@@ -8,11 +8,12 @@ impressa em 3D, borda de **contatos dourados** (card edge) embaixo, foto de prod
 off-white.
 
 Visão geral e especificação técnica do cartucho estão no [README](../README.md#especificação-do-cartucho-card-edge).
+As imagens são ilustração: o número de contatos e as proporções que aparecem nelas não valem como medida.
 
 | Cartucho | Função | Nome (título de jogo) | Imagem |
 |---|---|---|---|
 | LoRa | Rádio de longo alcance, 915 MHz (comunicação entre dois d-BMOs) | BRAVE NEW WORLD | [`cartucho-brave-new-world.jpg`](img/cartucho-brave-new-world.jpg) |
-| Câmera | Visão para o modo agente (um "corpo para o Claude" via API) | BIG BROTHER | [`cartucho-big-brother.jpg`](img/cartucho-big-brother.jpg) |
+| Câmera | Visão para o modo agente (cliente do BMO Brain) | BIG BROTHER | [`cartucho-big-brother.jpg`](img/cartucho-big-brother.jpg) |
 
 Os nomes trocaram em 02/11/2026: o LoRa era WAVE RIDER e a câmera era EAGLE EYE, ambos no
 visual teal antigo. Os prompts abaixo descrevem as imagens atuais; o Gemini não reproduz uma

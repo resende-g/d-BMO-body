@@ -2,7 +2,7 @@
 
 > Status: especificação preliminar. Arquitetura funcional definida; componentes, pinagem final, dimensões e layout de PCB ainda dependem de validação.
 >
-> Escopo: subsistema de bateria da variante d-BMO-body baseada em ESP32-P4 + ESP32-C6. Este documento não substitui nem altera a alimentação do BMO v1 legado baseado em ESP32-S3 descrito no README.
+> **Não vale para o d-BMO v1.** Escopo: subsistema de bateria da variante d-BMO-body baseada em ESP32-P4 + ESP32-C6, que foi adiada para o v2 em 02/11/2026. A plataforma do v1 é a ESP32-S3 N16R8, e a alimentação dela está em [README > Alimentação](../README.md#alimentação). Os 5 V / 3 A, o conector SH1.0 e a avaliação do carregador abaixo são da placa P4.
 
 ## 1. Decisões consolidadas
 
