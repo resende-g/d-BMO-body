@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // Teste de bancada da tela ILI9341 3,2" (BMO v1).
 // Pinagem: README > Pinagem. VCC da tela no 3V3; LED no 3V3 na bancada (o pino 16 vai
 // em HIGH mesmo assim, para quando o backlight passar a ser controlado).

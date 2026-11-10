@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // Rostos do d-BMO: os 10 estados da spec (resende-g/d-BMO, docs/brand/CHARACTER_SPECIFICATION.md).
 // Grade fixa de 16 × 12 blocos (20 px cada na tela de 320 × 240). Um caractere por bloco:
 //   '#' vermelho sinal (#D92332)   '+' vermelho escuro (#8F1722)   '.' fundo (#090A0C)
@@ -21,7 +22,7 @@ struct Face {
 
 #define VAZIO "................"
 
-// Olhos de bloco 2 × 3 e sorriso curto: o rosto da referência conceitual v1.
+// Olhos de bloco 2 × 3 e sorriso curto.
 const Frame ROSTO_IDLE[] = {
   {{VAZIO, VAZIO, VAZIO,
     "....##....##....",

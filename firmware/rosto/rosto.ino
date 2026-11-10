@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // Rosto do d-BMO na tela ILI9341 3,2" (bancada). Mostra os 10 estados da spec em blocos de
 // pixel vermelho sobre fundo escuro; os desenhos ficam em rosto_faces.h.
 // Pinagem e configuração do Arduino IDE iguais às do firmware/teste_tela (README > Pinagem):
@@ -36,7 +37,8 @@ const uint16_t COR_ESCURO = 0x88A4; // #8F1722
 Adafruit_ILI9341 tft(&SPI, PIN_DC, PIN_CS, PIN_RST);
 
 int estado = 0, quadro = 0;
-unsigned long trocaEm = 0;
+unsigned long quadroDesde = 0;
+uint16_t quadroMs = 0;  // 0 = desenha já
 char naTela[GRID_H][GRID_W];  // o que já está desenhado, para só redesenhar o que mudou
 int bloco, origemX, origemY;
 
@@ -57,7 +59,7 @@ void desenha(const Frame &fr) {
 void mudaEstado(int novo) {
   estado = (novo + FACE_COUNT) % FACE_COUNT;
   quadro = 0;
-  trocaEm = 0;  // desenha já no próximo loop
+  quadroMs = 0;  // desenha já no próximo loop
   Serial.printf("Estado %d: %s\n", estado, FACES[estado].name);
 }
 
@@ -124,9 +126,11 @@ void loop() {
   leSerial();
   leBotao();
   const Face &face = FACES[estado];
-  if (millis() >= trocaEm) {
+  // Subtração sem sinal: continua certa quando o millis() dá a volta (~49,7 dias).
+  if (millis() - quadroDesde >= quadroMs) {
     desenha(face.frames[quadro]);
-    trocaEm = millis() + face.frames[quadro].ms;
+    quadroDesde = millis();
+    quadroMs = face.frames[quadro].ms;
     quadro = (quadro + 1) % face.count;
   }
 }

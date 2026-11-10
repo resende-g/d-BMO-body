@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // Teste de bancada do CC1101 (BMO v1): lê PARTNUM/VERSION por SPI e confere o fio do GDO0.
 // Pinagem: README > Pinagem. VCC do módulo no 3V3, NUNCA no 5V.
 // Sem biblioteca extra. Não transmite nada (dá para rodar sem antena).
@@ -69,6 +70,11 @@ void loop() {
 
   int part = cc1101(CC1101_PARTNUM | 0xC0, true);
   int ver = cc1101(CC1101_VERSION | 0xC0, true);
+  if (part < 0 || ver < 0) {
+    Serial.println("FALHA: o chip respondeu ao reset mas parou de ficar pronto. Jumper com mau contato.");
+    delay(3000);
+    return;
+  }
   Serial.printf("PARTNUM: 0x%02X (esperado 0x00)\n", part);
   Serial.printf("VERSION: 0x%02X (esperado 0x14; 0x04 em lote antigo)\n", ver);
   if (ver == 0x14 || ver == 0x04) Serial.println("OK: CC1101 respondendo no SPI.");

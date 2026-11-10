@@ -1,6 +1,7 @@
 // Licença: AGPL-3.0, a mesma do Bruce (ver firmware/bruce/LICENSE).
 // Interface do BMO v1 para o Bruce. Base: boards/ESP32-C5-tft/interface.cpp do Bruce 1.16.1
 // (ILI9341 no SPI compartilhado + 3 botões), sem o touch, que o BMO não usa.
+// Modificado a partir do original em 23/10/2026.
 #include "core/powerSave.h"
 #include "core/utils.h"
 #include <interface.h>
