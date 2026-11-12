@@ -1339,10 +1339,10 @@ design_parameters:
     source: "README, Especificação do cartucho"
     note: null
   cartridge_protrusion:
-    label: "Cartucho de 52 x 52 mm: quanto fica para fora do topo"
+    label: "Estimativa histórica de saliência do cartucho (não usar como cota final)"
     value: 40.0
-    source: "README, Especificação do cartucho"
-    note: "O README registra '~40 mm'. Depende da profundidade da fenda do soquete, que é PENDENTE."
+    source: "README, Especificação do cartucho (estimativa anterior)"
+    note: "Valor histórico de ~40 mm baseado na PCB de 52 x 52 mm e na profundidade presumida do soquete. Não representa o envelope da carcaça plástica e não deve ser usado no CAD; recalcular após medir o soquete, definir o batente, a guarda e o envelope externo."
   battery_bay_thickness_margin:
     label: "Berço da bateria: folga na espessura, como fração da espessura medida"
     value: 0.10
