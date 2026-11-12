@@ -32,11 +32,14 @@ struct IrCode {
   uint8_t bits = 0;      // NEC: 32; Sony: 12, 15 ou 20
   uint16_t address = 0;  // NEC: 8 bits ou 16 (estendido); Sony: 5, 8 ou 13 bits
   uint16_t command = 0;  // NEC: 8 bits; Sony: 7 bits
+  // NEC com endereço de 16 bits (o segundo byte não é o inverso do primeiro). Sem esta
+  // marca, um endereço estendido com byte alto zero se confundiria com o de 8 bits.
+  bool extended = false;
 };
 
 constexpr bool operator==(const IrCode &a, const IrCode &b) {
   return a.protocol == b.protocol && a.bits == b.bits && a.address == b.address &&
-         a.command == b.command;
+         a.command == b.command && a.extended == b.extended;
 }
 
 // Um código guardado: decodificado (code) ou bruto (raw).

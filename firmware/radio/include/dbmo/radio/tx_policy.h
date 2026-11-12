@@ -45,15 +45,25 @@ class TxGrant {
  public:
   bool valid() const { return valid_; }
   uint32_t frequencyHz() const { return frequencyHz_; }
+  uint32_t occupiedHz() const { return occupiedHz_; }
   uint32_t airtimeMs() const { return airtimeMs_; }
+  // Número de série crescente: o driver aceita cada autorização uma única vez.
+  uint32_t serial() const { return serial_; }
 
  private:
   friend class TxPolicy;
-  TxGrant(bool valid, uint32_t frequencyHz, uint32_t airtimeMs)
-      : valid_(valid), frequencyHz_(frequencyHz), airtimeMs_(airtimeMs) {}
+  TxGrant(bool valid, uint32_t frequencyHz, uint32_t occupiedHz, uint32_t airtimeMs,
+          uint32_t serial)
+      : valid_(valid),
+        frequencyHz_(frequencyHz),
+        occupiedHz_(occupiedHz),
+        airtimeMs_(airtimeMs),
+        serial_(serial) {}
   bool valid_;
   uint32_t frequencyHz_;
+  uint32_t occupiedHz_;
   uint32_t airtimeMs_;
+  uint32_t serial_;
 };
 
 struct TxDecision {
@@ -66,7 +76,9 @@ class TxPolicy {
  public:
   static constexpr uint32_t kWindowMs = 60000;
   static constexpr uint32_t kBucketMs = 10000;
-  static constexpr size_t kBuckets = kWindowMs / kBucketMs;
+  // Um intervalo a mais que a janela: o gasto só é esquecido quando o intervalo inteiro em
+  // que ocorreu já saiu dos últimos 60 s (a soma cobre de 60 a 70 s, nunca menos).
+  static constexpr size_t kBuckets = kWindowMs / kBucketMs + 1;
 
   void setLimits(const TxLimits &limits) { limits_ = limits; }
   const TxLimits &limits() const { return limits_; }
@@ -88,6 +100,7 @@ class TxPolicy {
   size_t current_ = 0;
   uint32_t bucketStartMs_ = 0;
   bool started_ = false;
+  uint32_t nextSerial_ = 1;
 };
 
 }  // namespace dbmo::radio

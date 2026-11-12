@@ -65,6 +65,15 @@ Result<size_t> readFile(IFileSystem &fs, const char *path, void *buffer, size_t 
   return total;
 }
 
+Result<size_t> readFileOrBackup(IFileSystem &fs, const char *path, void *buffer, size_t capacity) {
+  const Result<size_t> primary = readFile(fs, path, buffer, capacity);
+  if (primary.status() != Status::NotFound) return primary;
+  // Queda de energia entre os dois renames de writeFileAtomic(): só o .bak existe.
+  char backup[kMaxPath];
+  if (!isOk(sibling(path, ".bak", backup, sizeof(backup)))) return primary;
+  return readFile(fs, backup, buffer, capacity);
+}
+
 Status writeFileAtomic(IFileSystem &fs, const char *path, const void *data, size_t n,
                        bool keepBackup) {
   if (!isValidPath(path) || (data == nullptr && n != 0)) return Status::InvalidArgument;
@@ -79,15 +88,14 @@ Status writeFileAtomic(IFileSystem &fs, const char *path, const void *data, size
     return written;
   }
 
+  // A versão anterior nunca é apagada antes de a nova estar no lugar: ela sai do caminho
+  // para .bak (o rename do FAT não sobrescreve) e só é removida depois, se o chamador não
+  // quer cópia de segurança.
   bool movedToBackup = false;
   if (fs.exists(path)) {
-    if (keepBackup) {
-      if (fs.exists(backup)) DBMO_TRY(fs.remove(backup));
-      DBMO_TRY(fs.rename(path, backup));
-      movedToBackup = true;
-    } else {
-      DBMO_TRY(fs.remove(path));
-    }
+    if (fs.exists(backup)) DBMO_TRY(fs.remove(backup));
+    DBMO_TRY(fs.rename(path, backup));
+    movedToBackup = true;
   }
 
   const Status renamed = fs.rename(temporary, path);
@@ -95,8 +103,10 @@ Status writeFileAtomic(IFileSystem &fs, const char *path, const void *data, size
     // Devolve a versão anterior ao lugar; se nem isso der certo, ela continua em .bak.
     if (movedToBackup) (void)fs.rename(backup, path);
     (void)fs.remove(temporary);
+    return renamed;
   }
-  return renamed;
+  if (movedToBackup && !keepBackup) (void)fs.remove(backup);
+  return Status::Ok;
 }
 
 Status ensureLayout(IFileSystem &fs) {

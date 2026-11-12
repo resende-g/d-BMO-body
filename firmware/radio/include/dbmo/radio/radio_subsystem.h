@@ -98,6 +98,8 @@ class RadioSubsystem final : public ISubsystem {
   Status bringUp();
   void setState(RadioState state);
   void noteError(Status status, uint32_t nowMs);
+  void failNow(Status status);
+  void reconfigureChip();
   void pollReceive(uint32_t nowMs);
   void pollTransmit(uint32_t nowMs);
 

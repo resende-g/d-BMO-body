@@ -55,7 +55,8 @@ Status InfraredSubsystem::init() {
   hasLast_ = hasLearned_ = learning_ = transmitting_ = false;
   rxErrors_ = 0;
   rxFaulted_ = false;
-  usedUs_ = 0;
+  for (uint32_t &bucket : bucketsUs_) bucket = 0;
+  bucket_ = 0;
   if (receiver_ == nullptr && transmitter_ == nullptr) return Status::HardwareAbsent;
   if (receiver_ != nullptr) DBMO_TRY(receiver_->begin());
   if (transmitter_ != nullptr) DBMO_TRY(transmitter_->begin());
@@ -141,10 +142,24 @@ void InfraredSubsystem::handleReceived(const RawTiming &timing, uint32_t nowMs) 
                      packHeader(received.code), packValue(received.code));
 }
 
+uint32_t InfraredSubsystem::usedUs() const {
+  uint32_t total = 0;
+  for (uint32_t bucket : bucketsUs_) total += bucket;
+  return total;
+}
+
 void InfraredSubsystem::rollBudget(uint32_t nowMs) {
-  if (elapsedMs(nowMs, windowStartMs_) >= kBudgetWindowMs) {
+  uint32_t elapsed = elapsedMs(nowMs, windowStartMs_);
+  if (elapsed >= kBudgetBuckets * kBudgetBucketMs) {
+    for (uint32_t &bucket : bucketsUs_) bucket = 0;
     windowStartMs_ = nowMs;
-    usedUs_ = 0;
+    return;
+  }
+  while (elapsed >= kBudgetBucketMs) {
+    bucket_ = (bucket_ + 1) % kBudgetBuckets;
+    bucketsUs_[bucket_] = 0;
+    windowStartMs_ += kBudgetBucketMs;
+    elapsed -= kBudgetBucketMs;
   }
 }
 
@@ -170,7 +185,7 @@ Status InfraredSubsystem::sendRaw(const RawTiming &timing) {
   if (durationUs > kMaxSendUs) return deny(IrTxDenial::TooLong);
   const uint32_t now = clock_.nowMs();
   rollBudget(now);
-  if (static_cast<uint64_t>(usedUs_) + durationUs > static_cast<uint64_t>(budgetMs_) * 1000)
+  if (static_cast<uint64_t>(usedUs()) + durationUs > static_cast<uint64_t>(budgetMs_) * 1000)
     return deny(IrTxDenial::BudgetExceeded);
 
   const Status status = transmitter_->send(timing);
@@ -178,7 +193,7 @@ Status InfraredSubsystem::sendRaw(const RawTiming &timing) {
     (void)bus_.publish(infrared_event::kFault, static_cast<uint32_t>(status));
     return status;
   }
-  usedUs_ += durationUs;
+  bucketsUs_[bucket_] += durationUs;
   transmitting_ = true;
   lastDenial_ = IrTxDenial::None;
   return Status::Ok;

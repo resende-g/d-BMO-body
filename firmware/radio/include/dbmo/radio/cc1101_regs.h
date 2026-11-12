@@ -24,12 +24,16 @@ inline constexpr uint8_t kSync0 = 0x05;
 inline constexpr uint8_t kPktlen = 0x06;
 inline constexpr uint8_t kPktctrl1 = 0x07;
 inline constexpr uint8_t kPktctrl0 = 0x08;
+inline constexpr uint8_t kChannr = 0x0A;
+inline constexpr uint8_t kFsctrl0 = 0x0C;
 inline constexpr uint8_t kFreq2 = 0x0D;
 inline constexpr uint8_t kFreq1 = 0x0E;
 inline constexpr uint8_t kFreq0 = 0x0F;
 inline constexpr uint8_t kMdmcfg4 = 0x10;
 inline constexpr uint8_t kMdmcfg3 = 0x11;
 inline constexpr uint8_t kMdmcfg2 = 0x12;
+inline constexpr uint8_t kMdmcfg1 = 0x13;
+inline constexpr uint8_t kMdmcfg0 = 0x14;
 inline constexpr uint8_t kDeviatn = 0x15;
 inline constexpr uint8_t kMcsm1 = 0x17;
 inline constexpr uint8_t kMcsm0 = 0x18;
@@ -44,7 +48,10 @@ inline constexpr uint8_t kLastConfigRegister = 0x2E;
 // depois do pacote. (PATABLE e FIFO não são registradores de configuração: a escrita de
 // baixo nível os recusa por outro motivo.)
 constexpr bool isPolicyRegister(uint8_t address) {
-  return address == kFreq2 || address == kFreq1 || address == kFreq0 || address == kPktlen ||
+  // CHANNR, FSCTRL0 e o espaçamento de canal (MDMCFG1/0) deslocam a portadora; MDMCFG1
+  // também muda o preâmbulo e o FEC, isto é, o tempo no ar.
+  return address == kChannr || address == kFsctrl0 || address == kMdmcfg1 || address == kMdmcfg0 ||
+         address == kFreq2 || address == kFreq1 || address == kFreq0 || address == kPktlen ||
          address == kPktctrl1 || address == kPktctrl0 || address == kMdmcfg4 ||
          address == kMdmcfg3 || address == kMdmcfg2 || address == kDeviatn || address == kMcsm1 ||
          address == kFrend0;

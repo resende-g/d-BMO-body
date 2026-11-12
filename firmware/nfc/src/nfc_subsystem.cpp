@@ -68,6 +68,7 @@ Status NfcSubsystem::bringUp() {
 
   errors_ = 0;
   step_ = Step::None;
+  fieldOffPending_ = false;  // bringUp() termina com o campo desligado
   return Status::Ok;
 }
 
@@ -124,7 +125,9 @@ Status NfcSubsystem::stopScan() {
   chip_.abort();
   const Status status = chip_.startRfField(false);
   step_ = isOk(status) ? Step::FieldOff : Step::None;
-  return status;
+  // Se o desligamento não saiu agora, tick() insiste até o campo estar desligado.
+  fieldOffPending_ = !isOk(status);
+  return Status::Ok;
 }
 
 bool NfcSubsystem::currentTag(TagInfo *out) const {
@@ -198,7 +201,21 @@ void NfcSubsystem::tick(uint32_t nowMs) {
         noteError(result, nowMs);
       }
     } else if (!isOk(result)) {
+      fieldOffPending_ = true;  // o campo pode ter ficado ligado: tenta de novo
       noteError(result, nowMs);
+    }
+    return;
+  }
+
+  if (fieldOffPending_ && state_ == NfcState::Idle) {
+    if (elapsedMs(nowMs, lastScanMs_) < scanPeriodMs_) return;
+    lastScanMs_ = nowMs;
+    const Status started = chip_.startRfField(false);
+    if (isOk(started)) {
+      fieldOffPending_ = false;
+      step_ = Step::FieldOff;
+    } else {
+      noteError(started, nowMs);
     }
     return;
   }

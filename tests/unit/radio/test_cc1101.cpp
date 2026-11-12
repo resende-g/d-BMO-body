@@ -25,10 +25,11 @@ struct Fixture {
     limits.enabled = true;
     limits.minHz = 433050000;
     limits.maxHz = 434790000;
+    limits.maxAirtimeMsPerMinute = 60000;  // os testes do driver pedem várias autorizações
     policy.setLimits(limits);
   }
   TxGrant grant(uint32_t frequencyHz = 433920000) {
-    return policy.authorize(frequencyHz, 12000, 50, clock.nowMs()).grant;
+    return policy.authorize(frequencyHz, 12000, 600, clock.nowMs()).grant;
   }
   void configure() { TEST_ASSERT_OK(chip.configure(RadioConfig(), 0x12)); }
 };
@@ -372,6 +373,78 @@ void test_overrides_cannot_change_bandwidth_or_tx_behaviour() {
   TEST_ASSERT_STATUS(Status::NotPermitted, f.chip.applyOverrides(length, 1));
 }
 
+void test_channel_and_offset_registers_are_protected_and_reset_by_configure() {
+  Fixture f;
+  f.configure();
+  // CHANNR, FSCTRL0 e o espaçamento de canal deslocariam a portadora sem a política ver.
+  const uint8_t shifting[] = {reg::kChannr, reg::kFsctrl0, reg::kMdmcfg1, reg::kMdmcfg0};
+  for (uint8_t address : shifting) {
+    TEST_ASSERT_STATUS(Status::NotPermitted, f.chip.writeRegister(address, 0x7F));
+    const RegisterSetting setting[] = {{address, 0x7F}};
+    TEST_ASSERT_STATUS(Status::NotPermitted, f.chip.applyOverrides(setting, 1));
+  }
+  // Mesmo que algo os tenha alterado antes, configure() os devolve ao valor conhecido.
+  f.sim.registers[reg::kChannr] = 100;
+  f.sim.registers[reg::kFsctrl0] = 0x7F;
+  f.configure();
+  TEST_ASSERT_EQUAL_HEX8(0x00, f.sim.registers[reg::kChannr]);
+  TEST_ASSERT_EQUAL_HEX8(0x00, f.sim.registers[reg::kFsctrl0]);
+  TEST_ASSERT_EQUAL_HEX8(0x22, f.sim.registers[reg::kMdmcfg1]);
+  TEST_ASSERT_EQUAL_HEX8(0xF8, f.sim.registers[reg::kMdmcfg0]);
+}
+
+void test_grant_is_single_use_and_bound_to_what_was_evaluated() {
+  Fixture f;
+  f.configure();
+  const uint8_t data[61] = {};
+  const TxGrant grant = f.grant();
+  TEST_ASSERT_OK(f.chip.startTransmit(grant, data, 4));
+  TEST_ASSERT_STATUS(Status::NotPermitted, f.chip.startTransmit(grant, data, 4));  // reuso
+  TEST_ASSERT_EQUAL_UINT(1, f.sim.transmitCount);
+
+  // Autorização para um pacote curto não serve para um longo (mais tempo no ar).
+  const TxGrant shortGrant = f.policy.authorize(433920000, 12000, 70, 0).grant;
+  TEST_ASSERT_STATUS(Status::NotPermitted, f.chip.startTransmit(shortGrant, data, 61));
+
+  // Nem para uma configuração mais larga feita depois.
+  const TxGrant narrow = f.grant();
+  RadioConfig wide;
+  wide.modulation = Modulation::Gfsk;
+  wide.dataRateBaud = 250000;
+  wide.deviationHz = 127000;
+  wide.bandwidthHz = 540000;
+  TEST_ASSERT_OK(f.chip.configure(wide, 0x12));
+  TEST_ASSERT_STATUS(Status::NotPermitted, f.chip.startTransmit(narrow, data, 4));
+  TEST_ASSERT_EQUAL_UINT(1, f.sim.transmitCount);
+}
+
+void test_failed_reconfiguration_blocks_the_radio() {
+  Fixture f;
+  f.configure();
+  RadioConfig other;
+  other.frequencyHz = 868300000;
+  f.sim.failTransfers = 1;  // o barramento falha no meio da nova configuração
+  TEST_ASSERT_FALSE(dbmo::isOk(f.chip.configure(other, 0x12)));
+  const uint8_t data[4] = {};
+  // Com os registradores em estado desconhecido, nada de transmitir nem receber.
+  TEST_ASSERT_STATUS(Status::NotInitialized, f.chip.startTransmit(f.grant(), data, 4));
+  TEST_ASSERT_STATUS(Status::NotInitialized, f.chip.startReceive());
+  TEST_ASSERT_EQUAL_UINT(0, f.sim.transmitCount);
+}
+
+void test_ook_power_table_is_rewritten_before_each_transmission() {
+  Fixture f;
+  RadioConfig ook;
+  ook.modulation = Modulation::Ook;
+  TEST_ASSERT_OK(f.chip.configure(ook, 0x34));
+  TEST_ASSERT_OK(f.chip.sleep());
+  f.sim.patable[1] = 0x00;  // o que o chip real perde ao dormir
+  const uint8_t data[4] = {};
+  TEST_ASSERT_OK(f.chip.startTransmit(f.policy.authorize(433920000, 12000, 600, 0).grant, data, 4));
+  TEST_ASSERT_EQUAL_HEX8(0x00, f.sim.patable[0]);
+  TEST_ASSERT_EQUAL_HEX8(0x34, f.sim.patable[1]);
+}
+
 void test_rssi_conversion() {
   TEST_ASSERT_EQUAL_INT16(-74, rssiToDbm(0));
   TEST_ASSERT_EQUAL_INT16(-11, rssiToDbm(127));   // 63 − 74
@@ -410,6 +483,10 @@ int main() {
   RUN_TEST(test_overrides_cannot_change_frequency_or_packet_mode);
   RUN_TEST(test_low_level_write_cannot_touch_what_goes_on_air);
   RUN_TEST(test_overrides_cannot_change_bandwidth_or_tx_behaviour);
+  RUN_TEST(test_channel_and_offset_registers_are_protected_and_reset_by_configure);
+  RUN_TEST(test_grant_is_single_use_and_bound_to_what_was_evaluated);
+  RUN_TEST(test_failed_reconfiguration_blocks_the_radio);
+  RUN_TEST(test_ook_power_table_is_rewritten_before_each_transmission);
   RUN_TEST(test_rssi_conversion);
   return UNITY_END();
 }

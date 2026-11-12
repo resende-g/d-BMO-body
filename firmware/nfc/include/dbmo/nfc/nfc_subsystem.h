@@ -91,6 +91,7 @@ class NfcSubsystem final : public ISubsystem {
   bool tagPresent_ = false;
   TagInfo tag_{};
   uint8_t misses_ = 0;
+  bool fieldOffPending_ = false;
 };
 
 }  // namespace dbmo::nfc

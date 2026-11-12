@@ -121,6 +121,25 @@ void test_failed_final_rename_restores_the_previous_version() {
   TEST_ASSERT_FALSE(fs->exists(kTemp));
 }
 
+void test_without_backup_a_failed_swap_still_keeps_the_old_file() {
+  TEST_ASSERT_OK(save("a=1\n", false));
+  fs->renameFaultDelay = 1;  // antigo -> .bak funciona
+  fs->failRename = 1;        // .tmp -> arquivo falha
+  TEST_ASSERT_STATUS(Status::IoError, save("a=2\n", false));
+  TEST_ASSERT_EQUAL_STRING("a=1\n", fs->text(kFile));  // nada se perdeu
+  TEST_ASSERT_FALSE(fs->exists(kTemp));
+}
+
+void test_read_falls_back_to_backup_after_power_loss_mid_swap() {
+  // Estado deixado por uma queda de energia entre os dois renames: só o .bak existe.
+  fs->put(kBackup, "a=1\n");
+  char buffer[16] = {};
+  TEST_ASSERT_STATUS(Status::NotFound, readFile(*fs, kFile, buffer, sizeof(buffer)).status());
+  const dbmo::Result<size_t> length = readFileOrBackup(*fs, kFile, buffer, sizeof(buffer));
+  TEST_ASSERT_TRUE(length.ok());
+  TEST_ASSERT_EQUAL_MEMORY("a=1\n", buffer, 4);
+}
+
 void test_rejects_invalid_paths() {
   TEST_ASSERT_STATUS(Status::InvalidArgument, writeFileAtomic(*fs, "/dbmo/../x", "a", 1, true));
   TEST_ASSERT_STATUS(Status::InvalidArgument, writeFileAtomic(*fs, kFile, nullptr, 3, true));
@@ -214,6 +233,8 @@ int main() {
   RUN_TEST(test_failed_write_leaves_the_old_file_untouched);
   RUN_TEST(test_full_card_is_reported_and_old_file_survives);
   RUN_TEST(test_failed_final_rename_restores_the_previous_version);
+  RUN_TEST(test_without_backup_a_failed_swap_still_keeps_the_old_file);
+  RUN_TEST(test_read_falls_back_to_backup_after_power_loss_mid_swap);
   RUN_TEST(test_rejects_invalid_paths);
   RUN_TEST(test_config_round_trip_through_the_card);
   RUN_TEST(test_config_load_without_file_is_not_found);

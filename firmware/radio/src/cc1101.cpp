@@ -162,8 +162,16 @@ Status Cc1101::configure(const RadioConfig &config, uint8_t paTable) {
   const uint32_t word = frequencyWord(xtalHz_, config.frequencyHz);
   const bool ook = config.modulation == Modulation::Ook;
 
+  // A partir daqui o chip pode ficar com registradores misturados: enquanto a nova
+  // configuração não for gravada e conferida por inteiro, o driver não transmite nem recebe.
+  configured_ = false;
   DBMO_TRY(strobe(kSidle));
   const RegisterSetting settings[] = {
+      // Canal zero, sem deslocamento e com o espaçamento de reset: a portadora é só FREQ.
+      {kChannr, 0x00},
+      {kFsctrl0, 0x00},
+      {kMdmcfg1, 0x22},  // sem FEC, 4 bytes de preâmbulo
+      {kMdmcfg0, 0xF8},
       {kIocfg2, 0x2E},  // GDO2 em alta impedância
       {kIocfg0, 0x06},  // GDO0: ativo entre o sincronismo e o fim do pacote
       {kSync1, static_cast<uint8_t>(config.syncWord >> 8)},
@@ -190,8 +198,9 @@ Status Cc1101::configure(const RadioConfig &config, uint8_t paTable) {
   for (const RegisterSetting &setting : settings)
     DBMO_TRY(writeRegisterRaw(setting.address, setting.value));
 
-  const uint8_t table[2] = {static_cast<uint8_t>(ook ? 0x00 : paTable), paTable};
-  DBMO_TRY(writeBurst(kPatable, table, 2));
+  paTable_ = paTable;
+  config_.modulation = config.modulation;  // usado por writePaTable()
+  DBMO_TRY(writePaTable());
 
   // Confere a escrita: um barramento com defeito não pode deixar o rádio numa frequência
   // diferente da pedida.
@@ -206,6 +215,15 @@ Status Cc1101::configure(const RadioConfig &config, uint8_t paTable) {
   config_ = config;
   configured_ = true;
   return Status::Ok;
+}
+
+Status Cc1101::writePaTable() {
+  // OOK usa PATABLE[0] para o bit 0 e PATABLE[1] para o bit 1. Só a primeira posição
+  // sobrevive ao modo de sono do chip, então a tabela é regravada antes de cada
+  // transmissão.
+  const bool ook = config_.modulation == Modulation::Ook;
+  const uint8_t table[2] = {static_cast<uint8_t>(ook ? 0x00 : paTable_), paTable_};
+  return writeBurst(kPatable, table, 2);
 }
 
 Status Cc1101::applyOverrides(const RegisterSetting *settings, size_t count) {
@@ -294,14 +312,21 @@ Result<RxPoll> Cc1101::pollReceive(RadioPacket *out) {
 
 Status Cc1101::startTransmit(const TxGrant &grant, const uint8_t *data, size_t length) {
   if (!configured_) return Status::NotInitialized;
-  if (!grant.valid() || grant.frequencyHz() != config_.frequencyHz) return Status::NotPermitted;
   if (data == nullptr || length == 0 || length > config_.maxPayload) return Status::InvalidArgument;
+  // A autorização vale para uma transmissão, na frequência, banda e duração avaliadas.
+  if (!grant.valid() || grant.serial() <= lastGrantSerial_ ||
+      grant.frequencyHz() != config_.frequencyHz ||
+      occupiedBandwidthHz(config_) > grant.occupiedHz() ||
+      airtimeMs(config_, length) > grant.airtimeMs())
+    return Status::NotPermitted;
+  lastGrantSerial_ = grant.serial();
 
   DBMO_TRY(strobe(kSidle));
   DBMO_TRY(strobe(kSftx));
   uint8_t frame[1 + kMaxPayload];
   frame[0] = static_cast<uint8_t>(length);
   memcpy(frame + 1, data, length);
+  DBMO_TRY(writePaTable());
   DBMO_TRY(writeBurst(kFifo, frame, length + 1));
   return strobe(kStx);
 }

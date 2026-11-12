@@ -47,6 +47,8 @@ class CartridgeSubsystem final : public ISubsystem {
   static constexpr uint32_t kPollPeriodMs = 500;
   // Tentativas de leitura do cabeçalho antes de desistir desta inserção.
   static constexpr uint8_t kReadAttempts = 3;
+  // Consultas entre releituras de um cartucho sem cabeçalho válido (4 × 500 ms = 2 s).
+  static constexpr uint8_t kUnknownRetryPolls = 4;
   // Consultas seguidas sem resposta até considerar o cartucho removido.
   static constexpr uint8_t kMissesToRemove = 2;
 
@@ -101,6 +103,7 @@ class CartridgeSubsystem final : public ISubsystem {
   bool polled_ = false;
   uint32_t lastPollMs_ = 0;
   uint8_t misses_ = 0;
+  uint8_t unknownPolls_ = 0;
   uint8_t readFailures_ = 0;
 };
 

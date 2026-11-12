@@ -75,7 +75,8 @@ class Cc1101 {
   Result<RxPoll> pollReceive(RadioPacket *out);
 
   // Carrega a FIFO e inicia a transmissão de UM pacote. NotPermitted se a autorização é
-  // inválida ou foi emitida para outra frequência.
+  // inválida, já foi usada, foi emitida para outra frequência, ou não cobre a banda
+  // ocupada e o tempo no ar deste pacote na configuração atual.
   Status startTransmit(const TxGrant &grant, const uint8_t *data, size_t length);
   Result<TxPoll> pollTransmit();
 
@@ -86,6 +87,7 @@ class Cc1101 {
   Result<uint8_t> readStatus(uint8_t address);
 
  private:
+  Status writePaTable();
   Status begin();  // abre a transação já com o chip pronto; quem chama fecha
   Status writeRegisterRaw(uint8_t address, uint8_t value);
   Status strobe(uint8_t command);
@@ -100,6 +102,8 @@ class Cc1101 {
   RadioConfig config_;
   bool configured_ = false;
   bool asleep_ = false;
+  uint8_t paTable_ = 0;
+  uint32_t lastGrantSerial_ = 0;
 };
 
 // RSSI bruto → dBm (deslocamento típico de 74 dB do datasheet).

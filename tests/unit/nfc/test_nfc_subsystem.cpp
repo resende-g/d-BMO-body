@@ -175,6 +175,30 @@ void test_stop_scan_turns_the_field_off_and_forgets_the_tag() {
   TEST_ASSERT_EQUAL_UINT(searches, f.sim.commandCount[kFind]);
 }
 
+void test_stop_scan_insists_until_the_field_is_off() {
+  Fixture f;
+  TEST_ASSERT_OK(f.nfc.init());
+  TEST_ASSERT_OK(f.nfc.startScan());
+  f.run(600);
+  TEST_ASSERT_TRUE(f.sim.rfFieldOn);
+  f.bus.failNext(Status::IoError, 1);  // o comando de desligar o campo falha uma vez
+  TEST_ASSERT_OK(f.nfc.stopScan());
+  f.run(2000);
+  TEST_ASSERT_FALSE(f.sim.rfFieldOn);  // o subsistema tentou de novo
+  TEST_ASSERT_EQUAL(NfcState::Idle, f.nfc.state());
+}
+
+void test_chip_that_stops_acknowledging_goes_to_fault() {
+  Fixture f;
+  TEST_ASSERT_OK(f.nfc.init());
+  TEST_ASSERT_OK(f.nfc.startScan());
+  f.run(600);
+  f.sim.readsBeforeAck = 1000000;  // responde ao endereço, mas não confirma mais nada
+  f.run(3000);
+  TEST_ASSERT_EQUAL(NfcState::Fault, f.nfc.state());
+  TEST_ASSERT_EQUAL_INT(1, f.countOf(nfc_event::kFault));
+}
+
 void test_scan_enabled_by_config_starts_at_boot() {
   Fixture f;
   TEST_ASSERT_OK(f.config.setBool(config_key::kScanEnabled, true));
@@ -289,6 +313,8 @@ int main() {
   RUN_TEST(test_tag_removal_needs_two_empty_scans);
   RUN_TEST(test_swapping_tags_reports_removal_and_detection);
   RUN_TEST(test_stop_scan_turns_the_field_off_and_forgets_the_tag);
+  RUN_TEST(test_stop_scan_insists_until_the_field_is_off);
+  RUN_TEST(test_chip_that_stops_acknowledging_goes_to_fault);
   RUN_TEST(test_scan_enabled_by_config_starts_at_boot);
   RUN_TEST(test_chip_without_finite_retries_still_scans_by_timeout);
   RUN_TEST(test_fault_is_reported_once_and_recovered);

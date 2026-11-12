@@ -39,9 +39,8 @@ Status decodeNec(const RawTiming &timing, IrCode *out) {
   out->bits = 32;
   out->command = command;
   // Endereço de 8 bits quando o segundo byte é o inverso; senão, estendido de 16 bits.
-  out->address = static_cast<uint8_t>(address ^ addressInverse) == 0xFF
-                     ? address
-                     : static_cast<uint16_t>(address | (addressInverse << 8));
+  out->extended = static_cast<uint8_t>(address ^ addressInverse) != 0xFF;
+  out->address = out->extended ? static_cast<uint16_t>(address | (addressInverse << 8)) : address;
   return Status::Ok;
 }
 
@@ -79,8 +78,9 @@ Status decodeSony(const RawTiming &timing, IrCode *out) {
 Status encodeNec(const IrCode &code, RawTiming *out) {
   if (code.command > 0xFF) return Status::InvalidArgument;
   const uint8_t low = static_cast<uint8_t>(code.address);
+  const bool extended = code.extended || code.address > 0xFF;
   const uint8_t high =
-      code.address > 0xFF ? static_cast<uint8_t>(code.address >> 8) : static_cast<uint8_t>(~low);
+      extended ? static_cast<uint8_t>(code.address >> 8) : static_cast<uint8_t>(~low);
   const uint8_t command = static_cast<uint8_t>(code.command);
   const uint32_t data = static_cast<uint32_t>(low) | (static_cast<uint32_t>(high) << 8) |
                         (static_cast<uint32_t>(command) << 16) |

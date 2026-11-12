@@ -114,7 +114,7 @@ cmake -S . -B build/lead -G Ninja -DDBMO_SANITIZE=ON && cmake --build build/lead
 
 Ambiente: g++ 13.3.0, CMake 3.28.3, Ninja, AddressSanitizer + UndefinedBehaviorSanitizer.
 
-Resultado: **46 executáveis de teste, 525 testes, 0 falhas, 0 ignorados.**
+Resultado: **46 executáveis de teste, 538 testes, 0 falhas, 0 ignorados** (contagem final, depois das correções da revisão adversarial; a tabela por área abaixo é a da medição anterior, com 525).
 
 | Área | Executáveis | Testes |
 |---|---:|---:|
@@ -203,6 +203,44 @@ não acompanhava o aprendizado de infravermelho (`Application`).
 | `tools/check_links.py` | 34 arquivos Markdown, 0 links quebrados |
 | `tools/check_repo.py` | 12 subsistemas, fontes portáveis e scripts conferidos; 0 problemas |
 | `tools/check_format.sh` | Sem diferenças (clang-format 18.1.3) |
+
+### Revisão adversarial independente (2026-11-12)
+
+Cinco revisores por área, cada um seguido de um verificador que tenta refutar ou reproduzir
+os achados. **A revisão ficou incompleta:** o limite de gasto da conta interrompeu a
+execução. Resultado por área:
+
+| Área | Revisão | Verificação independente |
+|---|---|---|
+| Emissão (rádio e infravermelho) | Concluída: 8 achados, com testes de reprodução do próprio revisor | Não executada |
+| Entrada não confiável (NFC, cartuchos, caminhos, códigos IR) | Concluída: 8 achados | Não executada |
+| Energia e dados | **Não executada** | — |
+| Porte ESP32-S3 | **Não executada** | — |
+| Núcleo e interface | **Não executada** | — |
+
+Os 16 achados foram conferidos pelo autor contra o código e tratados assim:
+
+| Achado | Tratamento |
+|---|---|
+| Registradores de canal e de deslocamento do CC1101 fora da lista protegida (portadora fora da faixa autorizada) | Corrigido, com teste |
+| Reconfiguração que falha deixava o rádio "configurado" com registradores misturados | Corrigido, com teste |
+| Autorização de transmissão reutilizável e válida para outra configuração | Corrigido (uso único; amarrada a frequência, banda e tempo no ar), com teste |
+| Troca de cristal ou de potência só em memória, sem regravar o chip | Corrigido |
+| Janela de tempo no ar do rádio permitia o dobro do orçamento em 60 s | Corrigido, com teste |
+| OOK: tabela de potência perdida quando o chip dorme | Corrigido, com teste (o comportamento do chip real vem do datasheet, de memória: validar na bancada) |
+| Orçamento de infravermelho em janela fixa permitia o dobro na virada do minuto | Corrigido, com teste |
+| NEC estendido com byte alto zero era reenviado com outro endereço | Corrigido (`necx:` no formato de texto), com teste |
+| `stopScan()` do NFC podia deixar o campo de RF ligado | Corrigido, com teste |
+| PN532 que para de confirmar comandos nunca chegava a `Fault` | Corrigido, com teste |
+| Gravação atômica sem cópia de segurança podia perder a versão antiga e a nova | Corrigido, com teste |
+| Cartucho ficava em `Unknown` para sempre depois de uma leitura ruim na inserção | Corrigido; **sem teste novo** |
+| Cabeçalho de cartucho aceito com fornecedor zero ou bytes reservados não nulos | Corrigido, com teste |
+| Remoção de cartucho ativo relatada como falha do driver | Corrigido; **sem teste novo** |
+| Recuperação do NFC em `Fault` espera dentro de um `tick()` (até ~0,5 s a cada 5 s) | **Não corrigido**: limitação registrada em `firmware/nfc/README.md` |
+| (duplicado do NEC estendido, relatado pelas duas áreas) | — |
+
+Três das cinco áreas não foram revisadas por um segundo par de olhos, e nenhuma correção
+passou por verificação independente. Isso deve ser refeito antes de confiar no firmware.
 
 ### O que NÃO foi executado
 

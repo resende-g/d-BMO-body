@@ -56,7 +56,9 @@ CommandState Pn532::poll() {
     if (elapsed >= limit) {
       // Sem resposta no prazo: manda o PN532 desistir do comando.
       (void)bus_.write(address_, kAckFrame, sizeof(kAckFrame));
-      fail(Status::Timeout);
+      // Sem ACK o chip nem aceitou o comando (travado ou ausente); sem resposta depois do
+      // ACK é o caso normal de "nada no campo".
+      fail(state_ == CommandState::WaitingAck ? Status::HardwareAbsent : Status::Timeout);
     }
     return state_;
   }

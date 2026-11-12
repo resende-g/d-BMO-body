@@ -60,6 +60,9 @@ class InfraredSubsystem final : public ISubsystem {
   // Janela em que o mesmo código recebido de novo conta como repetição.
   static constexpr uint32_t kRepeatWindowMs = 200;
   static constexpr uint32_t kBudgetWindowMs = 60000;
+  // Janela deslizante em intervalos de 10 s, com um a mais que a janela (ver TxPolicy).
+  static constexpr uint32_t kBudgetBucketMs = 10000;
+  static constexpr size_t kBudgetBuckets = kBudgetWindowMs / kBudgetBucketMs + 1;
   static constexpr uint8_t kFaultThreshold = 5;
 
   InfraredSubsystem(EventBus &bus, ConfigStore &config, IClock &clock);
@@ -92,7 +95,7 @@ class InfraredSubsystem final : public ISubsystem {
   IrTxDenial lastDenial() const { return lastDenial_; }
   bool transmitting() const { return transmitting_; }
   // Tempo de emissão gasto no minuto corrente, em ms.
-  uint32_t airtimeUsedMs() const { return usedUs_ / 1000; }
+  uint32_t airtimeUsedMs() const { return usedUs() / 1000; }
 
   void applyConfig();
 
@@ -122,8 +125,10 @@ class InfraredSubsystem final : public ISubsystem {
 
   bool transmitting_ = false;
   IrTxDenial lastDenial_ = IrTxDenial::None;
+  uint32_t usedUs() const;
   uint32_t windowStartMs_ = 0;
-  uint32_t usedUs_ = 0;
+  uint32_t bucketsUs_[kBudgetBuckets] = {};
+  size_t bucket_ = 0;
   uint8_t rxErrors_ = 0;
   bool rxFaulted_ = false;
   RawTiming scratch_;

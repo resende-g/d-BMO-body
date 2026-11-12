@@ -94,7 +94,10 @@ Result<size_t> formatCode(const StoredCode &code, char *out, size_t capacity) {
 
   int written = -1;
   if (code.code.protocol == IrProtocol::Nec) {
-    written = snprintf(out, capacity, "nec:%04X:%02X", static_cast<unsigned>(code.code.address),
+    // "necx" marca endereço estendido de 16 bits, inclusive quando o byte alto é zero.
+    written = snprintf(out, capacity, "%s:%04X:%02X",
+                       code.code.extended || code.code.address > 0xFF ? "necx" : "nec",
+                       static_cast<unsigned>(code.code.address),
                        static_cast<unsigned>(code.code.command));
   } else if (code.code.protocol == IrProtocol::Sony) {
     written = snprintf(out, capacity, "sony:%u:%04X:%02X", static_cast<unsigned>(code.code.bits),
@@ -117,11 +120,13 @@ Status parseCode(const char *text, size_t length, StoredCode *out) {
   StoredCode result;
   uint32_t value = 0;
 
-  if (cursor.takeWord("nec:")) {
+  const bool necExtended = cursor.takeWord("necx:");
+  if (necExtended || cursor.takeWord("nec:")) {
     result.code.protocol = IrProtocol::Nec;
     result.code.bits = 32;
     if (!cursor.takeNumber(16, 0xFFFF, &value)) return Status::Corrupt;
     result.code.address = static_cast<uint16_t>(value);
+    result.code.extended = necExtended || value > 0xFF;
     if (!cursor.take(':') || !cursor.takeNumber(16, 0xFF, &value)) return Status::Corrupt;
     result.code.command = static_cast<uint16_t>(value);
   } else if (cursor.takeWord("sony:")) {

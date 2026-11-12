@@ -99,6 +99,17 @@ void test_airtime_budget_is_enforced_over_a_sliding_minute() {
   TEST_ASSERT_EQUAL_UINT32(0, policy.airtimeUsedMs(now));
 }
 
+void test_budget_holds_in_every_60_second_window() {
+  // O gasto só pode ser esquecido depois de 60 s inteiros, nunca antes.
+  TxPolicy policy;
+  policy.setLimits(openLimits());
+  TEST_ASSERT_EQUAL(TxDenial::None, policy.check(kFrequency, kOccupied, 1, 0));  // alinha em t = 0
+  TEST_ASSERT_TRUE(policy.authorize(kFrequency, kOccupied, 600, 9990).allowed());
+  TEST_ASSERT_FALSE(policy.authorize(kFrequency, kOccupied, 600, 60000).allowed());
+  TEST_ASSERT_FALSE(policy.authorize(kFrequency, kOccupied, 600, 69900).allowed());
+  TEST_ASSERT_TRUE(policy.authorize(kFrequency, kOccupied, 600, 70000).allowed());
+}
+
 void test_continuous_transmission_is_impossible() {
   // Tentando transmitir sem parar por 10 minutos, o tempo no ar não passa de 1 %
   // (mais a granularidade de um intervalo de 10 s).
@@ -136,6 +147,7 @@ int main() {
   RUN_TEST(test_frequency_outside_chip_bands);
   RUN_TEST(test_single_packet_longer_than_the_budget);
   RUN_TEST(test_airtime_budget_is_enforced_over_a_sliding_minute);
+  RUN_TEST(test_budget_holds_in_every_60_second_window);
   RUN_TEST(test_continuous_transmission_is_impossible);
   RUN_TEST(test_zero_budget_blocks_transmission);
   RUN_TEST(test_clock_wraparound_does_not_reopen_the_budget);

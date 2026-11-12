@@ -396,6 +396,21 @@ void test_airtime_budget_prevents_flooding() {
   TEST_ASSERT_OK(f.ir.send(necCode(0x04, 0x08)));
 }
 
+void test_budget_cannot_be_doubled_across_a_minute_boundary() {
+  Fixture f;
+  TEST_ASSERT_OK(f.ir.init());
+  f.enableTx();
+  f.run(54000);
+  int sent = 0;
+  // Do segundo 54 ao 66, tentando sem parar: uma janela fixa aceitaria o dobro.
+  for (int i = 0; i < 600; ++i) {
+    if (dbmo::isOk(f.ir.send(necCode(0x04, 0x08)))) ++sent;
+    f.finishSend();
+    f.run(18);
+  }
+  TEST_ASSERT_EQUAL_INT(88, sent);  // 88 × 68 ms = 6 s: o orçamento de um minuto, não dois
+}
+
 void test_send_without_transmitter() {
   EventBus bus;
   ConfigStore config;
@@ -469,6 +484,7 @@ int main() {
   RUN_TEST(test_own_transmission_is_not_received);
   RUN_TEST(test_invalid_signals_are_denied);
   RUN_TEST(test_airtime_budget_prevents_flooding);
+  RUN_TEST(test_budget_cannot_be_doubled_across_a_minute_boundary);
   RUN_TEST(test_send_without_transmitter);
   RUN_TEST(test_transmitter_failure_is_reported_and_not_charged);
   RUN_TEST(test_receiver_failure_is_reported_once);

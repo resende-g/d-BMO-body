@@ -49,6 +49,10 @@ Privacidade:
 - Três erros seguidos de barramento ou de protocolo levam a `Fault`; o subsistema tenta
   reiniciar o chip a cada 5 s e retoma a busca se ela estava ligada.
 
+Limitação conhecida: em `Fault`, a tentativa de reiniciar o chip (a cada 5 s) envia quatro
+comandos e espera cada um dentro de um único `tick()`. Com um chip que responde devagar,
+essa volta do laço principal pode levar cerca de meio segundo. Não foi corrigido.
+
 ## O que está verificado e o que não está
 
 | Item | Estado |

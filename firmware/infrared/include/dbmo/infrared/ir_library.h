@@ -16,6 +16,7 @@ inline constexpr size_t kMaxCodeText = 800;
 
 // Formatos (uma linha):
 //   nec:<endereço hex>:<comando hex>
+//   necx:<endereço estendido de 16 bits, hex>:<comando hex>
 //   sony:<bits>:<endereço hex>:<comando hex>
 //   raw:<portadora Hz>:<d0>,<d1>,...   (microssegundos, começando por uma marca)
 Result<size_t> formatCode(const StoredCode &code, char *out, size_t capacity);

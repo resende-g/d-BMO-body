@@ -85,7 +85,8 @@ void test_ack_timeout() {
   f.sim.readsBeforeAck = 100000;
   TEST_ASSERT_OK(f.chip.startGetFirmwareVersion());
   TEST_ASSERT_EQUAL(CommandState::Failed, f.finish());
-  TEST_ASSERT_STATUS(Status::Timeout, f.chip.failure());
+  // Sem ACK o chip não aceitou o comando: é diferente de "sem resposta" (campo vazio).
+  TEST_ASSERT_STATUS(Status::HardwareAbsent, f.chip.failure());
   TEST_ASSERT_TRUE(f.clock.nowMs() >= Pn532::kAckTimeoutMs);
   TEST_ASSERT_TRUE(f.clock.nowMs() < Pn532::kAckTimeoutMs + 5);
 }

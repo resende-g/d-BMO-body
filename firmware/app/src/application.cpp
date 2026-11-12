@@ -132,7 +132,7 @@ Result<size_t> FileIrCodeStorage::load(const char *name, char *buffer, size_t ca
   char path[storage::kMaxPath];
   const Status status = pathFor(name, path, sizeof(path));
   if (!isOk(status)) return status;
-  return storage::readFile(storage_.fileSystem(), path, buffer, capacity);
+  return storage::readFileOrBackup(storage_.fileSystem(), path, buffer, capacity);
 }
 
 Status FileIrCodeStorage::remove(const char *name) {

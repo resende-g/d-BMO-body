@@ -45,9 +45,29 @@ void RadioSubsystem::applyConfig() {
   limits.maxAirtimeMsPerMinute =
       static_cast<uint32_t>(config_.getInt(config_key::kTxMsPerMin).valueOr(600));
   policy_.setLimits(limits);
-  paTable_ = static_cast<uint8_t>(config_.getInt(config_key::kTxPaTable).valueOr(0x12));
-  chip_.setXtalHz(static_cast<uint32_t>(config_.getInt(config_key::kXtalKhz).valueOr(26000)) *
-                  1000u);
+  const uint8_t paTable =
+      static_cast<uint8_t>(config_.getInt(config_key::kTxPaTable).valueOr(0x12));
+  const uint32_t xtalHz =
+      static_cast<uint32_t>(config_.getInt(config_key::kXtalKhz).valueOr(26000)) * 1000u;
+  const bool changed = paTable != paTable_ || xtalHz != chip_.xtalHz();
+  paTable_ = paTable;
+  chip_.setXtalHz(xtalHz);
+  // Potência e cristal entram nos registradores: com o rádio em uso, regrava o chip para
+  // que ele não fique operando com valores diferentes dos que a política avalia.
+  if (changed && initialized_ && state_ != RadioState::Transmitting) reconfigureChip();
+}
+
+void RadioSubsystem::reconfigureChip() {
+  if (state_ == RadioState::Fault) return;  // bringUp() regrava tudo ao recuperar
+  Status status = chip_.configure(radioConfig_, paTable_);
+  if (isOk(status)) status = state_ == RadioState::Receiving ? chip_.startReceive() : chip_.sleep();
+  if (!isOk(status)) failNow(status);
+}
+
+// Estado do chip desconhecido: vai para Fault, de onde bringUp() reinicia e regrava tudo.
+void RadioSubsystem::failNow(Status status) {
+  errors_ = kFaultThreshold - 1;
+  noteError(status, clock_.nowMs());
 }
 
 void RadioSubsystem::setState(RadioState state) {
@@ -109,11 +129,19 @@ Status RadioSubsystem::shutdown() {
 Status RadioSubsystem::configure(const RadioConfig &config) {
   DBMO_TRY(validate(config, chip_.xtalHz()));
   if (state_ == RadioState::Transmitting) return Status::Busy;
-  radioConfig_ = config;
-  if (!initialized_ || state_ == RadioState::Fault) return Status::Ok;  // vale no próximo bringUp
-  DBMO_TRY(chip_.configure(radioConfig_, paTable_));
-  if (state_ == RadioState::Receiving) return chip_.startReceive();
-  return chip_.sleep();
+  if (!initialized_ || state_ == RadioState::Fault) {
+    radioConfig_ = config;  // vale no próximo bringUp
+    return Status::Ok;
+  }
+  Status status = chip_.configure(config, paTable_);
+  if (isOk(status)) {
+    radioConfig_ = config;  // só passa a valer depois que o chip aceitou e conferiu
+    status = state_ == RadioState::Receiving ? chip_.startReceive() : chip_.sleep();
+  }
+  // Falha no meio da gravação: os registradores podem estar misturados. O rádio vai para
+  // Fault e é reiniciado com a configuração anterior, que continua sendo a válida.
+  if (!isOk(status)) failNow(status);
+  return status;
 }
 
 Status RadioSubsystem::startReceive() {

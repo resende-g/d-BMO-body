@@ -18,6 +18,7 @@ constexpr size_t kOffProduct = 8;
 constexpr size_t kOffHardwareRevision = 10;
 constexpr size_t kOffCartridgeVersion = 11;
 constexpr size_t kOffMinFirmware = 14;
+constexpr size_t kOffReserved17 = 17;
 constexpr size_t kOffCapabilities = 18;
 constexpr size_t kOffMaxCurrent = 20;
 constexpr size_t kOffI2cCount = 22;
@@ -26,6 +27,7 @@ constexpr size_t kOffSpiMode = 27;
 constexpr size_t kOffSpiMaxHz = 28;
 constexpr size_t kOffUartBaud = 32;
 constexpr size_t kOffName = 36;
+constexpr size_t kOffReserved52 = 52;
 constexpr size_t kOffCrc = 62;
 
 void put16(uint8_t *out, uint16_t value) {
@@ -109,7 +111,8 @@ const char *toString(Compatibility compatibility) {
 }
 
 Status encodeHeader(const CartridgeHeader &header, uint8_t out[kHeaderSize]) {
-  if (out == nullptr || !validFields(header)) return Status::InvalidArgument;
+  if (out == nullptr || !validFields(header) || header.vendorId == 0)
+    return Status::InvalidArgument;
 
   uint8_t name[kNameSize] = {};
   const size_t nameLength = strlen(header.name);
@@ -157,6 +160,15 @@ HeaderCheck decodeHeader(const uint8_t *data, size_t length, CartridgeHeader *ou
   if (get16(data + kOffCrc) != crc16Ccitt(data, kOffCrc)) return HeaderCheck::BadCrc;
   if (data[kOffFormat] != kHeaderFormat) return HeaderCheck::UnsupportedFormat;
   if (!validNameField(data + kOffName)) return HeaderCheck::BadField;
+  // Fornecedor 0x0000 é inválido; bytes reservados e posições de endereço não usadas
+  // precisam ser zero, para que um formato futuro possa dar significado a eles.
+  if (get16(data + kOffVendor) == 0) return HeaderCheck::BadField;
+  if (data[kOffReserved17] != 0) return HeaderCheck::BadField;
+  for (size_t i = kOffReserved52; i < kOffCrc; ++i)
+    if (data[i] != 0) return HeaderCheck::BadField;
+  if (data[kOffI2cCount] <= kMaxI2cAddresses)
+    for (size_t i = data[kOffI2cCount]; i < kMaxI2cAddresses; ++i)
+      if (data[kOffI2cAddresses + i] != 0) return HeaderCheck::BadField;
 
   CartridgeHeader header;
   header.vendorId = get16(data + kOffVendor);

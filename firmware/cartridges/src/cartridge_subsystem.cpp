@@ -100,6 +100,7 @@ void CartridgeSubsystem::remove() {
   headerValid_ = false;
   misses_ = 0;
   readFailures_ = 0;
+  unknownPolls_ = 0;
 }
 
 void CartridgeSubsystem::identify() {
@@ -184,7 +185,15 @@ void CartridgeSubsystem::poll(uint32_t) {
     identify();
     return;
   }
-  if (!headerValid_) return;
+  if (!headerValid_) {
+    // Há uma EEPROM, mas a leitura não trouxe um cabeçalho válido. Pode ter sido mau
+    // contato durante a inserção: relê de tempos em tempos em vez de desistir.
+    if (state_ == SlotState::Unknown && ++unknownPolls_ >= kUnknownRetryPolls) {
+      unknownPolls_ = 0;
+      identify();
+    }
+    return;
+  }
 
   // Troca rápida de cartucho entre duas consultas: a identidade gravada mudou.
   uint8_t identity[kIdentitySize];
@@ -209,6 +218,11 @@ void CartridgeSubsystem::tick(uint32_t nowMs) {
 
   if (state_ == SlotState::Active && driver_ != nullptr) {
     const Status status = driver_->tick(nowMs);
+    if (!isOk(status) && !isOk(eeprom_.probe())) {
+      // O cartucho está saindo do conector: o erro do driver é consequência da remoção,
+      // não uma falha dele. A consulta periódica conclui a remoção.
+      return;
+    }
     if (!isOk(status)) {
       // Falha do driver fica contida no cartucho: ele para e o resto do sistema segue.
       DBMO_LOGE(kTag, "driver %s falhou: %s", driver_->name(), toString(status));

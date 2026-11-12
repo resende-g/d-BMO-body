@@ -25,7 +25,7 @@ void TxPolicy::advance(uint32_t nowMs) {
     return;
   }
   uint32_t elapsed = elapsedMs(nowMs, bucketStartMs_);
-  if (elapsed >= kWindowMs + kBucketMs) {
+  if (elapsed >= kBuckets * kBucketMs) {
     // Mais de uma janela inteira sem atividade: tudo expirou.
     for (uint32_t &bucket : buckets_) bucket = 0;
     bucketStartMs_ = nowMs;
@@ -65,8 +65,10 @@ TxDenial TxPolicy::check(uint32_t frequencyHz, uint32_t occupiedHz, uint32_t air
 TxDecision TxPolicy::authorize(uint32_t frequencyHz, uint32_t occupiedHz, uint32_t airtimeMs,
                                uint32_t nowMs) {
   const TxDenial denial = check(frequencyHz, occupiedHz, airtimeMs, nowMs);
-  if (denial == TxDenial::None) buckets_[current_] += airtimeMs;
-  return TxDecision{denial, TxGrant(denial == TxDenial::None, frequencyHz, airtimeMs)};
+  const bool allowed = denial == TxDenial::None;
+  if (allowed) buckets_[current_] += airtimeMs;
+  return TxDecision{
+      denial, TxGrant(allowed, frequencyHz, occupiedHz, airtimeMs, allowed ? nextSerial_++ : 0)};
 }
 
 }  // namespace dbmo::radio

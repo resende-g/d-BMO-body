@@ -222,8 +222,45 @@ static void test_example_cartridge_header_is_valid_and_compatible() {
   TEST_ASSERT_TRUE(checkCompatibility(header, host()) == Compatibility::Compatible);
 }
 
+void test_reserved_bytes_vendor_zero_and_unused_slots_are_rejected() {
+  CartridgeHeader header;
+  header.vendorId = 0xFFFF;
+  header.productId = 1;
+  header.capabilities = capability::kI2c;
+  header.i2cAddressCount = 1;
+  header.i2cAddresses[0] = 0x48;
+  const char name[] = "TESTE";
+  for (size_t i = 0; i < sizeof(name); ++i) header.name[i] = name[i];
+  uint8_t image[kHeaderSize];
+  TEST_ASSERT_OK(encodeHeader(header, image));
+  CartridgeHeader decoded;
+  TEST_ASSERT_EQUAL(HeaderCheck::Valid, decodeHeader(image, sizeof(image), &decoded));
+
+  // Cada alteração abaixo mantém o CRC correto: o que reprova é o campo.
+  const size_t offsets[] = {17, 52, 61, 24};  // reservados e uma posição de endereço não usada
+  for (size_t offset : offsets) {
+    uint8_t bad[kHeaderSize];
+    memcpy(bad, image, sizeof(bad));
+    bad[offset] = 0x55;
+    const uint16_t crc = dbmo::crc16Ccitt(bad, 62);
+    bad[62] = static_cast<uint8_t>(crc & 0xFF);
+    bad[63] = static_cast<uint8_t>(crc >> 8);
+    TEST_ASSERT_EQUAL(HeaderCheck::BadField, decodeHeader(bad, sizeof(bad), &decoded));
+  }
+  uint8_t noVendor[kHeaderSize];
+  memcpy(noVendor, image, sizeof(noVendor));
+  noVendor[6] = noVendor[7] = 0;
+  const uint16_t crc = dbmo::crc16Ccitt(noVendor, 62);
+  noVendor[62] = static_cast<uint8_t>(crc & 0xFF);
+  noVendor[63] = static_cast<uint8_t>(crc >> 8);
+  TEST_ASSERT_EQUAL(HeaderCheck::BadField, decodeHeader(noVendor, sizeof(noVendor), &decoded));
+  header.vendorId = 0;
+  TEST_ASSERT_STATUS(dbmo::Status::InvalidArgument, encodeHeader(header, image));
+}
+
 int main() {
   UNITY_BEGIN();
+  RUN_TEST(test_reserved_bytes_vendor_zero_and_unused_slots_are_rejected);
   RUN_TEST(test_byte_layout_is_the_documented_one);
   RUN_TEST(test_round_trip);
   RUN_TEST(test_any_single_corrupted_byte_is_detected);

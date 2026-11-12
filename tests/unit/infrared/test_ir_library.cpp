@@ -121,6 +121,19 @@ void test_parse_decoded_codes() {
   TEST_ASSERT_EQUAL_HEX16(0x7F, code.code.command);
 }
 
+void test_extended_nec_text_round_trip() {
+  StoredCode code = necStored(0x0004, 0x08);
+  code.code.extended = true;
+  char text[32];
+  TEST_ASSERT_TRUE(formatCode(code, text, sizeof(text)).ok());
+  TEST_ASSERT_EQUAL_STRING("necx:0004:08", text);
+  StoredCode parsed;
+  TEST_ASSERT_OK(parse(text, &parsed));
+  TEST_ASSERT_TRUE(parsed.code == code.code);
+  TEST_ASSERT_OK(parse("nec:0004:08", &parsed));
+  TEST_ASSERT_FALSE(parsed.code.extended);
+}
+
 void test_parse_raw_code() {
   StoredCode code;
   TEST_ASSERT_OK(parse("raw:38000:9000,4500,562", &code));
@@ -254,6 +267,7 @@ int main() {
   RUN_TEST(test_format_raw_code);
   RUN_TEST(test_format_errors);
   RUN_TEST(test_parse_decoded_codes);
+  RUN_TEST(test_extended_nec_text_round_trip);
   RUN_TEST(test_parse_raw_code);
   RUN_TEST(test_parse_rejects_malformed_text);
   RUN_TEST(test_parse_rejects_too_many_durations);

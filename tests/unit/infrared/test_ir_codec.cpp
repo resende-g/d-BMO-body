@@ -84,6 +84,26 @@ void test_nec_extended_address() {
   TEST_ASSERT_EQUAL_HEX16(0x56, decoded.command);
 }
 
+void test_nec_extended_address_with_zero_high_byte_survives_round_trip() {
+  // Quadro 04 00 08 F7: endereço estendido 0x0004, diferente do endereço de 8 bits 0x04.
+  IrCode extended = necCode(0x0004, 0x08);
+  extended.extended = true;
+  RawTiming timing;
+  TEST_ASSERT_OK(encode(extended, &timing));
+  IrCode decoded;
+  TEST_ASSERT_OK(decode(timing, &decoded));
+  TEST_ASSERT_TRUE(decoded.extended);
+  TEST_ASSERT_EQUAL_HEX16(0x0004, decoded.address);
+  RawTiming again;
+  TEST_ASSERT_OK(encode(decoded, &again));
+  TEST_ASSERT_EQUAL_UINT16_ARRAY(timing.durationsUs, again.durationsUs, timing.count);
+
+  RawTiming standard;
+  TEST_ASSERT_OK(encode(necCode(0x04, 0x08), &standard));
+  TEST_ASSERT_FALSE(standard.durationsUs[3 + 16] ==
+                    timing.durationsUs[3 + 16]);  // sinais diferentes
+}
+
 void test_nec_tolerates_receiver_distortion() {
   RawTiming timing;
   TEST_ASSERT_OK(encode(necCode(0x20, 0xDF), &timing));
@@ -227,6 +247,7 @@ int main() {
   RUN_TEST(test_nec_frame_layout);
   RUN_TEST(test_nec_round_trip);
   RUN_TEST(test_nec_extended_address);
+  RUN_TEST(test_nec_extended_address_with_zero_high_byte_survives_round_trip);
   RUN_TEST(test_nec_tolerates_receiver_distortion);
   RUN_TEST(test_nec_corrupted_command_is_rejected);
   RUN_TEST(test_nec_truncated_frame_is_not_nec);
