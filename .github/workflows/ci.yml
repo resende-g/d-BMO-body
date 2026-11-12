@@ -98,3 +98,74 @@ jobs:
             .pio/build/dbmo-target/firmware.bin
           if-no-files-found: error
           retention-days: 14
+
+  # As três tarefas abaixo compilam o que nunca tinha sido compilado (Bruce e Retro-Go para
+  # o d-BMO) e rodam o autoteste do gerador de CAD. Uma falha aqui é informação, não é
+  # escondida: nenhuma delas usa continue-on-error.
+  bruce:
+    name: Bruce para o d-BMO (${{ matrix.env }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        env: [bmo-v1, bmo-v1-mcp]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.platformio
+          key: pio-bruce-${{ runner.os }}-${{ hashFiles('firmware/bruce/build.sh', 'firmware/bruce/bmo.ini') }}
+      - name: Instalar o PlatformIO
+        run: pip install platformio==6.1.19
+      - name: Compilar o Bruce na versão fixada com a placa do d-BMO
+        env:
+          BRUCE_ENV: ${{ matrix.env }}
+        run: firmware/bruce/build.sh "$RUNNER_TEMP/bruce"
+
+  retro-go-host-check:
+    name: Retro-Go (conferência da configuração, sem ESP-IDF)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Conferir o alvo dbmo-v1 em todas as combinações de opções
+        run: firmware/retro-go/tests/host_check.sh
+
+  retro-go:
+    name: Retro-Go para o d-BMO (launcher, ESP-IDF 4.4.8)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    container: espressif/idf:v4.4.8
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Compilar o launcher do Retro-Go para o alvo dbmo-v1
+        shell: bash
+        run: |
+          git config --global --add safe.directory '*'
+          . "$IDF_PATH/export.sh"
+          XDG_CACHE_HOME="$PWD/build/cache" firmware/retro-go/build.sh
+
+  cad:
+    name: CAD paramétrico (autoteste)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.13"
+      - name: Instalar o cadquery (mesmas versões da geração registrada)
+        run: pip install cadquery==2.8.0 cadquery-ocp==7.9.3.1.1 PyYAML==6.0.3
+      - name: Autoteste do gerador de modelos
+        working-directory: mechanical/cad
+        run: python test_generate_models.py
