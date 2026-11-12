@@ -568,85 +568,113 @@ os cartuchos possíveis:
 - **Cartuchos temáticos**: cada cartucho como uma "ferramenta" ou "jogo" físico, no espírito dos
   cartuchos de videogame.
 
-**Referências visuais (família de cartuchos):** carcaça prata impressa em 3D e a mesma borda de
-contatos dourados; cada cartucho é uma "capa de jogo" em pixel art, com um título de jogo antigo
-inspirado em distopias clássicas da literatura, que codifica a função (sem logo de marca). Prompts em
-[docs/cartuchos-prompts.md](docs/cartuchos-prompts.md).
+**Referências visuais (família de cartuchos):** carcaça plástica padronizada, com acabamento
+prata não condutivo e a mesma interface card edge; a face frontal recebe uma "capa" em pixel
+art e um título de jogo antigo inspirado em distopias clássicas da literatura, sem logotipo de
+marca real. Os cartuchos compartilham o mesmo envelope externo, a mesma posição da língua e o
+mesmo encaixe no d-BMO. Aberturas específicas (por exemplo, lente de câmera ou antena) variam
+conforme a função. Prompts em docs/cartuchos-prompts.md.
 
 | BRAVE NEW WORLD — cartucho LoRa 915 MHz (antena de mola) | BIG BROTHER — cartucho câmera (lente frontal, visão p/ o modo agente) |
 |---|---|
 | ![Cartucho BRAVE NEW WORLD](docs/img/cartucho-brave-new-world.jpg) | ![Cartucho BIG BROTHER](docs/img/cartucho-big-brother.jpg) |
 
-Servem de referência do card edge para o projeto no EasyEDA e para o CAD. Com o soquete
-DK920A-20M (2×10), os **contatos ficam nos dois lados** da língua (10 na frente, 10 atrás),
-como numa placa de memória. O cartucho câmera (BIG BROTHER) tem a lente na face frontal: o módulo (ex. OV2640) fica
-virado para fora, no lado oposto aos contatos, e a carcaça do cartucho precisa de um furo para
-a lente.
+As imagens são referências de linguagem visual e não definem dimensões, encaixes ou construção
+mecânica.
 
-Nota técnica do LoRa: a etiqueta diz 915 MHz porque, no Brasil, o LoRa opera na faixa ISM de
-**915 MHz** (Anatel: 902-907,5 e 915-928). 433 MHz é a faixa do CC1101 comum. "LoRa" é marca da
-Semtech (uso conceitual apenas, não comercial).
+### Carcaça padrão dos cartuchos
 
-Limite honesto: o card edge não torna o d-BMO mais rápido nem roda IA local; para um "cérebro
-extra" o cartucho precisaria do próprio processador (outro projeto). O uso mais valioso para o
-propósito de segurança é o **cartucho de rádio/sensor extra**.
+A família passa a adotar um **cartucho encapsulado em plástico**, inspirado na lógica de
+manuseio de memory cards: o usuário segura e insere o corpo plástico, não a PCB nem os contatos.
+A carcaça protege a placa e os módulos, padroniza o envelope externo e deixa livre apenas a
+região necessária à conexão card edge.
 
-### Anatomia de um cartucho (importante)
+- **Corpo plástico comum:** todos os cartuchos usam a mesma geometria externa de referência,
+  com cavidade interna adaptada ao módulo de cada função. A altura, largura, espessura,
+  espessura das paredes e método de união ainda serão medidos/decididos.
+- **Língua elétrica:** a PCB continua formando a língua card edge, com contatos ENIG nas duas
+  faces. Os pads permanecem descobertos na área de contato; a carcaça não pode cobrir nem
+  invadir o percurso de contato do DK920A-20M.
+- **Proteção da língua:** a extremidade recebe uma moldura/guarda plástica lateral e um
+  rebaixo de proteção ao redor da região dos contatos. A geometria deve proteger contra toque,
+  riscos e entrada inclinada sem bloquear a aproximação dos contatos do soquete. O formato
+  exato desse rebaixo depende de medir o soquete real.
+- **Entrada no d-BMO:** a abertura superior deixa de ser apenas uma fenda. Será uma boca
+  guiada, com entrada chanfrada, canais laterais compatíveis com a guarda do cartucho e uma
+  região interna que centraliza a língua nua no DK920A-20M.
+- **Batente e retenção:** um ombro no corpo plástico define a profundidade de inserção e
+  encosta no alojamento do d-BMO antes que a PCB bata no fundo do conector. Uma retenção
+  secundária (detente ou lingueta flexível) e uma área para os dedos serão prototipadas; a
+  fricção do conector não deve ser o único mecanismo de retenção.
+- **Caminho de carga:** guias, batente e apoio estrutural do d-BMO recebem os esforços de
+  inserção, retirada e alavanca. O DK920A-20M e suas soldas não devem funcionar como único
+  suporte mecânico.
+- **Material:** plástico não condutivo, preferencialmente PETG ou ASA. Não usar uma carcaça
+  metálica. Pintura ou acabamento com partículas metálicas não deve cobrir regiões de antena
+  sem teste de RF.
+- **Aberturas funcionais:** câmera, antena, LED, microfone ou sensor podem exigir janelas
+  próprias, sem alterar a interface mecânica comum.
 
-O **card edge não vem pronto** em nenhum módulo. Um cartucho é montado de duas partes:
+O corpo externo padronizado e a língua card edge são duas referências diferentes: a medida
+de 52 × 52 mm abaixo se refere à PCB-cartucho, não ao envelope externo da carcaça plástica.
 
-1. **Módulo da função** (comprado, ex. módulo LoRa SX1276/1278 do AliExpress): traz o chip e
-   tem pinos normais (SPI, energia). Faz o trabalho (rádio, GPS, sensor), mas NÃO tem a borda
-   de contatos.
-2. **PCB-cartucho** (projetada no EasyEDA, fabricada na JLCPCB): é a placa com o formato de
-   cartucho e os **contatos card edge na borda**. O módulo da função é soldado em cima dela, e
-   as trilhas ligam os pinos do módulo aos contatos certos da borda.
+### Anatomia de um cartucho
+
+O cartucho completo passa a ter três partes:
+
+1. **Módulo funcional:** rádio, GPS, câmera ou sensor adquirido separadamente, quando aplicável.
+2. **PCB-cartucho:** placa projetada no EasyEDA, com o módulo soldado, a EEPROM 24C02 e as
+   trilhas até os contatos dourados card edge.
+3. **Carcaça plástica:** duas metades ou outra construção equivalente, a definir, que envolve
+   e protege a PCB e os componentes. A língua de conexão permanece exposta na extremidade,
+   com guarda lateral/rebaixo de proteção compatível com a fêmea DK920A-20M.
 
 ```
-[Módulo LoRa comprado] --soldado em--> [PCB-cartucho c/ card edge] --encaixa no--> [conector do d-BMO]
+[Módulo funcional] ─soldado em─> [PCB com EEPROM e contatos card edge]
+                                      │
+                                      └─ alojada em → [carcaça plástica comum]
+                                                               │
+                                                               └─ língua exposta → [DK920A-20M]
 ```
 
-Ou seja: **cartucho completo = módulo da função + PCB-cartucho com card edge**. O conector
-fêmea (a fenda que recebe o cartucho) fica no corpo do d-BMO. O AliExpress dá o cérebro do rádio;
-a PCB-cartucho (desenhada no EasyEDA, fabricada na JLCPCB) dá o corpo do cartucho.
+A escolha entre encaixes flexíveis, parafusos ou combinação dos dois para fechar a carcaça
+fica pendente até definir o processo de impressão e testar um corpo de prova. A cavidade
+interna varia por módulo; a interface externa, a guia, o batente e a língua não.
 
-### Especificação do cartucho (card edge)
+### Especificação da PCB e da interface card edge
 
-Casada com o soquete **DK920A-20M** e com as regras de contatos dourados da JLCPCB.
+Casada com o soquete DK920A-20M e com as regras de contatos dourados da JLCPCB. As cotas
+abaixo continuam sendo referências de projeto; a peça real e o desenho do fabricante precisam
+ser conferidos antes de congelar a PCB ou o CAD.
 
-- **Placa:** 1,6 mm de espessura, 2 camadas. Tamanho total **52 × 52 mm** (não 50): a JLCPCB
-  **não faz o chanfro dos contatos em placa menor que 50 × 50 mm**, então 52 dá folga. Mesma
-  medida para todos os cartuchos (modelo único).
-- **Língua de encaixe:** a abertura do soquete tem ~28,3 mm, então a parte que entra é uma
-  **língua de ~27,8 mm de largura** (com folga), com degraus que se alargam até o corpo de
-  52 mm — formato de placa de memória/PCI. Comprimento da língua = profundidade da fenda do
-  soquete (a medir na peça, ~8 mm). Os degraus servem de batente.
-- **Contatos:** 2×10 = 20, pitch 2,54 mm (10 na frente, 10 atrás), centralizados na língua
-  (22,86 mm da 1ª à última), a **0,6 mm da borda**, com **máscara de solda aberta** sobre eles.
-- **Acabamento JLCPCB:** contatos dourados exigem **ENIG**; **chanfro de 30°** na ponta da
-  língua. Cantos da ponta cortados a 45° no contorno ajudam a centralizar.
-- **Durabilidade:** o ouro do ENIG é fino e desgasta com muitas trocas (a JLCPCB recomenda ouro
-  duro para encaixe frequente, não confirmado como opção no pedido). Para troca ocasional de
-  cartucho, ENIG + guias na fenda deve bastar.
-- **Anti-inversão:** o soquete é simétrico. Deslocar a língua um pouco para um lado e fazer a
-  fenda da carcaça com o mesmo deslocamento, para o cartucho invertido (que trocaria 5 V por
-  3,3 V nos pinos) não entrar.
-- **Apoio mecânico:** o DK920A não tem abas de fixação; toda a força de encaixe cai nas 20
-  soldas. A carcaça precisa de um apoio encostado no corpo do soquete.
-- **Pegada na PCB principal:** 2×10 furos (~1,0 mm), pitch 2,54 mm, 5,08 mm entre as fileiras;
-  contorno do corpo 31,7 × 9,2 mm; altura ~10,2 mm acima da placa (na riser, define a folga até
-  o topo da carcaça). Partir da pegada "20 PIN CARD EDGE CONNECTOR - 2.54MM (MALE)" da biblioteca EasyEDA.
-- **Reconhecimento (opcional):** uma EEPROM I²C pequena (ex. 24C02) em cada cartucho guarda o
-  "nome" dele, e o d-BMO identifica sozinho o que foi plugado — usa o I²C que já está no conector.
-- **A confirmar na JLCPCB:** se ela chanfra uma língua com degraus (padrão de placa de memória,
-  deve dar) e se o mínimo de 50 mm vale para os dois lados ou só largura (se for só largura, o
-  cartucho pode ficar mais curto, ~52 × 25 mm, e sair menos para fora da frente).
+- **PCB:** referência atual de 1,6 mm, 2 camadas e 52 × 52 mm. Essa é a dimensão da placa,
+  não da carcaça externa. O mínimo de 50 × 50 mm para chanfro pela JLCPCB precisa ser
+  reconfirmado na cotação; se a PCB mudar para 52 × 25 mm ou outro formato, a cavidade e o
+  corpo plástico serão revistos sem alterar o padrão da interface.
+- **Língua de encaixe:** abertura anunciada do soquete ~28,3 mm; língua estimada em ~27,8 mm,
+  com degraus/guarda lateral que não entrem na fenda elétrica. Profundidade da língua = valor
+  medido da fenda do soquete (estimativa anterior ~8 mm, ainda pendente).
+- **Contatos:** 2 × 10 = 20, passo 2,54 mm, 10 por face, centralizados na língua (22,86 mm da
+  primeira à última posição), a 0,6 mm da borda. Máscara aberta sobre os pads; nenhuma parede
+  plástica pode cobrir a área efetivamente varrida pelos contatos elásticos do soquete.
+- **Acabamento:** ENIG e chanfro nominal de 30° na ponta da língua. Confirmar com a JLCPCB o
+  processo, o chanfro e a compatibilidade com o DK920A-20M.
+- **Anti-inversão:** manter a língua deslocada em relação ao eixo do corpo e repetir a chave
+  na guarda plástica e no canal de entrada do d-BMO. O encaixe físico é a primeira barreira;
+  a distribuição elétrica simétrica documentada é uma defesa adicional, não substitui a chave.
+- **Apoio do soquete:** o DK920A-20M não tem abas de fixação conhecidas. A estrutura interna
+  deve apoiar o corpo do soquete e a riser, e o batente do cartucho deve impedir sobrecurso.
+- **Pegada da PCB principal:** 2 × 10 furos (~1,0 mm), passo 2,54 mm, 5,08 mm entre fileiras;
+  corpo anunciado 31,7 × 9,2 mm e altura aproximada de 10,2 mm acima da placa. Medir a peça
+  real e confirmar a pegada antes de desenhar no EasyEDA.
+- **Identificação:** uma EEPROM I²C 24C02 em cada PCB-cartucho guarda o identificador e as
+  capacidades, conforme docs/cartridges/CARTRIDGE_SPECIFICATION.md.
 
-> Ponto em aberto (pede decisão): com cartucho de 52 × 52 mm o soquete prende só ~8–10 mm e
-> **~40 mm do cartucho ficam para fora do topo**, competindo com a antena SMA, o furo do mic e
-> os gatilhos de ombro. Alternativa: cartucho curto
-> (52 × 25 mm) num painel destacável de 52 × 52 para ganhar o chanfro de fábrica — depende da
-> resposta da JLCPCB acima.
+> **Dimensão ainda em aberto:** a estimativa anterior de cerca de 40 mm expostos acima do topo
+> considerava a placa de 52 × 52 mm e a profundidade presumida da fenda. Ela não deve ser usada
+> como cota da carcaça pronta. Recalcular a saliência externa após medir o soquete, definir o
+> ombro/batente e modelar a carcaça plástica. Também verificar colisões com antena SMA,
+> microfone e gatilhos de ombro.
 
 ### Dimensões conhecidas
 | Peça | Medida |
