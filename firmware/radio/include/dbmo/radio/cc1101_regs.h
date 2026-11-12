@@ -36,6 +36,20 @@ inline constexpr uint8_t kMcsm0 = 0x18;
 inline constexpr uint8_t kFrend0 = 0x22;
 inline constexpr uint8_t kLastConfigRegister = 0x2E;
 
+// Registradores que definem o que vai ao ar: frequência, banda ocupada, formato e tamanho
+// do pacote, o que o rádio faz depois de transmitir e a seleção de potência. Só
+// Cc1101::configure() os escreve, a partir do RadioConfig que a política de transmissão
+// avaliou; nem ajuste fino nem acesso de baixo nível podem alterá-los. PKTCTRL0 inclui o
+// modo de dados aleatórios e o modo assíncrono; MCSM1 inclui "permanecer transmitindo"
+// depois do pacote. (PATABLE e FIFO não são registradores de configuração: a escrita de
+// baixo nível os recusa por outro motivo.)
+constexpr bool isPolicyRegister(uint8_t address) {
+  return address == kFreq2 || address == kFreq1 || address == kFreq0 || address == kPktlen ||
+         address == kPktctrl1 || address == kPktctrl0 || address == kMdmcfg4 ||
+         address == kMdmcfg3 || address == kMdmcfg2 || address == kDeviatn || address == kMcsm1 ||
+         address == kFrend0;
+}
+
 // Comandos (strobes).
 inline constexpr uint8_t kSres = 0x30;
 inline constexpr uint8_t kSrx = 0x34;

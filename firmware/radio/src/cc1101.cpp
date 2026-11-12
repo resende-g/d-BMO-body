@@ -59,8 +59,13 @@ Status Cc1101::strobe(uint8_t command) {
 }
 
 Status Cc1101::writeRegister(uint8_t address, uint8_t value) {
-  if (address > kLastConfigRegister && address != kPatable && address != kFifo)
-    return Status::InvalidArgument;
+  if (address > kLastConfigRegister) return Status::InvalidArgument;
+  if (isPolicyRegister(address)) return Status::NotPermitted;
+  return writeRegisterRaw(address, value);
+}
+
+Status Cc1101::writeRegisterRaw(uint8_t address, uint8_t value) {
+  if (address > kLastConfigRegister) return Status::InvalidArgument;
   Deselect guard(spi_);
   DBMO_TRY(begin());
   const uint8_t frame[2] = {address, value};
@@ -183,7 +188,7 @@ Status Cc1101::configure(const RadioConfig &config, uint8_t paTable) {
       {kFrend0, static_cast<uint8_t>(ook ? 0x11 : 0x10)},
   };
   for (const RegisterSetting &setting : settings)
-    DBMO_TRY(writeRegister(setting.address, setting.value));
+    DBMO_TRY(writeRegisterRaw(setting.address, setting.value));
 
   const uint8_t table[2] = {static_cast<uint8_t>(ook ? 0x00 : paTable), paTable};
   DBMO_TRY(writeBurst(kPatable, table, 2));
@@ -207,15 +212,13 @@ Status Cc1101::applyOverrides(const RegisterSetting *settings, size_t count) {
   if (!configured_) return Status::NotInitialized;
   if (settings == nullptr && count != 0) return Status::InvalidArgument;
   for (size_t i = 0; i < count; ++i) {
-    // Frequência, pacote e potência não são ajuste fino: mudam só por configure(), que
-    // é o que a política de transmissão enxerga.
+    // Frequência, banda, pacote e potência não são ajuste fino: mudam só por configure(),
+    // que é o que a política de transmissão enxerga. O lote inteiro é recusado.
     const uint8_t address = settings[i].address;
-    if (address == kFreq2 || address == kFreq1 || address == kFreq0 || address == kPktctrl0 ||
-        address == kFrend0 || address > kLastConfigRegister)
-      return Status::NotPermitted;
+    if (address > kLastConfigRegister || isPolicyRegister(address)) return Status::NotPermitted;
   }
   for (size_t i = 0; i < count; ++i)
-    DBMO_TRY(writeRegister(settings[i].address, settings[i].value));
+    DBMO_TRY(writeRegisterRaw(settings[i].address, settings[i].value));
   return Status::Ok;
 }
 

@@ -14,6 +14,8 @@ void Pn532::fail(Status status) {
 }
 
 Status Pn532::start(const uint8_t *payload, size_t length, uint32_t responseTimeoutMs) {
+  if (payload == nullptr || length == 0) return Status::InvalidArgument;
+  if (!command::isAllowed(payload[0])) return Status::NotPermitted;
   if (state_ == CommandState::WaitingAck || state_ == CommandState::WaitingResponse)
     return Status::Busy;
   uint8_t frame[kMaxFrame];

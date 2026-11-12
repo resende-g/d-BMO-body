@@ -79,13 +79,15 @@ class Cc1101 {
   Status startTransmit(const TxGrant &grant, const uint8_t *data, size_t length);
   Result<TxPoll> pollTransmit();
 
-  // Acesso de baixo nível (testes de bancada e diagnóstico).
+  // Acesso de baixo nível (testes de bancada e diagnóstico). A escrita recusa
+  // (NotPermitted) os registradores que definem o que vai ao ar: ver isPolicyRegister().
   Status writeRegister(uint8_t address, uint8_t value);
   Result<uint8_t> readRegister(uint8_t address);
   Result<uint8_t> readStatus(uint8_t address);
 
  private:
   Status begin();  // abre a transação já com o chip pronto; quem chama fecha
+  Status writeRegisterRaw(uint8_t address, uint8_t value);
   Status strobe(uint8_t command);
   Status writeBurst(uint8_t address, const uint8_t *data, size_t n);
   Status readBurst(uint8_t address, uint8_t *data, size_t n);

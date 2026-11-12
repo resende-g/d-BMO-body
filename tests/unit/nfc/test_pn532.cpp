@@ -158,6 +158,22 @@ void test_abort_sends_ack_only_when_a_command_is_pending() {
   TEST_ASSERT_EQUAL(CommandState::Idle, f.chip.state());
 }
 
+void test_only_identification_commands_can_be_sent() {
+  Fixture f;
+  // InDataExchange (0x40, usado para autenticar e ler MIFARE), InCommunicateThru (0x42),
+  // TgInitAsTarget (0x8C, emulação de cartão), WriteRegister (0x08) e PowerDown (0x16).
+  const uint8_t forbidden[] = {0x40, 0x42, 0x8C, 0x08, 0x16, 0x00, 0xFF};
+  for (uint8_t code : forbidden) {
+    const uint8_t payload[] = {code, 0x01, 0x60, 0x04};
+    TEST_ASSERT_STATUS(Status::NotPermitted, f.chip.start(payload, sizeof(payload), 100));
+  }
+  TEST_ASSERT_EQUAL_UINT(0, f.bus.writeCount);  // nada chegou ao barramento
+  TEST_ASSERT_EQUAL(CommandState::Idle, f.chip.state());
+  TEST_ASSERT_STATUS(Status::InvalidArgument, f.chip.start(nullptr, 1, 100));
+  const uint8_t empty[1] = {command::kGetFirmwareVersion};
+  TEST_ASSERT_STATUS(Status::InvalidArgument, f.chip.start(empty, 0, 100));
+}
+
 void test_find_tag() {
   Fixture f;
   const uint8_t uid[7] = {0x04, 0xA1, 0xB2, 0xC3, 0xD4, 0xE5, 0xF6};
@@ -245,6 +261,7 @@ int main() {
   RUN_TEST(test_error_frame_is_a_protocol_error);
   RUN_TEST(test_bus_errors);
   RUN_TEST(test_abort_sends_ack_only_when_a_command_is_pending);
+  RUN_TEST(test_only_identification_commands_can_be_sent);
   RUN_TEST(test_find_tag);
   RUN_TEST(test_find_tag_with_finite_retries_reports_no_tag);
   RUN_TEST(test_rf_field_control);

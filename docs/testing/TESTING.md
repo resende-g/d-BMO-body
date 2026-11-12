@@ -114,7 +114,7 @@ cmake -S . -B build/lead -G Ninja -DDBMO_SANITIZE=ON && cmake --build build/lead
 
 Ambiente: g++ 13.3.0, CMake 3.28.3, Ninja, AddressSanitizer + UndefinedBehaviorSanitizer.
 
-Resultado: **46 executáveis de teste, 522 testes, 0 falhas, 0 ignorados.**
+Resultado: **46 executáveis de teste, 525 testes, 0 falhas, 0 ignorados.**
 
 | Área | Executáveis | Testes |
 |---|---:|---:|
@@ -127,12 +127,12 @@ Resultado: **46 executáveis de teste, 522 testes, 0 falhas, 0 ignorados.**
 | `cartridges` | 3 | 33 |
 | `power` | 2 | 30 |
 | `storage` | 4 | 44 |
-| `radio` | 4 | 59 |
-| `nfc` | 3 | 43 |
+| `radio` | 4 | 61 |
+| `nfc` | 3 | 44 |
 | `infrared` | 3 | 48 |
 | `audio` | 3 | 39 |
 | Integração (`tests/integration`) | 1 | 21 |
-| **Total** | **46** | **522** |
+| **Total** | **46** | **525** |
 
 ### GitHub Actions
 

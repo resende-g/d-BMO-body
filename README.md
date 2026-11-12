@@ -74,7 +74,7 @@ soldar, entender barramentos e escrever firmware.
 **Firmware próprio (12/11/2026):** além do Bruce e do Retro-Go, o repositório passou a ter um
 firmware próprio modular em `firmware/` (núcleo, rosto, controles, áudio, rádio, NFC,
 infravermelho, armazenamento, energia e cartuchos). Está **implementado e testado no computador**
-(522 testes automatizados, com simuladores dos chips) e **compila para o ESP32-S3** na CI; ainda
+(525 testes automatizados, com simuladores dos chips) e **compila para o ESP32-S3** na CI; ainda
 **não foi gravado nem testado na placa**. Detalhes em [Firmware próprio](#firmware-próprio-do-d-bmo).
 
 ---
@@ -425,7 +425,7 @@ Firmware modular em C++17, escrito para este aparelho, em `firmware/` (estado em
 - **O que tem:** núcleo (inicialização ordenada, eventos, log, configuração, tratamento de
   falhas), rosto com 17 expressões, controles, áudio, rádio CC1101, NFC PN532, infravermelho,
   cartão, energia e sistema de cartuchos, mais um console serial.
-- **Como foi verificado:** 522 testes automatizados que rodam em qualquer computador, com
+- **Como foi verificado:** 525 testes automatizados que rodam em qualquer computador, com
   simuladores dos chips, e compilação para o ESP32-S3 na CI (perfis `dbmo-bench` e
   `dbmo-target`). **Nada foi testado na placa ainda.**
 - **Padrões de segurança:** microfone, busca de NFC e toda transmissão (rádio e infravermelho)

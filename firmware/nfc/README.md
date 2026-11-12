@@ -12,8 +12,11 @@ identificador (UID).
 ## Escopo e limites deliberados
 
 O módulo faz **só identificação**. O chip recebe apenas quatro comandos:
-`GetFirmwareVersion`, `SAMConfiguration`, `RFConfiguration` e `InListPassiveTarget`
-(o teste `test_only_identification_commands_are_ever_sent` confere isso).
+`GetFirmwareVersion`, `SAMConfiguration`, `RFConfiguration` e `InListPassiveTarget`.
+A restrição é estrutural: `Pn532::start()` recusa (`NotPermitted`) qualquer código de
+comando fora dessa lista, antes de tocar o barramento. Os testes
+`test_only_identification_commands_can_be_sent` (driver) e
+`test_only_identification_commands_are_ever_sent` (subsistema) conferem isso.
 
 **Não existe** no código: autenticação (MIFARE ou outra), leitura ou gravação da memória
 de etiquetas, troca de dados com o alvo, emulação de cartão, cópia de credenciais.
@@ -58,6 +61,6 @@ Privacidade:
 ## Estado
 
 - Implementado e testado no computador com um simulador do chip no nível do I2C
-  (`tests/unit/nfc/`, 43 testes).
+  (`tests/unit/nfc/`, 44 testes).
 - Aguarda hardware: módulo PN532 na bancada. Risco conhecido do README do projeto: I2C do
   PN532 com o ESP32 pode exigir o plano B (HSU), que disputa pinos com a UART do cartucho.

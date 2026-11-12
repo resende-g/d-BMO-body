@@ -335,6 +335,43 @@ void test_overrides_cannot_change_frequency_or_packet_mode() {
   TEST_ASSERT_STATUS(Status::NotPermitted, f.chip.applyOverrides(power, 1));
 }
 
+void test_low_level_write_cannot_touch_what_goes_on_air() {
+  Fixture f;
+  f.configure();
+  const uint8_t before[] = {f.sim.registers[reg::kMcsm1], f.sim.registers[reg::kMdmcfg2]};
+  // Cada um destes mudaria o que é transmitido sem passar pela política.
+  const uint8_t forbidden[] = {reg::kFreq2,    reg::kFreq1,    reg::kFreq0,   reg::kPktlen,
+                               reg::kPktctrl1, reg::kPktctrl0, reg::kMdmcfg4, reg::kMdmcfg3,
+                               reg::kMdmcfg2,  reg::kDeviatn,  reg::kMcsm1,   reg::kFrend0};
+  for (uint8_t address : forbidden)
+    TEST_ASSERT_STATUS(Status::NotPermitted, f.chip.writeRegister(address, 0xFF));
+  TEST_ASSERT_EQUAL_HEX32(0x10B071, f.sim.frequencyWord());
+  TEST_ASSERT_EQUAL_HEX8(before[0], f.sim.registers[reg::kMcsm1]);  // não fica "sempre em TX"
+  TEST_ASSERT_EQUAL_HEX8(before[1], f.sim.registers[reg::kMdmcfg2]);
+  TEST_ASSERT_EQUAL_HEX8(0x05, f.sim.registers[reg::kPktctrl0]);  // sem modo aleatório/assíncrono
+
+  // PATABLE, FIFO e comandos não são registradores de configuração.
+  TEST_ASSERT_STATUS(Status::InvalidArgument, f.chip.writeRegister(reg::kPatable, 0xC0));
+  TEST_ASSERT_STATUS(Status::InvalidArgument, f.chip.writeRegister(reg::kFifo, 0xAA));
+  TEST_ASSERT_STATUS(Status::InvalidArgument, f.chip.writeRegister(reg::kStx, 0));
+  TEST_ASSERT_EQUAL_UINT(0, f.sim.transmitCount);
+
+  // Registradores de ajuste continuam acessíveis.
+  TEST_ASSERT_OK(f.chip.writeRegister(0x1B, 0x43));  // AGCCTRL2
+  TEST_ASSERT_EQUAL_HEX8(0x43, f.sim.registers[0x1B]);
+}
+
+void test_overrides_cannot_change_bandwidth_or_tx_behaviour() {
+  Fixture f;
+  f.configure();
+  const RegisterSetting rate[] = {{reg::kMdmcfg3, 0xFF}};
+  TEST_ASSERT_STATUS(Status::NotPermitted, f.chip.applyOverrides(rate, 1));
+  const RegisterSetting stayInTx[] = {{reg::kMcsm1, 0x32}};  // TXOFF_MODE = permanecer em TX
+  TEST_ASSERT_STATUS(Status::NotPermitted, f.chip.applyOverrides(stayInTx, 1));
+  const RegisterSetting length[] = {{reg::kPktlen, 0xFF}};
+  TEST_ASSERT_STATUS(Status::NotPermitted, f.chip.applyOverrides(length, 1));
+}
+
 void test_rssi_conversion() {
   TEST_ASSERT_EQUAL_INT16(-74, rssiToDbm(0));
   TEST_ASSERT_EQUAL_INT16(-11, rssiToDbm(127));   // 63 − 74
@@ -371,6 +408,8 @@ int main() {
   RUN_TEST(test_sleep_and_wake);
   RUN_TEST(test_wake_without_readable_miso_waits_a_fixed_time);
   RUN_TEST(test_overrides_cannot_change_frequency_or_packet_mode);
+  RUN_TEST(test_low_level_write_cannot_touch_what_goes_on_air);
+  RUN_TEST(test_overrides_cannot_change_bandwidth_or_tx_behaviour);
   RUN_TEST(test_rssi_conversion);
   return UNITY_END();
 }

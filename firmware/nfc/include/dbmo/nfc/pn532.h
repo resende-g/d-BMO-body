@@ -23,6 +23,13 @@ inline constexpr uint8_t kGetFirmwareVersion = 0x02;
 inline constexpr uint8_t kSamConfiguration = 0x14;
 inline constexpr uint8_t kRfConfiguration = 0x32;
 inline constexpr uint8_t kInListPassiveTarget = 0x4A;
+
+// Os únicos comandos que o driver aceita enviar. Autenticação, leitura ou gravação de
+// memória, troca de dados com o alvo e emulação de cartão ficam de fora por construção.
+constexpr bool isAllowed(uint8_t code) {
+  return code == kGetFirmwareVersion || code == kSamConfiguration || code == kRfConfiguration ||
+         code == kInListPassiveTarget;
+}
 }  // namespace command
 
 struct FirmwareVersion {
@@ -55,7 +62,8 @@ class Pn532 {
   // O chip responde no barramento?
   Status probe() { return bus_.probe(address_); }
 
-  // Envia um comando (payload[0] = código). Busy se há outro em andamento.
+  // Envia um comando (payload[0] = código). Busy se há outro em andamento;
+  // NotPermitted se o comando não está na lista de command::isAllowed().
   Status start(const uint8_t *payload, size_t length, uint32_t responseTimeoutMs);
   // Avança o comando em andamento. Devolve o estado depois do passo.
   CommandState poll();

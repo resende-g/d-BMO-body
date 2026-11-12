@@ -24,8 +24,12 @@ uma política explícita, desabilitada por padrão**.
    informar a faixa e a potência autorizadas é de quem habilita a transmissão.
 4. **Não existe** no código: portadora contínua, transmissão assíncrona sem pacote, modo
    de teste de PA, repetição automática sem limite, ruído ou qualquer função de
-   interferência. `applyOverrides()` (ajuste fino de bancada) recusa os registradores de
-   frequência, de formato de pacote e de potência.
+   interferência. Os registradores que definem o que vai ao ar (frequência, taxa, banda,
+   desvio, formato e tamanho do pacote, comportamento depois de transmitir, seleção de
+   potência) **só são escritos por `configure()`**, a partir da configuração que a política
+   avaliou: `applyOverrides()` (ajuste fino de bancada) e `writeRegister()` (acesso de
+   baixo nível) os recusam com `NotPermitted`. Isso inclui o modo de dados aleatórios e o
+   modo assíncrono do chip (`PKTCTRL0`) e o "permanecer transmitindo" (`MCSM1`).
 5. O driver só transmite com um `TxGrant` válido emitido para a frequência configurada;
    uma transmissão que passe do tempo previsto é cortada.
 
@@ -57,6 +61,6 @@ Não implementado: detecção de canal livre antes de transmitir (CCA), uso do p
 ## Estado
 
 - Implementado e testado no computador com um simulador do chip no nível do SPI
-  (`tests/unit/radio/`, 59 testes).
+  (`tests/unit/radio/`, 61 testes).
 - Aguarda hardware: módulo CC1101 na bancada, cristal e casamento de antena do módulo
   comprado, adaptador SPI do porte.
