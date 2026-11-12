@@ -7,8 +7,10 @@ Alvo de build do [Retro-Go](https://github.com/ducalex/retro-go) para o d-BMO v1
 
 ## Estado
 
-- **Nunca foi compilado.** O PlatformIO e o ESP-IDF não rodam no ambiente em que este alvo foi
-  escrito. O que foi conferido está em [Declaração de verificação](#declaração-de-verificação).
+- **O launcher compila na CI** desde 12/11/2026 (tarefa `retro-go` do fluxo `CI`: ESP-IDF
+  4.4.8 no contêiner `espressif/idf:v4.4.8`, alvo `dbmo-v1`, `launcher.bin` gerado). Os
+  emuladores e a imagem completa (`build-img`) **ainda não foram compilados**. O que mais foi
+  conferido está em [Declaração de verificação](#declaração-de-verificação).
 - **Nunca rodou no hardware.** Nada aqui afirma que o Retro-Go funciona no d-BMO.
 - A pinagem é a do perfil `target` de
   [`firmware/config/include/dbmo/config/pins.h`](../config/include/dbmo/config/pins.h), que é uma
@@ -261,7 +263,8 @@ XDG_CACHE_HOME="$PWD/build/cache" firmware/retro-go/build.sh build-img
 ```
 
 A imagem sai em `build/cache/d-bmo/retro-go-4ced12066975/retro-go_<versão>_dbmo-v1.img`
-(`rg_tool.py:224`; a versão padrão é `4ced120-dbmo`). Esses comandos nunca foram executados.
+(`rg_tool.py:224`; a versão padrão é `4ced120-dbmo`). Na CI roda a variante sem argumentos
+(só o launcher); `build-img` nunca foi executado.
 
 ### Conferência sem ESP-IDF
 

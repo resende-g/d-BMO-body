@@ -166,14 +166,28 @@ qualidade das asserções nem substitui o teste em hardware.
 
 ### GitHub Actions
 
-Execução nº 16 do fluxo `CI`, commit `5cd8b84` (ramo `claude/dbmo-v1-firmware-dev-96rxin`):
+Execução nº 20 do fluxo `CI`, commit `79cee67` (ramo `claude/dbmo-v1-firmware-dev-96rxin`),
+em 2026-11-12: **as nove tarefas aprovadas**.
 
-| Tarefa | Resultado |
-|---|---|
-| Testes nativos (gcc + ASan/UBSan) | Aprovado |
-| Testes nativos (clang, sem sanitizers) | Aprovado |
-| Firmware próprio (ESP32-S3): compila `dbmo-bench` e `dbmo-target`; compila os testes de bancada sem gravar | Aprovado |
-| Integridade do repositório | **Reprovado** naquela execução: link para `ASSEMBLY_GUIDE.md`, que ainda não existia. O guia foi escrito no commit seguinte; conferir a execução mais recente no histórico do ramo |
+| Tarefa | Resultado | O que prova |
+|---|---|---|
+| Testes nativos (gcc + ASan/UBSan) | Aprovado | Os 46 executáveis de teste passam |
+| Testes nativos (clang, sem sanitizers) | Aprovado | Idem, com outro compilador |
+| Integridade do repositório | Aprovado | Mapa de pinos coerente entre `pins.h`, Bruce, Retro-Go e documentação; links; portabilidade; formatação |
+| Firmware próprio (ESP32-S3) | Aprovado | Compila nos perfis `dbmo-bench` e `dbmo-target`; os cinco testes de bancada compilam (sem gravar) |
+| Bruce para o d-BMO (`bmo-v1`) | Aprovado | Bruce 1.16.1 compila com a placa do d-BMO (`bmo-v1 SUCCESS` no log do PlatformIO, 8 min 36 s) |
+| Bruce para o d-BMO (`bmo-v1-mcp`) | Aprovado | Idem, com os botões no MCP23017 |
+| Retro-Go, conferência da configuração | Aprovado | Sintaxe do alvo `dbmo-v1` em todas as combinações de opções |
+| Retro-Go para o d-BMO (launcher) | Aprovado | O launcher compila com o ESP-IDF 4.4.8 para o alvo `dbmo-v1` (815 passos; `launcher.bin` gerado para ESP32-S3) |
+| CAD paramétrico | Aprovado | Autoteste do gerador de modelos com as versões registradas do cadquery |
+
+Foi a **primeira vez** que o Bruce e o Retro-Go foram compilados para o d-BMO. Compilar não
+é funcionar: nenhum dos três firmwares foi gravado na placa nesta etapa. Do Retro-Go só o
+launcher foi compilado; os emuladores não.
+
+Histórico relevante das execuções anteriores (falhas reais, corrigidas, não escondidas):
+a plataforma exigia PlatformIO 6.1.19; a biblioteca `display` não tinha manifesto; o link
+para o guia de montagem apontava para um arquivo que ainda não existia.
 
 Bugs encontrados pelos próprios testes durante o desenvolvimento e corrigidos antes do
 commit: perda de evento ao cancelar inscrição durante a entrega (`EventBus`); origem de
@@ -195,8 +209,8 @@ não acompanhava o aprendizado de infravermelho (`Application`).
 | Item | Situação |
 |---|---|
 | Qualquer teste em hardware (`tests/hardware/`, firmware próprio na placa) | Não executado: sem acesso à bancada. A CI só prova que compila |
-| Bruce para o d-BMO (`firmware/bruce/build.sh`) | Nunca compilado, nem aqui nem na CI |
-| Retro-Go para o d-BMO (`firmware/retro-go/build.sh`) | Nunca compilado com o ESP-IDF; só a verificação de sintaxe da configuração no computador |
+| Bruce e Retro-Go na placa | Compilados na CI; **nunca gravados nem executados** |
+| Emuladores do Retro-Go e imagem completa (`build-img`) | Não compilados; só o launcher |
 | Testes com clang + sanitizers | Não executado no computador de desenvolvimento (falta a biblioteca de runtime); a CI roda clang sem sanitizers |
 | Medições elétricas, de consumo e de RF | Não executadas |
 | Cobertura de ramos | Não medida (só a de linhas, acima) |

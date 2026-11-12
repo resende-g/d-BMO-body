@@ -8,10 +8,12 @@ oficial da DevKitC não tem tela, por isso esta pasta acrescenta uma "placa" ao 
 alterar o código dele: um arquivo de ambiente do PlatformIO, a interface da placa e um script
 que junta tudo no clone do Bruce e compila.
 
-> **Estado desta revisão.** Nada aqui foi compilado nem executado na sessão em que foi escrito
-> (o PlatformIO não instala no ambiente usado). O que foi conferido, e como, está em
-> [Verificação](#verificação). A compilação precisa ser provada pela CI e o comportamento, na
-> bancada.
+> **Estado desta revisão.** Os ambientes `bmo-v1` e `bmo-v1-mcp` **compilam na CI** desde
+> 12/11/2026 (tarefa `bruce` do fluxo `CI`, Bruce 1.16.1 com a placa do d-BMO). As flags
+> `DBMO_VBAT_ADC_PIN`, `DBMO_CHG_STAT_PIN` e `DBMO_POWER_HOLD_PIN` ficam desligadas nesses
+> ambientes: o código que elas ligam **continua sem ter sido compilado**. Nada desta revisão
+> foi executado na placa; o comportamento precisa ser provado na bancada. O que foi conferido,
+> e como, está em [Verificação](#verificação).
 
 ## Arquivos
 
@@ -70,7 +72,7 @@ tela são os mesmos da versão anterior.
 
 | Flag | Padrão | O que liga | Hardware necessário | Estado |
 |---|---|---|---|---|
-| `DBMO_INPUT_MCP23017=1` | desligada (ligada só em `bmo-v1-mcp`) | Botões lidos do MCP23017 por I2C, no lugar dos 3 GPIOs. Exige também `HAS_5_BUTTONS`, `SYS_I2C_SDA/SCL` e a retirada de `HAS_3_BUTTONS` (o ambiente `bmo-v1-mcp` já faz isso) | MCP23017 em 0x20 no I2C 8/9, botões ao GND | Escrito; não compilado; não testado |
+| `DBMO_INPUT_MCP23017=1` | desligada (ligada só em `bmo-v1-mcp`) | Botões lidos do MCP23017 por I2C, no lugar dos 3 GPIOs. Exige também `HAS_5_BUTTONS`, `SYS_I2C_SDA/SCL` e a retirada de `HAS_3_BUTTONS` (o ambiente `bmo-v1-mcp` já faz isso) | MCP23017 em 0x20 no I2C 8/9, botões ao GND | Escrito; compila na CI (ambiente `bmo-v1-mcp`); não testado em hardware |
 | `DBMO_VBAT_ADC_PIN=<gpio>` | desligada | `getBattery()` lê o divisor da bateria no ADC e devolve 1 a 100 | Divisor 100k/100k da bateria no GPIO 1 (ADC1) | Escrito; não compilado; curva **não calibrada** |
 | `DBMO_CHG_STAT_PIN=<gpio>` + `DBMO_CHG_STAT_ACTIVE=<HIGH\|LOW>` | desligadas | `isCharging()` lê o pino de status do carregador | CI de carga com saída de status. **CI e pino ainda não escolhidos** | Só o gancho; sem valor padrão de propósito |
 | `DBMO_POWER_HOLD_PIN=<gpio>` + `DBMO_POWER_HOLD_ACTIVE=<HIGH\|LOW>` | desligadas | Segura o power-latch no boot e o solta em `powerOff()` | Circuito de power-latch (GPIO 48 no perfil target). **Circuito ainda não definido** | Só o gancho; sem valor padrão de propósito |
