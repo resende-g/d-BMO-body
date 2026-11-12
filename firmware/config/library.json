@@ -1,0 +1,11 @@
+{
+  "name": "dbmo-config",
+  "version": "0.1.0",
+  "description": "Mapa de pinos e parâmetros de barramento do d-BMO v1",
+  "license": "Apache-2.0",
+  "frameworks": "*",
+  "platforms": "*",
+  "build": {
+    "includeDir": "include"
+  }
+}
