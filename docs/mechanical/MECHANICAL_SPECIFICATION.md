@@ -8,7 +8,7 @@ SPDX-License-Identifier: Apache-2.0
 | Campo | Valor |
 |---|---|
 | Status | Preliminar. Prepara a modelagem da carcaça no FreeCAD; **não é um projeto de carcaça** |
-| Data | 2026-11-12 |
+| Data | 2026-11-12 (revisão 0.2) |
 | Plataforma | ESP32-S3 N16R8 (definitiva para o v1) |
 | Documentos irmãos | [COMPONENT_DIMENSIONS.md](COMPONENT_DIMENSIONS.md) (registro de dimensões), [ASSEMBLY_LAYOUT.md](ASSEMBLY_LAYOUT.md) (zonas e empilhamento), [`mechanical/README.md`](../../mechanical/README.md) (CAD paramétrico) |
 
@@ -138,6 +138,12 @@ há leitura deste documento, isso está marcado.
 | RM-10 | Silhueta reconhecível em vista frontal e em tamanho reduzido | `[M: §2]` |
 | RM-11 | As vistas frontal, traseira, lateral e em perspectiva representam o mesmo objeto; detalhes traseiros ou mecânicos não definidos ficam marcados como pendentes | `[M: §3]` |
 | RM-12 | Ergonomia por chanfro ou arredondamento das arestas inferiores, mantendo o corpo retangular | `[R: Carcaça 3D]` |
+| RM-13 | Cada cartucho tem carcaça plástica não condutiva que envolve a PCB e o módulo funcional; a interface card edge permanece exposta apenas na extremidade | [R: Carcaça padrão dos cartuchos] |
+| RM-14 | A carcaça dos cartuchos compartilha um envelope externo de referência e uma interface de encaixe comum; cavidade e aberturas funcionais podem variar por módulo | [R: Carcaça padrão dos cartuchos] |
+| RM-15 | A língua card edge tem guarda lateral/rebaixo protetor, sem plástico cobrindo os pads ou invadindo a área de contato do soquete | [R: Carcaça padrão dos cartuchos] |
+| RM-16 | A entrada superior do d-BMO tem boca guiada, canais laterais e chave mecânica compatível com o cartucho | [R: Carcaça padrão dos cartuchos] |
+| RM-17 | Batente e retenção atuam sobre o corpo plástico; o encaixe não usa a ponta da PCB como batente nem o soquete como único suporte mecânico | [R: Carcaça padrão dos cartuchos] |
+| RM-18 | O cartucho oferece superfície de pega para inserção e remoção sem tocar nos contatos ou componentes | [R: Carcaça padrão dos cartuchos] |
 
 ### 4.2 Elementos vedados
 
@@ -185,10 +191,10 @@ número, porque quase todas as entradas ainda são `NOMINAL` ou `PENDENTE`.
 | EC-1 | Com a tela na horizontal (320 × 240), a largura interna tem de conter o lado maior da placa da tela | `display_msp3218.pcb_length` — NOMINAL |
 | EC-2 | A zona da tampa traseira tem de conter a face da bateria, em uma de duas orientações (ver decisão D-3) | `battery_4070115.width`, `battery_4070115.length` — NOMINAL |
 | EC-3 | O berço da bateria precisa de ~10% de folga na espessura `[R: Riscos da bateria, item 7]` | `battery_4070115.thickness` — NOMINAL e contraditório no anúncio |
-| EC-4 | A borda superior tem de acomodar, sem colisão, a fenda do cartucho (centro), a saída SMA, o furo do microfone e os gatilhos de ombro `[R: Carcaça 3D]` | Largura do cartucho definida pelo projeto (52 mm); demais itens PENDENTE |
+| EC-4 | A borda superior tem de acomodar, sem colisão, a entrada guiada e o envelope externo do cartucho (centro), a saída SMA, o furo do microfone e os gatilhos de ombro [R: Carcaça 3D], [R: Carcaça padrão dos cartuchos] | Envelope externo do cartucho e demais itens PENDENTE |
 | EC-5 | A espessura tem de conter o empilhamento mais alto entre as zonas (ver [ASSEMBLY_LAYOUT.md](ASSEMBLY_LAYOUT.md), seção 3) | Altura dos analógicos, espessura da tela, altura da DevKitC com pinos — todas PENDENTE |
 | EC-6 | A região da antena do módulo ESP32-S3-WROOM-1 pede folga de pelo menos 15 mm em todas as direções dentro da carcaça `[F: ESPRESSIF_HDG_PCB_LAYOUT]` | Dimensões da região da antena — CONFIRMADO |
-| EC-7 | Com o cartucho de 52 × 52 mm, cerca de 40 mm do cartucho ficam para fora do topo `[R: Especificação do cartucho]` | Depende da profundidade da fenda do soquete — PENDENTE |
+| EC-7 | A saliência externa do cartucho é definida pelo corpo plástico, pelo ombro/batente e pela profundidade real de engate da língua no soquete | Envelope da carcaça, slot_depth e posição da riser — PENDENTE; estimativa antiga de ~40 mm não é cota da carcaça pronta |
 
 Verificação de coerência (aritmética, não é confirmação): uma área ativa de 64,8 × 48,6 mm tem
 diagonal de 81,0 mm, isto é, 3,19 polegadas, compatível com a designação "3,2 polegadas" e com a
@@ -337,24 +343,32 @@ Consequências **(derivado)**:
 perfurar, não colar de modo que danifique o invólucro). Esse documento está fora de vigência para o
 v1 (ver seção 2.1) e não acrescenta requisito aqui.
 
-## 9. Fenda do cartucho (borda superior)
+## 9. Interface do cartucho e fenda de acomodação (borda superior)
+
+A interface passa a ter dois estágios físicos: a abertura guiada da carcaça principal recebe
+e orienta o corpo plástico; dentro dela, a língua card edge entra no DK920A-20M. A abertura
+externa não deve ser dimensionada apenas pela espessura da PCB.
 
 | ID | Regra | Fonte |
 |---|---|---|
-| CT-1 | O cartucho entra pela borda superior, paralelo ao corpo; nunca pela face frontal | `[R: Carcaça 3D]`, `[M: §2.2]` |
-| CT-2 | Soquete escolhido: DK920A-20M, card edge de 2,54 mm, 2 × 10 contatos, vertical, de furo passante | `[R: Carcaça 3D]` |
-| CT-3 | Por ser vertical, o soquete vai numa placa riser perpendicular à PCB principal, no topo | `[R: Carcaça 3D]` (ver inconsistência I-6) |
-| CT-4 | O soquete não tem abas de fixação; a carcaça precisa de um apoio encostado no corpo do soquete, para a força de encaixe não cair só nas 20 soldas | `[R: Especificação do cartucho]` |
-| CT-5 | Anti-inversão: a língua do cartucho é deslocada para um lado e a fenda da carcaça tem o mesmo deslocamento | `[R: Especificação do cartucho]` |
-| CT-6 | A fenda tem guias, para reduzir o desgaste dos contatos | `[R: Especificação do cartucho]` |
-| CT-7 | A altura do soquete acima da riser define a folga até o topo da carcaça | `[R: Especificação do cartucho]` |
-| CT-8 | Até a Fase 4 de compras, a fenda fica com tampa cega | `[R: Compras em fases]`, `[R: Carcaça v0]` |
-| CT-9 | Cartucho único para toda a família: placa de 52 × 52 mm, 1,6 mm, com língua de ~27,8 mm | `[R: Especificação do cartucho]` (ver decisão D-8) |
+| CT-1 | O cartucho entra pela borda superior, paralelo ao corpo; nunca pela face frontal | [R: Carcaça 3D], [M: §2.2] |
+| CT-2 | Soquete escolhido: DK920A-20M, card edge de 2,54 mm, 2 × 10 contatos, vertical, de furo passante | [R: Carcaça 3D] |
+| CT-3 | Por ser vertical, o soquete vai numa placa riser perpendicular à PCB principal, no topo | [R: Carcaça 3D] (ver inconsistência I-6) |
+| CT-4 | O soquete não tem abas de fixação conhecidas; a estrutura da carcaça principal apoia o corpo do soquete e a riser | [R: Especificação do cartucho] |
+| CT-5 | A língua é deslocada lateralmente; a guarda plástica e a boca de entrada repetem a chave para impedir inserção invertida | [R: Carcaça padrão dos cartuchos] |
+| CT-6 | A entrada do d-BMO tem boca chanfrada, canais laterais e transição que centraliza a língua nua na fenda elétrica | [R: Carcaça padrão dos cartuchos] |
+| CT-7 | A guarda protege as bordas e enquadra os contatos; nenhum plástico cobre os pads ou invade a área de varredura dos contatos do soquete | [R: Carcaça padrão dos cartuchos] |
+| CT-8 | Ombro/batente no corpo plástico limita a inserção antes de a ponta da PCB atingir o fundo do conector | [R: Carcaça padrão dos cartuchos] |
+| CT-9 | A retenção secundária e a área de pega devem permitir remoção sem alavancar o cartucho pelo PCB | [R: Carcaça padrão dos cartuchos] |
+| CT-10 | Os esforços de inserção/retirada são distribuídos entre corpo plástico, guias, batente e apoio estrutural do soquete; as soldas não são o único suporte | [R: Carcaça padrão dos cartuchos] |
+| CT-11 | Até a Fase 4 de compras, a abertura fica com tampa cega | [R: Compras em fases], [R: Carcaça v0] |
+| CT-12 | A referência atual da PCB é 52 × 52 mm, 1,6 mm, com língua de ~27,8 mm; o envelope plástico externo é independente e ainda não cotado | [R: Especificação do cartucho] (ver D-8) |
+| CT-13 | O corpo plástico segue um envelope comum; cavidades internas e janelas funcionais podem variar por cartucho | [R: Carcaça padrão dos cartuchos] |
 
-Pendências da fenda: valor do deslocamento anti-inversão, profundidade da fenda do soquete,
-espessura do cartucho com a carcaça impressa dele e quanto do cartucho fica para fora. Todas constam
-de [ASSEMBLY_LAYOUT.md](ASSEMBLY_LAYOUT.md) como parâmetros.
-
+Pendências: medir largura, profundidade, altura e tolerâncias do DK920A-20M; medir o corpo e a
+profundidade de engate do soquete; definir dimensões da guarda, do canal, do batente, da retenção
+e da superfície de pega; medir os módulos reais; definir o método de união da carcaça. O parâmetro
+antigo de ~40 mm expostos não deve ser usado como dimensão do corpo plástico.
 ## 10. Aberturas
 
 Lista do que o README pede. A posição exata de cada abertura é parâmetro de
@@ -449,7 +463,7 @@ v0 até haver definição (D-14).
 | D-5 | Carcaça impressa pelo Tiago Efraim ou fabricada na JLCPCB | Mantenedor | `[R: Fabricação]`, `[R: Roadmap]` |
 | D-6 | Parede em que fica a antena do NFC e como evitar metal atrás dela | Teste de leitura com a peça | `[R: Carcaça 3D]` |
 | D-7 | Posição em X da saída SMA e do furo do microfone no topo; placa do CC1101 junto à parede do topo ou ligada por cabo | Medição do módulo CC1101 e dos gatilhos | `[R: Carcaça 3D]` |
-| D-8 | Cartucho de 52 × 52 mm ou cartucho curto de 52 × 25 mm | Resposta da JLCPCB sobre o chanfro | `[R: Especificação do cartucho]` |
+| D-8 | Formato final da PCB-cartucho (referência 52 × 52 mm ou variante curta) e compatibilidade com a cavidade da carcaça comum | Resposta da JLCPCB sobre o chanfro, módulos reais e protótipo da carcaça | [R: Especificação do cartucho] |
 | D-9 | Face da janela do IR | Mantenedor | `[R: Carcaça 3D]` |
 | D-10 | Cruz direcional de peça única ou quatro tampas; tampas do controle de PS3 ou impressas | Medição das tampas | `[R: Analógicos e gatilhos reaproveitados]` |
 | D-11 | L2/R2 com as alavancas do controle, com tampas impressas, ou só L1/R1 na v0 | Medição das alavancas | `[R: Analógicos e gatilhos reaproveitados]` |
@@ -461,6 +475,8 @@ v0 até haver definição (D-14).
 | D-17 | LED de estado na frente (ponto vermelho da referência v1): manter como LED pequeno e embutido ou remover | Mantenedor da marca | `[M: §8]` |
 | D-18 | Linha de divisão entre a zona traseira fixa e a tampa | Medição da bateria e da eletrônica | `[R: Carcaça 3D]` |
 | D-19 | Onde ficam os berços dos cartuchos reserva e quantos são | Dimensões finais do cartucho (D-8) | `[R: Carcaça 3D]` |
+| D-20 | Método de união e abertura da carcaça dos cartuchos (clips, parafusos ou combinação) | Processo de impressão, manutenção e corpo de prova | [R: Carcaça padrão dos cartuchos] |
+| D-21 | Geometria da guarda/rebaixo da língua, chave, batente e retenção secundária | Medição do DK920A-20M e protótipo conjunto da entrada do d-BMO | [R: Carcaça padrão dos cartuchos] |
 
 ## 15. Inconsistências encontradas nas fontes
 
@@ -494,6 +510,10 @@ A modelagem começa quando, no registro de dimensões, as linhas abaixo deixarem
 7. Botões tácteis: corpo e altura do atuador de cada modelo usado, inclusive os de ângulo reto.
 8. Standoff: rosca, distância entre faces e comprimento.
 9. Regras de processo de quem imprime (D-15).
+10. Cartucho: medir o DK920A-20M real e fechar o contorno da língua, a guarda lateral, a
+    área livre dos pads, o batente, a retenção e o canal da carcaça principal. O corpo plástico
+    comum precisa ser prototipado com pelo menos uma PCB e um módulo reais antes de definir
+    seus berços internos e os berços de reserva do d-BMO.
 
 Decisões D-2, D-3, D-6, D-7, D-9 e D-18 precisam estar fechadas antes de fixar `BODY_W`, `BODY_H` e
 `BODY_D`.
