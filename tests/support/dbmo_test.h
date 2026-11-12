@@ -1,6 +1,8 @@
 // Apoio aos testes nativos: Unity + comparações de Status com mensagem legível.
 #pragma once
 
+#include <initializer_list>
+
 #include "dbmo/core/status.h"
 #include "unity.h"
 
