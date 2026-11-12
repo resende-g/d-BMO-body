@@ -1,0 +1,12 @@
+{
+  "name": "dbmo-display",
+  "version": "0.1.0",
+  "description": "Contrato de tela (IDisplay), paleta e gerência da tela do d-BMO",
+  "license": "Apache-2.0",
+  "frameworks": "*",
+  "platforms": "*",
+  "build": {
+    "srcDir": "src",
+    "includeDir": "include"
+  }
+}
