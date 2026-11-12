@@ -7,7 +7,7 @@ SPDX-License-Identifier: Apache-2.0
 
 | Campo | Valor |
 |---|---|
-| Status | Preliminar. Descreve **zonas** e **restrições**, não posições cotadas |
+| Status | Preliminar (revisão 0.2). Descreve **zonas**, **restrições** e a nova interface de cartucho protegido; não define dimensões sem medição |
 | Data | 2026-11-12 |
 | Referencial | RC-dBMO, definido em [MECHANICAL_SPECIFICATION.md](MECHANICAL_SPECIFICATION.md), seção 3. Este documento não redefine eixos nem origem |
 | Dimensões das peças | [COMPONENT_DIMENSIONS.md](COMPONENT_DIMENSIONS.md) |
@@ -103,17 +103,20 @@ voltados para a célula sem uma parede lisa entre eles.
 
 ### 3.3 Coluna C — topo (região `ZT`), ao longo de Y
 
-O cartucho entra em −Y. De cima para baixo:
+O cartucho entra em −Y. O corpo plástico é guiado pela abertura superior; somente a
+língua card edge sem a guarda entra na fenda elétrica. De cima para baixo:
 
 | Ordem | Camada | Extensão em Y | Situação |
 |---|---|---|---|
-| C1 | Parede do topo com a fenda e as guias | `T_WALL_TP` | Parâmetro |
-| C2 | Soquete, da boca da fenda ao assentamento na riser | `card_edge_socket_dk920a_20m.height_above_board` | `NOMINAL` |
-| C3 | Placa riser, perpendicular à PCB principal | `T_RISER` | Parâmetro de projeto da PCB |
-| C4 | Terminais do soquete e ligação da riser à PCB principal | `RISER_LINK_H` | Parâmetro de projeto da PCB |
+| C1 | Parede do topo, boca chanfrada e entrada dos canais laterais | T_WALL_TP + parâmetros da abertura | Parâmetro; cotas pendentes |
+| C2 | Corpo plástico do cartucho, guardas laterais e guias do alojamento | Envelope externo do cartucho e GUIDE_LEN | Ainda sem dimensões |
+| C3 | Soquete DK920A-20M, com a língua card edge engatada | card_edge_socket_dk920a_20m.height_above_board | NOMINAL; medir peça real |
+| C4 | Riser perpendicular à PCB principal, terminais e apoio estrutural | T_RISER + RISER_LINK_H | Parâmetros de projeto da PCB |
 
-`TOP_BAND_H` ≥ C1 + C2 + C3 + C4. O apoio da carcaça encosta no corpo do soquete, do lado oposto à
-boca, para receber a força de encaixe `[R: Especificação do cartucho]`.
+TOP_BAND_H precisa acomodar o corpo plástico inserido, a abertura/guia, o soquete, a riser
+e o apoio, sem colisão com SMA, microfone e gatilhos. O batente do cartucho deve encostar na
+estrutura do d-BMO na posição de engate completo; o corpo do soquete recebe apoio no lado
+oposto à boca. A força não deve ficar concentrada nas 20 soldas.
 
 ### 3.4 Condição de espessura
 
@@ -217,16 +220,16 @@ Cada tabela indica a zona, a referência de posição, os parâmetros a preenche
 | Medir | Contorno da placa, `sma_connector`, `total_thickness`, `antenna` |
 | Restrições | AD-06; a haste da antena não pode cruzar o curso dos gatilhos nem o cartucho |
 
-### 5.6 Cartucho, soquete e riser
+### 5.6 Cartucho protegido, soquete e riser
 
 | Item | Definição |
 |---|---|
-| Zona | `ZT`, centro |
-| Referência | Plano médio da placa do cartucho, paralelo ao datum A |
-| Parâmetros | `CART_X0`, `CART_OFFSET`, `CART_Z`, `SLOT_W`, `SLOT_T`, `SOCK_Y_SEAT`, `T_RISER`, `RISER_LINK_H`, `GUIDE_LEN` |
-| Medir | Todas as linhas de `card_edge_socket_dk920a_20m`, em especial `slot_depth` |
-| Restrições | AD-06, AD-07, AD-08, AD-14 |
-| Nota | A largura da fenda da carcaça depende do cartucho **com a carcaça impressa dele**, que ainda não tem espessura definida. `[R: Especificação do cartucho]` estima que ~40 mm do cartucho de 52 × 52 mm ficam para fora |
+| Zona | ZT, centro |
+| Referência | Plano médio da língua card edge, paralelo ao datum A; envelope externo da carcaça como referência de manuseio |
+| Parâmetros | CART_X0, CART_OFFSET, CART_Z, CART_BODY_W, CART_BODY_H, CART_BODY_D, CART_WALL_T, CART_CAVITY_W, CART_CAVITY_H, CART_TONGUE_W, CART_TONGUE_T, CART_TONGUE_LEN, CONTACT_RECESS, SLOT_W, SLOT_T, SLOT_GUIDE_W, SLOT_GUIDE_T, SLOT_STOP_Z, SLOT_KEY_X, CART_RETENTION, CART_GRIP, SOCK_Y_SEAT, T_RISER, RISER_LINK_H, GUIDE_LEN |
+| Medir | Todas as linhas de card_edge_socket_dk920a_20m, especialmente abertura, profundidade e altura; PCB-cartucho; módulo funcional; amostra impressa da guarda e do canal |
+| Restrições | AD-06, AD-07, AD-08, AD-14; RM-13 a RM-18; CT-1 a CT-13 |
+| Nota | A fenda externa acomoda o corpo plástico, não apenas a espessura de 1,6 mm da PCB. A guarda lateral enquadra a língua, mas não pode cobrir pads nem invadir a área de varredura do soquete. O batente é no corpo plástico; as guias e o apoio da riser descarregam esforços na carcaça principal. A estimativa anterior de ~40 mm salientes é apenas referência histórica, não cota do cartucho pronto. |
 
 ### 5.7 Controles frontais
 
@@ -365,18 +368,28 @@ da especificação) ou regra de processo.
 | `SMA_X`, `SMA_Z` | Centro do furo do conector SMA na face `TP` | `sma_connector`; D-7 |
 | `IR_FACE`, `IR_TX_POS`, `IR_RX_POS`, `IR_WINDOW` | Face, posições e janela do IR | `ir_kit`; D-9 |
 
-### 7.6 Cartucho
+### 7.6 Cartucho protegido
 
 | Parâmetro | Significado | Fecha com |
 |---|---|---|
-| `CART_X0` | X do centro da fenda da carcaça | AD-06; EC-4 |
-| `CART_OFFSET` | Deslocamento anti-inversão da língua em relação ao centro do cartucho | Projeto do cartucho `[R: Especificação do cartucho]` |
-| `CART_Z` | Profundidade do plano médio do cartucho | Posição da riser; coluna A |
-| `SLOT_W`, `SLOT_T` | Abertura da fenda da carcaça | Cartucho com carcaça; D-8; D-15 |
-| `SOCK_Y_SEAT` | Y do plano de assentamento do soquete | `height_above_board`, `T_WALL_TP` |
-| `T_RISER`, `RISER_LINK_H` | Espessura da riser e altura da ligação à PCB principal | Projeto da PCB |
-| `GUIDE_LEN` | Comprimento das guias da fenda | `slot_depth`; D-8 |
-| `SPARE_N`, `SPARE_POS` | Quantidade e posição dos berços de cartucho reserva | D-8, D-19 |
+| CART_X0 | X do centro da entrada do cartucho | AD-06; EC-4 |
+| CART_OFFSET | Deslocamento anti-inversão da língua e da chave externa | Projeto da PCB e da guarda; D-21 |
+| CART_Z | Profundidade do plano médio do cartucho | Posição da riser; coluna A |
+| CART_BODY_W, CART_BODY_H, CART_BODY_D | Envelope externo comum da carcaça plástica (largura, altura e profundidade) | Medição dos módulos; padrão de família; D-8 |
+| CART_WALL_T | Espessura das paredes da carcaça do cartucho | Material, impressora e ensaio de resistência; D-15, D-20 |
+| CART_CAVITY_W, CART_CAVITY_H | Envelope interno disponível à PCB e ao módulo funcional | Medições de cada módulo; varia por família |
+| CART_TONGUE_W, CART_TONGUE_T, CART_TONGUE_LEN | Largura, espessura e comprimento de engate da língua card edge | Medição do DK920A-20M e desenho da PCB |
+| CONTACT_RECESS | Profundidade/contorno do rebaixo de proteção ao redor dos pads | Área de varredura dos contatos do soquete; corpo de prova |
+| SLOT_W, SLOT_T | Abertura externa da boca guiada (não confundir com a fenda elétrica do soquete) | Envelope da carcaça; guarda e tolerâncias de impressão |
+| SLOT_GUIDE_W, SLOT_GUIDE_T | Largura e espessura dos canais laterais que orientam a guarda plástica | Medição da guarda e corpo de prova |
+| SLOT_STOP_Z | Posição do batente que determina o engate completo sem sobrecurso | Profundidade real do soquete e riser |
+| SLOT_KEY_X | Deslocamento da chave mecânica que impede inserção invertida | CART_OFFSET; D-21 |
+| CART_RETENTION | Tipo/posição da retenção secundária (detente ou lingueta flexível) | Corpo de prova; D-20, D-21 |
+| CART_GRIP | Rebaixo ou área externa para os dedos, sem tocar nos contatos | Ergonomia e envelope final |
+| SOCK_Y_SEAT | Y do plano de assentamento do soquete | height_above_board, T_WALL_TP |
+| T_RISER, RISER_LINK_H | Espessura da riser e altura da ligação à PCB principal | Projeto da PCB |
+| GUIDE_LEN | Comprimento efetivo das guias laterais | Profundidade de engate, apoio e corpo de prova |
+| SPARE_N, SPARE_POS | Quantidade e posição dos berços de cartucho reserva (acomodam o corpo plástico final) | Envelope externo comum; D-8, D-19 |
 
 ### 7.7 Controles, áudio, topo e laterais
 
