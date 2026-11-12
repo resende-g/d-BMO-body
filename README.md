@@ -626,7 +626,7 @@ região necessária à conexão card edge.
 O corpo externo padronizado e a língua card edge são duas referências diferentes: a medida
 de 52 × 52 mm abaixo se refere à PCB-cartucho, não ao envelope externo da carcaça plástica.
 
-### Anatomia de um cartucho
+### Anatomia de um cartucho (importante)
 
 O cartucho completo passa a ter três partes:
 
@@ -649,7 +649,7 @@ A escolha entre encaixes flexíveis, parafusos ou combinação dos dois para fec
 fica pendente até definir o processo de impressão e testar um corpo de prova. A cavidade
 interna varia por módulo; a interface externa, a guia, o batente e a língua não.
 
-### Especificação da PCB e da interface card edge
+### Especificação do cartucho (card edge)
 
 Casada com o soquete DK920A-20M e com as regras de contatos dourados da JLCPCB. As cotas
 abaixo continuam sendo referências de projeto; a peça real e o desenho do fabricante precisam
