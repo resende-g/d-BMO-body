@@ -573,7 +573,7 @@ prata não condutivo e a mesma interface card edge; a face frontal recebe uma "c
 art e um título de jogo antigo inspirado em distopias clássicas da literatura, sem logotipo de
 marca real. Os cartuchos compartilham o mesmo envelope externo, a mesma posição da língua e o
 mesmo encaixe no d-BMO. Aberturas específicas (por exemplo, lente de câmera ou antena) variam
-conforme a função. Prompts em docs/cartuchos-prompts.md.
+conforme a função. Prompts em [docs/cartuchos-prompts.md](docs/cartuchos-prompts.md).
 
 | BRAVE NEW WORLD — cartucho LoRa 915 MHz (antena de mola) | BIG BROTHER — cartucho câmera (lente frontal, visão p/ o modo agente) |
 |---|---|
@@ -581,6 +581,14 @@ conforme a função. Prompts em docs/cartuchos-prompts.md.
 
 As imagens são referências de linguagem visual e não definem dimensões, encaixes ou construção
 mecânica.
+
+Nota técnica do LoRa: a etiqueta diz 915 MHz porque, no Brasil, o LoRa opera na faixa ISM de
+**915 MHz** (Anatel: 902-907,5 e 915-928). 433 MHz é a faixa do CC1101 comum. "LoRa" é marca da
+Semtech (uso conceitual apenas, não comercial).
+
+Limite honesto: o card edge não torna o d-BMO mais rápido nem roda IA local; para um "cérebro
+extra" o cartucho precisaria do próprio processador (outro projeto). O uso mais valioso para o
+propósito de segurança é o **cartucho de rádio/sensor extra**.
 
 ### Carcaça padrão dos cartuchos
 
