@@ -49,7 +49,7 @@ class EventBus {
   enum class Filter : uint8_t { Exact, Domain, All };
   struct Subscription {
     Filter filter;
-    EventId id;  // Exact: id; Domain: domínio no byte alto
+    EventId id;       // Exact: id; Domain: domínio no byte alto
     Handler handler;  // nullptr: inscrição cancelada, aguardando compactação
     void *context;
   };

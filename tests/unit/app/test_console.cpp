@@ -157,7 +157,8 @@ static void test_registration_rules_and_help() {
   TEST_ASSERT_OK(console.registerCommand({"status", "estado dos subsistemas", record, &call}));
   TEST_ASSERT_STATUS(Status::AlreadyInitialized,
                      console.registerCommand({"status", "", record, &call}));
-  TEST_ASSERT_STATUS(Status::AlreadyInitialized, console.registerCommand({"help", "", record, &call}));
+  TEST_ASSERT_STATUS(Status::AlreadyInitialized,
+                     console.registerCommand({"help", "", record, &call}));
 
   console.feed("help\n");
   TEST_ASSERT_TRUE(out.contains("status"));

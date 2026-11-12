@@ -12,14 +12,14 @@ enum class [[nodiscard]] Status : uint8_t {
   OutOfRange,
   NotInitialized,
   AlreadyInitialized,
-  NotFound,        // arquivo, chave ou registro inexistente
+  NotFound,  // arquivo, chave ou registro inexistente
   Timeout,
   Busy,
-  IoError,         // falha de barramento, leitura ou escrita
+  IoError,  // falha de barramento, leitura ou escrita
   CrcError,
-  ProtocolError,   // resposta malformada do periférico
-  Corrupt,         // dado persistido inválido
-  NoSpace,         // buffer, fila ou armazenamento cheio
+  ProtocolError,  // resposta malformada do periférico
+  Corrupt,        // dado persistido inválido
+  NoSpace,        // buffer, fila ou armazenamento cheio
   Unsupported,
   NotPermitted,    // bloqueado por política (ex.: transmissão fora da faixa permitida)
   Incompatible,    // versão ou capacidade incompatível
@@ -52,8 +52,8 @@ class [[nodiscard]] Result {
 }  // namespace dbmo
 
 // Propaga o erro para quem chamou.
-#define DBMO_TRY(expr)                                       \
-  do {                                                       \
-    const ::dbmo::Status dbmo_try_status_ = (expr);          \
+#define DBMO_TRY(expr)                                                   \
+  do {                                                                   \
+    const ::dbmo::Status dbmo_try_status_ = (expr);                      \
     if (dbmo_try_status_ != ::dbmo::Status::Ok) return dbmo_try_status_; \
   } while (0)

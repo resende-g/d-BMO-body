@@ -4,9 +4,9 @@
 #include "dbmo/mock/mock_hal.h"
 #include "dbmo_test.h"
 
+using dbmo::Logger;
 using dbmo::LogHistory;
 using dbmo::LogLevel;
-using dbmo::Logger;
 using dbmo::Status;
 using dbmo::mock::MockClock;
 using dbmo::mock::RecordingLogSink;

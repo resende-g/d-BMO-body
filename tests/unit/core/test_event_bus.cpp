@@ -6,8 +6,8 @@ using dbmo::Event;
 using dbmo::EventBus;
 using dbmo::EventDomain;
 using dbmo::EventId;
-using dbmo::Status;
 using dbmo::makeEventId;
+using dbmo::Status;
 
 namespace {
 
@@ -33,7 +33,8 @@ void tearDown() {}
 
 static void test_event_id_packs_domain_and_code() {
   TEST_ASSERT_EQUAL_HEX16(0x0201, kButton);
-  TEST_ASSERT_EQUAL_INT(static_cast<int>(EventDomain::Input), static_cast<int>(dbmo::domainOf(kButton)));
+  TEST_ASSERT_EQUAL_INT(static_cast<int>(EventDomain::Input),
+                        static_cast<int>(dbmo::domainOf(kButton)));
   TEST_ASSERT_EQUAL_UINT8(1, dbmo::codeOf(kButton));
 }
 
@@ -129,7 +130,8 @@ static void test_subscriber_table_limit() {
   Recorder recorders[EventBus::kMaxSubscribers + 1];
   for (size_t i = 0; i < EventBus::kMaxSubscribers; ++i)
     TEST_ASSERT_OK(bus.subscribeAll(record, &recorders[i]));
-  TEST_ASSERT_STATUS(Status::NoSpace, bus.subscribeAll(record, &recorders[EventBus::kMaxSubscribers]));
+  TEST_ASSERT_STATUS(Status::NoSpace,
+                     bus.subscribeAll(record, &recorders[EventBus::kMaxSubscribers]));
 }
 
 static void test_handler_may_publish_and_chain_is_bounded() {

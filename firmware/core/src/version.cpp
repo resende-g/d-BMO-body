@@ -28,9 +28,9 @@ Result<Version> parseVersion(const char *text) {
 
 size_t formatVersion(const Version &version, char *out, size_t capacity) {
   if (out == nullptr || capacity == 0) return 0;
-  const int written = snprintf(out, capacity, "%u.%u.%u", static_cast<unsigned>(version.major),
-                               static_cast<unsigned>(version.minor),
-                               static_cast<unsigned>(version.patch));
+  const int written =
+      snprintf(out, capacity, "%u.%u.%u", static_cast<unsigned>(version.major),
+               static_cast<unsigned>(version.minor), static_cast<unsigned>(version.patch));
   if (written < 0 || static_cast<size_t>(written) >= capacity) {
     out[0] = '\0';
     return 0;

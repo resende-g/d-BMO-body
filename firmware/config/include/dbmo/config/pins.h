@@ -55,14 +55,14 @@ constexpr bool isRtcGpio(int gpio) { return gpio >= 0 && gpio <= 21; }
 // ---------------------------------------------------------------------------
 namespace target {
 
-inline constexpr int8_t kPowerButton = 0;   // strapping de boot: ver risco em GPIO_MAP.md
-inline constexpr int8_t kVbatSense = 1;     // ADC1; divisor 100k/100k
-inline constexpr int8_t kStickLeftX = 2;    // ADC1
-inline constexpr int8_t kAmpShutdown = 3;   // MAX98357A SD_MODE; strapping (JTAG)
-inline constexpr int8_t kStickLeftY = 4;    // ADC1
-inline constexpr int8_t kStickRightX = 5;   // ADC1
-inline constexpr int8_t kStickRightY = 6;   // ADC1
-inline constexpr int8_t kI2sMicData = 7;    // INMP441 SD
+inline constexpr int8_t kPowerButton = 0;  // strapping de boot: ver risco em GPIO_MAP.md
+inline constexpr int8_t kVbatSense = 1;    // ADC1; divisor 100k/100k
+inline constexpr int8_t kStickLeftX = 2;   // ADC1
+inline constexpr int8_t kAmpShutdown = 3;  // MAX98357A SD_MODE; strapping (JTAG)
+inline constexpr int8_t kStickLeftY = 4;   // ADC1
+inline constexpr int8_t kStickRightX = 5;  // ADC1
+inline constexpr int8_t kStickRightY = 6;  // ADC1
+inline constexpr int8_t kI2sMicData = 7;   // INMP441 SD
 inline constexpr int8_t kI2cSda = 8;
 inline constexpr int8_t kI2cScl = 9;
 inline constexpr int8_t kDisplayCs = 10;
@@ -81,7 +81,7 @@ inline constexpr int8_t kCartridgeCs = 38;  // na DevKitC, 38 ou 48 é o LED RGB
 inline constexpr int8_t kIrRx = 39;
 inline constexpr int8_t kI2sBclk = 40;
 inline constexpr int8_t kI2sLrclk = 41;
-inline constexpr int8_t kI2sSpeakerData = 42;  // MAX98357A DIN
+inline constexpr int8_t kI2sSpeakerData = 42;   // MAX98357A DIN
 inline constexpr int8_t kCartridgeUartTx = 43;  // UART0 TX
 inline constexpr int8_t kCartridgeUartRx = 44;  // UART0 RX
 inline constexpr int8_t kIrTx = 47;
@@ -133,7 +133,7 @@ inline constexpr int8_t kFreePins[] = {45, 46};
 namespace bench {
 
 inline constexpr int8_t kButtonUp = 39;
-inline constexpr int8_t kButtonOk = 2;    // GPIO RTC: acorda do deep sleep
+inline constexpr int8_t kButtonOk = 2;  // GPIO RTC: acorda do deep sleep
 inline constexpr int8_t kButtonDown = 47;
 // IR no Bruce de bancada (ainda sem o módulo ligado).
 inline constexpr int8_t kIrRx = 4;

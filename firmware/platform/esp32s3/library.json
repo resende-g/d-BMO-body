@@ -1,0 +1,11 @@
+{
+  "name": "dbmo-platform-esp32s3",
+  "version": "0.1.0",
+  "description": "Porte do firmware do d-BMO para o ESP32-S3 sobre o Arduino-ESP32: implementa os contratos de HAL",
+  "license": "Apache-2.0",
+  "frameworks": "arduino",
+  "platforms": "espressif32",
+  "build": {
+    "includeDir": "include"
+  }
+}

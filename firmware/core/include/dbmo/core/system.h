@@ -17,11 +17,11 @@ namespace dbmo {
 enum class SystemState : uint8_t {
   Off,
   Booting,
-  Running,       // todos os subsistemas prontos
-  Degraded,      // algum subsistema opcional ausente, degradado ou com falha
+  Running,   // todos os subsistemas prontos
+  Degraded,  // algum subsistema opcional ausente, degradado ou com falha
   LowPower,
   ShuttingDown,
-  Fault,         // um subsistema obrigatório falhou
+  Fault,  // um subsistema obrigatório falhou
 };
 
 const char *toString(SystemState state);

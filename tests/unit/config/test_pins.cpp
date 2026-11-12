@@ -79,9 +79,8 @@ static void test_strapping_pins_in_use_are_flagged() {
 }
 
 static void test_shared_bus_pins_are_identical_in_both_profiles() {
-  const char *shared[] = {"SPI_MOSI",   "SPI_SCK",    "SPI_MISO",      "DISPLAY_CS",
-                          "DISPLAY_DC", "DISPLAY_RESET", "CC1101_CS", "SD_CS",
-                          "I2C_SDA",    "I2C_SCL"};
+  const char *shared[] = {"SPI_MOSI",      "SPI_SCK",   "SPI_MISO", "DISPLAY_CS", "DISPLAY_DC",
+                          "DISPLAY_RESET", "CC1101_CS", "SD_CS",    "I2C_SDA",    "I2C_SCL"};
   for (const char *signal : shared) {
     const PinAssignment *t = findSignal(target::kPins, signal);
     const PinAssignment *b = findSignal(bench::kPins, signal);
@@ -111,12 +110,11 @@ static void test_i2c_addresses_do_not_collide() {
 }
 
 static void test_mcp_button_bits_are_unique_and_avoid_output_only_pins() {
-  const uint8_t bits[] = {
-      mcp_buttons::kDpadUp,  mcp_buttons::kDpadDown, mcp_buttons::kDpadLeft,
-      mcp_buttons::kDpadRight, mcp_buttons::kActionA, mcp_buttons::kActionB,
-      mcp_buttons::kActionX, mcp_buttons::kActionY,  mcp_buttons::kSelect,
-      mcp_buttons::kStart,   mcp_buttons::kL1,       mcp_buttons::kR1,
-      mcp_buttons::kL2,      mcp_buttons::kR2};
+  const uint8_t bits[] = {mcp_buttons::kDpadUp,    mcp_buttons::kDpadDown, mcp_buttons::kDpadLeft,
+                          mcp_buttons::kDpadRight, mcp_buttons::kActionA,  mcp_buttons::kActionB,
+                          mcp_buttons::kActionX,   mcp_buttons::kActionY,  mcp_buttons::kSelect,
+                          mcp_buttons::kStart,     mcp_buttons::kL1,       mcp_buttons::kR1,
+                          mcp_buttons::kL2,        mcp_buttons::kR2};
   uint16_t seen = 0;
   for (uint8_t bit : bits) {
     TEST_ASSERT_TRUE(bit < 16);
@@ -140,8 +138,8 @@ static void test_claiming_the_whole_target_profile_at_runtime_has_no_conflict() 
   // O mesmo mapa passa pelo registro de recursos usado na inicialização.
   dbmo::ResourceRegistry registry;
   for (const PinAssignment &pin : target::kPins)
-    TEST_ASSERT_OK(registry.claim(dbmo::ResourceKind::Gpio, static_cast<uint16_t>(pin.gpio),
-                                  pin.signal));
+    TEST_ASSERT_OK(
+        registry.claim(dbmo::ResourceKind::Gpio, static_cast<uint16_t>(pin.gpio), pin.signal));
   // E um segundo dono no pino de um botão da bancada é detectado.
   TEST_ASSERT_STATUS(dbmo::Status::Busy,
                      registry.claim(dbmo::ResourceKind::Gpio,

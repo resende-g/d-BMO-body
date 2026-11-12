@@ -51,12 +51,14 @@ static void test_defaults_are_returned_until_changed() {
 static void test_define_validates_key_default_and_duplicates() {
   ConfigStore store;
   TEST_ASSERT_STATUS(Status::InvalidArgument, store.define(ConfigSpec::integer("", 1, 0, 2)));
-  TEST_ASSERT_STATUS(Status::InvalidArgument, store.define(ConfigSpec::integer("Com Espaco", 1, 0, 2)));
-  TEST_ASSERT_STATUS(Status::InvalidArgument, store.define(ConfigSpec::integer("a.b=c", 1, 0, 2)));
   TEST_ASSERT_STATUS(Status::InvalidArgument,
-                     store.define(ConfigSpec::integer("chave.com.mais.de.trinta.e.um.chars", 1, 0, 2)));
+                     store.define(ConfigSpec::integer("Com Espaco", 1, 0, 2)));
+  TEST_ASSERT_STATUS(Status::InvalidArgument, store.define(ConfigSpec::integer("a.b=c", 1, 0, 2)));
+  TEST_ASSERT_STATUS(Status::InvalidArgument, store.define(ConfigSpec::integer(
+                                                  "chave.com.mais.de.trinta.e.um.chars", 1, 0, 2)));
   TEST_ASSERT_STATUS(Status::InvalidArgument, store.define(ConfigSpec::integer("a.fora", 5, 0, 2)));
-  TEST_ASSERT_STATUS(Status::InvalidArgument, store.define(ConfigSpec::integer("a.invertido", 1, 2, 0)));
+  TEST_ASSERT_STATUS(Status::InvalidArgument,
+                     store.define(ConfigSpec::integer("a.invertido", 1, 2, 0)));
   TEST_ASSERT_STATUS(Status::InvalidArgument, store.define(ConfigSpec::string("a.nulo", nullptr)));
   TEST_ASSERT_OK(store.define(ConfigSpec::integer("a.ok", 1, 0, 2)));
   TEST_ASSERT_STATUS(Status::AlreadyInitialized, store.define(ConfigSpec::boolean("a.ok", true)));
@@ -174,12 +176,12 @@ static void test_deserialize_tolerates_and_reports_bad_input() {
   const char text[] =
       "# comentario\r\n"
       "\r\n"
-      "  audio.volume = 20  \r\n"   // espaços e CRLF são aceitos
-      "chave.de.outro.firmware=1\n" // desconhecida: ignorada, não é erro
-      "radio.tx_enabled=talvez\n"   // valor inválido: fica o padrão
-      "linha sem igual\n"           // malformada
-      "input.deadzone=500\n"        // fora da faixa
-      "device.name=ok";             // última linha sem \n
+      "  audio.volume = 20  \r\n"    // espaços e CRLF são aceitos
+      "chave.de.outro.firmware=1\n"  // desconhecida: ignorada, não é erro
+      "radio.tx_enabled=talvez\n"    // valor inválido: fica o padrão
+      "linha sem igual\n"            // malformada
+      "input.deadzone=500\n"         // fora da faixa
+      "device.name=ok";              // última linha sem \n
   ConfigLoadReport report;
   TEST_ASSERT_STATUS(Status::Corrupt, store.deserialize(text, strlen(text), &report));
   TEST_ASSERT_EQUAL_UINT16(2, report.applied);

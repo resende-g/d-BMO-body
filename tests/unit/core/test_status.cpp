@@ -12,12 +12,24 @@ void tearDown() {}
 
 static void test_every_status_has_a_distinct_name() {
   const Status all[] = {
-      Status::Ok,           Status::InvalidArgument, Status::OutOfRange,
-      Status::NotInitialized, Status::AlreadyInitialized, Status::NotFound,
-      Status::Timeout,      Status::Busy,            Status::IoError,
-      Status::CrcError,     Status::ProtocolError,   Status::Corrupt,
-      Status::NoSpace,      Status::Unsupported,     Status::NotPermitted,
-      Status::Incompatible, Status::HardwareAbsent,  Status::InternalError,
+      Status::Ok,
+      Status::InvalidArgument,
+      Status::OutOfRange,
+      Status::NotInitialized,
+      Status::AlreadyInitialized,
+      Status::NotFound,
+      Status::Timeout,
+      Status::Busy,
+      Status::IoError,
+      Status::CrcError,
+      Status::ProtocolError,
+      Status::Corrupt,
+      Status::NoSpace,
+      Status::Unsupported,
+      Status::NotPermitted,
+      Status::Incompatible,
+      Status::HardwareAbsent,
+      Status::InternalError,
   };
   const size_t count = sizeof(all) / sizeof(all[0]);
   for (size_t i = 0; i < count; ++i) {

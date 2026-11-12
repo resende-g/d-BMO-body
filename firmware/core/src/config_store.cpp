@@ -187,8 +187,7 @@ Status ConfigStore::setFromText(const char *key, const char *value) {
       if (!parseInt(value, &parsed)) return Status::InvalidArgument;
       return setInt(key, parsed);
     }
-    case ConfigType::String:
-      return setString(key, value);
+    case ConfigType::String: return setString(key, value);
   }
   return Status::InternalError;
 }
