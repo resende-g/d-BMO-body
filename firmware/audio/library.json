@@ -1,0 +1,12 @@
+{
+  "name": "dbmo-audio",
+  "version": "0.1.0",
+  "description": "Áudio do d-BMO: contratos de captura e reprodução I2S, volume, gerador de tons, reprodução e gravação em memória. Sem reconhecimento de voz e sem gravação silenciosa",
+  "license": "Apache-2.0",
+  "frameworks": "*",
+  "platforms": "*",
+  "build": {
+    "srcDir": "src",
+    "includeDir": "include"
+  }
+}
