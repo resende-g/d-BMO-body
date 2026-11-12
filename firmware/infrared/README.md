@@ -68,6 +68,7 @@ RC-5/RC-6 e outros protocolos (ficam como sinal bruto), sinais com mais de 128 d
 ## Estado
 
 - Implementado e testado no computador (`tests/unit/infrared/`, 48 testes).
-- Aguarda hardware: adaptadores de `IIrReceiver` e `IIrTransmitter` sobre o RMT do
-  ESP32-S3 e validação com controles reais. O emissor e o receptor já foram ligados na
-  bancada com outro firmware (`README.md` do projeto).
+- Aguarda hardware: o conjunto de emissor e receptor foi comprado e ainda não chegou
+  (`README.md` do projeto, "Compras"); nada de infravermelho foi ligado na bancada. Os
+  adaptadores sobre o RMT do ESP32-S3 estão em `firmware/platform/esp32s3` e só foram
+  compilados.

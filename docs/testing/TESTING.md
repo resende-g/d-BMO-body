@@ -101,5 +101,72 @@ de evidência, com o estado de cada um.
 
 ## Evidência de execução
 
-Preenchida ao final da sessão de desenvolvimento, com os comandos executados e os
-resultados obtidos (ver o relatório da entrega e o histórico do GitHub Actions do ramo).
+Registro do que foi **executado de fato** nesta etapa de desenvolvimento. O que não foi
+executado está na última tabela, sem resultado atribuído.
+
+### Testes no computador (2026-11-12)
+
+Comando:
+
+```bash
+cmake -S . -B build/lead -G Ninja -DDBMO_SANITIZE=ON && cmake --build build/lead && ctest --test-dir build/lead
+```
+
+Ambiente: g++ 13.3.0, CMake 3.28.3, Ninja, AddressSanitizer + UndefinedBehaviorSanitizer.
+
+Resultado: **46 executáveis de teste, 522 testes, 0 falhas, 0 ignorados.**
+
+| Área | Executáveis | Testes |
+|---|---:|---:|
+| `core` (HAL, eventos, log, configuração, sistema, mocks) | 11 | 82 |
+| `config` (mapa de pinos) | 1 | 10 |
+| `app` (console) | 1 | 10 |
+| `display` | 2 | 17 |
+| `rosto` | 4 | 41 |
+| `input` | 4 | 45 |
+| `cartridges` | 3 | 33 |
+| `power` | 2 | 30 |
+| `storage` | 4 | 44 |
+| `radio` | 4 | 59 |
+| `nfc` | 3 | 43 |
+| `infrared` | 3 | 48 |
+| `audio` | 3 | 39 |
+| Integração (`tests/integration`) | 1 | 21 |
+| **Total** | **46** | **522** |
+
+### GitHub Actions
+
+Execução nº 16 do fluxo `CI`, commit `5cd8b84` (ramo `claude/dbmo-v1-firmware-dev-96rxin`):
+
+| Tarefa | Resultado |
+|---|---|
+| Testes nativos (gcc + ASan/UBSan) | Aprovado |
+| Testes nativos (clang, sem sanitizers) | Aprovado |
+| Firmware próprio (ESP32-S3): compila `dbmo-bench` e `dbmo-target`; compila os testes de bancada sem gravar | Aprovado |
+| Integridade do repositório | **Reprovado** naquela execução: link para `ASSEMBLY_GUIDE.md`, que ainda não existia. O guia foi escrito no commit seguinte; conferir a execução mais recente no histórico do ramo |
+
+Bugs encontrados pelos próprios testes durante o desenvolvimento e corrigidos antes do
+commit: perda de evento ao cancelar inscrição durante a entrega (`EventBus`); origem de
+botões que oscilava entre falha e recuperação (`InputSubsystem`); remontagem imediata e
+repetida de um cartão que não grava (`StorageSubsystem`); expressão de fundo do rosto que
+não acompanhava o aprendizado de infravermelho (`Application`).
+
+### Verificações de integridade (2026-11-12, no computador)
+
+| Verificação | Resultado |
+|---|---|
+| `tools/check_pinmap.py` | 31 sinais no perfil `target`, 19 no `bench`; 28 flags do Bruce, 17 macros do Retro-Go e 2 blocos gerados conferidos |
+| `tools/check_links.py` | 34 arquivos Markdown, 0 links quebrados |
+| `tools/check_repo.py` | 12 subsistemas, fontes portáveis e scripts conferidos; 0 problemas |
+| `tools/check_format.sh` | Sem diferenças (clang-format 18.1.3) |
+
+### O que NÃO foi executado
+
+| Item | Situação |
+|---|---|
+| Qualquer teste em hardware (`tests/hardware/`, firmware próprio na placa) | Não executado: sem acesso à bancada. A CI só prova que compila |
+| Bruce para o d-BMO (`firmware/bruce/build.sh`) | Nunca compilado, nem aqui nem na CI |
+| Retro-Go para o d-BMO (`firmware/retro-go/build.sh`) | Nunca compilado com o ESP-IDF; só a verificação de sintaxe da configuração no computador |
+| Testes com clang + sanitizers | Não executado no computador de desenvolvimento (falta a biblioteca de runtime); a CI roda clang sem sanitizers |
+| Medições elétricas, de consumo e de RF | Não executadas |
+| Cobertura de código | Não medida |
