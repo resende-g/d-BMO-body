@@ -2,9 +2,9 @@
 
 | Campo | Valor |
 |---|---|
-| Versão do documento | 0.1 (2026-11-12) |
+| Versão do documento | 0.2 (2026-11-12) |
 | Formato do cabeçalho descrito | 1 |
-| Estado | Protocolo lógico **implementado e testado no computador**; interface elétrica e mecânica **propostas**, sem validação física |
+| Estado | Protocolo lógico **implementado e testado no computador**; interface elétrica proposta; carcaça plástica e encaixe mecânico **especificados em nível conceitual**, ainda sem dimensões ou validação física |
 | Código | `firmware/cartridges/` |
 | Testes | `tests/unit/cartridges/` |
 
@@ -42,7 +42,10 @@ Princípios do protocolo:
 |---|---|---|
 | Tipo | Card edge, 2 × 10 contatos, passo de 2,54 mm (soquete DK920A-20M) | DECIDIDO (`README.md`, "Carcaça 3D") |
 | Posição | Borda superior do aparelho, em placa riser | DECIDIDO |
-| Placa do cartucho | 1,6 mm, 52 × 52 mm, acabamento ENIG, chanfro na língua | DECIDIDO, com pontos em aberto registrados no `README.md` |
+| PCB-cartucho | Referência atual: 1,6 mm, 52 × 52 mm, ENIG e chanfro na língua | DECIDIDO como referência de projeto; formato final depende de confirmar o chanfro com a JLCPCB |
+| Carcaça externa | Corpo plástico não condutivo, comum à família, envolvendo PCB e módulos; língua card edge exposta | PROPOSTO nesta versão; envelope e construção pendentes |
+| Proteção da língua | Rebaixo e guardas laterais plásticas, sem cobrir a área de contato dos pads | PROPOSTO; depende de medir o DK920A-20M |
+| Canal de entrada no d-BMO | Boca guiada, chave mecânica, guias laterais e batente apoiado na carcaça | PROPOSTO; depende do protótipo e das dimensões do soquete |
 | Dimensões do soquete, profundidade da fenda, aceitação de placa de 1,6 mm | — | PENDENTE DE VALIDAÇÃO FÍSICA (medir a peça) |
 | Anti-inversão mecânica (língua deslocada) | — | PROPOSTO no `README.md`; PENDENTE |
 
@@ -104,6 +107,46 @@ Pendências desta tabela: confirmar a hipótese de espelhamento na peça real; d
 valor do resistor em série e o limitador da linha de 3V3; decidir a linha de 5 V. A
 anti-inversão mecânica do `README.md` continua sendo a primeira barreira; esta disposição
 é a segunda.
+
+### 2.3 Carcaça plástica e interface mecânica protegida
+
+A família de cartuchos adota um corpo plástico comum, inspirado na experiência de manuseio de
+memory cards. O usuário segura a carcaça; a PCB, os componentes e a região de contato não são
+superfícies de manuseio.
+
+**Construção do cartucho (PROPOSTA):**
+
+- Uma carcaça plástica não condutiva envolve a PCB-cartucho e o módulo funcional. O envelope
+  externo, a espessura das paredes e a cavidade interna ainda não têm dimensões.
+- A PCB forma uma língua card edge na extremidade inferior. Os pads ENIG permanecem expostos
+  nas duas faces, na área exigida pelo contato elétrico.
+- Uma guarda plástica lateral acompanha a língua e protege suas bordas contra impactos e
+  entrada inclinada. Os pads podem ficar em um rebaixo ao redor do qual a guarda forma uma
+  moldura, mas nenhuma parede pode entrar na área de varredura dos contatos do soquete.
+- A geometria da guarda e do rebaixo será definida em conjunto com o DK920A-20M real. Não
+  assumir que o corpo do soquete cabe dentro da carcaça nem que a fenda aceita qualquer
+  espessura/ombro sem medição.
+
+**Abertura correspondente no d-BMO (PROPOSTA):**
+
+1. Boca de entrada chanfrada, mais larga que a língua elétrica, para receber e centralizar a
+   guarda plástica.
+2. Guias laterais internas que mantêm o cartucho paralelo ao eixo de inserção.
+3. Região de transição que deixa a língua sem a guarda entrar alinhada na fenda elétrica do
+   DK920A-20M.
+4. Chave assimétrica alinhada ao deslocamento da língua, para impedir inserção invertida.
+5. Batente no corpo plástico, com contato contra a estrutura do d-BMO, para limitar a
+   profundidade sem usar a ponta da PCB como batente.
+6. Retenção secundária e superfície de pega para remoção, ambas a prototipar.
+
+**Caminho de carga:** o corpo do cartucho transmite a força ao batente/retentor e às guias do
+alojamento do d-BMO. O soquete e suas soldas não podem ser o único apoio mecânico; a riser e o
+corpo do soquete precisam de apoio estrutural na carcaça principal.
+
+O padrão de carcaça é comum à família. A cavidade interna, as aberturas e os suportes da PCB
+podem variar conforme o módulo (câmera, antena, GPS ou sensor), sem alterar a língua, o
+chaveamento, o envelope de interface nem a posição de assentamento.
+
 
 ## 3. Identificação por EEPROM
 
@@ -292,8 +335,9 @@ Enquanto isso valer:
 - Um cartucho com defeito que prenda SDA ou SCL em nível baixo para todo o barramento.
 
 **Procedimento recomendado até existir hardware de proteção: inserir e retirar o cartucho
-com o aparelho desligado.** A detecção por consulta existe para o firmware reagir bem, não
-para autorizar a troca a quente.
+com o aparelho desligado.** A carcaça plástica, as guias e a retenção mecânica não tornam a
+interface hot-swap. A detecção por consulta existe para o firmware reagir bem, não para
+autorizar a troca a quente.
 
 Melhorias de hardware a avaliar (PROPOSTO, sem decisão): linha de presença, chave de
 alimentação do cartucho comandada pelo firmware só depois da identificação, isolador ou
@@ -319,8 +363,9 @@ requisito de um formato futuro.
 
 ## 9. Como criar um cartucho novo
 
-1. **Hardware:** PCB-cartucho com o módulo da função e uma 24C02 em 0x50
-   (`README.md`, "Anatomia de um cartucho").
+1. **Hardware:** PCB-cartucho com o módulo da função, uma 24C02 em 0x50 e a carcaça plástica
+   padronizada. A língua e a guarda mecânica devem respeitar a interface da seção 2.3 e ser
+   conferidas com o soquete DK920A-20M real (`README.md`, "Carcaça padrão dos cartuchos").
 2. **Identidade:** escolher fornecedor e produto e gerar a imagem da EEPROM:
 
    ```bash
@@ -363,6 +408,12 @@ Sem hardware, o sistema é exercitado por:
 | 8 | Identificadores de fornecedor | Convenção a confirmar pelo mantenedor |
 | 9 | Comportamento com EEPROM real (24LC02B, AT24C02, M24C02) | Peça em mãos |
 | 10 | Assinatura do cabeçalho | Só se cartuchos de terceiros entrarem no escopo |
+| 11 | Envelope externo comum da carcaça plástica | Medir módulos e definir o padrão mecânico da família |
+| 12 | Geometria da guarda/rebaixo dos contatos e área livre dos pads | Soquete real, desenho da riser e ensaio de inserção |
+| 13 | Boca de entrada, guias, chave mecânica e batente no d-BMO | Protótipo conjunto do cartucho e da carcaça principal |
+| 14 | Mecanismo de retenção e área de pega para remoção | Corpo de prova; avaliar esforço, folga e desgaste |
+| 15 | Método de união da carcaça (clips, parafusos ou combinação) | Processo de impressão, manutenção e dimensões dos módulos |
+| 16 | Aberturas e zonas de RF/ópticas em cada carcaça funcional | Módulo real e ensaio de operação com o invólucro montado |
 
 ## Fontes
 
