@@ -32,8 +32,9 @@ struct PinAssignment {
 };
 
 // GPIOs utilizáveis no módulo ESP32-S3-WROOM-1-N16R8: 0–21 e 38–48.
-// 22–25 não existem no ESP32-S3; 26–32 são da flash; 33–37 não saem no módulo (35–37 são
-// da PSRAM octal do R8).
+// 22–25 não existem no ESP32-S3; 26–32 são da flash; 33 e 34 não saem no módulo; 35–37
+// saem no módulo (e no conector da DevKitC), mas no N16R8 pertencem à PSRAM octal.
+// Fontes em docs/hardware/sources/ESP32-S3.md.
 constexpr bool isUsableGpio(int gpio) {
   return (gpio >= 0 && gpio <= 21) || (gpio >= 38 && gpio <= 48);
 }
@@ -182,6 +183,10 @@ inline constexpr uint32_t kSdInitHz = 400000;
 
 // Botões no MCP23017 (0x20): bit 0–7 = GPA0–7, bit 8–15 = GPB0–7. Proposta; a ordem
 // pode mudar com o roteamento da PCB (basta alterar esta tabela).
+//
+// O datasheet do MCP23017 (Microchip DS20001952, revisão D) declara GPA7 e GPB7 como
+// somente saída. Por isso os bits 7 e 15 não recebem botão: um MCP23017 oferece 14
+// entradas. Ver docs/hardware/sources/PERIPHERALS.md (MCP-03 a MCP-06).
 namespace mcp_buttons {
 inline constexpr uint8_t kDpadUp = 0;
 inline constexpr uint8_t kDpadDown = 1;
@@ -190,16 +195,24 @@ inline constexpr uint8_t kDpadRight = 3;
 inline constexpr uint8_t kActionA = 4;
 inline constexpr uint8_t kActionB = 5;
 inline constexpr uint8_t kActionX = 6;
-inline constexpr uint8_t kActionY = 7;
-inline constexpr uint8_t kSelect = 8;
-inline constexpr uint8_t kStart = 9;
-inline constexpr uint8_t kL1 = 10;
-inline constexpr uint8_t kR1 = 11;
-inline constexpr uint8_t kL2 = 12;
-inline constexpr uint8_t kR2 = 13;
-inline constexpr uint8_t kStickLeftClick = 14;
-inline constexpr uint8_t kStickRightClick = 15;
+inline constexpr uint8_t kActionY = 8;
+inline constexpr uint8_t kSelect = 9;
+inline constexpr uint8_t kStart = 10;
+inline constexpr uint8_t kL1 = 11;
+inline constexpr uint8_t kR1 = 12;
+inline constexpr uint8_t kL2 = 13;
+inline constexpr uint8_t kR2 = 14;
+// GPA7 e GPB7: não usar como entrada.
+inline constexpr uint16_t kOutputOnlyMask = 0x8080;
 }  // namespace mcp_buttons
+
+// Cliques dos analógicos (L3/R3): não cabem nas 14 entradas do primeiro MCP23017.
+// Proposta PENDENTE DE DECISÃO: entradas do segundo MCP23017 (0x21), que o README já
+// previa como opcional. Alternativas em docs/hardware/GPIO_MAP.md.
+namespace mcp_aux {
+inline constexpr uint8_t kStickLeftClick = 0;
+inline constexpr uint8_t kStickRightClick = 1;
+}  // namespace mcp_aux
 
 // ---------------------------------------------------------------------------
 // Verificações em tempo de compilação.

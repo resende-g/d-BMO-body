@@ -14,7 +14,7 @@ option(DBMO_WERROR "Trata avisos como erro" ON)
 option(DBMO_SANITIZE "Compila com AddressSanitizer e UndefinedBehaviorSanitizer" OFF)
 option(DBMO_COVERAGE "Instrumenta para cobertura (gcov)" OFF)
 set(DBMO_SUBSYSTEMS
-    "config;core;display;input;audio;radio;nfc;infrared;storage;power;cartridges;rosto"
+    "config;core;display;input;audio;radio;nfc;infrared;storage;power;cartridges;rosto;app"
     CACHE STRING "Subsistemas a compilar (lista separada por ';')")
 
 # Opções de compilação comuns. Sem exceções e sem RTTI, como no build do ESP32.

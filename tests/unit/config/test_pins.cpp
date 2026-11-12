@@ -110,21 +110,30 @@ static void test_i2c_addresses_do_not_collide() {
   }
 }
 
-static void test_mcp_button_bits_are_unique_and_cover_the_16_inputs() {
+static void test_mcp_button_bits_are_unique_and_avoid_output_only_pins() {
   const uint8_t bits[] = {
       mcp_buttons::kDpadUp,  mcp_buttons::kDpadDown, mcp_buttons::kDpadLeft,
       mcp_buttons::kDpadRight, mcp_buttons::kActionA, mcp_buttons::kActionB,
       mcp_buttons::kActionX, mcp_buttons::kActionY,  mcp_buttons::kSelect,
       mcp_buttons::kStart,   mcp_buttons::kL1,       mcp_buttons::kR1,
-      mcp_buttons::kL2,      mcp_buttons::kR2,       mcp_buttons::kStickLeftClick,
-      mcp_buttons::kStickRightClick};
+      mcp_buttons::kL2,      mcp_buttons::kR2};
   uint16_t seen = 0;
   for (uint8_t bit : bits) {
     TEST_ASSERT_TRUE(bit < 16);
     TEST_ASSERT_EQUAL_UINT16(0, seen & (1u << bit));
     seen = static_cast<uint16_t>(seen | (1u << bit));
   }
-  TEST_ASSERT_EQUAL_HEX16(0xFFFF, seen);
+  // GPA7 e GPB7 são somente saída no MCP23017 (datasheet rev. D): nenhum botão neles,
+  // e os 14 botões ocupam exatamente as 14 entradas restantes.
+  TEST_ASSERT_EQUAL_HEX16(0x8080, mcp_buttons::kOutputOnlyMask);
+  TEST_ASSERT_EQUAL_HEX16(0, seen & mcp_buttons::kOutputOnlyMask);
+  TEST_ASSERT_EQUAL_HEX16(0x7F7F, seen);
+}
+
+static void test_stick_clicks_on_the_second_expander_avoid_output_only_pins() {
+  TEST_ASSERT_NOT_EQUAL(mcp_aux::kStickLeftClick, mcp_aux::kStickRightClick);
+  TEST_ASSERT_EQUAL_HEX16(0, (1u << mcp_aux::kStickLeftClick) & mcp_buttons::kOutputOnlyMask);
+  TEST_ASSERT_EQUAL_HEX16(0, (1u << mcp_aux::kStickRightClick) & mcp_buttons::kOutputOnlyMask);
 }
 
 static void test_claiming_the_whole_target_profile_at_runtime_has_no_conflict() {
@@ -148,7 +157,8 @@ int main() {
   RUN_TEST(test_shared_bus_pins_are_identical_in_both_profiles);
   RUN_TEST(test_bench_and_target_disagree_exactly_where_documented);
   RUN_TEST(test_i2c_addresses_do_not_collide);
-  RUN_TEST(test_mcp_button_bits_are_unique_and_cover_the_16_inputs);
+  RUN_TEST(test_mcp_button_bits_are_unique_and_avoid_output_only_pins);
+  RUN_TEST(test_stick_clicks_on_the_second_expander_avoid_output_only_pins);
   RUN_TEST(test_claiming_the_whole_target_profile_at_runtime_has_no_conflict);
   return UNITY_END();
 }

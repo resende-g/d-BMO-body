@@ -44,7 +44,8 @@ class Logger {
 
   void log(LogLevel level, const char *tag, const char *format, ...)
       __attribute__((format(printf, 4, 5)));
-  void vlog(LogLevel level, const char *tag, const char *format, va_list args);
+  void vlog(LogLevel level, const char *tag, const char *format, va_list args)
+      __attribute__((format(printf, 4, 0)));
 
  private:
   IClock *clock_ = nullptr;
