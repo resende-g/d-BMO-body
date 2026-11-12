@@ -1,5 +1,10 @@
 # DBBS 1.0 — d-BMO-body Battery System
 
+> **Situação em 12/11/2026:** a migração para ESP32-P4 + ESP32-C6 foi adiada para um d-BMO v2
+> (`README.md`, "Decisões de projeto"). Este documento fica como referência para o v2 e **não se
+> aplica ao d-BMO v1**, cujo controlador é o ESP32-S3 N16R8. A alimentação do v1 está em
+> [`hardware/POWER_ARCHITECTURE.md`](hardware/POWER_ARCHITECTURE.md).
+
 > Status: especificação preliminar. Arquitetura funcional definida; componentes, pinagem final, dimensões e layout de PCB ainda dependem de validação.
 >
 > Escopo: subsistema de bateria da variante d-BMO-body baseada em ESP32-P4 + ESP32-C6. Este documento não substitui nem altera a alimentação do BMO v1 legado baseado em ESP32-S3 descrito no README.
