@@ -1,0 +1,316 @@
+{
+  "spdx_license": "CERN-OHL-P-2.0",
+  "register": "components.yaml",
+  "register_date": "2026-11-12",
+  "generator": "mechanical/cad/generate_models.py",
+  "cadquery_version": "2.8.0",
+  "rule": "geometria só para componentes cujas dimensões usadas são todas CONFIRMADO",
+  "generated": [
+    {
+      "component": "esp32_s3_wroom_1",
+      "solid": "envelope",
+      "file": "esp32_s3_wroom_1__envelope.step",
+      "size_mm": [
+        18.0,
+        25.5,
+        3.1
+      ],
+      "center_mm": [
+        0.0,
+        0.0,
+        1.55
+      ],
+      "local_frame": "Origem no centro da face de montagem (face inferior da placa do módulo). +X ao longo da largura; +Y ao longo do comprimento, apontando para a ponta da antena; +Z da face de montagem para a blindagem.",
+      "dimensions_used": {
+        "width": {
+          "value_mm": 18.0,
+          "sources": [
+            "ESPRESSIF_KICAD_WROOM1_FP",
+            "ESPRESSIF_KICAD_WROOM1_STEP"
+          ]
+        },
+        "length": {
+          "value_mm": 25.5,
+          "sources": [
+            "ESPRESSIF_KICAD_WROOM1_FP",
+            "ESPRESSIF_KICAD_WROOM1_STEP"
+          ]
+        },
+        "thickness": {
+          "value_mm": 3.1,
+          "sources": [
+            "ESPRESSIF_KICAD_WROOM1_STEP"
+          ]
+        }
+      },
+      "sha256": "3dcab2fee3a084a004976fb890ee09a5b5f4d697d0c2d276540d591e2b9ff548"
+    },
+    {
+      "component": "esp32_s3_wroom_1",
+      "solid": "antenna_zone",
+      "file": "esp32_s3_wroom_1__antenna_zone.step",
+      "size_mm": [
+        18.0,
+        5.95,
+        3.1
+      ],
+      "center_mm": [
+        0.0,
+        9.775,
+        1.55
+      ],
+      "local_frame": "Origem no centro da face de montagem (face inferior da placa do módulo). +X ao longo da largura; +Y ao longo do comprimento, apontando para a ponta da antena; +Z da face de montagem para a blindagem.",
+      "dimensions_used": {
+        "width": {
+          "value_mm": 18.0,
+          "sources": [
+            "ESPRESSIF_KICAD_WROOM1_FP",
+            "ESPRESSIF_KICAD_WROOM1_STEP"
+          ]
+        },
+        "antenna_zone_length": {
+          "value_mm": 5.95,
+          "sources": [
+            "ESPRESSIF_KICAD_WROOM1_FP",
+            "ESPRESSIF_HDG_CLEARANCE_FIG"
+          ]
+        },
+        "thickness": {
+          "value_mm": 3.1,
+          "sources": [
+            "ESPRESSIF_KICAD_WROOM1_STEP"
+          ]
+        },
+        "length": {
+          "value_mm": 25.5,
+          "sources": [
+            "ESPRESSIF_KICAD_WROOM1_FP",
+            "ESPRESSIF_KICAD_WROOM1_STEP"
+          ]
+        }
+      },
+      "sha256": "a8b41dac5010e3925fcb06bb2bdbfa6fd5944ffbe5d314276e6ffb7e78e4615b"
+    },
+    {
+      "component": "esp32_s3_wroom_1",
+      "solid": "antenna_keepout",
+      "file": "esp32_s3_wroom_1__antenna_keepout.step",
+      "size_mm": [
+        48.0,
+        35.95,
+        33.1
+      ],
+      "center_mm": [
+        0.0,
+        9.775,
+        1.55
+      ],
+      "local_frame": "Origem no centro da face de montagem (face inferior da placa do módulo). +X ao longo da largura; +Y ao longo do comprimento, apontando para a ponta da antena; +Z da face de montagem para a blindagem.",
+      "dimensions_used": {
+        "width": {
+          "value_mm": 18.0,
+          "sources": [
+            "ESPRESSIF_KICAD_WROOM1_FP",
+            "ESPRESSIF_KICAD_WROOM1_STEP"
+          ]
+        },
+        "antenna_zone_length": {
+          "value_mm": 5.95,
+          "sources": [
+            "ESPRESSIF_KICAD_WROOM1_FP",
+            "ESPRESSIF_HDG_CLEARANCE_FIG"
+          ]
+        },
+        "thickness": {
+          "value_mm": 3.1,
+          "sources": [
+            "ESPRESSIF_KICAD_WROOM1_STEP"
+          ]
+        },
+        "length": {
+          "value_mm": 25.5,
+          "sources": [
+            "ESPRESSIF_KICAD_WROOM1_FP",
+            "ESPRESSIF_KICAD_WROOM1_STEP"
+          ]
+        },
+        "antenna_clearance_min": {
+          "value_mm": 15.0,
+          "sources": [
+            "ESPRESSIF_HDG_PCB_LAYOUT",
+            "ESPRESSIF_HDG_CLEARANCE_FIG"
+          ]
+        }
+      },
+      "sha256": "8f55def6e3e78d48fc491df1276c6370443604ecc5c780d53faa74d75be8dad5"
+    }
+  ],
+  "refused": [
+    {
+      "component": "esp32_s3_devkitc_1",
+      "reasons": [
+        "pcb_width: status PENDENTE",
+        "pcb_length: status PENDENTE",
+        "height_with_pins: status PENDENTE"
+      ]
+    },
+    {
+      "component": "display_msp3218",
+      "reasons": [
+        "pcb_length: status NOMINAL",
+        "pcb_width: status NOMINAL",
+        "total_thickness: status PENDENTE"
+      ]
+    },
+    {
+      "component": "battery_4070115",
+      "reasons": [
+        "width: status NOMINAL",
+        "length: status NOMINAL",
+        "thickness: status NOMINAL"
+      ]
+    },
+    {
+      "component": "card_edge_socket_dk920a_20m",
+      "reasons": [
+        "body_length: status NOMINAL",
+        "body_width: status NOMINAL",
+        "height_above_board: status NOMINAL"
+      ]
+    },
+    {
+      "component": "pn532_nfc_v3",
+      "reasons": [
+        "pcb_length: status PENDENTE",
+        "pcb_width: status PENDENTE",
+        "total_thickness: status PENDENTE"
+      ]
+    },
+    {
+      "component": "cc1101_module",
+      "reasons": [
+        "pcb_length: status PENDENTE",
+        "pcb_width: status PENDENTE",
+        "total_thickness: status PENDENTE"
+      ]
+    },
+    {
+      "component": "mcp23017",
+      "reasons": [
+        "body_length: status PENDENTE",
+        "body_width: status PENDENTE",
+        "body_height: status PENDENTE"
+      ]
+    },
+    {
+      "component": "inmp441_breakout",
+      "reasons": [
+        "pcb_length: status PENDENTE",
+        "pcb_width: status PENDENTE",
+        "total_thickness: status PENDENTE"
+      ]
+    },
+    {
+      "component": "max98357a_breakout",
+      "reasons": [
+        "pcb_length: status PENDENTE",
+        "pcb_width: status PENDENTE",
+        "total_thickness: status PENDENTE"
+      ]
+    },
+    {
+      "component": "speaker_2030",
+      "reasons": [
+        "length: status NOMINAL",
+        "width: status NOMINAL",
+        "thickness: status PENDENTE"
+      ]
+    },
+    {
+      "component": "ir_kit",
+      "reasons": [
+        "length: status PENDENTE",
+        "width: status PENDENTE",
+        "height: status PENDENTE"
+      ]
+    },
+    {
+      "component": "analog_stick_ps3",
+      "reasons": [
+        "base_length: status PENDENTE",
+        "base_width: status PENDENTE",
+        "height_with_cap: status PENDENTE"
+      ]
+    },
+    {
+      "component": "tactile_switch",
+      "reasons": [
+        "body_length: status NOMINAL",
+        "body_width: status NOMINAL",
+        "total_height: status PENDENTE"
+      ]
+    },
+    {
+      "component": "tactile_switch_right_angle",
+      "reasons": [
+        "body_length: status PENDENTE",
+        "body_depth: status PENDENTE",
+        "body_height: status PENDENTE"
+      ]
+    },
+    {
+      "component": "power_button",
+      "reasons": [
+        "body_length: status PENDENTE",
+        "body_width: status PENDENTE",
+        "total_height: status PENDENTE"
+      ]
+    },
+    {
+      "component": "button_caps_ps3",
+      "reasons": [
+        "body_diameter: status PENDENTE",
+        "total_height: status PENDENTE"
+      ]
+    },
+    {
+      "component": "sd_card_with_adapter",
+      "reasons": [
+        "width: status PENDENTE",
+        "length: status PENDENTE",
+        "thickness: status PENDENTE"
+      ]
+    },
+    {
+      "component": "charger_module",
+      "reasons": [
+        "pcb_length: status PENDENTE",
+        "pcb_width: status PENDENTE",
+        "total_thickness: status PENDENTE"
+      ]
+    },
+    {
+      "component": "usb_c_receptacle",
+      "reasons": [
+        "shell_width: status PENDENTE",
+        "shell_depth: status PENDENTE",
+        "shell_height: status PENDENTE"
+      ]
+    },
+    {
+      "component": "hex_standoff",
+      "reasons": [
+        "across_flats: status PENDENTE",
+        "body_length: status PENDENTE"
+      ]
+    },
+    {
+      "component": "heat_set_insert",
+      "reasons": [
+        "outer_diameter: status PENDENTE",
+        "length: status PENDENTE"
+      ]
+    }
+  ],
+  "removed_stale_files": []
+}

@@ -1,0 +1,1361 @@
+# SPDX-FileCopyrightText: 2026 Gabriel Almeida Resende
+# SPDX-License-Identifier: CERN-OHL-P-2.0
+#
+# d-BMO-body v1 — registro de dimensões em formato legível por máquina.
+#
+# Este arquivo é a fonte das tabelas de docs/mechanical/COMPONENT_DIMENSIONS.md
+# (bloco gerado por render_register.py) e a entrada de generate_models.py.
+#
+# Regras:
+#   - status CONFIRMADO: valor lido nesta data em documento dimensional publicado
+#     pelo fabricante (fonte com origin: fabricante e url). Só estas dimensões
+#     podem virar geometria.
+#   - status NOMINAL: valor de anúncio, de designação da peça ou de medida de
+#     régua registrada no README. Não vira geometria.
+#   - status PENDENTE: sem valor (value: null). Medir com paquímetro.
+#   - Nunca escrever um valor sem fonte. Nunca promover uma linha a CONFIRMADO
+#     sem abrir o documento do fabricante e registrar a URL em sources.
+
+schema_version: 1
+register_date: "2026-11-12"
+units: mm
+
+sources:
+  ESPRESSIF_KICAD_WROOM1_FP:
+    origin: fabricante
+    kind: footprint oficial (biblioteca KiCad da Espressif)
+    title: "espressif/kicad-libraries — footprints/Espressif.pretty/ESP32-S3-WROOM-1.kicad_mod"
+    url: "https://raw.githubusercontent.com/espressif/kicad-libraries/dd76561812ab300351234ba6e0ec1295641796f0/footprints/Espressif.pretty/ESP32-S3-WROOM-1.kicad_mod"
+    sha256: "a99796419aec905e6b0a12ddf266a63d546754070c587acf10585d70a161dddc"
+    accessed: "2026-11-12"
+    location: "contorno nas camadas F.SilkS e Eco2.User (x de -9 a 9, y de -15,75 a 9,75); zona 'antenna keepout' (y de -15,75 a -9,8); pads 1 a 40"
+  ESPRESSIF_KICAD_WROOM1_STEP:
+    origin: fabricante
+    kind: modelo 3D oficial (biblioteca KiCad da Espressif)
+    title: "espressif/kicad-libraries — 3dmodels/espressif.3dshapes/ESP32-S3-WROOM-1.STEP"
+    url: "https://raw.githubusercontent.com/espressif/kicad-libraries/dd76561812ab300351234ba6e0ec1295641796f0/3dmodels/espressif.3dshapes/ESP32-S3-WROOM-1.STEP"
+    sha256: "02e192087a1a2268ccbe7bf667ef04884370fc76c994484bf85654dfa7407ef6"
+    accessed: "2026-11-12"
+    location: "cabeçalho FILE_NAME 'ESP32-S3-WROOM-1_20211021.STEP' (SolidWorks); caixa envolvente medida com cadquery 2.8.0: 18,0 x 25,5 x 3,1 mm"
+  ESPRESSIF_KICAD_DEVKITC_FP:
+    origin: fabricante
+    kind: footprint oficial (biblioteca KiCad da Espressif)
+    title: "espressif/kicad-libraries — footprints/Espressif.pretty/ESP32-S3-DevKitC.kicad_mod"
+    url: "https://raw.githubusercontent.com/espressif/kicad-libraries/dd76561812ab300351234ba6e0ec1295641796f0/footprints/Espressif.pretty/ESP32-S3-DevKitC.kicad_mod"
+    sha256: "1e033c202e4ae743955d325da9e8e392c9600b51bf67caec56fb7f7eca723c0a"
+    accessed: "2026-11-12"
+    location: "44 pads de furo passante: fileira 1 a 22 em x = 0, fileira 23 a 44 em x = 22,86; y de 0 a 53,34; furo 0,8"
+  ESPRESSIF_KICAD_README:
+    origin: fabricante
+    kind: documentação da biblioteca
+    title: "espressif/kicad-libraries — README.md"
+    url: "https://raw.githubusercontent.com/espressif/kicad-libraries/dd76561812ab300351234ba6e0ec1295641796f0/README.md"
+    sha256: "416c1ccccae91df9122483f3e4c315b7b62f28b5de5aad391138406ec5329ce5"
+    accessed: "2026-11-12"
+    location: "linha 29: 'All footprints were designed according to the Recommended PCB Land Pattern section present on each module datasheet.'"
+  ESPRESSIF_HDG_PCB_LAYOUT:
+    origin: fabricante
+    kind: diretrizes de projeto de hardware (texto-fonte)
+    title: "espressif/esp-hardware-design-guidelines — docs/en/pcb-layout-design.rst"
+    url: "https://raw.githubusercontent.com/espressif/esp-hardware-design-guidelines/12c39ca361650334fbe72fdc13385a6913e75edf/docs/en/pcb-layout-design.rst"
+    sha256: "97b0972dac243e2e691b4b7ca70ea910bbccbc14404ac3772985f45f82653be9"
+    accessed: "2026-11-12"
+    location: "seção 'General Principles of PCB Layout for Modules (Positioning a Module on a Base Board)', linhas 334 a 377"
+  ESPRESSIF_HDG_CLEARANCE_FIG:
+    origin: fabricante
+    kind: figura cotada das diretrizes de projeto de hardware
+    title: "espressif/esp-hardware-design-guidelines — docs/_static/esp32s3/esp32s3-module-clearance.png"
+    url: "https://raw.githubusercontent.com/espressif/esp-hardware-design-guidelines/12c39ca361650334fbe72fdc13385a6913e75edf/docs/_static/esp32s3/esp32s3-module-clearance.png"
+    sha256: "ea84d1e439d2818ee4d9dc9a8578c433833409d69f77a24ce4c87b23b2f67d3d"
+    accessed: "2026-11-12"
+    location: "cotas 'Min15', '6', 'Max 2' e 'Max 1'; legenda 'Unit: mm' e 'Clearance Area'"
+  ESPRESSIF_DEVKITC_GUIDE:
+    origin: fabricante
+    kind: guia do usuário (texto-fonte)
+    title: "espressif/esp-dev-kits — docs/en/esp32-s3-devkitc-1/user_guide_v1.1.rst e ordering-info.inc"
+    url: "https://raw.githubusercontent.com/espressif/esp-dev-kits/master/docs/en/esp32-s3-devkitc-1/user_guide_v1.1.rst"
+    sha256: "ee0b339051b013bdccbed9134335ee5d78e6564072d636c7127c3495936b116d"
+    accessed: "2026-11-12"
+    location: "tabela de componentes (portas Micro-USB), 'Hardware Revision Details' e 'Related Documents' (links do desenho cotado); ordering-info.inc (variante N16R8), sha256 962e485a50b17e9665660345b0f0cae8d111f1b3350ab0b645dbc2772f5100f4; ramo master, sem commit fixado"
+  README:
+    origin: projeto
+    kind: decisões e anotações do projeto
+    title: "README.md deste repositório"
+    url: null
+    sha256: null
+    accessed: "2026-11-12"
+    location: "seções Lista de componentes, Carcaça 3D, Especificação do cartucho, Dimensões conhecidas, Analógicos e gatilhos reaproveitados"
+
+# Documentos de fabricante que seriam a fonte adequada e NÃO puderam ser abertos
+# nesta sessão (host fora da lista permitida pela rede da sessão).
+unreachable_sources:
+  - what: "ESP32-S3-DevKitC-1 Dimensions (PDF e DXF), v1.1"
+    url: "https://dl.espressif.com/dl/schematics/esp_idf/DXF_ESP32-S3-DevKitC-1_V1.1_20220429.pdf"
+    reason: "dl.espressif.com bloqueado (403 no proxy da sessão)"
+  - what: "ESP32-S3-DevKitC-1 Dimensions (PDF e DXF), versão inicial (link no guia do esp-idf v5.1.6)"
+    url: "https://dl.espressif.com/dl/DXF_ESP32-S3-DevKitC-1_V1_20210312CB.pdf"
+    reason: "dl.espressif.com bloqueado"
+  - what: "ESP32-S3-WROOM-1 / WROOM-1U Datasheet (dimensões físicas e tolerâncias)"
+    url: "https://www.espressif.com/sites/default/files/documentation/esp32-s3-wroom-1_wroom-1u_datasheet_en.pdf"
+    reason: "www.espressif.com bloqueado (403 no proxy da sessão)"
+  - what: "Guia do usuário publicado da ESP32-S3-DevKitC-1"
+    url: "https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32s3/esp32-s3-devkitc-1/user_guide.html"
+    reason: "docs.espressif.com não resolve na sessão; o texto-fonte foi lido no GitHub"
+  - what: "Página do módulo MSP3218 (LCD Wiki)"
+    url: "http://www.lcdwiki.com/3.2inch_SPI_Module_ILI9341_SKU:MSP3218"
+    reason: "lcdwiki.com não resolve na sessão"
+  - what: "Manual do PN532 NFC Module V3 (Elechouse)"
+    url: null
+    reason: "o repositório elechouse/PN532 no GitHub não traz manual nem medidas; o site do fabricante não foi tentado depois das falhas acima"
+  - what: "Datasheet do MCP23017 (Microchip)"
+    url: null
+    reason: "ww1.microchip.com consta como bloqueado (403) no registro do proxy da sessão; não foi tentado de novo"
+  - what: "Datasheet do soquete DK920A-20M"
+    url: null
+    reason: "fabricante não identificado; busca pelo código não devolveu datasheet"
+
+components:
+
+  esp32_s3_wroom_1:
+    name: "Módulo ESP32-S3-WROOM-1 (N16R8)"
+    role: "MCU da PCB definitiva (carcaça v1). Na v0 ele está soldado na DevKitC."
+    qty: 1
+    cad:
+      local_frame: "Origem no centro da face de montagem (face inferior da placa do módulo). +X ao longo da largura; +Y ao longo do comprimento, apontando para a ponta da antena; +Z da face de montagem para a blindagem."
+      solids:
+        - name: envelope
+          x: width
+          y: length
+          z: thickness
+        - name: antenna_zone
+          x: width
+          y: antenna_zone_length
+          z: thickness
+          y_flush_max_with: length
+        - name: antenna_keepout
+          x: width
+          y: antenna_zone_length
+          z: thickness
+          y_flush_max_with: length
+          grow: antenna_clearance_min
+    dimensions:
+      length:
+        label: "Comprimento do módulo (inclui a região da antena)"
+        value: 25.5
+        tolerance: null
+        status: CONFIRMADO
+        basis: "footprint oficial e modelo 3D oficial"
+        source: [ESPRESSIF_KICAD_WROOM1_FP, ESPRESSIF_KICAD_WROOM1_STEP]
+        note: "As duas fontes coincidem. Tolerância: consta do datasheet, não aberto nesta sessão."
+      width:
+        label: "Largura do módulo"
+        value: 18.0
+        tolerance: null
+        status: CONFIRMADO
+        basis: "footprint oficial e modelo 3D oficial"
+        source: [ESPRESSIF_KICAD_WROOM1_FP, ESPRESSIF_KICAD_WROOM1_STEP]
+        note: "As duas fontes coincidem. Tolerância não publicada nas fontes abertas."
+      thickness:
+        label: "Espessura total (placa do módulo mais blindagem)"
+        value: 3.1
+        tolerance: null
+        status: CONFIRMADO
+        basis: "modelo 3D oficial (caixa envolvente em Z)"
+        source: [ESPRESSIF_KICAD_WROOM1_STEP]
+        note: "Valor nominal do modelo. Tolerância não publicada nas fontes abertas; conferir no datasheet quando acessível."
+      pcb_thickness:
+        label: "Espessura da placa do módulo (com cobre)"
+        value: 0.8
+        tolerance: null
+        status: CONFIRMADO
+        basis: "modelo 3D oficial"
+        source: [ESPRESSIF_KICAD_WROOM1_STEP]
+        note: "No modelo, a base da blindagem está em z = 0,8 mm."
+      shield_length:
+        label: "Blindagem: comprimento"
+        value: 17.6
+        tolerance: null
+        status: CONFIRMADO
+        basis: "modelo 3D oficial"
+        source: [ESPRESSIF_KICAD_WROOM1_STEP]
+        note: "No modelo, começa a 1,05 mm da borda oposta à antena."
+      shield_width:
+        label: "Blindagem: largura"
+        value: 15.8
+        tolerance: null
+        status: CONFIRMADO
+        basis: "modelo 3D oficial"
+        source: [ESPRESSIF_KICAD_WROOM1_STEP]
+        note: "Centrada na largura (1,1 mm de cada lado)."
+      shield_height:
+        label: "Blindagem: altura acima da placa do módulo"
+        value: 2.3
+        tolerance: null
+        status: CONFIRMADO
+        basis: "modelo 3D oficial"
+        source: [ESPRESSIF_KICAD_WROOM1_STEP]
+        note: null
+      antenna_zone_length:
+        label: "Região da antena: extensão ao longo do comprimento, a partir da ponta"
+        value: 5.95
+        tolerance: null
+        status: CONFIRMADO
+        basis: "footprint oficial (zona 'antenna keepout')"
+        source: [ESPRESSIF_KICAD_WROOM1_FP, ESPRESSIF_HDG_CLEARANCE_FIG]
+        note: "A figura das diretrizes de hardware cota a mesma região como 6 mm. A região ocupa toda a largura do módulo. No modelo 3D, o cobre da antena vai de 19,42 a 25,07 mm a partir da borda oposta; o limite da zona no footprint fica a 19,55 mm."
+      antenna_clearance_min:
+        label: "Folga mínima recomendada em volta da antena, dentro da carcaça"
+        value: 15.0
+        tolerance: null
+        status: CONFIRMADO
+        basis: "diretrizes de hardware do fabricante"
+        source: [ESPRESSIF_HDG_PCB_LAYOUT, ESPRESSIF_HDG_CLEARANCE_FIG]
+        note: "Texto: 'A clearance of at least 15 mm is recommended in all directions.' É recomendação, não dimensão da peça."
+      pad_pitch:
+        label: "Passo dos pads de borda"
+        value: 1.27
+        tolerance: null
+        status: CONFIRMADO
+        basis: "footprint oficial"
+        source: [ESPRESSIF_KICAD_WROOM1_FP]
+        note: "14 pads em cada lado maior e 12 no lado oposto à antena."
+
+  esp32_s3_devkitc_1:
+    name: "Placa ESP32-S3-DevKitC-1 N16R8"
+    role: "Placa principal da bancada e da carcaça v0."
+    qty: 1
+    cad:
+      local_frame: "Origem no centro da face inferior da placa. +X ao longo da largura; +Y ao longo do comprimento, apontando para a ponta da antena; +Z para o lado dos componentes."
+      solids:
+        - name: envelope
+          x: pcb_width
+          y: pcb_length
+          z: height_with_pins
+    dimensions:
+      pcb_length:
+        label: "Comprimento da placa (com a ponta da antena)"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: "O desenho cotado da Espressif existe (ver unreachable_sources) e não pôde ser aberto. Referência não cotada: a serigrafia do footprint oficial delimita 63,90 mm mais 5,89 mm da caixa da antena; serve de ordem de grandeza, não de cota."
+      pcb_width:
+        label: "Largura da placa"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: "Referência não cotada: a serigrafia do footprint oficial delimita 25,86 mm."
+      height_with_pins:
+        label: "Altura total, da ponta dos pinos ao componente mais alto"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: "Pedido pelo README (Dimensões conhecidas). Medir também a altura sem os pinos."
+      header_pitch:
+        label: "Passo dos pinos"
+        value: 2.54
+        tolerance: null
+        status: CONFIRMADO
+        basis: "footprint oficial"
+        source: [ESPRESSIF_KICAD_DEVKITC_FP]
+        note: "Vale para a placa oficial da Espressif. Conferir na placa em mãos."
+      header_row_spacing:
+        label: "Distância entre as duas fileiras de pinos"
+        value: 22.86
+        tolerance: null
+        status: CONFIRMADO
+        basis: "footprint oficial"
+        source: [ESPRESSIF_KICAD_DEVKITC_FP]
+        note: "Vale para a placa oficial. Placas de terceiros com o mesmo nome podem ter outra distância: conferir na peça."
+      header_pins_per_row:
+        label: "Pinos por fileira"
+        value: 22
+        unit: un
+        tolerance: null
+        status: CONFIRMADO
+        basis: "footprint oficial"
+        source: [ESPRESSIF_KICAD_DEVKITC_FP]
+        note: "Duas fileiras, 44 pinos."
+      header_span:
+        label: "Distância do primeiro ao último pino de uma fileira"
+        value: 53.34
+        tolerance: null
+        status: CONFIRMADO
+        basis: "footprint oficial"
+        source: [ESPRESSIF_KICAD_DEVKITC_FP]
+        note: "Igual a 21 x 2,54 mm."
+      usb_connector_positions:
+        label: "Posição, tipo e saliência dos dois conectores USB"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: "O guia oficial descreve duas portas Micro-USB. Se a placa em mãos tiver USB-C, não é a revisão documentada."
+      button_positions:
+        label: "Posição e altura dos botões Boot e Reset"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+
+  display_msp3218:
+    name: "Módulo TFT 3,2 pol. ILI9341 320 x 240, MSP3218 (com toque)"
+    role: "Tela única: rosto, menu e status. O slot SD do verso recebe o cartão na v0."
+    qty: 1
+    cad:
+      local_frame: "Origem no centro da face traseira da placa. +X ao longo do lado maior; +Y ao longo do lado menor; +Z para o lado do vidro."
+      solids:
+        - name: envelope
+          x: pcb_length
+          y: pcb_width
+          z: total_thickness
+    dimensions:
+      pcb_length:
+        label: "Placa: lado maior"
+        value: 89.3
+        tolerance: null
+        status: NOMINAL
+        basis: "README, que atribui o valor a um 'datasheet' não identificado"
+        source: [README]
+        note: "A régua do README deu 88 mm. A página do fabricante não pôde ser aberta; um resumo de busca cita o mesmo valor, sem valor de prova."
+      pcb_width:
+        label: "Placa: lado menor"
+        value: 55.04
+        tolerance: null
+        status: NOMINAL
+        basis: "README, que atribui o valor a um 'datasheet' não identificado"
+        source: [README]
+        note: "A régua do README deu 54 mm."
+      active_area_length:
+        label: "Área ativa: lado maior"
+        value: 64.8
+        tolerance: null
+        status: NOMINAL
+        basis: "README, que atribui o valor a um 'datasheet' não identificado"
+        source: [README]
+        note: "Coerente com a designação: diagonal de 81,0 mm (3,19 pol.) e proporção 4:3."
+      active_area_width:
+        label: "Área ativa: lado menor"
+        value: 48.6
+        tolerance: null
+        status: NOMINAL
+        basis: "README, que atribui o valor a um 'datasheet' não identificado"
+        source: [README]
+        note: null
+      glass_visible_length:
+        label: "Vidro visível: lado maior"
+        value: 70.0
+        tolerance: null
+        status: NOMINAL
+        basis: "régua (README)"
+        source: [README]
+        note: "O README registra '~70'."
+      glass_visible_width:
+        label: "Vidro visível: lado menor"
+        value: 51.0
+        tolerance: null
+        status: NOMINAL
+        basis: "régua (README)"
+        source: [README]
+        note: "O README registra '~51'."
+      total_thickness:
+        label: "Espessura total com o painel de toque (sem os pinos)"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: "Pedido pelo README (Dimensões conhecidas)."
+      pcb_thickness:
+        label: "Espessura da placa"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+      glass_outline:
+        label: "Contorno externo do vidro e do painel de toque (lado maior e lado menor)"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: "Pedido pelo README (Dimensões conhecidas)."
+      active_area_offset:
+        label: "Posição do centro da área ativa em relação ao centro da placa"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: "Define o centro da janela da tela."
+      mounting_holes:
+        label: "Furos de fixação: diâmetro e posição"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+      sd_slot_envelope:
+        label: "Slot SD do verso: posição, altura e saliência do cartão inserido"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: "O slot é de SD de tamanho normal (README); o microSD entra com adaptador."
+      pin_header_envelope:
+        label: "Barra de pinos: posição, comprimento e altura abaixo da placa"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+
+  battery_4070115:
+    name: "Bateria LiPo 1S, designação 4070115 (4000 mAh no anúncio)"
+    role: "Fonte de energia, na zona da tampa traseira. Compra não confirmada no README."
+    qty: 1
+    cad:
+      local_frame: "Origem no centro de uma das faces maiores. +X ao longo da largura; +Y ao longo do comprimento; +Z ao longo da espessura."
+      solids:
+        - name: envelope
+          x: width
+          y: length
+          z: thickness
+    dimensions:
+      thickness:
+        label: "Espessura da célula"
+        value: 4.0
+        tolerance: null
+        status: NOMINAL
+        basis: "designação 4070115"
+        source: [README]
+        note: "O anúncio informa 0,4 mm; o README considera 4,0 mm provável. Medir a célula real, no ponto mais espesso."
+      width:
+        label: "Largura da célula"
+        value: 70.0
+        tolerance: null
+        status: NOMINAL
+        basis: "anúncio e designação 4070115"
+        source: [README]
+        note: null
+      length:
+        label: "Comprimento da célula"
+        value: 115.0
+        tolerance: null
+        status: NOMINAL
+        basis: "anúncio e designação 4070115"
+        source: [README]
+        note: "Não se sabe se inclui a placa de proteção (PCM) e as abas."
+      length_with_pcm:
+        label: "Comprimento total com PCM, abas e saída dos fios"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+      wire_exit:
+        label: "Posição da saída dos fios e comprimento do chicote com o conector"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: "Dois ou três fios, conforme haja NTC."
+
+  card_edge_socket_dk920a_20m:
+    name: "Soquete card edge DK920A-20M (2 x 10 contatos, 2,54 mm)"
+    role: "Recebe o cartucho, numa riser no topo. Compra prevista para a Fase 4."
+    qty: 1
+    cad:
+      local_frame: "Origem no centro da face de assentamento na placa. +X ao longo do comprimento do corpo; +Y ao longo da largura; +Z para a boca da fenda."
+      solids:
+        - name: envelope
+          x: body_length
+          y: body_width
+          z: height_above_board
+    dimensions:
+      body_length:
+        label: "Corpo: comprimento"
+        value: 31.7
+        tolerance: null
+        status: NOMINAL
+        basis: "README, sem fonte citada"
+        source: [README]
+        note: "Datasheet não localizado. O README manda medir a peça real antes de desenhar a pegada."
+      body_width:
+        label: "Corpo: largura"
+        value: 9.2
+        tolerance: null
+        status: NOMINAL
+        basis: "README, sem fonte citada"
+        source: [README]
+        note: null
+      height_above_board:
+        label: "Altura acima da placa"
+        value: 10.2
+        tolerance: null
+        status: NOMINAL
+        basis: "README, sem fonte citada"
+        source: [README]
+        note: "O README registra '~10,2'."
+      row_spacing:
+        label: "Distância entre as duas fileiras de terminais"
+        value: 5.08
+        tolerance: null
+        status: NOMINAL
+        basis: "README, sem fonte citada"
+        source: [README]
+        note: null
+      contact_pitch:
+        label: "Passo dos contatos"
+        value: 2.54
+        tolerance: null
+        status: NOMINAL
+        basis: "designação do anúncio"
+        source: [README]
+        note: "10 contatos por lado: 22,86 mm do primeiro ao último (9 x 2,54)."
+      slot_width:
+        label: "Fenda: largura (na direção da espessura do cartucho)"
+        value: 1.9
+        tolerance: null
+        status: NOMINAL
+        basis: "README, sem fonte citada"
+        source: [README]
+        note: "Para placa de 1,6 mm, segundo o README. Conferir com uma sobra de PCB."
+      slot_opening_length:
+        label: "Fenda: comprimento da abertura"
+        value: 28.3
+        tolerance: null
+        status: NOMINAL
+        basis: "README, sem fonte citada"
+        source: [README]
+        note: "O README registra '~28,3'."
+      pcb_hole_diameter:
+        label: "Furo dos terminais na placa"
+        value: 1.0
+        tolerance: null
+        status: NOMINAL
+        basis: "README, sem fonte citada"
+        source: [README]
+        note: "O README registra '~1,0'."
+      slot_depth:
+        label: "Fenda: profundidade"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: "O README estima ~8 mm e manda medir na peça. Define o comprimento da língua do cartucho."
+
+  pn532_nfc_v3:
+    name: "Módulo NFC PN532 V3"
+    role: "NFC de 13,56 MHz. A antena é a própria placa. Aguardando entrega."
+    qty: 1
+    cad:
+      local_frame: "Origem no centro da face sem componentes altos. +X ao longo do lado maior; +Y ao longo do lado menor; +Z para o lado dos componentes."
+      solids:
+        - name: envelope
+          x: pcb_length
+          y: pcb_width
+          z: total_thickness
+    dimensions:
+      pcb_length:
+        label: "Placa: lado maior"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: "O manual da Elechouse não pôde ser aberto. O item comprado é um 'PN532 Set' de anúncio; não assumir que tem as medidas do módulo da Elechouse."
+      pcb_width:
+        label: "Placa: lado menor"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+      total_thickness:
+        label: "Espessura total com componentes, chaves DIP e barra de pinos"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+      antenna_outline:
+        label: "Contorno da bobina da antena na placa"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: "Define a zona KO-NFC."
+      mounting_holes:
+        label: "Furos de fixação: diâmetro e posição"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+
+  cc1101_module:
+    name: "Módulo CC1101 433 MHz com conector SMA"
+    role: "Rádio sub-GHz. Módulo genérico, sem desenho de fabricante."
+    qty: 1
+    cad:
+      local_frame: "Origem no centro da face inferior da placa. +X ao longo do lado maior; +Y ao longo do lado menor; +Z para o lado dos componentes."
+      solids:
+        - name: envelope
+          x: pcb_length
+          y: pcb_width
+          z: total_thickness
+    dimensions:
+      pcb_length:
+        label: "Placa: lado maior (sem o conector SMA)"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+      pcb_width:
+        label: "Placa: lado menor"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+      total_thickness:
+        label: "Espessura total com blindagem e barra de pinos"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+      sma_connector:
+        label: "Conector SMA: posição na placa, saliência, diâmetro e comprimento da rosca"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: "Define o furo AB-10 e a espessura máxima da parede do topo."
+      antenna:
+        label: "Antena: comprimento e diâmetro da base"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+
+  mcp23017:
+    name: "Expansor de I/O MCP23017"
+    role: "Lê os 16 botões por I2C. O README não informa o encapsulamento."
+    qty: "1 a 2"
+    cad:
+      local_frame: "Origem no centro da face de assentamento. +X ao longo do comprimento do corpo; +Y ao longo da largura com terminais; +Z para cima."
+      solids:
+        - name: envelope
+          x: body_length
+          y: body_width
+          z: body_height
+    dimensions:
+      package:
+        label: "Encapsulamento (identificar pela marcação da peça)"
+        value: null
+        unit: "-"
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: "Identificado o encapsulamento, as cotas saem do datasheet da Microchip, que não pôde ser aberto nesta sessão."
+      body_length:
+        label: "Corpo: comprimento"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+      body_width:
+        label: "Largura com os terminais"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+      body_height:
+        label: "Altura acima da placa (com soquete, se houver)"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+
+  inmp441_breakout:
+    name: "Placa do microfone INMP441 (I2S)"
+    role: "Captação de voz, junto ao furo do topo. Módulo genérico. Aguardando entrega."
+    qty: 1
+    cad:
+      local_frame: "Origem no centro da face inferior da placa. +X e +Y no plano da placa; +Z para o lado dos componentes."
+      solids:
+        - name: envelope
+          x: pcb_length
+          y: pcb_width
+          z: total_thickness
+    dimensions:
+      pcb_length:
+        label: "Placa: lado maior ou diâmetro"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+      pcb_width:
+        label: "Placa: lado menor"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+      total_thickness:
+        label: "Espessura total com pinos"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+      acoustic_port:
+        label: "Furo acústico: posição na placa, face em que fica e diâmetro"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: "Define o furo AB-11."
+
+  max98357a_breakout:
+    name: "Placa do amplificador MAX98357A (I2S)"
+    role: "Amplificador do alto-falante. Módulo genérico. Aguardando entrega."
+    qty: 1
+    cad:
+      local_frame: "Origem no centro da face inferior da placa. +X e +Y no plano da placa; +Z para o lado dos componentes."
+      solids:
+        - name: envelope
+          x: pcb_length
+          y: pcb_width
+          z: total_thickness
+    dimensions:
+      pcb_length:
+        label: "Placa: lado maior"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+      pcb_width:
+        label: "Placa: lado menor"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+      total_thickness:
+        label: "Espessura total com pinos e borne"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+
+  speaker_2030:
+    name: "Alto-falante 2030, 8 ohms, 2 W"
+    role: "Saída de áudio, atrás da grade frontal. Aguardando entrega."
+    qty: 1
+    cad:
+      local_frame: "Origem no centro da face traseira. +X ao longo do lado maior; +Y ao longo do lado menor; +Z para a face que emite o som."
+      solids:
+        - name: envelope
+          x: length
+          y: width
+          z: thickness
+    dimensions:
+      length:
+        label: "Lado maior"
+        value: 30.0
+        tolerance: null
+        status: NOMINAL
+        basis: "designação '2030'"
+        source: [README]
+        note: "Leitura usual da designação (20 x 30 mm). O README não traz medidas e pede conferir."
+      width:
+        label: "Lado menor"
+        value: 20.0
+        tolerance: null
+        status: NOMINAL
+        basis: "designação '2030'"
+        source: [README]
+        note: null
+      thickness:
+        label: "Espessura total"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+      terminals:
+        label: "Posição dos terminais e dos fios"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+
+  ir_kit:
+    name: "Conjunto IR: emissor e receptor de 38 kHz"
+    role: "Infravermelho, atrás da janela AB-07. Aguardando entrega; conferir se o conjunto traz as duas peças."
+    qty: 1
+    cad:
+      local_frame: "A definir quando a forma das peças for conhecida (componentes soltos ou plaquinhas)."
+      solids:
+        - name: envelope
+          x: length
+          y: width
+          z: height
+    dimensions:
+      length:
+        label: "Maior dimensão de cada peça (emissor e receptor)"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+      width:
+        label: "Largura de cada peça"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+      height:
+        label: "Altura de cada peça"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+      optical_axis:
+        label: "Diâmetro do LED, face sensível do receptor e posição do eixo óptico"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+
+  analog_stick_ps3:
+    name: "Analógico reaproveitado de controle genérico de PS3"
+    role: "Dois sticks, um de cada lado, na parte inferior da frente. Peça não identificada."
+    qty: 2
+    cad:
+      local_frame: "Origem no centro da face de assentamento. +X e +Y nos eixos dos potenciômetros; +Z ao longo da haste."
+      solids:
+        - name: envelope
+          x: base_length
+          y: base_width
+          z: height_with_cap
+    dimensions:
+      base_length:
+        label: "Base: comprimento, com os potenciômetros"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: "O README pede medir área e altura com a capa, com o stick já fora do controle."
+      base_width:
+        label: "Base: largura, com o botão de clique"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+      height_with_cap:
+        label: "Altura total, da face de assentamento ao topo da capa"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: "Entra na espessura da carcaça v0 (README)."
+      cap_diameter:
+        label: "Diâmetro da capa e do colar"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: "Define o furo AB-05."
+      tilt_envelope:
+        label: "Ângulo máximo de inclinação e deslocamento lateral da capa"
+        value: null
+        unit: grau
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+      carrier_outline:
+        label: "Contorno do pedaço de placa, se o stick for cortado com a placa do controle"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: "Alternativa de retirada descrita no README; fica um pouco maior."
+
+  tactile_switch:
+    name: "Botão táctil (cruz, ações, select/start)"
+    role: "Estoque próprio; modelo não identificado."
+    qty: 10
+    cad:
+      local_frame: "Origem no centro da face de assentamento. +Z ao longo do atuador."
+      solids:
+        - name: envelope
+          x: body_length
+          y: body_width
+          z: total_height
+    dimensions:
+      body_length:
+        label: "Corpo: comprimento"
+        value: 6.0
+        tolerance: null
+        status: NOMINAL
+        basis: "designação '6 x 6 mm' citada no README"
+        source: [README]
+        note: "O README manda confirmar dimensões e quantidade na montagem."
+      body_width:
+        label: "Corpo: largura"
+        value: 6.0
+        tolerance: null
+        status: NOMINAL
+        basis: "designação '6 x 6 mm' citada no README"
+        source: [README]
+        note: null
+      total_height:
+        label: "Altura total, da placa ao topo do atuador"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: "Define o espaçador sob cada tampa."
+      travel:
+        label: "Curso do atuador"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+
+  tactile_switch_right_angle:
+    name: "Botão táctil de ângulo reto (gatilhos de ombro)"
+    role: "Estoque próprio, se houver; senão, comprar."
+    qty: "2 a 4"
+    cad:
+      local_frame: "Origem no centro da face de assentamento. +Y ao longo do atuador."
+      solids:
+        - name: envelope
+          x: body_length
+          y: body_depth
+          z: body_height
+    dimensions:
+      body_length:
+        label: "Corpo: comprimento"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+      body_depth:
+        label: "Profundidade com o atuador"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+      body_height:
+        label: "Altura acima da placa e altura do eixo do atuador"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+
+  power_button:
+    name: "Botão momentâneo de energia"
+    role: "Numa lateral. Peça a definir com o esquema elétrico."
+    qty: 1
+    cad:
+      local_frame: "Origem no centro da face de assentamento. +Z ao longo do atuador."
+      solids:
+        - name: envelope
+          x: body_length
+          y: body_width
+          z: total_height
+    dimensions:
+      body_length:
+        label: "Corpo: comprimento"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+      body_width:
+        label: "Corpo: largura"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+      total_height:
+        label: "Altura total com o atuador"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+
+  button_caps_ps3:
+    name: "Tampas reaproveitadas do controle de PS3"
+    role: "Cruz, quatro botões de ação, L1/R1, alavancas L2/R2 e botão redondo, se forem usados (decisões D-10 e D-11)."
+    qty: "1 conjunto"
+    cad:
+      local_frame: "Uma peça por tampa; a definir depois da medição."
+      solids:
+        - name: envelope
+          x: body_diameter
+          y: body_diameter
+          z: total_height
+    dimensions:
+      body_diameter:
+        label: "Diâmetro ou contorno do corpo de cada tampa"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: "O furo da carcaça sai desta medida, com folga de ~0,2 a 0,3 mm (README)."
+      flange:
+        label: "Diâmetro ou contorno da aba de cada tampa"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+      total_height:
+        label: "Altura total de cada tampa"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: "Define o espaçador impresso."
+      dpad_pivot:
+        label: "Cruz de peça única: posição e altura do pino central"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+      trigger_lever:
+        label: "Alavancas L2/R2: comprimento, largura, eixo do pivô e curso"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: "O README alerta que podem ser grandes demais para o topo do corpo vertical."
+
+  sd_card_with_adapter:
+    name: "Cartão microSD com adaptador para SD de tamanho normal"
+    role: "Armazenamento na v0, no slot do verso da tela."
+    qty: 1
+    cad:
+      local_frame: "Origem no centro de uma face maior. +Y ao longo da direção de inserção."
+      solids:
+        - name: envelope
+          x: width
+          y: length
+          z: thickness
+    dimensions:
+      width:
+        label: "Largura do adaptador"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: "A especificação física da SD Association não foi aberta nesta sessão. Medir a peça."
+      length:
+        label: "Comprimento do adaptador"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+      thickness:
+        label: "Espessura do adaptador"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+
+  charger_module:
+    name: "Módulo de carga com power-path (BQ24074 ou MCP73871)"
+    role: "Fase 2 de compras. Valida a energia na bancada e entra na carcaça v0."
+    qty: 1
+    cad:
+      local_frame: "Origem no centro da face inferior da placa. +Z para o lado dos componentes."
+      solids:
+        - name: envelope
+          x: pcb_length
+          y: pcb_width
+          z: total_thickness
+    dimensions:
+      pcb_length:
+        label: "Placa: lado maior"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: "Peça ainda não escolhida nem comprada."
+      pcb_width:
+        label: "Placa: lado menor"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+      total_thickness:
+        label: "Espessura total com conectores"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+      usb_connector_position:
+        label: "Posição e saliência do conector USB do módulo"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: "Na v0, define a abertura AB-14."
+
+  usb_c_receptacle:
+    name: "Conector USB-C da PCB definitiva"
+    role: "Dados e carga (uma ou duas portas, decisão D-4). Peça a definir no esquema."
+    qty: "1 a 2"
+    cad:
+      local_frame: "Origem no centro da face de assentamento, na borda da placa. +Y para fora, na direção de inserção do cabo."
+      solids:
+        - name: envelope
+          x: shell_width
+          y: shell_depth
+          z: shell_height
+    dimensions:
+      shell_width:
+        label: "Carcaça metálica: largura"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: "Sai do datasheet do conector escolhido."
+      shell_depth:
+        label: "Carcaça metálica: profundidade e saliência além da borda da placa"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+      shell_height:
+        label: "Carcaça metálica: altura e altura do eixo acima da placa"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+
+  hex_standoff:
+    name: "Standoff hexagonal de metal reaproveitado (de placa-mãe)"
+    role: "Rosca do parafuso da tampa traseira, embutido em furo hexagonal."
+    qty: 1
+    cad:
+      local_frame: "Origem no centro da base. +Z ao longo do eixo."
+      solids:
+        - name: envelope
+          x: across_flats
+          y: across_flats
+          z: body_length
+    dimensions:
+      across_flats:
+        label: "Distância entre faces do sextavado"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: "Medir também a distância entre vértices."
+      body_length:
+        label: "Comprimento do corpo sextavado"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+      thread:
+        label: "Rosca interna e rosca do pino, se houver"
+        value: null
+        unit: "-"
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: "Identificar com um parafuso conhecido. Não assumir M3."
+
+  heat_set_insert:
+    name: "Inserto roscado heat-set (plano B e demais parafusos)"
+    role: "M2 ou M3 (decisão D-16). Peça a definir."
+    qty: null
+    cad:
+      local_frame: "Origem no centro da base. +Z ao longo do eixo."
+      solids:
+        - name: envelope
+          x: outer_diameter
+          y: outer_diameter
+          z: length
+    dimensions:
+      outer_diameter:
+        label: "Diâmetro externo e diâmetro do furo recomendado"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: "Sai do datasheet do inserto escolhido. Quantidade não definida no README."
+      length:
+        label: "Comprimento"
+        value: null
+        tolerance: null
+        status: PENDENTE
+        basis: null
+        source: []
+        note: null
+
+# Parâmetros definidos pelo próprio projeto. Não são medidas de peça e não têm
+# STATUS: valem enquanto a decisão do README valer. Não viram geometria aqui.
+design_parameters:
+  cartridge_pcb_length:
+    label: "Cartucho: comprimento da placa"
+    value: 52.0
+    source: "README, Especificação do cartucho"
+    note: "Em aberto: cartucho curto de 52 x 25 mm (decisão D-8)."
+  cartridge_pcb_width:
+    label: "Cartucho: largura da placa"
+    value: 52.0
+    source: "README, Especificação do cartucho"
+    note: null
+  cartridge_pcb_thickness:
+    label: "Cartucho: espessura da placa"
+    value: 1.6
+    source: "README, Especificação do cartucho"
+    note: null
+  cartridge_tongue_width:
+    label: "Cartucho: largura da língua"
+    value: 27.8
+    source: "README, Especificação do cartucho"
+    note: "O README registra '~27,8', derivado da abertura do soquete (~28,3 mm), que é NOMINAL."
+  cartridge_contact_span:
+    label: "Cartucho: distância do primeiro ao último contato de um lado"
+    value: 22.86
+    source: "README, Especificação do cartucho"
+    note: "9 x 2,54 mm."
+  cartridge_contact_edge_offset:
+    label: "Cartucho: distância dos contatos à borda"
+    value: 0.6
+    source: "README, Especificação do cartucho"
+    note: null
+  cartridge_protrusion:
+    label: "Cartucho de 52 x 52 mm: quanto fica para fora do topo"
+    value: 40.0
+    source: "README, Especificação do cartucho"
+    note: "O README registra '~40 mm'. Depende da profundidade da fenda do soquete, que é PENDENTE."
+  battery_bay_thickness_margin:
+    label: "Berço da bateria: folga na espessura, como fração da espessura medida"
+    value: 0.10
+    unit: "fração"
+    source: "README, Riscos da bateria e recomendações, item 7"
+    note: "O README registra '~10%'."
+  button_cap_hole_clearance_min:
+    label: "Furo das tampas de botão: folga mínima"
+    value: 0.2
+    source: "README, Analógicos e gatilhos reaproveitados"
+    note: "O README registra '~0,2 a 0,3 mm'."
+  button_cap_hole_clearance_max:
+    label: "Furo das tampas de botão: folga máxima"
+    value: 0.3
+    source: "README, Analógicos e gatilhos reaproveitados"
+    note: null
