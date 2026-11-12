@@ -1,0 +1,12 @@
+{
+  "name": "dbmo-radio",
+  "version": "0.1.0",
+  "description": "Rádio sub-GHz do d-BMO: driver do CC1101, configuração paramétrica, recepção de pacotes e transmissão condicionada a uma política explícita (desabilitada por padrão)",
+  "license": "Apache-2.0",
+  "frameworks": "*",
+  "platforms": "*",
+  "build": {
+    "srcDir": "src",
+    "includeDir": "include"
+  }
+}
