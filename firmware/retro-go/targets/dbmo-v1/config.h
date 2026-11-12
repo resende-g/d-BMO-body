@@ -61,6 +61,11 @@
 #endif
 // Clock SPI da tela, em Hz. 40 MHz é o valor dos alvos de origem; no d-BMO só 10 MHz foi
 // validado, e em jumpers de protoboard (constante kDisplayHz do mapa de pinos canônico).
+// ATENÇÃO: o datasheet do ILI9341 limita a escrita serial a 10 MHz (ciclo mínimo de 100 ns;
+// docs/hardware/sources/PERIPHERALS.md, ILI-07). Os 40 MHz do perfil sem DBMO_RG_BENCH estão
+// FORA dessa especificação: são o que os emuladores precisam para uma taxa de quadros
+// utilizável (a 10 MHz, um quadro inteiro de 320 x 240 leva cerca de 120 ms) e o que outros
+// alvos do Retro-Go usam com este controlador, mas é um risco PENDENTE DE VALIDAÇÃO FÍSICA.
 #ifndef DBMO_RG_SCREEN_SPEED_HZ
 #if DBMO_RG_BENCH
 #define DBMO_RG_SCREEN_SPEED_HZ SPI_MASTER_FREQ_10M

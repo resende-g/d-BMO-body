@@ -63,6 +63,7 @@ Riscos elétricos em aberto:
 | Carga capacitiva de quatro dispositivos e fios de protoboard | SD-12 | Baixar o clock para isolar; definir o clock final na PCB |
 | A tela solta o SDO com CS em alto? | O datasheet não afirma explicitamente (ILI-10) | Conferir com o CC1101 e o cartão no mesmo MISO |
 | SO do CC1101 fica em alta impedância com CS em alto | Confirmado no datasheet (CC-08) | — |
+| O alvo do Retro-Go usa a tela a 40 MHz fora do perfil de bancada | O datasheet limita a escrita a 10 MHz (ILI-07); 40 MHz é prática comum com este controlador, sem validação aqui. A 10 MHz um quadro inteiro leva cerca de 120 ms | Validar na placa antes de adotar; o Bruce e o firmware próprio ficam em 10 MHz |
 
 ## 3. I2C compartilhado
 

@@ -81,6 +81,7 @@ Ligar o CS do slot ao GPIO 21; os demais sinais são os do SPI da tela. Cartão 
 
 | Passo | Esperado |
 |---|---|
+| `pio test -e dbmo-bench -f test_storage` | Monta, cria as pastas, grava e relê um arquivo, apaga |
 | Reiniciar com o cartão | `status`: `storage` em `Ready`; no cartão surgem `/dbmo/config`, `/dbmo/logs`, `/dbmo/cartridges`, `/dbmo/ir` |
 | `config audio.volume 30`, esperar 3 s, `off`, tirar o cartão | `/dbmo/config/config.txt` contém `audio.volume=30`; `/dbmo/logs/log.txt` tem o log |
 | **A tela continua funcionando com o cartão montado** | Se a tela travar ou mostrar lixo, o cartão não está soltando o barramento (SD-11, SD-16) |
@@ -106,6 +107,7 @@ Chaves do módulo em I2C. VCC em 3,3 V, SDA e SCL no barramento.
 | Passo | Esperado |
 |---|---|
 | Varredura | Aparece `0x24` |
+| `pio test -e dbmo-bench -f test_pn532` | IC `0x32`; configuração de leitor aceita; campo desligado ao final |
 | `status` | `nfc` em `Ready` |
 | `nfc on`, aproximar uma etiqueta | Rosto SCANNING, depois SUCCESS; `nfc` mostra o identificador |
 | `nfc off` | Campo desligado; rosto volta ao IDLE |
@@ -119,6 +121,7 @@ SCK, MOSI e MISO do barramento; CS 14; GDO0 15; VCC em 3,3 V; antena conectada.
 
 | Passo | Esperado |
 |---|---|
+| `pio test -e dbmo-bench -f test_cc1101` | PARTNUM `0x00`, VERSION `0x14` (ou `0x04`); frequência relida igual; RSSI plausível. O teste não transmite |
 | `status` | `radio` em `Ready` (o firmware leu PARTNUM e VERSION) |
 | `radio` | Mostra a frequência configurada e os contadores |
 | `radio rx on` | Rosto SCANNING |

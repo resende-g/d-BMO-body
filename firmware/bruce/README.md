@@ -249,7 +249,7 @@ hardware correspondente estiver ligado:
 | 5 | Carregador e power-latch definidos | Flags `DBMO_CHG_STAT_*` e `DBMO_POWER_HOLD_*` | Só os ganchos |
 | 6 | MAX98357A e INMP441 ligados | Flags de áudio do achado A11 (BCLK 40, LRCLK 41, DOUT 42, microfone 7, shutdown 3). O valor de `MCLK` para um amplificador sem MCLK não foi definido | Pendente |
 | 7 | UART do cartucho | `-DSERIAL_TX=43`, `-DSERIAL_RX=44`, `-DGPS_SERIAL_TX=43`, `-DGPS_SERIAL_RX=44` (achado A9). Em `pins.h` esses pinos estão marcados como de risco | Pendente |
-| 8 | PCB | Subir `SPI_FREQUENCY` (hoje 10 MHz, o que rodou nos jumpers) | Pendente |
+| 8 | PCB | Avaliar subir `SPI_FREQUENCY` (hoje 10 MHz, o que rodou nos jumpers e o limite de escrita do datasheet do ILI9341; acima disso é fora de especificação) | Pendente; exige validação na placa |
 
 Atenção: IR, RF e NFC têm os pinos e módulos **salvos em `/brucePins.conf`**; o valor salvo
 prevalece sobre o do `bmo.ini`. Depois de mudar um padrão, ajustar no menu Config ou apagar o

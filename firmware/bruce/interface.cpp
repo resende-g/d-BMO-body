@@ -239,8 +239,13 @@ void InputHandler(void) {
 // painel em SLPIN e ext0 no botão de acordar. O chip reinicia ao acordar.
 void goToDeepSleep() {
     // O botão que acorda pode ser o mesmo que acabou de escolher esta opção: dormir com ele
-    // ainda apertado acordaria na hora.
-    while (digitalRead(DEEPSLEEP_WAKEUP_PIN) == DEEPSLEEP_PIN_ACT) delay(10);
+    // ainda apertado acordaria na hora. A espera tem limite: com o botão preso (ou em curto),
+    // o aparelho desiste de dormir em vez de ficar parado aqui para sempre.
+    const unsigned long waitStart = millis();
+    while (digitalRead(DEEPSLEEP_WAKEUP_PIN) == DEEPSLEEP_PIN_ACT) {
+        if (millis() - waitStart > 10000UL) return;
+        delay(10);
+    }
     delay(200);
     _setBrightness(0);
     tft.writecommand(0x10); // SLPIN
