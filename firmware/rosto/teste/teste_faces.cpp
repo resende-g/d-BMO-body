@@ -22,8 +22,8 @@ int main(int argc, char **argv) {
         const char *row = fr.rows[y];
         assert(row && "linha faltando");
         if (strlen(row) != GRID_W) {
-          fprintf(stderr, "%s quadro %d linha %d: %zu colunas, esperado %d\n", face.name, q, y,
-                  strlen(row), GRID_W);
+          fprintf(stderr, "%s quadro %d linha %d: %zu colunas, esperado %d\n",
+                  face.name, q, y, strlen(row), GRID_W);
           return 1;
         }
         assert(strspn(row, "#+.") == GRID_W && "caractere fora de '#', '+' e '.'");
