@@ -134,6 +134,36 @@ Resultado: **46 executáveis de teste, 525 testes, 0 falhas, 0 ignorados.**
 | Integração (`tests/integration`) | 1 | 21 |
 | **Total** | **46** | **525** |
 
+### Cobertura de linhas (2026-11-12)
+
+Medida com `-DDBMO_COVERAGE=ON` (gcc `--coverage`, sem otimização) e `gcov`, somando todos
+os executáveis de teste. Conta o firmware portável: 102 arquivos de `firmware/`. Ficam de
+fora, porque não compilam no computador, `firmware/app/src/main.cpp` e
+`firmware/platform/esp32s3`; e, porque não são executados pelos testes, os utilitários de
+`firmware/*/tools`.
+
+| Módulo | Linhas executadas / executáveis | Cobertura |
+|---|---:|---:|
+| `core` | 718 / 739 | 97,2 % |
+| `config` | 6 / 6 | 100 % |
+| `display` | 139 / 140 | 99,3 % |
+| `rosto` | 208 / 208 | 100 % |
+| `input` | 440 / 445 | 98,9 % |
+| `audio` | 245 / 245 | 100 % |
+| `radio` | 517 / 542 | 95,4 % |
+| `nfc` | 302 / 311 | 97,1 % |
+| `infrared` | 395 / 406 | 97,3 % |
+| `storage` | 267 / 271 | 98,5 % |
+| `power` | 276 / 296 | 93,2 % |
+| `cartridges` | 353 / 365 | 96,7 % |
+| `app` | 477 / 570 | 83,7 % |
+| **Total** | **4343 / 4544** | **95,6 %** |
+
+Menos cobertos: `app/null_hal.h` (16 %: os objetos "ausentes" só têm os métodos chamados
+no boot exercitados), `app_commands.cpp` (66 %: nem todo ramo de cada comando do console é
+testado) e as funções `toString` de vários módulos. Cobertura de linhas não mede a
+qualidade das asserções nem substitui o teste em hardware.
+
 ### GitHub Actions
 
 Execução nº 16 do fluxo `CI`, commit `5cd8b84` (ramo `claude/dbmo-v1-firmware-dev-96rxin`):
@@ -169,4 +199,4 @@ não acompanhava o aprendizado de infravermelho (`Application`).
 | Retro-Go para o d-BMO (`firmware/retro-go/build.sh`) | Nunca compilado com o ESP-IDF; só a verificação de sintaxe da configuração no computador |
 | Testes com clang + sanitizers | Não executado no computador de desenvolvimento (falta a biblioteca de runtime); a CI roda clang sem sanitizers |
 | Medições elétricas, de consumo e de RF | Não executadas |
-| Cobertura de código | Não medida |
+| Cobertura de ramos | Não medida (só a de linhas, acima) |
