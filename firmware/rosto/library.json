@@ -1,0 +1,13 @@
+{
+  "name": "dbmo-rosto",
+  "version": "0.1.0",
+  "description": "Rosto do d-BMO: expressões, máquina de estados, renderizador e subsistema",
+  "license": "Apache-2.0",
+  "frameworks": "*",
+  "platforms": "*",
+  "build": {
+    "srcDir": "engine",
+    "includeDir": "include",
+    "flags": ["-I."]
+  }
+}

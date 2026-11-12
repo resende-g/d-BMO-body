@@ -1,4 +1,4 @@
-// Rosto do d-BMO na tela ILI9341 3,2" (bancada). Mostra os 10 estados da spec em blocos de
+// Rosto do d-BMO na tela ILI9341 3,2" (bancada). Mostra os 17 estados (10 da spec e 7 do firmware) em blocos de
 // pixel vermelho sobre fundo escuro; os desenhos ficam em rosto_faces.h.
 // Pinagem e configuração do Arduino IDE iguais às do firmware/teste_tela (README > Pinagem):
 // placa "ESP32S3 Dev Module", PSRAM "OPI PSRAM", Flash Size "16MB", USB CDC On Boot "Enabled".
@@ -6,7 +6,7 @@
 //
 // Como usar:
 // - Botão OK (GPIO 2, ao GND) passa para o próximo estado.
-// - No monitor serial (115200), digitar o número (0–9) ou o nome do estado (ex.: alert).
+// - No monitor serial (115200), digitar o número (0–16) ou o nome do estado (ex.: alert).
 // - Sem nada, o rosto fica em IDLE, piscando.
 #include <SPI.h>
 #include <Adafruit_ILI9341.h>
@@ -73,8 +73,10 @@ void leSerial() {
     if (n == 0) continue;
     buf[n] = 0;
     n = 0;
-    if (buf[0] >= '0' && buf[0] <= '9' && buf[1] == 0) {
-      mudaEstado(buf[0] - '0');
+    if (strspn(buf, "0123456789") == strlen(buf)) {  // só dígitos: número do estado
+      int numero = atoi(buf);
+      if (numero < FACE_COUNT) mudaEstado(numero);
+      else Serial.printf("Estado fora da faixa: %s (0 a %d)\n", buf, FACE_COUNT - 1);
       return;
     }
     for (int i = 0; i < FACE_COUNT; i++)

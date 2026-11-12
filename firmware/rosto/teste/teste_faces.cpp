@@ -9,7 +9,7 @@
 
 int main(int argc, char **argv) {
   bool ver = argc > 1 && strcmp(argv[1], "--ver") == 0;
-  assert(FACE_COUNT == 10);
+  assert(FACE_COUNT == 17);
   for (int f = 0; f < FACE_COUNT; f++) {
     const Face &face = FACES[f];
     assert(face.count >= 1);
@@ -22,8 +22,8 @@ int main(int argc, char **argv) {
         const char *row = fr.rows[y];
         assert(row && "linha faltando");
         if (strlen(row) != GRID_W) {
-          fprintf(stderr, "%s quadro %d linha %d: %zu colunas, esperado %d\n",
-                  face.name, q, y, strlen(row), GRID_W);
+          fprintf(stderr, "%s quadro %d linha %d: %zu colunas, esperado %d\n", face.name, q, y,
+                  strlen(row), GRID_W);
           return 1;
         }
         assert(strspn(row, "#+.") == GRID_W && "caractere fora de '#', '+' e '.'");
