@@ -74,7 +74,7 @@ jobs:
           path: ~/.platformio
           key: pio-own-${{ runner.os }}-${{ hashFiles('platformio.ini') }}
       - name: Instalar o PlatformIO
-        run: pip install platformio==6.1.18
+        run: pip install platformio==6.1.19
       - name: Compilar (perfis de bancada e alvo)
         run: pio run -e dbmo-bench -e dbmo-target
       - name: Compilar os testes de bancada (sem gravar)
