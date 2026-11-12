@@ -1,0 +1,13 @@
+{
+  "name": "dbmo-cartridges",
+  "version": "0.1.0",
+  "description": "Sistema de cartuchos do d-BMO: EEPROM de identificação, cabeçalho, compatibilidade, registro de drivers e ciclo de vida",
+  "license": "Apache-2.0",
+  "frameworks": "*",
+  "platforms": "*",
+  "build": {
+    "srcDir": "src",
+    "includeDir": "include",
+    "flags": ["-Iexamples"]
+  }
+}

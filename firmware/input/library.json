@@ -1,0 +1,12 @@
+{
+  "name": "dbmo-input",
+  "version": "0.1.0",
+  "description": "Controles do d-BMO: botões (debounce, toque longo, repetição, combinações), analógicos e driver do MCP23017",
+  "license": "Apache-2.0",
+  "frameworks": "*",
+  "platforms": "*",
+  "build": {
+    "srcDir": "src",
+    "includeDir": "include"
+  }
+}

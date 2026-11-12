@@ -71,6 +71,12 @@ soldar, entender barramentos e escrever firmware.
 
 **Bancada:** ESP32-S3 DevKitC-1 N16R8, tela ILI9341 e 3 botões testados, com o Bruce rodando; CC1101 recebido, ainda sem teste por falta de jumpers fêmea. **Plataforma confirmada em 02/11/2026: ESP32-S3 N16R8.** A migração para ESP32-P4 + ESP32-C6, registrada antes, foi **adiada para um d-BMO v2** (ver [Decisões de projeto](#decisões-de-projeto)): o Bruce não tem suporte à P4, as funções de WiFi bruto do Bruce não passam pelo ESP-Hosted padrão, o Retro-Go não tem alvo para P4 e a placa custaria R$ 116,91 + antena. A pinagem da S3 foi restaurada e ampliada (ver [Pinagem](#pinagem-esp32-s3-n16r8)).
 
+**Firmware próprio (12/11/2026):** além do Bruce e do Retro-Go, o repositório passou a ter um
+firmware próprio modular em `firmware/` (núcleo, rosto, controles, áudio, rádio, NFC,
+infravermelho, armazenamento, energia e cartuchos). Está **implementado e testado no computador**
+(538 testes automatizados, com simuladores dos chips) e **compila para o ESP32-S3** na CI; ainda
+**não foi gravado nem testado na placa**. Detalhes em [Firmware próprio](#firmware-próprio-do-d-bmo).
+
 ---
 
 ## Pessoas do projeto
@@ -122,7 +128,7 @@ digitar comando faz sentido. Fora do escopo deste repositório por enquanto.
 | Item | Qtd | Termo de busca | Situação / observação |
 |---|---:|---|---|
 | ESP32-S3 DevKitC-1 N16R8 | 1 | já disponível | **Placa principal** (16 MB flash, 8 MB PSRAM octal, WiFi + BLE no chip, antena de trilha). Já validada com tela, 3 botões e Bruce. Na PCB final, usar o módulo ESP32-S3-WROOM-1-N16R8 (conferir estoque na JLCPCB) |
-| MCP23017 (expansor de I/O I²C) | 1–2 | já disponível | O usuário tem 2 (iam para o Projeto 2). Um lê os 16 botões por I²C (0x20); o segundo (0x21) é opcional, para vibração e GPIOs do cartucho |
+| MCP23017 (expansor de I/O I²C) | 1–2 | já disponível | O usuário tem 2 (iam para o Projeto 2). Um lê os botões por I²C (0x20): **14 entradas**, porque GPA7 e GPB7 são só saída na revisão D do datasheet (ver [`docs/hardware/COMPONENT_MATRIX.md`](docs/hardware/COMPONENT_MATRIX.md)); o segundo (0x21) é opcional, para vibração e GPIOs do cartucho |
 | ~~Antena 2,4 GHz IPEX/U.FL~~ | 0 | — | **Não precisa com a S3**: a DevKitC e o WROOM-1 têm antena de trilha. Era exigência do módulo P4 (ver Decisões de projeto). Na carcaça, deixar a ponta da antena da S3 longe de metal, da bateria e do alto-falante. A antena SMA do CC1101 continua só para o CC1101 |
 | TFT 3,2" ILI9341 320×240 SPI | 1 | `3.2 ILI9341 320x240 SPI no touch` | Já comprada e validada (MSP3218 touch); pinos T_* sem ligação no v1. Tela única: rosto + menu + status |
 | CC1101 433 MHz + antena SMA | 1 | `CC1101 433MHz module SMA antenna` | Já chegou; falta testar na bancada (jumpers fêmea-fêmea) |
@@ -197,8 +203,8 @@ Preços do carrinho de 02/11/2026; mudam e expiram.
 - **SPI** (SCK/MOSI/MISO compartilhados, cada um com seu CS): Display, CC1101, MicroSD.
 - **I²C** (SDA/SCL): PN532 (0x24), MCP23017 dos botões (0x20), EEPROM do cartucho. (Tela única; sem OLED secundário.)
 - **I²S**: MAX98357A (saída) + INMP441 (entrada), mesmo barramento.
-- **GPIO direto**: IR RX/TX, botão de energia, CS do cartucho, power-latch. Os 16 botões ficam no MCP23017, lidos por polling.
-- **ADC**: 2 analógicos (4 eixos) e leitura de bateria, **só no ADC1 (GPIO 1–10)**: o ADC2 não funciona com o WiFi ligado.
+- **GPIO direto**: IR RX/TX, botão de energia, CS do cartucho, power-latch. Os botões ficam no MCP23017 (14 entradas utilizáveis), lidos por polling.
+- **ADC**: 2 analógicos (4 eixos) e leitura de bateria, **só no ADC1 (GPIO 1–10)**: o ADC2 é compartilhado com o WiFi e a leitura pode falhar.
 
 ---
 
@@ -224,25 +230,40 @@ serigrafia da placa.
 | Display DC / RES | 17 / 18 | |
 | USB D− / D+ | 19 / 20 | USB nativo (gravação, serial CDC, BadUSB) |
 | CS microSD | 21 | slot do módulo da tela |
-| Botão de energia | 0 | strapping; GPIO RTC, acorda do deep sleep |
+| Botão de energia | 0 | strapping; GPIO RTC, acorda do deep sleep. **Risco aberto:** GPIO 0 em nível baixo na saída do reset entra em modo de download; se o mesmo botão liga a alimentação, o aparelho pode não ligar (ver [`docs/hardware/GPIO_MAP.md`](docs/hardware/GPIO_MAP.md), risco 1) |
 | Shutdown do MAX98357A (SD) | 3 | strapping (JTAG); seguro como saída depois do boot |
 | CS do cartucho | 38 | na DevKitC, 38 ou 48 é o LED RGB, conforme a revisão: na bancada, usar o que não for LED |
 | IR RX | 39 | |
 | I²S BCLK / LRC / DOUT | 40 / 41 / 42 | DOUT para o MAX98357A |
-| UART do cartucho TX / RX | 43 / 44 | UART0; liberado porque o console usa o USB CDC |
+| UART do cartucho TX / RX | 43 / 44 | UART0. **Risco aberto:** mesmo com o console no USB, a ROM imprime o log de boot no GPIO 43 a cada partida (ver `docs/hardware/GPIO_MAP.md`, risco 2) |
 | Power-latch (HOLD) | 48 | segura a alimentação ligada depois do clique no botão |
 | IR TX | 47 | |
 | Livre | 45, 46 | strapping: o 45 define a tensão da flash no boot, **não usar** como saída que possa estar em alto no boot |
 
-**MCP23017 (0x20):** 16 botões (D-pad 4, ação 4, select/start 2, L1/R1/L2/R2 4, cliques dos
-analógicos 2), botão ao GND com pull-up interno do MCP. **Segundo MCP23017 (0x21), opcional:**
+**MCP23017 (0x20):** 14 botões (D-pad 4, ação 4, select/start 2, L1/R1/L2/R2 4), botão ao GND
+com pull-up interno do MCP. **Correção de 12/11/2026:** a contagem anterior era 16, mas GPA7 e
+GPB7 são só saída na revisão D do datasheet do MCP23017; os 2 cliques dos analógicos ficaram
+sem lugar e dependem do segundo expansor ou de outra solução (decisão em aberto). **Segundo MCP23017 (0x21), opcional:**
 vibração (liga/desliga via transistor) e os 2 GPIOs do cartucho.
 
 **Não usar:** GPIO 26–37 (flash/PSRAM octal). Cuidado com strapping: 0, 3, 45, 46.
 
+**Fonte de verdade da pinagem:** `firmware/config/include/dbmo/config/pins.h`. A tabela gerada a
+partir dele, a classificação de cada pino (validado, proposto, com risco) e os ensaios que
+fecham o mapa estão em [`docs/hardware/GPIO_MAP.md`](docs/hardware/GPIO_MAP.md); a CI confere
+que o Bruce e o Retro-Go usam os mesmos pinos.
+
 ---
 
 ## Alimentação
+
+> **Inconsistência registrada em 12/11/2026 (não resolvida aqui).** Esta seção fala em "boost
+> 5V" e em "5V para MAX98357A". A tabela de compras e o item 6 de
+> [Riscos da bateria](#riscos-da-bateria-e-recomendações) dizem o contrário: amplificador direto
+> da bateria e boost de 5 V provavelmente desnecessário. As faixas de alimentação dos
+> componentes confirmam que nada no v1 exige 5 V. A decisão continua em aberto e está descrita,
+> com os requisitos confirmados em fonte, em
+> [`docs/hardware/POWER_ARCHITECTURE.md`](docs/hardware/POWER_ARCHITECTURE.md).
 
 Todo o caminho de energia (carga da LiPo por USB-C, proteção/BMS de 1 célula e boost 5V)
 fica **desenhado na própria PCB** com componentes SMD, em vez de módulos avulsos. Fluxo lógico:
@@ -287,7 +308,9 @@ e pressão mecânica.
    CC1101 e o PN532 funcionam em 3,3 V, e o MAX98357A funciona direto da bateria (2,5–5,5 V).
    Recomendado: **buck-boost de 3,3 V** a partir da bateria, que esquenta menos que boost 5 V +
    regulador 3,3 V. Dimensionar para o pico de WiFi + CC1101 + tela + áudio, com folga. Na
-   DevKitC da bancada, o pino 3V3 aceita 3,3 V direto (sem passar pelo regulador da placa).
+   DevKitC da bancada, o pino 3V3 aceita 3,3 V direto (sem passar pelo regulador da placa); o
+   guia da placa declara as três formas de alimentação mutuamente exclusivas: **não alimentar
+   pelo 3V3 com o USB conectado**.
    **Decisão em aberto:** manter ou não a linha de 5 V no conector do cartucho.
 7. **Mecânica:** ~10% de folga de espessura no berço da bateria, sem cola rígida, sem aresta
    encostando, longe do regulador, do amplificador e da S3. Carcaça em PETG ou ASA, não PLA
@@ -376,6 +399,7 @@ Um firmware por vez (como "cartuchos de software"):
 | Firmware | Uso |
 |---|---|
 | **Bruce** (C++) | multitool pronto (RF, NFC, IR, WiFi/BLE). Base do projeto. Build próprio do d-BMO (versão 1.16.1, tela ILI9341 + 3 botões + CC1101) em `firmware/bruce/`: o binário oficial da DevKitC não tem tela |
+| **Firmware próprio** (C++17) | firmware modular do d-BMO em `firmware/` (rosto, controles, áudio, rádio, NFC, IR, cartão, energia, cartuchos). Testado no computador; ainda não testado na placa. Ver [Firmware próprio](#firmware-próprio-do-d-bmo) |
 | **MicroPython** | escrever Python e testar cada módulo; interativo, ótimo pra aprender |
 | **Retro-Go** | jogos retrô. Roda bem NES, GB, GBC, Master System, Game Gear, PC Engine. SNES/Mega Drive lento/parcial. GBA não |
 | **Modo agente** (futuro) | Corpo remoto do assistente d-BMO ([`resende-g/d-BMO`](https://github.com/resende-g/d-BMO)): cliente autenticado da API local do BMO Brain pela rede privada (WiFi + NetBird), usando speaker, mic e tela; o rosto mostra o estado do Brain. Só firmware, sem hardware novo. RF, NFC e IR ficam fora do alcance do agente |
@@ -393,6 +417,39 @@ firmware/bruce/build.sh "" upload       # compila e grava pela USB
 ```
 
 ---
+
+### Firmware próprio do d-BMO
+
+Firmware modular em C++17, escrito para este aparelho, em `firmware/` (estado em 12/11/2026):
+
+- **O que tem:** núcleo (inicialização ordenada, eventos, log, configuração, tratamento de
+  falhas), rosto com 17 expressões, controles, áudio, rádio CC1101, NFC PN532, infravermelho,
+  cartão, energia e sistema de cartuchos, mais um console serial.
+- **Como foi verificado:** 538 testes automatizados que rodam em qualquer computador, com
+  simuladores dos chips, e compilação para o ESP32-S3 na CI (perfis `dbmo-bench` e
+  `dbmo-target`). **Nada foi testado na placa ainda.**
+- **Padrões de segurança:** microfone, busca de NFC e toda transmissão (rádio e infravermelho)
+  vêm desligados; não há jamming, cópia de credenciais, telemetria nem dependência de nuvem.
+
+```bash
+cmake -S . -B build/host -G Ninja -DDBMO_SANITIZE=ON && cmake --build build/host && ctest --test-dir build/host
+pio run -e dbmo-bench -t upload && pio device monitor
+```
+
+| Documento | Conteúdo |
+|---|---|
+| [`docs/architecture/ARCHITECTURE.md`](docs/architecture/ARCHITECTURE.md) | Camadas, núcleo, ordem de boot, falhas, modelo de execução |
+| [`docs/firmware/FIRMWARE.md`](docs/firmware/FIRMWARE.md) | Módulos, console, chaves de configuração, eventos, limites de uso |
+| [`docs/testing/TESTING.md`](docs/testing/TESTING.md) | Níveis de teste e evidência do que foi executado |
+| [`docs/hardware/GPIO_MAP.md`](docs/hardware/GPIO_MAP.md) | Pinagem, classificação e riscos por pino |
+| [`docs/hardware/BUS_ARCHITECTURE.md`](docs/hardware/BUS_ARCHITECTURE.md) | SPI, I2C, I2S, UART, RMT, ADC |
+| [`docs/hardware/COMPONENT_MATRIX.md`](docs/hardware/COMPONENT_MATRIX.md) | Componentes, alimentação, estado de compra e de validação |
+| [`docs/hardware/POWER_ARCHITECTURE.md`](docs/hardware/POWER_ARCHITECTURE.md) e [`POWER_BUDGET.md`](docs/hardware/POWER_BUDGET.md) | Alimentação: requisitos, decisões em aberto, correntes com fonte |
+| [`docs/hardware/ASSEMBLY_GUIDE.md`](docs/hardware/ASSEMBLY_GUIDE.md) | Montagem e validação em bancada, um periférico por vez |
+| [`docs/hardware/RF_REGULATORY_NOTES.md`](docs/hardware/RF_REGULATORY_NOTES.md) | Notas regulatórias de RF (nenhuma norma verificada) |
+| [`docs/hardware/sources/`](docs/hardware/sources/) | Registros de evidência dos datasheets |
+| [`docs/cartridges/CARTRIDGE_SPECIFICATION.md`](docs/cartridges/CARTRIDGE_SPECIFICATION.md) | Protocolo dos cartuchos |
+| [`docs/mechanical/`](docs/mechanical/) | Especificação mecânica, dimensões e layout |
 
 ## Rosto do d-BMO (tela principal)
 

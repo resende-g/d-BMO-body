@@ -6,3 +6,9 @@ O conteúdo deste arquivo foi incorporado ao [README](../README.md), que é a fo
 - [Configurações críticas](../README.md#configurações-críticas) (configuração da placa e do display)
 - [Rosto do d-BMO (tela principal)](../README.md#rosto-do-d-bmo-tela-principal)
 - [Montagem passo a passo](../README.md#montagem-passo-a-passo)
+
+Documentação técnica do firmware próprio (fora do README):
+
+- [Arquitetura](architecture/ARCHITECTURE.md)
+- [Guia e referência do firmware](firmware/FIRMWARE.md)
+- [Testes](testing/TESTING.md)

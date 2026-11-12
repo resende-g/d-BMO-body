@@ -1,0 +1,171 @@
+name: CI
+
+# Roda em todo pull request. O gatilho de push cobre a main e os ramos de trabalho
+# claude/**, para que o ramo seja verificado antes mesmo de existir um pull request.
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - "claude/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  native-tests:
+    name: Testes nativos (${{ matrix.name }})
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: gcc + ASan/UBSan
+            cc: gcc
+            cxx: g++
+            sanitize: "ON"
+          - name: clang
+            cc: clang
+            cxx: clang++
+            sanitize: "OFF"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Instalar Ninja
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ninja-build
+      - name: Configurar
+        env:
+          CC: ${{ matrix.cc }}
+          CXX: ${{ matrix.cxx }}
+        run: cmake -S . -B build/host -G Ninja -DDBMO_SANITIZE=${{ matrix.sanitize }}
+      - name: Compilar
+        run: cmake --build build/host
+      - name: Testar
+        run: ctest --test-dir build/host --output-on-failure
+
+  integrity:
+    name: Integridade do repositório
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Mapa de pinos (pins.h, Bruce, Retro-Go, documentação)
+        run: python3 tools/check_pinmap.py
+      - name: Links da documentação
+        run: python3 tools/check_links.py
+      - name: Estrutura, portabilidade, privacidade e scripts
+        run: python3 tools/check_repo.py
+      - name: Formatação (clang-format 18)
+        run: tools/check_format.sh
+
+  firmware-esp32s3:
+    name: Firmware próprio (ESP32-S3)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.platformio
+          key: pio-own-${{ runner.os }}-${{ hashFiles('platformio.ini') }}
+      - name: Instalar o PlatformIO
+        run: pip install platformio==6.1.19
+      - name: Compilar (perfis de bancada e alvo)
+        run: pio run -e dbmo-bench -e dbmo-target
+      - name: Compilar os testes de bancada (sem gravar)
+        run: |
+          if [ -n "$(ls -d tests/hardware/test_* 2>/dev/null)" ]; then
+            pio test -e dbmo-bench --without-uploading --without-testing
+          else
+            echo "sem testes de bancada ainda"
+          fi
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: dbmo-firmware-esp32s3
+          path: |
+            .pio/build/dbmo-bench/firmware.bin
+            .pio/build/dbmo-target/firmware.bin
+          if-no-files-found: error
+          retention-days: 14
+
+  # As três tarefas abaixo compilam o que nunca tinha sido compilado (Bruce e Retro-Go para
+  # o d-BMO) e rodam o autoteste do gerador de CAD. Uma falha aqui é informação, não é
+  # escondida: nenhuma delas usa continue-on-error.
+  bruce:
+    name: Bruce para o d-BMO (${{ matrix.env }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        env: [bmo-v1, bmo-v1-mcp]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.platformio
+          key: pio-bruce-${{ runner.os }}-${{ hashFiles('firmware/bruce/build.sh', 'firmware/bruce/bmo.ini') }}
+      - name: Instalar o PlatformIO
+        run: pip install platformio==6.1.19
+      - name: Compilar o Bruce na versão fixada com a placa do d-BMO
+        env:
+          BRUCE_ENV: ${{ matrix.env }}
+        run: firmware/bruce/build.sh "$RUNNER_TEMP/bruce"
+
+  retro-go-host-check:
+    name: Retro-Go (conferência da configuração, sem ESP-IDF)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Conferir o alvo dbmo-v1 em todas as combinações de opções
+        run: firmware/retro-go/tests/host_check.sh
+
+  retro-go:
+    name: Retro-Go para o d-BMO (launcher, ESP-IDF 4.4.8)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    container: espressif/idf:v4.4.8
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Compilar o launcher do Retro-Go para o alvo dbmo-v1
+        shell: bash
+        run: |
+          git config --global --add safe.directory '*'
+          . "$IDF_PATH/export.sh"
+          XDG_CACHE_HOME="$PWD/build/cache" firmware/retro-go/build.sh
+
+  cad:
+    name: CAD paramétrico (autoteste)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.13"
+      - name: Instalar o cadquery (mesmas versões da geração registrada)
+        run: pip install cadquery==2.8.0 cadquery-ocp==7.9.3.1.1 PyYAML==6.0.3
+      - name: Autoteste do gerador de modelos
+        working-directory: mechanical/cad
+        run: python test_generate_models.py

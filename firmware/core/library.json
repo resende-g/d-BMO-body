@@ -1,0 +1,12 @@
+{
+  "name": "dbmo-core",
+  "version": "0.1.0",
+  "description": "Núcleo do firmware do d-BMO: HAL, eventos, log, estados, configurações e recursos",
+  "license": "Apache-2.0",
+  "frameworks": "*",
+  "platforms": "*",
+  "build": {
+    "srcDir": "src",
+    "includeDir": "include"
+  }
+}

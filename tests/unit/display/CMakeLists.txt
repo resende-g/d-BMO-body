@@ -1,0 +1,2 @@
+dbmo_add_test(display_test_framebuffer SOURCES test_framebuffer.cpp LIBS dbmo_display)
+dbmo_add_test(display_test_subsystem SOURCES test_display_subsystem.cpp LIBS dbmo_display)

@@ -1,0 +1,10 @@
+dbmo_add_library(core
+  SOURCES
+    src/config_store.cpp
+    src/crc.cpp
+    src/event_bus.cpp
+    src/log.cpp
+    src/resource_registry.cpp
+    src/status.cpp
+    src/system.cpp
+    src/version.cpp)

@@ -1,0 +1,12 @@
+{
+  "name": "dbmo-power",
+  "version": "0.1.0",
+  "description": "Energia do d-BMO: leitura da bateria sem valores inventados, estado de carga, botão de energia, trava de alimentação e desligamento ordenado",
+  "license": "Apache-2.0",
+  "frameworks": "*",
+  "platforms": "*",
+  "build": {
+    "srcDir": "src",
+    "includeDir": "include"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "name": "dbmo-nfc",
+  "version": "0.1.0",
+  "description": "NFC do d-BMO: driver do PN532 por I2C, identificação do chip e leitura do identificador (UID) de etiquetas ISO 14443-A. Não lê memória, não autentica, não emula e não grava etiquetas",
+  "license": "Apache-2.0",
+  "frameworks": "*",
+  "platforms": "*",
+  "build": {
+    "srcDir": "src",
+    "includeDir": "include"
+  }
+}
