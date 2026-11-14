@@ -41,7 +41,6 @@ Ele **não**:
 | **M** | `docs/brand/CHARACTER_SPECIFICATION.md`, versão 2.0, do repositório `resende-g/d-BMO` (lido em cópia local nesta sessão) | Especificação visual do personagem (normativa para a identidade) |
 | **T** | `docs/brand/DESIGN_TOKENS.md`, versão 1.0, do mesmo repositório | Tokens de cor (normativos para a paleta) |
 | **F** | Documentos de fabricante abertos nesta sessão (lista na seção 2 de [COMPONENT_DIMENSIONS.md](COMPONENT_DIMENSIONS.md)) | Fonte primária externa |
-| **P4** | `docs/dbbs-1.0.md` | **Fora de vigência para o v1**: o próprio documento declara que seu escopo é a variante ESP32-P4 + ESP32-C6, adiada para o v2, e que não altera a alimentação do v1. Citado apenas como referência informativa |
 
 ### 2.2 Marcação usada no texto
 
@@ -194,7 +193,7 @@ número, porque quase todas as entradas ainda são `NOMINAL` ou `PENDENTE`.
 | EC-4 | A borda superior tem de acomodar, sem colisão, a entrada guiada e o envelope externo do cartucho (centro), a saída SMA, o furo do microfone e os gatilhos de ombro [R: Carcaça 3D], [R: Carcaça padrão dos cartuchos] | Envelope externo do cartucho e demais itens PENDENTE |
 | EC-5 | A espessura tem de conter o empilhamento mais alto entre as zonas (ver [ASSEMBLY_LAYOUT.md](ASSEMBLY_LAYOUT.md), seção 3) | Altura dos analógicos, espessura da tela, altura da DevKitC com pinos — todas PENDENTE |
 | EC-6 | A região da antena do módulo ESP32-S3-WROOM-1 pede folga de pelo menos 15 mm em todas as direções dentro da carcaça `[F: ESPRESSIF_HDG_PCB_LAYOUT]` | Dimensões da região da antena — CONFIRMADO |
-| EC-7 | A saliência externa do cartucho é definida pelo corpo plástico, pelo ombro/batente e pela profundidade real de engate da língua no soquete | Envelope da carcaça, slot_depth e posição da riser — PENDENTE; estimativa antiga de ~40 mm não é cota da carcaça pronta |
+| EC-7 | A saliência externa do cartucho é definida pelo corpo plástico, pelo ombro/batente e pela profundidade real de engate da língua no soquete | Envelope da carcaça, slot_depth e posição da riser — PENDENTE |
 
 Verificação de coerência (aritmética, não é confirmação): uma área ativa de 64,8 × 48,6 mm tem
 diagonal de 81,0 mm, isto é, 3,19 polegadas, compatível com a designação "3,2 polegadas" e com a
@@ -339,13 +338,9 @@ Consequências **(derivado)**:
   forçada na saída da célula.
 - Pela mesma regra de BT-3, bosses, nervuras e berços dos cartuchos reserva não tocam a célula.
 
-`docs/dbbs-1.0.md`, seção 6, traz requisitos mecânicos coerentes com estes (não comprimir, não
-perfurar, não colar de modo que danifique o invólucro). Esse documento está fora de vigência para o
-v1 (ver seção 2.1) e não acrescenta requisito aqui.
-
 ## 9. Interface do cartucho e fenda de acomodação (borda superior)
 
-A interface passa a ter dois estágios físicos: a abertura guiada da carcaça principal recebe
+A interface tem dois estágios físicos: a abertura guiada da carcaça principal recebe
 e orienta o corpo plástico; dentro dela, a língua card edge entra no DK920A-20M. A abertura
 externa não deve ser dimensionada apenas pela espessura da PCB.
 
@@ -367,8 +362,7 @@ externa não deve ser dimensionada apenas pela espessura da PCB.
 
 Pendências: medir largura, profundidade, altura e tolerâncias do DK920A-20M; medir o corpo e a
 profundidade de engate do soquete; definir dimensões da guarda, do canal, do batente, da retenção
-e da superfície de pega; medir os módulos reais; definir o método de união da carcaça. O parâmetro
-antigo de ~40 mm expostos não deve ser usado como dimensão do corpo plástico.
+e da superfície de pega; medir os módulos reais; definir o método de união da carcaça.
 ## 10. Aberturas
 
 Lista do que o README pede. A posição exata de cada abertura é parâmetro de

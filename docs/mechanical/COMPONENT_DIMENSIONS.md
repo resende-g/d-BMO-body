@@ -384,7 +384,6 @@ Não são medidas de peça: são decisões do README. Não têm STATUS e não vi
 | `cartridge_tongue_width` | Cartucho: largura da língua | 27,8 | mm | README, Especificação do cartucho | O README registra '~27,8', derivado da abertura do soquete (~28,3 mm), que é NOMINAL. |
 | `cartridge_contact_span` | Cartucho: distância do primeiro ao último contato de um lado | 22,86 | mm | README, Especificação do cartucho | 9 x 2,54 mm. |
 | `cartridge_contact_edge_offset` | Cartucho: distância dos contatos à borda | 0,6 | mm | README, Especificação do cartucho | — |
-| `cartridge_protrusion` | Estimativa histórica de saliência do cartucho (não usar como cota final) | 40,0 | mm | README, Especificação do cartucho (estimativa anterior) | Valor histórico de ~40 mm baseado na PCB de 52 x 52 mm e na profundidade presumida do soquete. Não representa o envelope da carcaça plástica e não deve ser usado no CAD; recalcular após medir o soquete, definir o batente, a guarda e o envelope externo. |
 | `battery_bay_thickness_margin` | Berço da bateria: folga na espessura, como fração da espessura medida | 0,1 | fração | README, Riscos da bateria e recomendações, item 7 | O README registra '~10%'. |
 | `button_cap_hole_clearance_min` | Furo das tampas de botão: folga mínima | 0,2 | mm | README, Analógicos e gatilhos reaproveitados | O README registra '~0,2 a 0,3 mm'. |
 | `button_cap_hole_clearance_max` | Furo das tampas de botão: folga máxima | 0,3 | mm | README, Analógicos e gatilhos reaproveitados | — |
@@ -412,8 +411,8 @@ Procedimento proposto por este documento (não vem do README). Instrumento: paqu
 
 Segundo o README, já estão em mãos e podem ser medidos agora: a DevKitC, a tela, o módulo CC1101, os
 MCP23017, os botões tácteis, o controle de PS3 (analógicos e tampas), o cartão microSD e os
-standoffs. Os itens comprados em 02/11/2026 aguardavam entrega; a compra da bateria não estava
-confirmada e o soquete do cartucho estava fora do carrinho (Fase 4).
+standoffs. Os itens comprados em 02/11/2026 aguardam entrega; a compra da bateria não está
+confirmada e o soquete do cartucho fica para a Fase 4.
 
 Ponto em aberto: este registro ainda não tem STATUS para "medido com paquímetro". Os três STATUS
 acima são os definidos para esta etapa, e o gerador de CAD só aceita `CONFIRMADO`. Antes de registrar

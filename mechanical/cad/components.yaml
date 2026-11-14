@@ -1338,11 +1338,6 @@ design_parameters:
     value: 0.6
     source: "README, Especificação do cartucho"
     note: null
-  cartridge_protrusion:
-    label: "Estimativa histórica de saliência do cartucho (não usar como cota final)"
-    value: 40.0
-    source: "README, Especificação do cartucho (estimativa anterior)"
-    note: "Valor histórico de ~40 mm baseado na PCB de 52 x 52 mm e na profundidade presumida do soquete. Não representa o envelope da carcaça plástica e não deve ser usado no CAD; recalcular após medir o soquete, definir o batente, a guarda e o envelope externo."
   battery_bay_thickness_margin:
     label: "Berço da bateria: folga na espessura, como fração da espessura medida"
     value: 0.10
