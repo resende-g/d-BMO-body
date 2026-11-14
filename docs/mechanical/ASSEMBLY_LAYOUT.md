@@ -231,7 +231,7 @@ Cada tabela indica a zona, a referência de posição, os parâmetros a preenche
 | Parâmetros | CART_X0, CART_OFFSET, CART_Z, CART_BODY_W, CART_BODY_H, CART_BODY_D, CART_WALL_T, CART_CAVITY_W, CART_CAVITY_H, CART_TONGUE_W, CART_TONGUE_T, CART_TONGUE_LEN, CONTACT_RECESS, SLOT_W, SLOT_T, SLOT_GUIDE_W, SLOT_GUIDE_T, SLOT_STOP_Z, SLOT_KEY_X, CART_RETENTION, CART_GRIP, SOCK_Y_SEAT, T_RISER, RISER_LINK_H, GUIDE_LEN |
 | Medir | Todas as linhas de card_edge_socket_dk920a_20m, especialmente abertura, profundidade e altura; PCB-cartucho; módulo funcional; amostra impressa da guarda e do canal |
 | Restrições | AD-06, AD-07, AD-08, AD-14; RM-13 a RM-18; CT-1 a CT-13 |
-| Nota | A boca externa guia o nariz e a parcela de encaixe do corpo plástico, não apenas a espessura de 1,6 mm da PCB; o corpo principal permanece parcialmente externo. A guarda lateral enquadra a língua, mas não pode cobrir pads nem invadir a área de varredura do soquete. O batente é no corpo plástico; as guias e o apoio da riser descarregam esforços na carcaça principal. A estimativa anterior de ~40 mm salientes é apenas referência histórica, não cota do cartucho pronto. |
+| Nota | A boca externa guia o nariz e a parcela de encaixe do corpo plástico, não apenas a espessura de 1,6 mm da PCB; o corpo principal permanece parcialmente externo. A guarda lateral enquadra a língua, mas não pode cobrir pads nem invadir a área de varredura do soquete. O batente é no corpo plástico; as guias e o apoio da riser descarregam esforços na carcaça principal. |
 
 ### 5.7 Controles frontais
 

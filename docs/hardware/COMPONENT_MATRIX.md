@@ -65,7 +65,7 @@ Todos os componentes operam em lógica de 3,3 V, com uma ressalva por componente
 
 | Item | Motivo |
 |---|---|
-| ESP32-P4, Raspberry Pi ou outro SBC | Decisão de plataforma (`README.md`, "Decisões de projeto") |
+| Raspberry Pi ou outro SBC | Decisão de plataforma (`README.md`, "Decisões de projeto") |
 | Toque resistivo da tela | Pinos T_* sem ligação |
 | Módulo microSD avulso com conversor de nível | Removido pelo README; usa-se o slot da tela |
 | Módulos avulsos de carga e de boost | Substituídos por componentes SMD na PCB |
