@@ -136,22 +136,23 @@ digitar comando faz sentido. Fora do escopo deste repositório por enquanto.
 | MAX98357A (amp I²S) | 1 | `MAX98357A I2S amplifier` | **Comprado em 02/11/2026** (aguardando entrega): variação "Small Chip Welding" (chip BGA, pinos soldados), R$ 8,36. Alimentado direto da bateria (2,5–5,5 V); pino SD no GPIO 3 |
 | Alto-falante 2030, 8 Ω 2 W | 1 | `2030 8 ohm 2W speaker` | **Comprado em 02/11/2026** (aguardando entrega): R$ 7,44. Conferir dimensões e cavidade acústica |
 | Mic INMP441 (I²S) | 1 | `INMP441 I2S microphone` | **Comprado em 02/11/2026** (aguardando entrega): R$ 12,14. Captação de voz |
-| Cartão microSD ADATA | 1 | já disponível | Usuário já possui; não comprar. Verificar capacidade e formatar FAT32 conforme necessidade. Entra no **slot SD do módulo da tela**: o MSP3218 tem slot de **SD tamanho normal** no verso (confirmado em 02/11/2026), então o cartão vai com o **adaptador microSD→SD**. Conferir se há chip buffer perto do slot (se houver, testar o SPI compartilhado). Na carcaça v0, o cartão fica atrás da tela, com troca rara. Na PCB final, slot microSD próprio na tampa traseira |
+| Cartões microSD | 2 | já disponível | ADATA de 16 GB e um segundo de 8 GB, cada um já num adaptador microSD→SD; não comprar. Formatar em FAT32. Entram no **slot SD do módulo da tela**: o MSP3218 tem slot de **SD tamanho normal** no verso (confirmado em 02/11/2026), então o cartão vai com o **adaptador microSD→SD**. Conferir se há chip buffer perto do slot (se houver, testar o SPI compartilhado). Na carcaça v0, o cartão fica atrás da tela, com troca rara. Na PCB final, slot microSD próprio na tampa traseira |
 | Bateria LiPo 3,7V 1S 4000 mAh (anúncio) | 1 | `4070115 3.7V 4000mAh` | Selecionada; R$ 59,48; compra não confirmada. Dimensão informada: 0,4 × 70 × 115 mm (provavelmente 4,0 × 70 × 115 mm; confirmar medida real). **Requisitos:** PCM de proteção integrado, termistor NTC (3 fios) e vendedor com datasheet. **Conferir a polaridade do JST antes de ligar**: baterias do AliExpress vêm invertidas com frequência, e a inversão queima o carregador. Se a bateria não tiver o terceiro fio, um NTC avulso serve: 10 kΩ (marcado "103"), constante B compatível com o datasheet do carregador (3435 ou 3950), colado na célula com fita kapton, sem criar ponto de pressão. O usuário já tem um sensor de temperatura: confirmar se é NTC analógico (serve) ou digital tipo DS18B20/DHT11 (não serve para o pino TS do carregador). Ver [Riscos da bateria](#riscos-da-bateria-e-recomendações) |
 | Botões tácteis | — | estoque próprio | Usuário informa que já possui vários botões; não comprar. Confirmar dimensões e quantidade na montagem (D-pad, 4 ações, select/start, 2 gatilhos de ombro, energia) |
 | Analógicos (sticks de PS3) | 2 | reaproveitar | **Tirar do controle genérico de PS3 que o usuário já tem** (sem compra). Cada stick tem 2 potenciômetros (X/Y) e o clique L3/R3. Ver [Analógicos e gatilhos reaproveitados](#analógicos-e-gatilhos-reaproveitados) |
 | Gatilhos de ombro (L/R) | 2–4 | estoque próprio | Botões tácteis em **ângulo reto**, como nos portáteis de emulação. Conferir se há modelos de ângulo reto no estoque; se não, comprar. Tampas: as do L1/R1 do controle de PS3 ou impressas em grafite; alavancas do L2/R2 se couberem (ver [Analógicos e gatilhos reaproveitados](#analógicos-e-gatilhos-reaproveitados)) |
+| Power bank magnético 5000 mAh (compatível com MagSafe) | 1 | já disponível | Fonte externa pela USB da DevKitC, alternativa sem custo à bateria da Fase 2 na v0. Não abrir para aproveitar a célula. Ver [Alternativa sem custo](#alternativa-sem-custo-power-bank-externo-v0) |
 | Botão momentâneo de energia | 1 | `tactile momentary push button` | Usar botão, não chave deslizante. A PCB precisará de circuito de power-latch/gerenciamento de energia para ligar e desligar com pressão; definir CI/topologia e botão conforme esquema. Não comprar chave SPST |
 | Resistores 4,7k / 100k / 1k | kit | `resistor kit 4.7k 100k 1k` | **Comprado em 02/11/2026** (aguardando entrega): kit de filme metálico 1%, 30 valores (10 Ω–1 MΩ), 300 peças, R$ 19,96. Pull-ups do I²C, divisor da bateria e afins |
 | Capacitores 100nF (104) | ~5 | `100nF ceramic capacitor 104` | **Comprado em 02/11/2026** (aguardando entrega): pacote de 100 peças de 100 nF (104), R$ 12,24. Desacoplamento do MCP23017 e dos módulos |
 | Jumpers Dupont (F-F, M-M e M-F) | kit 40 peças | `Dupont jumper wire kit 40pcs female-female male-male male-female` | **Comprado em 02/11/2026** (aguardando entrega): variação "20cm 3kinds 120pin" (40 de cada tipo), R$ 22,10. Prioridade imediata: F-F para o CC1101 |
 | Protoboard MB-102 (830 pontos) | 1 | `MB-102 breadboard 830` | **Comprado em 02/11/2026** (aguardando entrega): variação "MB-102 white", R$ 13,26. A DevKitC-1 é larga e deixa só uma fileira livre de cada lado; se precisar, usar duas lado a lado |
 | Malha dessoldadora (2–3 mm) e fluxo no-clean | 1 cada | loja brasileira | Para tirar os analógicos do controle de PS3 e para a montagem. Fluxo no-clean em pasta ou caneta, nunca pasta ácida |
-| Adaptador microSD→SD | 1 | loja de informática | Se não veio com o cartão: o slot da tela é SD tamanho normal |
+| Adaptador microSD→SD | 2 | já disponível | Um com cada cartão: o slot da tela é SD tamanho normal |
 | Fio fino 30 AWG | 1 rolo | `30 AWG silicone wire` | Comprar no Brasil (no AliExpress, o frete sai mais caro que o fio). Fiação fina e protótipos |
 | Conector/soquete card edge 2,54 mm, 20/34 pinos | 2 peças | `CE 225F 2.54mm 20 34 pin card edge slot connector` | Fase 4. Antes de comprar: confirmar se o anúncio "2*20P" (R$ 14,33) são **2 peças de 20P** (correto) ou **um soquete 2×20 = 40 contatos** (~55 mm, não cabe no cartucho de 52 mm); medir a peça real antes de fechar o footprint |
 
-**Comprado em 02/11/2026 (aguardando entrega):** jumpers R$ 22,10; protoboard MB-102 R$ 13,26; PN532 R$ 17,20; IR R$ 7,03; MAX98357A R$ 8,36; alto-falante R$ 7,44; INMP441 R$ 12,14; resistores R$ 19,96; capacitores 100 nF R$ 12,24. **Total R$ 119,73**, antes do cupom de R$ 16 (se valer para o carrinho inteiro) e do imposto. Fio de 30 AWG, malha, fluxo e adaptador microSD→SD em loja brasileira. Resistores e capacitores avulsos só servem para bancada: na PCB, entram como SMD montados pela JLCPCB.
+**Comprado em 02/11/2026 (aguardando entrega):** jumpers R$ 22,10; protoboard MB-102 R$ 13,26; PN532 R$ 17,20; IR R$ 7,03; MAX98357A R$ 8,36; alto-falante R$ 7,44; INMP441 R$ 12,14; resistores R$ 19,96; capacitores 100 nF R$ 12,24. **Total R$ 119,73**, antes do cupom de R$ 16 (se valer para o carrinho inteiro) e do imposto. Fio de 30 AWG, malha e fluxo em loja brasileira. Resistores e capacitores avulsos só servem para bancada: na PCB, entram como SMD montados pela JLCPCB.
 
 **Carga, BMS e regulador são componentes SMD na própria PCB** (projetados no EasyEDA, fabricados pela JLCPCB), não módulos avulsos TP4056/MT3608. Ver seção Fabricação.
 
@@ -166,7 +167,7 @@ bateria, analógicos), então só é modelada depois da Fase 2.
 | Fase | Comprar | Custo aproximado | O que destrava |
 |---|---|---:|---|
 | 1. Núcleo + periféricos (comprada em 02/11/2026) | Jumpers, protoboard, resistores, capacitores 100 nF, PN532, IR, MAX98357A, alto-falante, INMP441 | R$ 119,73 antes do cupom e do imposto | CC1101, NFC, IR e áudio na S3 com o Bruce. Sem compra: slot SD da tela com adaptador, 1 MCP23017 nos botões, rosto do d-BMO. A Fase 3 original foi antecipada para cá |
-| 2. Volume + energia (próxima rodada) | Bateria com PCM + NTC **e** módulo de carga com power-path (BQ24074 ou MCP73871) na mesma compra; botões tácteis de ângulo reto se faltarem no estoque; tirar os analógicos do controle de PS3 (sem compra) | ~R$ 80–100 | Peças que definem o corpo em mãos: **modelar e imprimir a carcaça v0**. Bateria sem carregador adequado não se compra: os dois vão juntos. O módulo também valida a energia na bancada (ver [Riscos da bateria](#riscos-da-bateria-e-recomendações)) |
+| 2. Volume + energia (próxima rodada) | Bateria com PCM + NTC **e** módulo de carga com power-path (BQ24074 ou MCP73871) na mesma compra; botões tácteis de ângulo reto se faltarem no estoque; tirar os analógicos do controle de PS3 (sem compra) | ~R$ 80–100, ou zero com o [power bank externo](#alternativa-sem-custo-power-bank-externo-v0) no lugar da bateria e do módulo | Peças que definem o corpo em mãos: **modelar e imprimir a carcaça v0**. Bateria sem carregador adequado não se compra: os dois vão juntos. O módulo também valida a energia na bancada (ver [Riscos da bateria](#riscos-da-bateria-e-recomendações)) |
 | 3. Periféricos | — | — | Antecipada para a Fase 1 (comprada em 02/11/2026) |
 | 4. Cartuchos | Soquete card edge | ~R$ 15 | Cartucho no topo; até lá, a fenda fica com tampa cega |
 | 5. Definitivo | PCB própria na JLCPCB (ESP32-S3-WROOM-1-N16R8, carga/BMS/regulador SMD, MCP23017, riser do card edge) | ~R$ 100 por 5 placas + montagem, frete e imposto | Carcaça v1 em volta da PCB definitiva |
@@ -311,6 +312,38 @@ e pressão mecânica.
    (amolece a ~55 °C).
 8. **Validar na bancada antes da PCB:** testar o circuito de energia com um módulo pronto de
    carga com power-path, em superfície não inflamável e sem deixar carregando sozinho.
+
+### Alternativa sem custo: power bank externo (v0)
+
+Registrada em 13/11/2026. O power bank magnético de 5000 mAh (compatível com MagSafe) que o
+usuário já tem pode alimentar a v0 pela USB da DevKitC, no lugar da bateria e do carregador da
+Fase 2. Lacrado, ele já traz carregador, proteção da célula e conversor de 5 V.
+
+- **Ligação:** cabo que já existe, na porta USB da DevKitC (5 V, regulador da placa, 3,3 V). Se
+  o cabo C-C não ligar a placa, faltam os resistores de 5,1 kΩ no CC da DevKitC; testar um cabo
+  USB-A→C.
+- **Aliviar o regulador da DevKitC:** a tela (3,3–5 V) e o MAX98357A (2,5–5,5 V) no pino 5V; o
+  resto em 3,3 V. CC1101 e PN532 nunca em 5 V.
+- **Fixação:** encaixe impresso na traseira da carcaça v0. O ímã MagSafe só prende com anel de
+  aço, que seria compra.
+- **Autonomia (estimativa, não medida):** ~8–9 h com consumo de ~0,35 A. Medir na bancada.
+
+Limitações:
+
+- **Corte por consumo baixo:** o power bank desliga a saída com pouca carga, então o deep sleep
+  apaga tudo e o botão do power bank vira o botão de energia. Conferir se o modelo tem modo de
+  baixo consumo.
+- **Sem nível de bateria no firmware:** só os LEDs do power bank mostram a carga.
+- **Carregar com o d-BMO desligado:** em modelos baratos, a saída pisca quando o carregador é
+  ligado e o ESP32 reinicia.
+- **NFC:** ímãs, bobina e ferrite do power bank atrapalham o PN532. A antena fica fora da área
+  coberta por ele.
+- **Volume:** o corpo fica mais grosso e pesado. Medir o power bank com paquímetro antes do CAD
+  e conferir na etiqueta a saída USB (5 V, 2 A ou mais).
+- **Não abrir** o power bank para aproveitar a célula (ver item 2 dos riscos).
+
+Na PCB final, a mesma ideia permitiria tirar carregador, proteção, trava de energia e leitura da
+bateria, em troca de espessura, peso e do corte automático. **Decisão em aberto.**
 
 ### Conector de carga USB-C dedicado
 
@@ -712,13 +745,14 @@ ser conferidos antes de congelar a PCB ou o CAD.
 - [ ] Projetar a riser do card edge no topo
 - [x] Bancada: ESP32-S3 DevKitC confirmada (16 MB + 8 MB PSRAM), tela ILI9341 validada (ID 0x9341) e Bruce rodando com 3 botões
 - [x] Fase 1 + periféricos comprada no AliExpress em 02/11/2026 (R$ 119,73 antes do cupom e do imposto)
-- [ ] Comprar malha, fluxo e adaptador microSD→SD no Brasil
-- [ ] Próxima rodada: bateria com PCM + NTC e módulo de carga com power-path, juntos
+- [ ] Comprar malha, fluxo e fio de 30 AWG no Brasil
+- [ ] Próxima rodada: bateria com PCM + NTC e módulo de carga com power-path, juntos (ou o power bank externo na v0)
+- [ ] Medir o power bank com paquímetro e conferir a saída USB na etiqueta
 - [ ] Ligar o slot SD da tela (cartão microSD com adaptador SD) no CS 21
 - [ ] Ligar 1 MCP23017 e testar o ambiente `bmo-v1-mcp` do Bruce
 - [ ] Validar a pinagem proposta da S3 e atualizar o `bmo.ini`
 - [ ] Fase 2: tirar e testar os analógicos do controle de PS3; comprar a bateria (PCM + NTC); modelar e imprimir a carcaça v0
-- [ ] Decidir carregador (power-path), USB-C único vs OR com diodo ideal, e se o cartucho mantém a linha de 5 V
+- [ ] Decidir carregador (power-path), USB-C único vs OR com diodo ideal, se o cartucho mantém a linha de 5 V e se a PCB final usa power bank externo
 - [ ] Validar o circuito de energia na bancada antes de fechar a PCB
 - [x] Alvo `dbmo-v1` do Retro-Go: launcher compila na CI
 - [ ] Compilar os emuladores e a imagem completa do Retro-Go
