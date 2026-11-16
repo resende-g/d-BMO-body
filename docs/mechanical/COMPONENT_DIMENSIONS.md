@@ -410,7 +410,7 @@ Procedimento proposto por este documento (não vem do README). Instrumento: paqu
    documento.
 
 Segundo o README, já estão em mãos e podem ser medidos agora: a DevKitC, a tela, o módulo CC1101, os
-MCP23017, os botões tácteis, o controle de PS3 (analógicos e tampas), o cartão microSD e os
+MCP23017, os botões tácteis, o controle de PS3 (analógicos e tampas), os cartões microSD com adaptador e os
 standoffs. Os itens comprados em 02/11/2026 aguardam entrega; a compra da bateria não está
 confirmada e o soquete do cartucho fica para a Fase 4.
 
