@@ -186,6 +186,49 @@ aparece mesmo com os módulos de IR desligados. Com o CC1101 desligado, a primei
 leu VERSION 0xE0 (MISO solto) e relatou `Failed (IoError)` antes de passar a `Absent`:
 classificação imprecisa do firmware, sem risco ao hardware.
 
+### Botões lidos pelo firmware próprio (2026-11-21)
+
+Montagem mínima (seção anterior): botões na protoboard pequena pelo J3, CIMA no 39, OK no 2,
+BAIXO no 47, GND do J3 (pino 22) no trilho (−); IR, CC1101, PN532 e SD desligados. Firmware
+`dbmo-bench` no commit `66a6723` (registro de botões no log desde `56cd461`), gravado com
+`pio run -e dbmo-bench -t upload --upload-port /dev/cu.usbmodem1101` (hash verificado). Console
+lido por um script pyserial a 115200 (DTR e RTS em 0, comandos terminados em CRLF), não pelo
+`pio device monitor`. Abrir a porta reinicia a placa: cada captura começa com o boot completo
+(`rst:0x15 (USB_UART_CHIP_RESET)`), sem precisar do RST.
+
+| Tentativa | Montagem | Resultado no log |
+|---|---|---|
+| 1 (capturas de 240 s e 900 s) | Como estava | Nenhum evento de botão; não se sabe se os botões foram apertados nessas janelas |
+| 2 (300 s) | Como estava; usuário apertou os três | Só `botao down: apertou / soltou / clique` (11,4 s). CIMA e OK sem nenhuma linha |
+| 3 (300 s) | Usuário desligou o USB e realinhou os jumpers dos botões | **Os três botões registrados** |
+
+Saída da tentativa 3 (linhas periódicas do PN532 e do CC1101 omitidas):
+
+```
+[   31163][I][app] botao down: apertou
+[   31418][I][app] botao down: soltou
+[   31418][I][app] botao down: clique
+[   32358][I][app] botao up: apertou
+[   32618][I][app] botao up: soltou
+[   32618][I][app] botao up: clique
+[   33403][I][app] botao a: apertou
+[   33648][I][app] botao a: soltou
+[   33648][I][app] botao a: clique
+```
+
+Leitura: o firmware próprio lê os três botões (GPIO 39, 2 e 47, com pull-up interno). Cada
+toque curto gerou um único apertou/soltou/clique, sem leitura duplicada. Os três pinos passam
+pela mesma rotina (`GpioButtonSource`, `firmware/app/src/main.cpp`), o que apontava a falha da
+tentativa 2 para a fiação; ela sumiu depois do realinhamento. Qual jumper ou furo estava errado
+não foi registrado.
+
+Limites desta evidência: um toque curto por botão, numa única rodada; toque longo e repetição
+não testados; continuidade com o multímetro não registrada.
+
+Rádio, na captura de 240 s, com o CC1101 desligado: aos 197 s o firmware leu
+`VERSION 0x0B fora das documentadas (0x04, 0x14)`, passou a `radio: Failed (IoError)` e voltou a
+`Absent` 15 s depois. É a mesma imprecisão já registrada com 0xE0 (MISO solto); não corrigida.
+
 ### Testes no computador (2026-11-12)
 
 Comando:
