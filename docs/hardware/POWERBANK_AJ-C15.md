@@ -243,3 +243,14 @@ Não registrado: estado de carga antes da abertura, ferramentas usadas, se houve
 |---|---|---|---|
 | Dois CIs de 6 pinos (SOT-23-6) ao lado dos pads TX | **"4608B"** | Candidato: BORN Semiconductor **BM4608B**, par de MOSFETs complementares (canal N + canal P) de 20 V em SOT-23-6, cuja ficha técnica usa a marcação "4608B" (atta.szlcsc.com, PDF BFCDB57A9EEF074ABEE4353B62206472) | **Hipótese provável.** Códigos de marcação podem se repetir entre fabricantes; a função (dois pares formando uma ponte H que aciona a bobina) é inferência pela posição na placa |
 | CI de 6 pinos à esquerda, abaixo do CI de 16 pinos | Começo parecido com "XB8…"/"YB8…", resto ilegível | Não identificado | Pendente |
+
+### 21/11/2026: bloco do conversor (lado direito)
+
+| Componente | Marcação | Identificação | Estado |
+|---|---|---|---|
+| CI de 6 pinos ao lado do indutor grande | **"4608B"** e "MR" | Mesma marcação dos dois CIs da ponte da bobina: par de MOSFETs complementares (candidato BM4608B). **Não é um CI controlador** | Marcação lida; identificação provável |
+| Indutor blindado grande | **"4R7"** | 4,7 µH pela notação usual | Marcação lida |
+| Diodo em encapsulamento SMA/SOD perto de "G C Q" | **"S4"** | Não identificado com segurança (marcação curta, usada por mais de uma peça) | Pendente |
+| CI de 16 pinos | Sem marcação visível em várias fotos | Provável controlador único da placa (carga, conversor e transmissor), com a marcação apagada | **Hipótese** |
+
+Leitura: não há CI conversor dedicado com datasheet. O conversor parece montado com um par de MOSFETs (4608B) e o indutor de 4,7 µH, comandado por um controlador sem marcação. Topologia (elevador ou abaixador), tensão de saída e quando ele liga (sempre, ou só durante a transmissão sem fio) **não podem ser determinadas por datasheet**: só por medição.
