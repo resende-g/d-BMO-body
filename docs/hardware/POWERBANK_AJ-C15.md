@@ -254,3 +254,9 @@ Não registrado: estado de carga antes da abertura, ferramentas usadas, se houve
 | CI de 16 pinos | Sem marcação visível em várias fotos | Provável controlador único da placa (carga, conversor e transmissor), com a marcação apagada | **Hipótese** |
 
 Leitura: não há CI conversor dedicado com datasheet. O conversor parece montado com um par de MOSFETs (4608B) e o indutor de 4,7 µH, comandado por um controlador sem marcação. Topologia (elevador ou abaixador), tensão de saída e quando ele liga (sempre, ou só durante a transmissão sem fio) **não podem ser determinadas por datasheet**: só por medição.
+
+### 21/11/2026: medição M1
+
+| # | Data | Ponto + | Ponto − | Modo/faixa | Condição | Leitura | Observação |
+|---|---|---|---|---|---|---|---|
+| M1 | 21/11 | Solda do fio vermelho da célula | Solda do fio preto da célula | DCV 20 | Parado, placa fora da carcaça | **3,9 V** (positivo) | Polaridade confirmada: vermelho = positivo. Tensão dentro da faixa normal de uma célula Li-ion (3,0 a 4,2 V); o estado de carga exato não se deduz só da tensão em repouso |
