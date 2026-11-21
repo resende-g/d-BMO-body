@@ -157,6 +157,35 @@ a compilação). Resolvido apagando `.pio/build/dbmo-bench`. Segunda execução:
 **4 de 4 aprovados, 29,6 s.** Primeiro teste de bancada do firmware próprio aprovado em
 hardware.
 
+### Firmware próprio com a montagem mínima (2026-11-21)
+
+Tela direto na DevKitC e 3 botões na protoboard pequena; IR, CC1101, PN532 e SD
+desligados. Rosto do d-BMO **visível na tela** (confirmado pelo usuário). Saída do `status`
+(console aberto com `--echo --filter send_on_enter --eol CRLF`; sem essas opções o comando
+não foi respondido, causa não investigada):
+
+```
+aplicacao: Running; sistema: Degraded
+  power        Ready         Ok
+  storage      Absent        HardwareAbsent
+  config       Ready         Ok
+  display      Ready         Ok
+  rosto        Ready         Ok
+  input        Ready         Ok
+  audio        Absent        HardwareAbsent
+  infrared     Ready         Ok
+  nfc          Absent        HardwareAbsent
+  radio        Absent        HardwareAbsent
+  cartridges   Ready         Ok
+bateria: sem leitura (Disabled)
+```
+
+Limites desta evidência: `input: Ready` só indica pinos configurados; o firmware não
+registra botões no log, então a leitura dos botões **não foi verificada**. `infrared: Ready`
+aparece mesmo com os módulos de IR desligados. Com o CC1101 desligado, a primeira tentativa
+leu VERSION 0xE0 (MISO solto) e relatou `Failed (IoError)` antes de passar a `Absent`:
+classificação imprecisa do firmware, sem risco ao hardware.
+
 ### Testes no computador (2026-11-12)
 
 Comando:
