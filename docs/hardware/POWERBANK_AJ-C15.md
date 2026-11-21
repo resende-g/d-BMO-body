@@ -236,3 +236,10 @@ Não registrado: estado de carga antes da abertura, ferramentas usadas, se houve
 | Dois LEDs pequenos ao lado da serigrafia "KCF"; três pads marcados **"G C Q"** perto do indutor | Observado; função dos pads desconhecida, **não usar** |
 | Marcações do CI de 16 pinos, dos CIs de 6 e 8 pinos e do indutor | **Ainda ilegíveis** |
 | Conector: carcaça retangular com cerca de 10 contatos visíveis | Tipo ainda não confirmado |
+
+### 21/11/2026: primeira marcação lida
+
+| Componente | Marcação | Identificação | Estado |
+|---|---|---|---|
+| Dois CIs de 6 pinos (SOT-23-6) ao lado dos pads TX | **"4608B"** | Candidato: BORN Semiconductor **BM4608B**, par de MOSFETs complementares (canal N + canal P) de 20 V em SOT-23-6, cuja ficha técnica usa a marcação "4608B" (atta.szlcsc.com, PDF BFCDB57A9EEF074ABEE4353B62206472) | **Hipótese provável.** Códigos de marcação podem se repetir entre fabricantes; a função (dois pares formando uma ponte H que aciona a bobina) é inferência pela posição na placa |
+| CI de 6 pinos à esquerda, abaixo do CI de 16 pinos | Começo parecido com "XB8…"/"YB8…", resto ilegível | Não identificado | Pendente |
