@@ -3,7 +3,7 @@
 | Campo | Valor |
 |---|---|
 | Versão | 0.1 (2026-11-20) |
-| Estado | **Protocolo, ainda não executado.** O power bank não foi aberto nem medido |
+| Estado | **Aberto em 21/11/2026** pelo usuário (etapa 5). Nenhuma medição elétrica ainda |
 | Objetivo | Saber se a placa interna tem uma linha regulada de 5 V aproveitável pelo d-BMO e decidir entre os três cenários da seção 7 |
 | Regra | Nenhuma ligação elétrica, solda ou fio em ponto cuja função não esteja confirmada por inscrição, datasheet **e** medição |
 
@@ -202,3 +202,18 @@ Enviar, com escala e luz lateral:
 | Complexidade | Solda em placa desconhecida; botão e corte por baixo consumo da placa original | Alta | Média, com módulos de bancada; depois SMD na PCB |
 | Manutenção e reprodutibilidade | Baixa: peça sem documentação, difícil repetir | Baixa | Alta |
 | Pontos a confirmar | Existência, estabilidade e capacidade da linha de 5 V; liga/desliga automático da saída | Origem e especificação da célula | Compra da célula e do carregador |
+
+## 11. Registro de execução
+
+### 21/11/2026: abertura (foto do usuário)
+
+Não registrado: estado de carga antes da abertura, ferramentas usadas, se houve aquecimento.
+
+| Observação | Estado |
+|---|---|
+| Uma célula tipo pouch (prateada, bordas com fita amarela), com isolante verde (fishpaper) sobre a extremidade da placa e um adesivo amarelo no centro | Observado na foto |
+| Placa com serigrafia "C302-V8.8J6P-KCF" e "BE0514"; face visível com áreas de cobre estanhado; componentes provavelmente na outra face | Observado; face dos componentes não vista |
+| Fio vermelho (à esquerda) e fio preto (à direita) da célula soldados em pads da placa; marcação "B" perto do fio preto (provavelmente "B−", não legível por inteiro) | Observado; polaridade **não medida** |
+| Moldura cinza ao redor (material não confirmado; se for metálica, há risco de curto com soldas expostas) | Pendente |
+| Bobina/ímãs do carregamento sem fio | Não visíveis; provavelmente embaixo da célula |
+| Inchaço da célula | Não avaliável pela foto de cima; falta foto lateral |
