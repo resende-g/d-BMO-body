@@ -229,6 +229,37 @@ Rádio, na captura de 240 s, com o CC1101 desligado: aos 197 s o firmware leu
 `VERSION 0x0B fora das documentadas (0x04, 0x14)`, passou a `radio: Failed (IoError)` e voltou a
 `Absent` 15 s depois. É a mesma imprecisão já registrada com 0xE0 (MISO solto); não corrigida.
 
+### Trilho da protoboard grande e receptor de IR (2026-11-21)
+
+Montagem conforme [`../hardware/BREADBOARD_MAP.md`](../hardware/BREADBOARD_MAP.md) v0.2: fase A
+(VCC e GND da tela direto na DevKitC; trilho (+) no J1 pino 2; trilho (−) no J3 pino 1; LED da
+tela no trilho) e fase C (receptor de IR com OUT no GPIO 4, transmissor com DAT no GPIO 5, os
+dois alimentados pelo trilho); CC1101 desligado. Firmware `dbmo-bench` já gravado (seção
+anterior). Console pelo mesmo script pyserial, com `ir last` enviado depois de cada tentativa.
+
+| Etapa | Observação | Leitura |
+|---|---|---|
+| Primeira energização com o IR | Boot e `status` iguais aos da montagem mínima; depois de uma tecla do controle, `ir last` → `nada recebido` | — |
+| R1: VCC contra GND, nas pernas do receptor (USB ligado) | **0 V** | Receptor sem alimentação |
+| GND do receptor contra GND da DevKitC | **2,5 V** (sinal da leitura não registrado) | O GND do receptor não chegava ao GND da placa |
+| Troca dos jumpers de VCC (amarelo) e de GND (marrom) do receptor | `ir last` → `nada recebido` | Não resolveu |
+| Usuário encontrou o fio A2 (J3 pino 1 → trilho (−)) **não ligado** e o ligou | — | O trilho (−) estava sem GND |
+| Nova tentativa com o controle | `ir last` → **`nec:0004:17`** | Receptor recebeu e decodificou um quadro NEC |
+
+Leitura: o receptor de IR funciona com o firmware próprio no GPIO 4. É a primeira execução em
+hardware do driver de recepção (`RmtIrReceiver`, `firmware/platform/esp32s3/`) e do
+decodificador NEC. A hipótese de que este receptor tivesse sido danificado pela ligação errada do
+GND na v0.1 fica descartada. A causa da falha nesta montagem foi o fio A2 ausente; não se sabe se
+os jumpers trocados tinham algum defeito.
+
+Limites desta evidência: um controle (não identificado), uma tecla, uma leitura; R1 não foi
+medido de novo depois da correção; conferências M1 a M5 do mapa não registradas, então não se
+sabe se o trilho de cima é dividido; mudança do rosto na tela não confirmada; transmissor ligado
+mas não testado (envio bloqueado, `infrared.tx_enabled` = 0). Numa das capturas, o log registrou
+`botao up` e `botao a` (apertou, soltou, clique) aos 126–127 s sem confirmação de que os botões
+foram apertados. Em outra, com o CC1101 desligado, o rádio relatou `CC1101 nao respondeu: Timeout`
+em vez de `HardwareAbsent`: a mesma leitura de MISO solto já registrada.
+
 ### Testes no computador (2026-11-12)
 
 Comando:
