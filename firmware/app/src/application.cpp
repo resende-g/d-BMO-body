@@ -294,6 +294,14 @@ void Application::handle(const Event &event) {
   const uint32_t now = event.timestampMs;
   switch (domainOf(event.id)) {
     case EventDomain::Input:
+      if (event.id == input::input_event::kButton) {
+        // Registro de cada botão no log, para conferir a fiação na bancada. A repetição
+        // automática fica de fora para não encher o console com o botão segurado.
+        const auto action = static_cast<input::ButtonAction>(event.b);
+        if (action != input::ButtonAction::Repeat)
+          DBMO_LOGI(kTag, "botao %s: %s", input::toString(static_cast<input::Button>(event.a)),
+                    input::toString(action));
+      }
       // Qualquer uso dos controles conta como atividade.
       display_.notifyActivity(now);
       power_.notifyActivity(now);

@@ -297,6 +297,23 @@ void test_button_press_reaches_the_event_bus() {
   TEST_ASSERT_TRUE(app.input().healthySources() == 1);
 }
 
+void test_button_press_is_written_to_the_log() {
+  dbmo::mock::RecordingLogSink sink;
+  TEST_ASSERT_OK(dbmo::logger().addSink(&sink));
+  Application app(rig->fullHardware());
+  TEST_ASSERT_OK(app.begin());
+  rig->run(app, 50);
+  sink.clear();
+  rig->mcp.press(dbmo::config::mcp_buttons::kActionA);
+  rig->run(app, 60);
+  rig->mcp.release(dbmo::config::mcp_buttons::kActionA);
+  rig->run(app, 60);
+  TEST_ASSERT_TRUE(sink.contains("botao a: apertou"));
+  TEST_ASSERT_TRUE(sink.contains("botao a: soltou"));
+  TEST_ASSERT_TRUE(sink.contains("botao a: clique"));
+  dbmo::logger().clearSinks();
+}
+
 void test_nfc_scan_drives_the_face() {
   Application app(rig->fullHardware());
   TEST_ASSERT_OK(app.begin());
@@ -701,6 +718,7 @@ int main() {
   RUN_TEST(test_boot_on_todays_bench_with_only_a_display);
   RUN_TEST(test_missing_required_hardware_is_refused);
   RUN_TEST(test_button_press_reaches_the_event_bus);
+  RUN_TEST(test_button_press_is_written_to_the_log);
   RUN_TEST(test_nfc_scan_drives_the_face);
   RUN_TEST(test_cartridge_insertion_starts_its_driver);
   RUN_TEST(test_cartridge_cannot_claim_a_device_address);

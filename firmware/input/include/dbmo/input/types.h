@@ -48,5 +48,6 @@ struct StickPosition {
 };
 
 const char *toString(Button button);
+const char *toString(ButtonAction action);
 
 }  // namespace dbmo::input
