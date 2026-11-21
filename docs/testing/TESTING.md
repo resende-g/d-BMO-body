@@ -260,6 +260,41 @@ mas não testado (envio bloqueado, `infrared.tx_enabled` = 0). Numa das capturas
 foram apertados. Em outra, com o CC1101 desligado, o rádio relatou `CC1101 nao respondeu: Timeout`
 em vez de `HardwareAbsent`: a mesma leitura de MISO solto já registrada.
 
+### CC1101 sozinho no SPI (2026-11-21)
+
+Passo anterior à fase D do mapa, para tirar a tela do caminho: os fios de SPI da tela (A6–A8)
+saíram da DevKitC e o CC1101 (Ebyte E07-M1101D, 433M, antena rosqueada) foi ligado direto, com
+jumpers fêmea: pino 1 GND e pino 2 VCC no trilho, 3 GDO0 → 15, 4 CSN → 14, 5 SCK → 12,
+6 MOSI → 11, 7 MISO → 13; pino 8 sem ligação. IR e botões continuaram ligados. Desenho:
+artifact "Ligação do CC1101" (https://claude.ai/artifact/KKHCduhNsNV6nBJWRAmhbM, privado).
+
+Medições do usuário (multímetro digital, faixa 20 V; continuidade na escala 200 Ω):
+
+| # | Pontas | Leitura | Leitura do resultado |
+|---|---|---|---|
+| M5 | Trilho (+) contra trilho (−) | 3,24 V | Dentro da faixa do CC1101 (CC-01, CC-02) |
+| V1 | Pino 2 contra pino 1 do módulo | 3,24 V | Alimentado, polaridade certa |
+| V2 | Pino 3 (GDO0) contra pino 1 | 1,61 V | Média do clock de fábrica no GDO0 (CC-12): cristal oscilando; confirma que o pino 3 é o GDO0 |
+| V3 | Pino 4 (CSN) contra pino 1 | 3,24 V | CSN chega ao módulo, em alto no repouso |
+| S5, S6 | Pino 12 da DevKitC contra pino 5; pino 11 contra pino 6 | 0,8 Ω cada | Fios de SCK e MOSI contínuos |
+
+| Tentativa | Resultado | Leitura |
+|---|---|---|
+| 1 | Boot: `radio: Absent (HardwareAbsent)`. `pio test -e dbmo-bench -f test_cc1101`: 1 de 4 (reset aprovado; identificação falhou com "VERSION 0x00 ou 0xFF"; configuração e recepção falharam; sono aprovado) | O fio do MISO (pino 7 → 13) **não estava ligado**, como o usuário encontrou ao medir S7. O GPIO 13 solto leu 0x00, e por isso a espera de "pronto" (MISO baixo) passou mesmo sem chip no barramento |
+| 2 (MISO ligado) | `test_cc1101`: **4 de 4 aprovados**, 19,0 s. Firmware regravado; boot: `CC1101 PARTNUM=0x00 VERSION=0x14; transmissao desabilitada`, `radio: Ready (Ok)`; comando `radio`: `Idle, 433920000 Hz` | CC1101 identificado (valores de CC-13) |
+
+Leitura: o CC1101 responde pelo driver do firmware próprio. A comunicação com a ligação acima
+confirma, na prática, a função dos pinos 5 (SCK), 6 (MOSI) e 7 (MISO), que até aqui vinham só da
+ficha da LCSC; o pino 8 (GDO2) continua sem verificação. Nada foi transmitido: o teste não
+transmite e o firmware relata a transmissão desabilitada.
+
+Limites desta evidência: a frequência do cristal **não** foi verificada. O teste de configuração
+relê FREQ2 = 0x10, valor que o próprio firmware calcula supondo 26 MHz, e por isso só prova a
+escrita e a leitura do registrador. O RSSI foi conferido só dentro da faixa plausível (−140 a 0);
+o valor não foi registrado. A tela ficou sem SPI durante o teste: o firmware leu o ID `0xFFFF` e
+depois `0x0000` e mesmo assim declarou `display: Ready` (imprecisão do firmware, não corrigida).
+O barramento dividido com a tela (fase D do mapa) ainda não foi testado.
+
 ### Testes no computador (2026-11-12)
 
 Comando:
