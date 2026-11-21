@@ -260,3 +260,4 @@ Leitura: não há CI conversor dedicado com datasheet. O conversor parece montad
 | # | Data | Ponto + | Ponto − | Modo/faixa | Condição | Leitura | Observação |
 |---|---|---|---|---|---|---|---|
 | M1 | 21/11 | Solda do fio vermelho da célula | Solda do fio preto da célula | DCV 20 | Parado, placa fora da carcaça | **3,9 V** (positivo) | Polaridade confirmada: vermelho = positivo. Tensão dentro da faixa normal de uma célula Li-ion (3,0 a 4,2 V); o estado de carga exato não se deduz só da tensão em repouso |
+| M2 | 21/11 | Lado direito dos 3 capacitores empilhados à direita do indutor "4R7" | Solda do fio preto da célula | DCV 20 | Parado, nada sobre a bobina | Lado esquerdo: **0 V**; lado direito: **3,86 V** (nos três) | Os três capacitores estão no mesmo nó, cerca de 0,04 V abaixo da célula (3,9 V). Em repouso **não há 5 V** nesse ponto: ele segue a tensão da bateria. Se é a entrada ou a saída do conversor parado, ainda não se sabe |
