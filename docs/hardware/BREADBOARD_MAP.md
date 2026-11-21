@@ -19,35 +19,19 @@
 
 ## 2. Desenho
 
-Protoboard MB-102 vista de cima, colunas numeradas de 1 a 63 (impressas na placa).
-Usar só o par de trilhos **de cima**.
+O desenho interativo está no artifact "Bancada d-BMO" (https://claude.ai/artifact/Jcf6cXU6TdTkLStP5fy38u, privado). Resumo da disposição na protoboard MB-102 (colunas 1 a 63 impressas na placa; só o par de trilhos de cima é usado):
 
-```
-             col: 1    5    10   13   16        25   27   32   34   39   41        50 51 52
-                  |    |    |    |    |         |    |    |    |    |    |         |  |  |
- trilho (+) 3V3   ═══════════════════════════════════════════════════════════════════════════
- trilho (−) GND   ═══════════════════════════════════════════════════════════════════════════
+| Onde | O quê |
+|---|---|
+| Coluna 8, linhas a–d | Nó MOSI (DevKitC 11, tela SDI, CC1101 pino 6) |
+| Coluna 11, linhas a–d | Nó SCK (DevKitC 12, tela SCK, CC1101 pino 5) |
+| Coluna 14, linhas a–d | Nó MISO (DevKitC 13, tela SDO, CC1101 pino 7) |
+| Colunas 24–26, atravessando o canal | Botão OK |
+| Colunas 30–32, atravessando o canal | Botão CIMA |
+| Colunas 36–38, atravessando o canal | Botão BAIXO |
+| Colunas 50, 51, 52, linha e | Receptor de IR: OUT, VCC, GND |
 
-       linha a    .    .    o    o    o    .    .    .    .    .    .    .    .    o  o  o
-       linha b    .    .    o    o    o    .    o    .    .    o    .    .    o    o  o  o
-       linha c    .    .    o    o    o    .    .    .    .    .    .    .    .   [R  R  R]
-       linha d    .    .    o    o    o    .    .    .    .    .    .    .    .    .  .  .
-       linha e    .    .    .    .    .   [B1--------]  [B2--------]  [B3--------] .  .  .
-                            SCK  MOSI MISO   CIMA(39)      OK(2)        BAIXO(47)   OUT VCC GND
-       ═══════════════════════ canal central ═══════════════════════════════════════════════
-       linha f    .    .    .    .    .   [B1--------]  [B2--------]  [B3--------] .  .  .
-       linha g    .    .    .    .    .    o    .    .    o    .    .    o    .    .  .  .
-       linha h..j .    .    .    .    .    .    .    .    .    .    .    .    .    .  .  .
-
- o = furo usado por um jumper     [R R R] = pinos do receptor de IR     [B...] = botão
-```
-
-- **Colunas 10, 13 e 16 (linhas a–d):** são os "nós" do SPI. Cada coluna recebe 3 jumpers:
-  DevKitC, tela e CC1101.
-- **Botões:** cada um atravessa o canal central. Na metade de cima vai o fio para o GPIO;
-  na metade de baixo, o fio para o GND (ver a seção 5, que define as pernas certas).
-- **Receptor de IR:** pinos nas colunas 50 (OUT), 51 (VCC) e 52 (GND), linha c, com a parte
-  do sensor virada para fora da placa.
+Em cada botão, o fio do GND fica na metade de cima (coluna da esquerda, linha b) e o do GPIO na metade de baixo (coluna da direita, linha g): pernas em diagonal.
 
 ## 3. Pinos da DevKitC usados
 
@@ -75,62 +59,42 @@ fonte apenas para alguns pinos (DKC-07, DKC-10, DKC-01, DKC-02, DKC-18 em
 
 ## 4. Lista de ligações
 
-Tipos: **FF** fêmea-fêmea, **FM** fêmea-macho, **MM** macho-macho. Cores sugeridas:
-vermelho = 3,3 V, preto = GND, amarelo = SCK, verde = MOSI, azul = MISO, outras = sinais.
+Tipos: **FF** fêmea-fêmea, **FM** fêmea-macho, **MM** macho-macho.
 
-### Fase A: alimentação, tela e botões (teste T2)
+| # | Fase | De | Para | Tipo |
+|---|---|---|---|---|
+| A1 | A | DevKitC 3V3 | Trilho (+), col. 46 | FM |
+| A2 | A | DevKitC GND | Trilho (−), col. 6 | FM |
+| A3 | A | Tela VCC | Trilho (+), col. 2 | FM |
+| A4 | A | Tela GND | Trilho (−), col. 4 | FM |
+| A5 | A | Tela LED | Trilho (+), col. 12 | FM |
+| A6 | A | Tela SDI (MOSI) | Col. 8, linha a | FM |
+| A7 | A | Tela SCK | Col. 11, linha a | FM |
+| A8 | A | Tela SDO (MISO) | Col. 14, linha a | FM |
+| A9 | A | DevKitC 11 | Col. 8, linha d | FM |
+| A10 | A | DevKitC 12 | Col. 11, linha d | FM |
+| A11 | A | DevKitC 13 | Col. 14, linha d | FM |
+| A12 | A | DevKitC 10 | Tela CS | FF |
+| A13 | A | DevKitC 18 | Tela RESET | FF |
+| A14 | A | DevKitC 17 | Tela DC | FF |
+| A15 | A | Botão OK, col. 24 linha b | Trilho (−), col. 23 | MM |
+| A16 | A | Botão CIMA, col. 30 linha b | Trilho (−), col. 29 | MM |
+| A17 | A | Botão BAIXO, col. 36 linha b | Trilho (−), col. 35 | MM |
+| A18 | A | DevKitC 2 | Botão OK, col. 26 linha g | FM |
+| A19 | A | DevKitC 39 | Botão CIMA, col. 32 linha g | FM |
+| A20 | A | DevKitC 47 | Botão BAIXO, col. 38 linha g | FM |
+| B1 | B | IR VCC, col. 51 linha b | Trilho (+), col. 54 | MM |
+| B2 | B | IR GND, col. 52 linha a | Trilho (−), col. 56 | MM |
+| B3 | B | DevKitC 4 | IR OUT, col. 50 linha a | FM |
+| C1 | C | CC1101 pino 1 GND | Trilho (−), col. 58 | FM |
+| C2 | C | CC1101 pino 2 VCC | Trilho (+), col. 61 | FM |
+| C3 | C | CC1101 pino 3 GDO0 | DevKitC 15 | FF |
+| C4 | C | CC1101 pino 4 CSN | DevKitC 14 (ao lado do 5V) | FF |
+| C5 | C | CC1101 pino 5 SCK | Col. 11, linha b | FM |
+| C6 | C | CC1101 pino 6 MOSI | Col. 8, linha b | FM |
+| C7 | C | CC1101 pino 7 MISO | Col. 14, linha b | FM |
 
-| # | De | Para | Tipo | Cor |
-|---:|---|---|---|---|
-| A1 | DevKitC 3V3 | Trilho (+) | FM | vermelho |
-| A2 | DevKitC GND | Trilho (−) | FM | preto |
-| A3 | Tela VCC | Trilho (+) | FM | vermelho |
-| A4 | Tela GND | Trilho (−) | FM | preto |
-| A5 | Tela LED | Trilho (+) | FM | vermelho |
-| A6 | DevKitC 12 | Coluna 10 (SCK) | FM | amarelo |
-| A7 | Tela SCK | Coluna 10 (SCK) | FM | amarelo |
-| A8 | DevKitC 11 | Coluna 13 (MOSI) | FM | verde |
-| A9 | Tela SDI (MOSI) | Coluna 13 (MOSI) | FM | verde |
-| A10 | DevKitC 13 | Coluna 16 (MISO) | FM | azul |
-| A11 | Tela SDO (MISO) | Coluna 16 (MISO) | FM | azul |
-| A12 | DevKitC 10 | Tela CS | FF | — |
-| A13 | DevKitC 17 | Tela DC (ou RS) | FF | — |
-| A14 | DevKitC 18 | Tela RESET | FF | — |
-| A15 | DevKitC 39 | Botão CIMA, metade de cima | FM | — |
-| A16 | DevKitC 2 | Botão OK, metade de cima | FM | — |
-| A17 | DevKitC 47 | Botão BAIXO, metade de cima | FM | — |
-| A18 | Botão CIMA, metade de baixo | Trilho (−) | MM | preto |
-| A19 | Botão OK, metade de baixo | Trilho (−) | MM | preto |
-| A20 | Botão BAIXO, metade de baixo | Trilho (−) | MM | preto |
-
-Pinos T_CLK, T_CS, T_DIN, T_DO e T_IRQ da tela: **sem ligação**.
-
-### Fase B: receptor de IR (teste T3)
-
-| # | De | Para | Tipo | Cor |
-|---:|---|---|---|---|
-| B1 | Coluna 51 (VCC do receptor) | Trilho (+) | MM | vermelho |
-| B2 | Coluna 52 (GND do receptor) | Trilho (−) | MM | preto |
-| B3 | DevKitC 4 | Coluna 50 (OUT do receptor) | FM | — |
-
-### Fase C: CC1101 E07-M1101D (teste T4)
-
-O conector do módulo é 2×4: **não encaixar na protoboard**. Pino 1 marcado com "1 •".
-Antes, fazer o teste T1 (pino 1 com continuidade para a rosca do conector da antena).
-
-| # | Pino do módulo | Para | Tipo | Cor |
-|---:|---|---|---|---|
-| C1 | 1 GND | Trilho (−) | FM | preto |
-| C2 | 2 VCC | Trilho (+) | FM | vermelho |
-| C3 | 3 GDO0 | DevKitC 15 | FF | — |
-| C4 | 4 CSN | DevKitC 14 | FF | — |
-| C5 | 5 SCK | Coluna 10 (SCK) | FM | amarelo |
-| C6 | 6 MOSI | Coluna 13 (MOSI) | FM | verde |
-| C7 | 7 MISO | Coluna 16 (MISO) | FM | azul |
-| C8 | 8 GDO2 | sem ligação | — | — |
-
-Pinos 1 a 4 conforme o manual da Ebyte; 5 a 8 só por fonte secundária (ficha da LCSC do
-E07-M1101D-TH). Antena rosqueada antes de energizar.
+CC1101 pino 8 (GDO2) e pinos T_* da tela: sem ligação. Pinos 1 a 4 do CC1101 conforme o manual da Ebyte; 5 a 8 só por fonte secundária (ficha da LCSC do E07-M1101D-TH).
 
 Total: 5 FF, 20 FM e 5 MM (mais 1 MM se o trilho for dividido).
 
@@ -141,7 +105,7 @@ Todas com o **USB desligado**, salvo indicação.
 | # | Quando | O que | Esperado |
 |---|---|---|---|
 | M1 | Protoboard vazia | Continuidade de ponta a ponta de cada trilho de cima | Bipa. Se não bipar, o trilho é dividido: ligar as duas metades com um MM na coluna 32 |
-| BT | Antes de pôr os fios de cada botão | Continuidade entre um furo da metade de cima e um da metade de baixo, nas colunas das pernas do botão | Escolher o par que **só bipa com o botão apertado**. Se bipar sem apertar, as pernas estão ligadas por dentro: usar a perna da diagonal |
+| BT | Antes de pôr os fios de cada botão | Continuidade entre o furo do GND (metade de cima) e o do GPIO (metade de baixo) | **Só bipa com o botão apertado.** Se bipar sem apertar, girar o botão 90° |
 | M2 | Antes de cada energização | Continuidade entre o trilho (+) e o trilho (−) | Sem bip contínuo (um bip curto ao encostar é normal) |
 | NÓ | Depois da fase A e da fase C | Continuidade entre o pino 12 da DevKitC e o pino SCK da tela e do CC1101; o mesmo para 11 e 13 | Bipa. Confirma os nós do SPI |
 | M5 | USB ligado, fase A montada | Tensão DC entre trilho (−) e trilho (+) | Cerca de 3,3 V |
