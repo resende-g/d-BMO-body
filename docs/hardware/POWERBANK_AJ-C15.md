@@ -227,3 +227,12 @@ Não registrado: estado de carga antes da abertura, ferramentas usadas, se houve
 | Um CI de 16 pinos (SOP-16) à esquerda; vários CIs pequenos de 6 e 8 pinos; quatro capacitores grandes em fileira ao lado dos pads TX; um indutor blindado grande à direita | Observado; **nenhuma marcação lida** |
 | Conector no centro da borda | Tipo não confirmado pela foto (o usuário informou Lightning) |
 | Hipótese de arquitetura: um bloco de gerenciamento da bateria e conversor (indutor grande à direita) e um bloco do transmissor sem fio (CI de 16 pinos, transistores e capacitores de ressonância perto dos pads TX) | **Hipótese**, depende das marcações dos CIs |
+
+### 21/11/2026: fotos de perto da placa
+
+| Observação | Estado |
+|---|---|
+| Dois resistores marcados **"R025"** (0,025 Ω pela notação usual), entre os pads TX e o CI de 16 pinos | Marcação lida. Função provável: medição de corrente (shunt). **Hipótese** |
+| Dois LEDs pequenos ao lado da serigrafia "KCF"; três pads marcados **"G C Q"** perto do indutor | Observado; função dos pads desconhecida, **não usar** |
+| Marcações do CI de 16 pinos, dos CIs de 6 e 8 pinos e do indutor | **Ainda ilegíveis** |
+| Conector: carcaça retangular com cerca de 10 contatos visíveis | Tipo ainda não confirmado |
