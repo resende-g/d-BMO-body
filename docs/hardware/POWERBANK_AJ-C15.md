@@ -217,3 +217,13 @@ Não registrado: estado de carga antes da abertura, ferramentas usadas, se houve
 | Moldura cinza ao redor (material não confirmado; se for metálica, há risco de curto com soldas expostas) | Pendente |
 | Bobina/ímãs do carregamento sem fio | Não visíveis; provavelmente embaixo da célula |
 | Inchaço da célula | Não avaliável pela foto de cima; falta foto lateral |
+
+### 21/11/2026: placa e bobina expostas (segunda foto do usuário)
+
+| Observação | Estado |
+|---|---|
+| Placa retirada da moldura, face dos componentes visível; ainda ligada à célula pelos fios | Observado |
+| Bobina de cobre sobre ferrite, colada na outra face da célula com um tecido/fita preta (rasgado em vários pontos); dois fios da bobina soldados nos pads marcados **"TX" "TX"** | Observado: a face magnética é um **transmissor** sem fio |
+| Um CI de 16 pinos (SOP-16) à esquerda; vários CIs pequenos de 6 e 8 pinos; quatro capacitores grandes em fileira ao lado dos pads TX; um indutor blindado grande à direita | Observado; **nenhuma marcação lida** |
+| Conector no centro da borda | Tipo não confirmado pela foto (o usuário informou Lightning) |
+| Hipótese de arquitetura: um bloco de gerenciamento da bateria e conversor (indutor grande à direita) e um bloco do transmissor sem fio (CI de 16 pinos, transistores e capacitores de ressonância perto dos pads TX) | **Hipótese**, depende das marcações dos CIs |
