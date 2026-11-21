@@ -130,6 +130,33 @@ Primeira execução do firmware próprio no hardware. O `HardwareAbsent` do rád
 PARTNUM/VERSION devolveu um valor de barramento sem chip (0x00 ou 0xFF em VERSION) ou
 PARTNUM diferente de 0x00 (`firmware/radio/src/cc1101.cpp`, `identify`).
 
+### Tela apagada e primeiro teste de bancada aprovado (2026-11-21)
+
+Depois da primeira gravação, a tela estava **sem luz de fundo**, embora o log mostrasse
+`display: Ready` (o firmware não tem como verificar a alimentação da tela). Medição do
+usuário com multímetro digital: **2,65 V** no 3,3 V (ponto exato não registrado). O usuário
+encontrou o GND do receptor de IR no lugar errado e o corrigiu; a tela continuou apagada.
+
+Montagem mínima: tela ligada **direto na DevKitC** (9 jumpers fêmea-fêmea, VCC e LED nos
+dois pinos 3V3), botões na protoboard pequena, IR e CC1101 desligados. **A luz de fundo
+acendeu.** Conclusão: tela e DevKitC em ordem; a falha estava no caminho de alimentação pela
+protoboard grande (trilho dividido, mau contato de jumper ou a carga do receptor ligado
+errado). Causa exata não isolada.
+
+`pio test -e dbmo-bench -f test_display`, primeira tentativa: erro de compilação no
+computador ("Implicit dependency ... unity.h not found", biblioteca Unity instalada durante
+a compilação). Resolvido apagando `.pio/build/dbmo-bench`. Segunda execução:
+
+| Teste | Resultado |
+|---|---|
+| `test_controller_id_is_ili9341` | Aprovado |
+| `test_landscape_resolution` | Aprovado |
+| `test_fill_and_sleep_commands_are_accepted` | Aprovado |
+| `test_backlight_is_reported_as_not_controlled` | Aprovado |
+
+**4 de 4 aprovados, 29,6 s.** Primeiro teste de bancada do firmware próprio aprovado em
+hardware.
+
 ### Testes no computador (2026-11-12)
 
 Comando:
