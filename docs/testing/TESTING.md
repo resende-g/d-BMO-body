@@ -104,6 +104,32 @@ de evidência, com o estado de cada um.
 Registro do que foi **executado de fato** nesta etapa de desenvolvimento. O que não foi
 executado está na última tabela, sem resultado atribuído.
 
+### Primeira gravação na placa (2026-11-21)
+
+Firmware próprio, perfil `dbmo-bench`, gravado pela USB nativa da DevKitC-1 N16R8
+(`/dev/cu.usbmodem1101`, VID:PID 303A:1001) num macOS. Montagem conforme
+[`../hardware/BREADBOARD_MAP.md`](../hardware/BREADBOARD_MAP.md): tela, 3 botões, receptor e
+transmissor de IR, CC1101. Log do console copiado pelo usuário, a partir de 10,7 s (o
+monitor foi aberto depois do início do boot; as linhas anteriores não foram vistas).
+
+| Subsistema | Resultado no log | Leitura |
+|---|---|---|
+| `display` | Ready; aviso "backlight sem controle" | Esperado: o LED da tela está direto no 3,3 V |
+| `rosto` | Ready | Rosto na tela não confirmado visualmente no registro |
+| `input` | Ready | Botões ainda não apertados no registro |
+| `infrared` | Ready; "receptor: sim; emissor: sim; envio desabilitado" | Recepção ainda não testada com controle remoto |
+| `radio` | **Absent (HardwareAbsent)**, repetido em nova tentativa aos 25,9 s | CC1101 ligado e não identificado: em diagnóstico |
+| `nfc` | Absent | Esperado: PN532 sem pinos soldados |
+| `audio` | Absent | Esperado: sem pinos no perfil `dbmo-bench` |
+| `cartridges` | Ready | Sem soquete; o subsistema não exige hardware para iniciar |
+| `storage` | não aparece no trecho copiado | Pendente |
+| Sistema | Booting → Degraded | Esperado com periféricos ausentes |
+
+Primeira execução do firmware próprio no hardware. O `HardwareAbsent` do rádio (e não
+`Timeout`) indica que a espera pelo "pronto" do chip passou e que a leitura de
+PARTNUM/VERSION devolveu um valor de barramento sem chip (0x00 ou 0xFF em VERSION) ou
+PARTNUM diferente de 0x00 (`firmware/radio/src/cc1101.cpp`, `identify`).
+
 ### Testes no computador (2026-11-12)
 
 Comando:
