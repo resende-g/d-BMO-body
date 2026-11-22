@@ -229,6 +229,8 @@ class Application {
   bool configChanged_ = false;
   rosto::Expression baseExpression_ = rosto::Expression::Idle;
   uint32_t lastRetryMs_ = 0;
+  bool irRawSeen_ = false;
+  uint32_t lastIrRawMs_ = 0;
 
   Menu menu_;
   display::TextScreen menuText_;

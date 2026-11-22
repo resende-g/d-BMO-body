@@ -361,8 +361,15 @@ void Application::handle(const Event &event) {
         if (infrared_.lastReceived(&code) && infrared::formatCode(code, text, sizeof(text)).ok())
           DBMO_LOGI(kTag, "infravermelho: %s", text);
       } else if (event.id == infrared::infrared_event::kRawReceived) {
-        DBMO_LOGI(kTag, "infravermelho: sinal desconhecido (%lu duracoes)",
-                  static_cast<unsigned long>(event.a));
+        // Protocolo desconhecido não passa pela detecção de repetição do subsistema; com a
+        // tecla segurada o quadro volta a cada ~110 ms. Só o primeiro da sequência vai ao log.
+        const bool repeat = irRawSeen_ && elapsedMs(now, lastIrRawMs_) <=
+                                              infrared::InfraredSubsystem::kRepeatWindowMs;
+        irRawSeen_ = true;
+        lastIrRawMs_ = now;
+        if (!repeat)
+          DBMO_LOGI(kTag, "infravermelho: sinal desconhecido (%lu duracoes)",
+                    static_cast<unsigned long>(event.a));
       }
       break;
 

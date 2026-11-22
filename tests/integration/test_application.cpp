@@ -774,12 +774,20 @@ void test_received_infrared_code_is_written_to_the_log_once() {
   rig->run(app, 10);
   TEST_ASSERT_FALSE(sink.contains("infravermelho:"));
 
-  // Sinal de protocolo desconhecido: registra o tamanho, não as durações.
+  // Sinal de protocolo desconhecido: registra o tamanho, não as durações. Com a tecla
+  // segurada o quadro volta a cada ~110 ms (RC5, por exemplo): só o primeiro vai ao log.
   rig->run(app, 500);
+  sink.clear();
   rig->irReceiver.next.count = 5;
+  for (int frame = 0; frame < 9; ++frame) {
+    rig->irReceiver.pending = true;
+    rig->run(app, 114);
+  }
+  TEST_ASSERT_EQUAL_UINT(1, sink.countContaining("infravermelho: sinal desconhecido (5 duracoes)"));
+  rig->run(app, 500);  // soltou e apertou de novo
   rig->irReceiver.pending = true;
   rig->run(app, 10);
-  TEST_ASSERT_TRUE(sink.contains("infravermelho: sinal desconhecido (5 duracoes)"));
+  TEST_ASSERT_EQUAL_UINT(2, sink.countContaining("infravermelho: sinal desconhecido"));
   dbmo::logger().clearSinks();
 }
 
