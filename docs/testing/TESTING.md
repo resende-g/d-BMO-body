@@ -409,6 +409,47 @@ Limites da evidência:
   (ruído no log, não corrigido). Segurar um botão repete na tela, mas o log não registra as
   repetições.
 
+### Microfone INMP441 no perfil bench (2026-11-22)
+
+**Montagem:** fase E do [mapa v0.3](../hardware/BREADBOARD_MAP.md), sobre as fases A a D. O
+INMP441 fica fora da protoboard, ligado por jumpers: VDD no trilho (+), GND e L/R no trilho
+(−), SCK no GPIO 40, WS no 41 e SD no 7. Pinagem pela serigrafia da placa (fotos de 22/11):
+L/R, WS e SCK de um lado; GND, VDD e SD do outro. As conferências MIC e MV e o valor de L/R
+contra GND não foram relatados.
+
+**Firmware:** `d33f036` (comando `mic`), gravado com
+`pio run -e dbmo-bench -t upload --upload-port /dev/cu.usbmodem1101`; console pelo script
+pyserial. O microfone foi habilitado em cada sessão com `config audio.mic_enabled 1`, sem
+`save`: a configuração não ficou gravada.
+
+| Etapa | Comando | Saída | Leitura |
+|---|---|---|---|
+| Sem o microfone ligado | `mic 500`, duas vezes | `gravacao encerrada: 6320 amostras, pico 0` | Base: com o SD solto, só zeros |
+| Com o microfone, em silêncio | `mic 1000`, duas vezes | `14240 amostras, pico 21277` e `pico 17773` | Chegam dados pelo SD |
+| Estatística por trecho, em silêncio | `mic 1000` e `mic last`, 3 vezes | Na 1ª: `media por 100 ms: 11754 2832 -1493 -3085 -3432 -3353 -2867 -2445 -1931`; `rms por 100 ms: 3584 1780 855 285 184 195 212 198 217`. As outras duas, com o mesmo formato | Cada gravação começa com um desvio lento, igual em todas |
+| Palmas | `mic 1000` e `mic last` a cada 2,2 s por 2 minutos; o Gabriel bateu 5 a 10 palmas | Na gravação dos 82 s, pico (já sem a média) de `35359`, `35177` e `35089` nos trechos 3, 6 e 9 de 100 ms, com `min -32638; max 32767`. Nas gravações sem palma, os trechos do meio ficaram entre 3000 e 5000 nessa medida | O microfone responde ao som até o fundo de escala |
+
+**Leitura.** O INMP441 funciona: sem ele o firmware lê só zeros, com ele chegam dados, e as
+palmas levam o sinal ao fundo de escala. Cada gravação, porém, começa com um desvio lento que
+não é som: a média por trecho de 100 ms vai de cerca de +10000 a −5500 e volta a −2000 ao fim de
+1 s, e o RMS dentro do trecho só cai para cerca de 200 depois de 300 ms. O desvio se repete
+quase igual de uma gravação para outra.
+
+**Hipótese, não verificada:** entre gravações o firmware desliga a entrada I2S (escolha de
+privacidade do subsistema de áudio), o clock para e o microfone entra em espera (MIC-09). Ao
+voltar, a saída dele leva mais de 1 s para assentar, e o firmware descarta só os primeiros
+100 ms (`kMicStartupMs`). Não corrigido.
+
+Limites da evidência:
+
+- As palmas aparecem nítidas em uma gravação só: cada gravação cobre cerca de 45 % do tempo,
+  e não se sabe quando cada palma foi batida.
+- O RMS de cerca de 200 no fim inclui a parte final do desvio lento: não é o ruído próprio do
+  microfone.
+- Nada foi ouvido: não há alto-falante ligado. Taxa de 16 kHz, palavras de 32 bits, só o canal
+  esquerdo.
+- Os pinos I2S do perfil `bench` continuam como `Proposed` em `pins.h`.
+
 ### Testes no computador (2026-11-12)
 
 Comando:
