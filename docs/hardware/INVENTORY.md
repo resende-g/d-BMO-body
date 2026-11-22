@@ -31,7 +31,9 @@ ou **reprovado**. Um item só avança com evidência registrada (foto, leitura, 
 | CC1101 + antena SMA | Marcação "CC1101"; frequência do cristal (26 MHz é o usual); **banda do casamento de antena** (o anúncio diz 433 MHz; módulos de 315/868 MHz são parecidos) | identificado (placa) | Ebyte **E07-M1101D V2.0**, serigrafia "433M" (fotos de 21/11). Barra **2×4** em 2,54 mm: **não vai na protoboard**, só com jumpers fêmea. Pinagem: 1 GND, 2 VCC, 3 GDO0, 4 CSN (manual Ebyte); 5 SCK, 6 MOSI, 7 MISO/GDO1, 8 GDO2 (só fonte secundária: ficha LCSC do E07-M1101D-TH). Conferir pino 1 = GND por continuidade com a carcaça do SMA. Marcação do CI e do cristal não legíveis na foto |
 | Tela MSP3218 (ILI9341) | — | testado | Validada (ID 0x9341). Conector do SD (4 pinos) **só com furos** (20/11): SD bloqueado até haver solda |
 | ESP32-S3 DevKitC-1 N16R8 | — | testado | Validada com Bruce |
-| MCP23017 | — | **não possui** | Informado em 21/11; o README dizia o contrário por erro. A comprar |
+| MCP23017 (2× CJMCU-2317) | Marcação "MCP23017" no chip (não "MCP23S17"); A0–A2, RESET e pull-ups de SDA/SCL; varredura I²C em 0x20 | esperado | Comprado em 23/11/2026. Antes disso o usuário não tinha o chip (informado em 21/11) |
+| TP4056 USB-C com proteção | CI "4056", DW01A e 8205A; ilhas B+/B− e OUT+/OUT− | esperado | Comprado em 23/11/2026 |
+| TPS63020 3,3 V | Marcação do chip (TPS63020 ou clone XL63020); saída sem carga | esperado | Comprado em 23/11/2026 |
 | Placa do controle genérico de PS3 | Sticks analógicos | identificado (placa) | Placa **BM-901 VER1.1**, CI marcado "ShanWan BM-901SWQP174 003" (fotos de 21/11; sem datasheet localizado). Dois sticks soldados na placa, cada um com dois potenciômetros de 3 pinos. Serigrafia: "R1 ADC R2", "L1 ADC L2", USB_CON (5V, D−, D+, GND, GND), fileira de furos vazios "Y B A X ADC PS ST SE GND AD AL AR AU", pontos "V5", "V3V", "GND". Reaproveitar os sticks exige solda ou dessolda; medições sem energia pendentes |
 | Power bank AJ-C15 | Ver [`POWERBANK_AJ-C15.md`](POWERBANK_AJ-C15.md) | recebido | Em investigação |
 

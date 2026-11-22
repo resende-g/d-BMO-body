@@ -128,7 +128,7 @@ digitar comando faz sentido. Fora do escopo deste repositório por enquanto.
 | Item | Qtd | Termo de busca | Situação / observação |
 |---|---:|---|---|
 | ESP32-S3 DevKitC-1 N16R8 | 1 | já disponível | **Placa principal** (16 MB flash, 8 MB PSRAM octal, WiFi + BLE no chip, antena de trilha). Já validada com tela, 3 botões e Bruce. Na PCB final, usar o módulo ESP32-S3-WROOM-1-N16R8 (conferir estoque na JLCPCB) |
-| MCP23017 (expansor de I/O I²C) | 1–2 | `CJMCU-2317` (variação **MCP23017**) ou `MCP23017-E/SP DIP-28` | **A comprar (decidido em 22/11/2026: é a única compra desta rodada).** Opção escolhida: placa CJMCU-2317, cerca de R$ 16 por unidade antes do imposto. Ela já vem com o chip soldado e furos de 2,54 mm, então dispensa soquete. **Atenção à variação:** o mesmo anúncio oferece a MCP23S17, que é SPI e não serve para o firmware (I²C, 0x20). Ao chegar, conferir A0–A2 (endereço), RESET (pull-up) e pull-ups de SDA/SCL. Corrigido em 21/11/2026: o usuário não tem o chip; a afirmação anterior ("o usuário tem 2") não tinha origem confirmada. Sem ele, a bancada usa botões direto nos GPIO (perfil `dbmo-bench`). Um lê os botões por I²C (0x20): **14 entradas**, porque GPA7 e GPB7 são só saída na revisão D do datasheet (ver [`docs/hardware/COMPONENT_MATRIX.md`](docs/hardware/COMPONENT_MATRIX.md)); o segundo (0x21) é opcional, para vibração e GPIOs do cartucho |
+| MCP23017 (expansor de I/O I²C) | 1–2 | `CJMCU-2317` (variação **MCP23017**) ou `MCP23017-E/SP DIP-28` | **Comprado em 23/11/2026 (aguardando entrega):** 2 placas CJMCU-2317 na variação MCP23017 (lojas SZHJW e Advanced Tech; a foto da variação mostra o chip marcado "MCP23017 E/SS"). Conferir a marcação do chip ao receber. Ela já vem com o chip soldado e furos de 2,54 mm, então dispensa soquete. **Atenção à variação:** o mesmo anúncio oferece a MCP23S17, que é SPI e não serve para o firmware (I²C, 0x20). Ao chegar, conferir A0–A2 (endereço), RESET (pull-up) e pull-ups de SDA/SCL. Corrigido em 21/11/2026: o usuário não tem o chip; a afirmação anterior ("o usuário tem 2") não tinha origem confirmada. Sem ele, a bancada usa botões direto nos GPIO (perfil `dbmo-bench`). Um lê os botões por I²C (0x20): **14 entradas**, porque GPA7 e GPB7 são só saída na revisão D do datasheet (ver [`docs/hardware/COMPONENT_MATRIX.md`](docs/hardware/COMPONENT_MATRIX.md)); o segundo (0x21) é opcional, para vibração e GPIOs do cartucho |
 | TFT 3,2" ILI9341 320×240 SPI | 1 | `3.2 ILI9341 320x240 SPI no touch` | Já comprada e validada (MSP3218 touch); pinos T_* sem ligação no v1. Tela única: rosto + menu + status |
 | CC1101 433 MHz + antena SMA | 1 | `CC1101 433MHz module SMA antenna` | Já chegou; falta testar na bancada (jumpers fêmea-fêmea) |
 | PN532 V3 NFC | 1 | `PN532 NFC module V3` | **Comprado em 02/11/2026** (aguardando entrega): "PN532 Set", R$ 17,20. DIP switch em I²C; endereço e compatibilidade a validar |
@@ -142,6 +142,8 @@ digitar comando faz sentido. Fora do escopo deste repositório por enquanto.
 | Analógicos (sticks de PS3) | 2 | reaproveitar | **Tirar do controle genérico de PS3 que o usuário já tem** (sem compra). Cada stick tem 2 potenciômetros (X/Y) e o clique L3/R3. Ver [Analógicos e gatilhos reaproveitados](#analógicos-e-gatilhos-reaproveitados) |
 | Gatilhos de ombro (L/R) | 2–4 | estoque próprio | Botões tácteis em **ângulo reto**, como nos portáteis de emulação. Conferir se há modelos de ângulo reto no estoque; se não, comprar. Tampas: as do L1/R1 do controle de PS3 ou impressas em grafite; alavancas do L2/R2 se couberem (ver [Analógicos e gatilhos reaproveitados](#analógicos-e-gatilhos-reaproveitados)) |
 | Power bank magnético 5000 mAh (compatível com MagSafe) | 1 | já disponível | Fonte externa pela USB da DevKitC, alternativa sem custo à bateria da Fase 2 na v0. Não abrir para aproveitar a célula. Ver [Alternativa sem custo](#alternativa-sem-custo-power-bank-externo-v0) |
+| Módulo de carga TP4056 USB-C com proteção | 1 | `TP4056 Type-C protection module` | **Comprado em 23/11/2026 (aguardando entrega):** variação "1X-Type C", R$ 4,54. Fotos do anúncio: CI de carga "TC4056A" (compatível com o TP4056, datasheet não conferido), proteção DW01A + 8205A, ilhas B+/B− e OUT+/OUT−; carga 4,2 V até 1 A, entrada USB-C 4,5–8 V. Carrega e protege a célula do AJ-C15 (ver [Energia da v0](#energia-da-v0-célula-do-aj-c15)). Sem power-path e sem NTC |
+| Regulador buck-boost TPS63020 3,3 V | 1 | `TPS63020 module 3.3V` | **Comprado em 23/11/2026 (aguardando entrega):** variação 3,3 V, R$ 15,17. O título do anúncio também cita "XL63020": o chip pode ser um clone, não verificado. Medir a saída sem carga antes de ligar na DevKitC. Alimenta o pino 3V3 a partir do nó protegido |
 | Botão momentâneo de energia | 1 | `tactile momentary push button` | Usar botão, não chave deslizante. A PCB precisará de circuito de power-latch/gerenciamento de energia para ligar e desligar com pressão; definir CI/topologia e botão conforme esquema. Não comprar chave SPST |
 | Resistores 4,7k / 100k / 1k | kit | `resistor kit 4.7k 100k 1k` | **Comprado em 02/11/2026** (aguardando entrega): kit de filme metálico 1%, 30 valores (10 Ω–1 MΩ), 300 peças, R$ 19,96. Pull-ups do I²C, divisor da bateria e afins |
 | Capacitores 100nF (104) | ~5 | `100nF ceramic capacitor 104` | **Comprado em 02/11/2026** (aguardando entrega): pacote de 100 peças de 100 nF (104), R$ 12,24. Desacoplamento do MCP23017 e dos módulos |
@@ -166,7 +168,8 @@ itens antes do imposto.
 | CC1101 433 MHz + antena | 10/10/2026 | R$ 23,88 | Pedido no AliExpress |
 | ESP32-S3 DevKitC-1 N16R8 (pinos soldados) | 10/10/2026 | R$ 31,30 | Pedido no AliExpress |
 | Fase 1: periféricos e bancada (lista acima) | 03/11/2026 | R$ 107,56 | Cobrança no cartão, informada pelo usuário |
-| **Total** | | **R$ 227,36** | |
+| 2 MCP23017 (CJMCU-2317), TP4056 com proteção, TPS63020 3,3 V | 23/11/2026 | R$ 50,75 | Valor com impostos informado pelo usuário (R$ 40,52 em itens) |
+| **Total** | | **R$ 278,11** | |
 
 Limites: supõe que a cobrança de 03/11 é o carrinho inteiro da Fase 1, sem outras cobranças
 divididas. **Fora da conta:** ferro de solda, multímetro e consumíveis (sem valor registrado).
@@ -185,7 +188,7 @@ bateria, analógicos), então só é modelada depois da Fase 2.
 | Fase | Comprar | Custo aproximado | O que destrava |
 |---|---|---:|---|
 | 1. Núcleo + periféricos (comprada em 02/11/2026) | Jumpers, protoboard, resistores, capacitores 100 nF, PN532, IR, MAX98357A, alto-falante, INMP441 | R$ 107,56 pagos (R$ 119,73 em itens, antes do cupom e do imposto) | CC1101, NFC, IR e áudio na S3 com o Bruce. Sem compra: slot SD da tela com adaptador, rosto do d-BMO. O MCP23017 dos botões precisa ser comprado (corrigido em 21/11/2026). A Fase 3 original foi antecipada para cá |
-| 2. Volume + energia (**adiada em 22/11/2026** para quando a carcaça estiver perto de ser modelada; nesta rodada só entra o MCP23017) | Bateria com PCM + NTC **e** módulo de carga com power-path (BQ24074 ou MCP73871) na mesma compra; botões tácteis de ângulo reto se faltarem no estoque; tirar os analógicos do controle de PS3 (sem compra) | ~R$ 80–100, ou zero com o [power bank externo](#alternativa-sem-custo-power-bank-externo-v0) no lugar da bateria e do módulo | Peças que definem o corpo em mãos: **modelar e imprimir a carcaça v0**. Bateria sem carregador adequado não se compra: os dois vão juntos. O módulo também valida a energia na bancada (ver [Riscos da bateria](#riscos-da-bateria-e-recomendações)) |
+| 2. Volume + energia (**substituída em 23/11/2026** por uma compra mínima: TP4056 com proteção + TPS63020, usando a célula do AJ-C15; ver [Energia da v0](#energia-da-v0-célula-do-aj-c15). O texto ao lado é o plano original) | Bateria com PCM + NTC **e** módulo de carga com power-path (BQ24074 ou MCP73871) na mesma compra; botões tácteis de ângulo reto se faltarem no estoque; tirar os analógicos do controle de PS3 (sem compra) | ~R$ 80–100, ou zero com o [power bank externo](#alternativa-sem-custo-power-bank-externo-v0) no lugar da bateria e do módulo | Peças que definem o corpo em mãos: **modelar e imprimir a carcaça v0**. Bateria sem carregador adequado não se compra: os dois vão juntos. O módulo também valida a energia na bancada (ver [Riscos da bateria](#riscos-da-bateria-e-recomendações)) |
 | 3. Periféricos | — | — | Antecipada para a Fase 1 (comprada em 02/11/2026) |
 | 4. Cartuchos | Soquete card edge | ~R$ 15 | Cartucho no topo; até lá, a fenda fica com tampa cega |
 | 5. Definitivo | PCB própria na JLCPCB (ESP32-S3-WROOM-1-N16R8, carga/BMS/regulador SMD, MCP23017, riser do card edge) | ~R$ 100 por 5 placas + montagem, frete e imposto | Carcaça v1 em volta da PCB definitiva |
@@ -330,6 +333,36 @@ e pressão mecânica.
    (amolece a ~55 °C).
 8. **Validar na bancada antes da PCB:** testar o circuito de energia com um módulo pronto de
    carga com power-path, em superfície não inflamável e sem deixar carregando sozinho.
+
+### Energia da v0: célula do AJ-C15
+
+Decidido pelo usuário em 23/11/2026, com a regra de não comprar mais nada além do mínimo e de
+**não ligar nada no pino 5V**. Esta decisão substitui, para a v0, o critério dos
+[Riscos da bateria](#riscos-da-bateria-e-recomendações) que recusava célula tirada de power bank.
+A placa original do AJ-C15 sai do circuito (não tem controlador identificado; a saída dela é a
+bobina de carregamento sem fio, em corrente alternada, que **não serve** para alimentar o ESP32).
+
+```
+célula ── B+/B− ┐
+                │ TP4056 com proteção (carrega pelo USB-C dele)
+                └ OUT+/OUT− ── nó protegido ──┬── VIN do TPS63020 (3,3 V) ── pino 3V3 da DevKitC
+                                              ├── VIN do MAX98357A (2,5 a 5,5 V)
+                                              └── divisor 100k/100k ── GPIO 1 (nível da bateria)
+```
+
+Condições, todas obrigatórias:
+
+1. **Célula sem inchaço** (foto de lado sobre superfície plana) antes de qualquer uso.
+2. Ao separar a célula da placa do AJ-C15, **cortar um fio de cada vez** e isolar a ponta na hora.
+   Polaridade já medida: vermelho positivo, 3,9 V (M1 em [`POWERBANK_AJ-C15.md`](docs/hardware/POWERBANK_AJ-C15.md)).
+3. **Nunca ligar o USB da DevKitC com a célula ligada** (alimentações mutuamente exclusivas,
+   DKC-13). Liga e desliga pelo pino EN do TPS63020 (conferir se o módulo tem resistor no EN).
+4. **Carregar só com o d-BMO desligado** (o TP4056 não tem power-path) e **sob supervisão** (sem
+   NTC: o pino de temperatura costuma vir desativado nesses módulos).
+5. Medir a saída do TPS63020 **sem carga** antes de ligar na DevKitC.
+
+Pendências: capacidade real (estimada em ~3.000 mAh pela etiqueta, não medida), medidas da célula
+para o CAD e ativação da leitura da bateria no firmware (`power.vbat_enabled`, hoje desligada).
 
 ### Alternativa sem custo: power bank externo (v0)
 
