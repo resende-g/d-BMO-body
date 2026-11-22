@@ -356,6 +356,59 @@ pelo porte, a identificação do CC1101 com VERSION fora de 0x14 e 0x04, o apren
 pelo menu, a recepção do rádio ligada pelo menu, a ausência do `nvs_open failed` no primeiro
 boot e o `pio device monitor` com as opções novas.
 
+### Menu na placa, SPI dividido e tela branca por inatividade (2026-11-22)
+
+**Montagem:** fase D do [mapa v0.2](../hardware/BREADBOARD_MAP.md) completa, com a tela e o
+CC1101 dividindo SCK, MOSI e MISO pelos nós das colunas 8, 11 e 14 (D1 a D13), mais
+alimentação (A), botões (B) e IR (C). A tela tinha sido tirada inteira ao fim de 21/11 e foi
+religada nesta data. O M2 foi relatado como "zerado", sem o valor do visor; as conferências
+NÓ não foram relatadas.
+
+**Firmware:** `claude/firmware-menu` (`f508cb6`), gravado com
+`pio run -e dbmo-bench -t upload --upload-port /dev/cu.usbmodem1101`. O console foi lido por
+um script pyserial (DTR e RTS em 0; linhas com CRLF); abrir a porta reinicia a placa.
+
+| Etapa | Comando ou ação | Saída | Leitura |
+|---|---|---|---|
+| Boot, firmware anterior (`7b208bd`) | Abrir a porta e `status` | `tela: id 0x9341, 320x240`; `CC1101 PARTNUM=0x00 VERSION=0x14`; `display Ready Ok`; `radio Ready Ok`; `nvs_open failed: NOT_FOUND` 2 vezes; `sdCommand(): Card Failed!` 3 vezes | Tela e CC1101 respondem no barramento dividido |
+| Boot, `f508cb6` | `status` e `radio` | `controlador 0x9341`; `display: Ready (Ok)`; `CC1101 PARTNUM=0x00 VERSION=0x14`; `radio: Idle, 433920000 Hz; pacotes 0, crc 0, negados 0`; sem `nvs_open failed`; sem `sdCommand(): Card Failed!` (restam 2 `f_mount failed`) | F5 confirmada neste boot |
+| Menu | Roteiro de 9 passos com os 3 botões, relatado pelo Gabriel | Rosto; OK abre; CIMA e BAIXO andam e repetem ao segurar; Estado; Infravermelho; Radio; Botoes; Sobre; volta ao rosto depois de 30 s parado: todos relatados como funcionando | O log mostra `botao up/down/a` com `apertou`, `soltou`, `clique` e `toque longo` |
+| Rádio pelo menu | OK no item Radio | `recepcao do radio ligada: Ok` e `recepcao do radio desligada: Ok`, 8 vezes alternadas | Só recepção; o menu não tem envio |
+| IR pelo menu e no log | OK no item Infravermelho (aprender) e teclas de um controle | `aprender infravermelho: Ok` 4 vezes; `infravermelho: nec:0004:44`, `:41`, `:07`, `:06`, `:40`, `:14`; 3 `sinal desconhecido` (67, 21 e 11 durações) | F3: o código entra no log sem `ir last` |
+
+**Tela branca.** Depois de uns 2 minutos sem botão, a tela ficou toda branca e o rosto sumiu;
+CIMA trouxe o rosto de volta. Causa no código: `display.off_after_s` (120 s) levava a tela ao
+estado `Off`, que chama `setSleep(true)` (`ILI9341_DISPOFF` e `ILI9341_SLPIN`) mesmo sem
+controle do backlight. Com o LED no trilho de 3,3 V aceso, o painel em repouso fica branco. O
+comportamento existia desde 2026-11-12 e um teste o exigia.
+
+Correção `6073bcf`: sem controle do backlight, o `DisplaySubsystem::tick` não esmaece nem
+apaga a tela. O teste `test_uncontrolled_backlight_never_dims_or_sleeps` falhou antes da
+correção (linha 150) e passou depois. Testes com UBSan no computador: 48 executáveis, todos
+aprovados (ASan só na CI). `check_pinmap.py`, `check_links.py` e `check_repo.py` sem
+problemas. Na placa, gravado o `6073bcf`: 170 s sem nenhum botão no log e o rosto continuou na
+tela.
+
+Nesse boot a leitura do ID deu `ID do controlador 0x0000, esperado 0x9341 (MISO da tela sem
+resposta)` e o `status` passou a `display: Degraded (IoError)`, com o rosto desenhado: é o
+comportamento esperado da F2, visto por acaso. Nos 3 boots anteriores, com a mesma montagem, o
+ID foi `0x9341`.
+
+Limites da evidência:
+
+- F1 (rádio com o barramento sem chip) não foi exercitada: o CC1101 respondeu em todos os
+  boots. O teste tirando o D13 foi adiado.
+- A leitura do ID da tela variou entre boots (`0x9341` e `0x0000`). Hipótese: mau contato no
+  D3 ou no D6, ou disputa no MISO dividido. Não verificado.
+- F4: os comandos foram só pelo script; o `pio device monitor` com as opções novas não foi
+  testado digitando à mão.
+- Cada código de IR apareceu de 2 a 4 vezes, com uns 0,5 s entre eles: pelo log não dá para
+  separar toques seguidos de repetições. Os 3 `sinal desconhecido` não foram investigados.
+- A legibilidade do texto na tela foi relatada como boa, sem foto.
+- O NFC registra `PN532 nao respondeu: HardwareAbsent` e `nfc: hardware ausente` a cada 15 s
+  (ruído no log, não corrigido). Segurar um botão repete na tela, mas o log não registra as
+  repetições.
+
 ### Testes no computador (2026-11-12)
 
 Comando:
