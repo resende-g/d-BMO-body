@@ -128,7 +128,7 @@ digitar comando faz sentido. Fora do escopo deste repositório por enquanto.
 | Item | Qtd | Termo de busca | Situação / observação |
 |---|---:|---|---|
 | ESP32-S3 DevKitC-1 N16R8 | 1 | já disponível | **Placa principal** (16 MB flash, 8 MB PSRAM octal, WiFi + BLE no chip, antena de trilha). Já validada com tela, 3 botões e Bruce. Na PCB final, usar o módulo ESP32-S3-WROOM-1-N16R8 (conferir estoque na JLCPCB) |
-| MCP23017 (expansor de I/O I²C) | 1–2 | `CJMCU-2317` (variação **MCP23017**) ou `MCP23017-E/SP DIP-28` | **Comprado em 23/11/2026 (aguardando entrega):** 2 placas CJMCU-2317 na variação MCP23017 (lojas SZHJW e Advanced Tech; a foto da variação mostra o chip marcado "MCP23017 E/SS"). Conferir a marcação do chip ao receber. Ela já vem com o chip soldado e furos de 2,54 mm, então dispensa soquete. **Atenção à variação:** o mesmo anúncio oferece a MCP23S17, que é SPI e não serve para o firmware (I²C, 0x20). Ao chegar, conferir A0–A2 (endereço), RESET (pull-up) e pull-ups de SDA/SCL. Corrigido em 21/11/2026: o usuário não tem o chip; a afirmação anterior ("o usuário tem 2") não tinha origem confirmada. Sem ele, a bancada usa botões direto nos GPIO (perfil `dbmo-bench`). Um lê os botões por I²C (0x20): **14 entradas**, porque GPA7 e GPB7 são só saída na revisão D do datasheet (ver [`docs/hardware/COMPONENT_MATRIX.md`](docs/hardware/COMPONENT_MATRIX.md)); o segundo (0x21) é opcional, para vibração e GPIOs do cartucho |
+| MCP23017 (expansor de I/O I²C) | 1–2 | `CJMCU-2317` (variação **MCP23017**) ou `MCP23017-E/SP DIP-28` | **No carrinho em 23/11/2026 (pagamento pendente):** 2 placas CJMCU-2317 na variação MCP23017 (lojas SZHJW e Advanced Tech; a foto da variação mostra o chip marcado "MCP23017 E/SS"). Conferir a marcação do chip ao receber. Ela já vem com o chip soldado e furos de 2,54 mm, então dispensa soquete. **Atenção à variação:** o mesmo anúncio oferece a MCP23S17, que é SPI e não serve para o firmware (I²C, 0x20). Ao chegar, conferir A0–A2 (endereço), RESET (pull-up) e pull-ups de SDA/SCL. Corrigido em 21/11/2026: o usuário não tem o chip; a afirmação anterior ("o usuário tem 2") não tinha origem confirmada. Sem ele, a bancada usa botões direto nos GPIO (perfil `dbmo-bench`). Um lê os botões por I²C (0x20): **14 entradas**, porque GPA7 e GPB7 são só saída na revisão D do datasheet (ver [`docs/hardware/COMPONENT_MATRIX.md`](docs/hardware/COMPONENT_MATRIX.md)); o segundo (0x21) é opcional, para vibração e GPIOs do cartucho |
 | TFT 3,2" ILI9341 320×240 SPI | 1 | `3.2 ILI9341 320x240 SPI no touch` | Já comprada e validada (MSP3218 touch); pinos T_* sem ligação no v1. Tela única: rosto + menu + status |
 | CC1101 433 MHz + antena SMA | 1 | `CC1101 433MHz module SMA antenna` | Já chegou; falta testar na bancada (jumpers fêmea-fêmea) |
 | PN532 V3 NFC | 1 | `PN532 NFC module V3` | **Comprado em 02/11/2026** (aguardando entrega): "PN532 Set", R$ 17,20. DIP switch em I²C; endereço e compatibilidade a validar |
@@ -142,8 +142,8 @@ digitar comando faz sentido. Fora do escopo deste repositório por enquanto.
 | Analógicos (sticks de PS3) | 2 | reaproveitar | **Tirar do controle genérico de PS3 que o usuário já tem** (sem compra). Cada stick tem 2 potenciômetros (X/Y) e o clique L3/R3. Ver [Analógicos e gatilhos reaproveitados](#analógicos-e-gatilhos-reaproveitados) |
 | Gatilhos de ombro (L/R) | 2–4 | estoque próprio | Botões tácteis em **ângulo reto**, como nos portáteis de emulação. Conferir se há modelos de ângulo reto no estoque; se não, comprar. Tampas: as do L1/R1 do controle de PS3 ou impressas em grafite; alavancas do L2/R2 se couberem (ver [Analógicos e gatilhos reaproveitados](#analógicos-e-gatilhos-reaproveitados)) |
 | Power bank magnético 5000 mAh (compatível com MagSafe) | 1 | já disponível | Fonte externa pela USB da DevKitC, alternativa sem custo à bateria da Fase 2 na v0. Não abrir para aproveitar a célula. Ver [Alternativa sem custo](#alternativa-sem-custo-power-bank-externo-v0) |
-| Módulo de carga TP4056 USB-C com proteção | 1 | `TP4056 Type-C protection module` | **Comprado em 23/11/2026 (aguardando entrega):** variação "1X-Type C", R$ 4,54. Fotos do anúncio: CI de carga "TC4056A" (compatível com o TP4056, datasheet não conferido), proteção DW01A + 8205A, ilhas B+/B− e OUT+/OUT−; carga 4,2 V até 1 A, entrada USB-C 4,5–8 V. Carrega e protege a célula do AJ-C15 (ver [Energia da v0](#energia-da-v0-célula-do-aj-c15)). Sem power-path e sem NTC |
-| Regulador buck-boost TPS63020 3,3 V | 1 | `TPS63020 module 3.3V` | **Comprado em 23/11/2026 (aguardando entrega):** variação 3,3 V, R$ 15,17. O título do anúncio também cita "XL63020": o chip pode ser um clone, não verificado. Medir a saída sem carga antes de ligar na DevKitC. Alimenta o pino 3V3 a partir do nó protegido |
+| Módulo de carga TP4056 USB-C com proteção | 1 | `TP4056 Type-C protection module` | **No carrinho em 23/11/2026 (pagamento pendente):** variação "1X-Type C", R$ 4,54. Fotos do anúncio: CI de carga "TC4056A" (compatível com o TP4056, datasheet não conferido), proteção DW01A + 8205A, ilhas B+/B− e OUT+/OUT−; carga 4,2 V até 1 A, entrada USB-C 4,5–8 V. Carrega e protege a célula do AJ-C15 (ver [Energia da v0](#energia-da-v0-célula-do-aj-c15)). Sem power-path e sem NTC |
+| Regulador buck-boost TPS63020 3,3 V | 1 | `TPS63020 module 3.3V` | **No carrinho em 23/11/2026 (pagamento pendente):** variação 3,3 V, R$ 15,17. O título do anúncio também cita "XL63020": o chip pode ser um clone, não verificado. Medir a saída sem carga antes de ligar na DevKitC. Alimenta o pino 3V3 a partir do nó protegido |
 | Botão momentâneo de energia | 1 | `tactile momentary push button` | Usar botão, não chave deslizante. A PCB precisará de circuito de power-latch/gerenciamento de energia para ligar e desligar com pressão; definir CI/topologia e botão conforme esquema. Não comprar chave SPST |
 | Resistores 4,7k / 100k / 1k | kit | `resistor kit 4.7k 100k 1k` | **Comprado em 02/11/2026** (aguardando entrega): kit de filme metálico 1%, 30 valores (10 Ω–1 MΩ), 300 peças, R$ 19,96. Pull-ups do I²C, divisor da bateria e afins |
 | Capacitores 100nF (104) | ~5 | `100nF ceramic capacitor 104` | **Comprado em 02/11/2026** (aguardando entrega): pacote de 100 peças de 100 nF (104), R$ 12,24. Desacoplamento do MCP23017 e dos módulos |
@@ -168,8 +168,9 @@ itens antes do imposto.
 | CC1101 433 MHz + antena | 10/10/2026 | R$ 23,88 | Pedido no AliExpress |
 | ESP32-S3 DevKitC-1 N16R8 (pinos soldados) | 10/10/2026 | R$ 31,30 | Pedido no AliExpress |
 | Fase 1: periféricos e bancada (lista acima) | 03/11/2026 | R$ 107,56 | Cobrança no cartão, informada pelo usuário |
-| 2 MCP23017 (CJMCU-2317), TP4056 com proteção, TPS63020 3,3 V | 23/11/2026 | R$ 50,75 | Valor com impostos informado pelo usuário (R$ 40,52 em itens) |
-| **Total** | | **R$ 278,11** | |
+| **Total** | | **R$ 227,36** | |
+
+Pendente de pagamento (23/11/2026): 2 MCP23017 (CJMCU-2317), TP4056 com proteção e TPS63020 3,3 V, R$ 50,75 com impostos no fechamento do carrinho (R$ 40,52 em itens). Entra no total quando for pago.
 
 Limites: supõe que a cobrança de 03/11 é o carrinho inteiro da Fase 1, sem outras cobranças
 divididas. **Fora da conta:** ferro de solda, multímetro e consumíveis (sem valor registrado).
@@ -336,7 +337,7 @@ e pressão mecânica.
 
 ### Energia da v0: célula do AJ-C15
 
-Decidido pelo usuário em 23/11/2026, com a regra de não comprar mais nada além do mínimo e de
+Decidido pelo usuário em 23/11/2026 (peças no carrinho, pagamento pendente), com a regra de não comprar mais nada além do mínimo e de
 **não ligar nada no pino 5V**. Esta decisão substitui, para a v0, o critério dos
 [Riscos da bateria](#riscos-da-bateria-e-recomendações) que recusava célula tirada de power bank.
 A placa original do AJ-C15 sai do circuito (não tem controlador identificado; a saída dela é a
