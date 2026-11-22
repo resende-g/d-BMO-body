@@ -5,6 +5,13 @@ target_link_libraries(dbmo_app_console PUBLIC dbmo_core PRIVATE dbmo_options)
 
 # A raiz de composição depende de todos os subsistemas: só existe quando todos entram
 # no build (DBMO_SUBSYSTEMS completo).
+# Lógica do menu: só depende dos tipos de botão, então tem teste próprio.
+if(TARGET dbmo_input)
+  add_library(dbmo_app_menu STATIC src/menu.cpp)
+  target_include_directories(dbmo_app_menu PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+  target_link_libraries(dbmo_app_menu PUBLIC dbmo_core dbmo_input PRIVATE dbmo_options)
+endif()
+
 set(DBMO_APP_DEPENDENCIES
     dbmo_audio dbmo_cartridges dbmo_display dbmo_infrared dbmo_input dbmo_nfc dbmo_power
     dbmo_radio dbmo_rosto dbmo_storage)
@@ -19,7 +26,7 @@ if(DBMO_APP_COMPLETE)
   add_library(dbmo_app STATIC src/application.cpp src/app_commands.cpp)
   target_include_directories(dbmo_app PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
   target_link_libraries(dbmo_app
-    PUBLIC dbmo_core dbmo_config dbmo_app_console ${DBMO_APP_DEPENDENCIES}
+    PUBLIC dbmo_core dbmo_config dbmo_app_console dbmo_app_menu ${DBMO_APP_DEPENDENCIES}
     PRIVATE dbmo_options)
 else()
   message(STATUS "dbmo_app fora do build: falta algum subsistema em DBMO_SUBSYSTEMS")
