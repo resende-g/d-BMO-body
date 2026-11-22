@@ -9,6 +9,7 @@
 #include <Wire.h>
 
 #include "esp_timer.h"
+#include "nvs.h"
 
 #include "dbmo/core/config_store.h"
 #include "dbmo/core/hal/adc.h"
@@ -225,6 +226,12 @@ class SerialLogSink final : public ILogSink {
 class NvsConfigBackend final : public IConfigBackend {
  public:
   Status load(char *buffer, size_t capacity, size_t *length) override {
+    // Na primeira inicialização o espaço "dbmo" ainda não existe. Preferences::begin()
+    // registraria isso como erro ("nvs_open failed: NOT_FOUND"); nvs_open() direto só
+    // devolve o código.
+    nvs_handle_t probe;
+    if (nvs_open(kNamespace, NVS_READONLY, &probe) != ESP_OK) return Status::NotFound;
+    nvs_close(probe);
     Preferences prefs;
     if (!prefs.begin(kNamespace, true)) return Status::NotFound;
     const size_t stored = prefs.getBytesLength(kKey);

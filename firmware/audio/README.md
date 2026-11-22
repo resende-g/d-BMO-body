@@ -47,6 +47,7 @@ configuração cai para 16000 Hz com aviso no log.
 | `audio.muted` | false |
 | `audio.sample_rate` | 16000 |
 | `audio.mic_enabled` | false |
+| `audio.mic_highpass_hz` | 60 (0 a 1000; 0 = sem filtro) |
 
 ## Estado
 

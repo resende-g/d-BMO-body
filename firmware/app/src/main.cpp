@@ -90,6 +90,8 @@ dbmo::input::GpioButtonSource gButtons(gGpio, kBenchButtons,
                                        sizeof(kBenchButtons) / sizeof(kBenchButtons[0]));
 esp32::RmtIrReceiver gIrReceiver(bench::kIrRx);
 esp32::RmtIrTransmitter gIrTransmitter(bench::kIrTx);
+// Só o microfone INMP441: sem saída de alto-falante nem pino do amplificador (-1).
+esp32::I2sAudio gAudio(pins::kI2sBclk, pins::kI2sLrclk, -1, pins::kI2sMicData, -1);
 #endif
 
 dbmo::app::Hardware makeHardware() {
@@ -110,6 +112,7 @@ dbmo::app::Hardware makeHardware() {
   hw.powerButtonGpio = &gGpio;
   hw.powerButtonPin = pins::kPowerButton;
 #if defined(DBMO_PROFILE_TARGET)
+  hw.profile = "target";
   hw.stickLeft = &gStickLeft;
   hw.stickRight = &gStickRight;
   hw.batteryAdc = &gBatteryAdc;
@@ -117,6 +120,9 @@ dbmo::app::Hardware makeHardware() {
   hw.audioOutput = &gAudio.output();
   hw.audioInput = &gAudio.input();
   hw.cartridgeSpi = &gCartridgeSpi;
+#else
+  hw.profile = "bench";
+  hw.audioInput = &gAudio.input();
 #endif
   return hw;
 }
@@ -179,7 +185,8 @@ void setup() {
   gDisplay.begin(dbmo::config::spi::kDisplayHz, kDisplayRotation);
   (void)gDisplay.fillRect(0, 0, static_cast<int16_t>(gDisplay.width()),
                           static_cast<int16_t>(gDisplay.height()), dbmo::display::palette::kBlack);
-  DBMO_LOGI(kTag, "tela: id 0x%04X, %ux%u", gDisplay.readId(), gDisplay.width(), gDisplay.height());
+  // O ID do controlador é conferido pelo subsistema da tela, no boot da aplicação.
+  DBMO_LOGI(kTag, "tela: %ux%u", gDisplay.width(), gDisplay.height());
 
   (void)gConsole.registerCommand({"version", "versao do firmware", versionCommand, nullptr});
   (void)gConsole.registerCommand({"log", "ultimas mensagens de log", logCommand, nullptr});

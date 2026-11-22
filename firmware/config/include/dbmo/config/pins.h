@@ -159,6 +159,10 @@ inline constexpr PinAssignment kPins[] = {
     {"SD_CS", target::kSdCs, PinStatus::Proposed},
     {"BUTTON_UP", kButtonUp, PinStatus::BenchValidated},
     {"BUTTON_DOWN", kButtonDown, PinStatus::BenchValidated},
+    // Microfone INMP441 nos mesmos pinos I2S do target; sem amplificador na bancada.
+    {"I2S_BCLK", target::kI2sBclk, PinStatus::Proposed},
+    {"I2S_LRCLK", target::kI2sLrclk, PinStatus::Proposed},
+    {"I2S_MIC_DATA", target::kI2sMicData, PinStatus::Proposed},
 };
 
 }  // namespace bench

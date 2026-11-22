@@ -37,7 +37,26 @@ inline constexpr char kVolume[] = "audio.volume";
 inline constexpr char kMuted[] = "audio.muted";
 inline constexpr char kSampleRate[] = "audio.sample_rate";
 inline constexpr char kMicEnabled[] = "audio.mic_enabled";
+// Corte do passa-altas da gravação, em Hz; 0 desliga o filtro.
+inline constexpr char kMicHighPassHz[] = "audio.mic_highpass_hz";
 }  // namespace config_key
+
+// Passa-altas de 2ª ordem (Butterworth, fórmulas do "Audio EQ Cookbook" de R. Bristow-Johnson)
+// aplicado à gravação: tira o desvio lento com que o INMP441 começa cada gravação (bancada,
+// 2026-11-22) sem mexer na faixa da voz. O estado começa como se o sinal já estivesse parado
+// no primeiro valor, então um desvio de DC no início não vira transiente.
+class HighPass {
+ public:
+  // cutoffHz = 0 desliga o filtro: a amostra sai como entrou.
+  void configure(uint32_t cutoffHz, uint32_t sampleRateHz);
+  int16_t process(int16_t sample);
+
+ private:
+  bool enabled_ = false;
+  bool primed_ = false;
+  float b0_ = 0, b1_ = 0, b2_ = 0, a1_ = 0, a2_ = 0;
+  float x1_ = 0, x2_ = 0, y1_ = 0, y2_ = 0;
+};
 
 class AudioSubsystem final : public ISubsystem {
  public:
@@ -51,6 +70,8 @@ class AudioSubsystem final : public ISubsystem {
   static constexpr uint32_t kMaxRecordMs = 30000;
   static constexpr uint8_t kFaultThreshold = 3;
   static constexpr uint32_t kDefaultSampleRate = 16000;
+  // 60 Hz: o canto inferior da resposta do próprio INMP441 (60 Hz a 15 kHz).
+  static constexpr uint32_t kDefaultMicHighPassHz = 60;
 
   AudioSubsystem(EventBus &bus, ConfigStore &config, IClock &clock);
 
@@ -125,6 +146,8 @@ class AudioSubsystem final : public ISubsystem {
   uint32_t recordMaxMs_ = 0;
   size_t discardLeft_ = 0;
   uint8_t inputErrors_ = 0;
+  uint32_t micHighPassHz_ = kDefaultMicHighPassHz;
+  HighPass micFilter_;
 };
 
 }  // namespace dbmo::audio

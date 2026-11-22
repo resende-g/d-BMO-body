@@ -19,6 +19,7 @@ class FramebufferDisplay final : public IDisplay {
   Status fillRect(int16_t x, int16_t y, int16_t w, int16_t h, Color color) override;
   Status setBacklight(uint8_t percent) override;
   Status setSleep(bool asleep) override;
+  Result<uint16_t> controllerId() override { return controllerIdResult; }
 
   Color pixel(uint16_t x, uint16_t y) const { return pixels_[static_cast<size_t>(y) * width_ + x]; }
   const Color *pixels() const { return pixels_; }
@@ -28,6 +29,8 @@ class FramebufferDisplay final : public IDisplay {
 
   // Falso simula o backlight ligado direto no 3V3: setBacklight() devolve Unsupported.
   bool backlightSupported = true;
+  // O que controllerId() devolve. Unsupported: tela que não informa o ID.
+  Result<uint16_t> controllerIdResult = Status::Unsupported;
   uint8_t backlightPercent = 0;
   bool asleep = false;
   unsigned fillRectCalls = 0;

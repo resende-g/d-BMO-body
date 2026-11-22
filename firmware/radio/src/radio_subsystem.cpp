@@ -82,7 +82,9 @@ Status RadioSubsystem::bringUp() {
   if (!id.ok()) return id.status();
   chipId_ = id.value();
   if (chipId_.version != cc1101::kVersionCurrent && chipId_.version != cc1101::kVersionOlder)
-    DBMO_LOGW(kTag, "VERSION 0x%02X fora das documentadas (0x04, 0x14)",
+    DBMO_LOGW(kTag,
+              "VERSION 0x%02X fora das documentadas (0x04, 0x14); aceito: o chip guardou "
+              "o registrador de teste",
               static_cast<unsigned>(chipId_.version));
   DBMO_TRY(chip_.configure(radioConfig_, paTable_));
   errors_ = 0;

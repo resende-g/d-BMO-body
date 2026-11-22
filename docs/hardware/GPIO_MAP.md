@@ -70,6 +70,7 @@ Nenhum pino é "definitivo": a pinagem só fecha depois dos ensaios de bancada d
 | 2 | `BUTTON_OK` | VALIDADO EM BANCADA |
 | 4 | `IR_RX` | PROPOSTO |
 | 5 | `IR_TX` | PROPOSTO |
+| 7 | `I2S_MIC_DATA` | PROPOSTO |
 | 8 | `I2C_SDA` | PROPOSTO |
 | 9 | `I2C_SCL` | PROPOSTO |
 | 10 | `DISPLAY_CS` | VALIDADO EM BANCADA |
@@ -85,6 +86,8 @@ Nenhum pino é "definitivo": a pinagem só fecha depois dos ensaios de bancada d
 | 20 | `USB_DP` | CONFIRMADO (fabricante) |
 | 21 | `SD_CS` | PROPOSTO |
 | 39 | `BUTTON_UP` | VALIDADO EM BANCADA |
+| 40 | `I2S_BCLK` | PROPOSTO |
+| 41 | `I2S_LRCLK` | PROPOSTO |
 | 47 | `BUTTON_DOWN` | VALIDADO EM BANCADA |
 
 <!-- END pinmap:bench -->

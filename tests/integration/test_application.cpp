@@ -200,6 +200,19 @@ struct Rig {
     bus.detach(i2c::kCartridgeEeprom);
     bus.detach(dbmo::cartridges::examples::ExampleSensorCartridge::kSensorAddress);
   }
+  // Toque curto e toque longo (input.long_press_ms = 600) num botão do MCP23017.
+  void click(Application &app, uint8_t pin) {
+    mcp.press(pin);
+    run(app, 60);
+    mcp.release(pin);
+    run(app, 60);
+  }
+  void longPress(Application &app, uint8_t pin) {
+    mcp.press(pin);
+    run(app, 800);
+    mcp.release(pin);
+    run(app, 60);
+  }
   size_t litPixels() const {
     size_t lit = 0;
     for (dbmo::display::Color color : gPixels)
@@ -209,6 +222,19 @@ struct Rig {
 };
 
 Rig *rig = nullptr;
+
+namespace mcp = dbmo::config::mcp_buttons;
+
+// Alguma linha do menu contém o trecho?
+bool screenHas(const Application &app, const char *fragment) {
+  for (size_t row = 0; row < app.menuScreen().rows(); ++row)
+    if (strstr(app.menuScreen().line(row), fragment) != nullptr) return true;
+  return false;
+}
+
+bool facePixel(uint16_t x, uint16_t y) {
+  return gPixels[static_cast<size_t>(y) * 320 + x] == dbmo::display::palette::kSignalRed;
+}
 
 SubsystemState stateOf(Application &app, const char *name) {
   const dbmo::SubsystemInfo *info = app.system().find(name);
@@ -269,6 +295,188 @@ void test_boot_on_todays_bench_with_only_a_display() {
   TEST_ASSERT_EQUAL(RunState::Running, app.runState());
   TEST_ASSERT_TRUE(rig->litPixels() > 500);
   TEST_ASSERT_EQUAL_UINT32(0, app.bus().droppedCount());
+}
+
+void test_display_with_unexpected_id_is_degraded_and_still_draws() {
+  // Bancada, 2026-11-21: sem o SDO da tela, ID 0xFFFF e mesmo assim "display: Ready (Ok)".
+  rig->display.controllerIdResult = static_cast<uint16_t>(0xFFFF);
+  Hardware hw;
+  hw.clock = &rig->clock;
+  hw.display = &rig->display;
+  Application app(hw);
+  TEST_ASSERT_OK(app.begin());
+  TEST_ASSERT_EQUAL(SubsystemState::Degraded, stateOf(app, "display"));
+  TEST_ASSERT_STATUS(Status::IoError, app.system().find("display")->lastStatus);
+  TEST_ASSERT_EQUAL(SubsystemState::Ready, stateOf(app, "rosto"));
+  // Aviso, não falha: sem registro de falha e sem o rosto de erro.
+  TEST_ASSERT_EQUAL_UINT(0, app.system().faultCount());
+  rig->run(app, 10);
+  TEST_ASSERT_EQUAL(Expression::Idle, app.face().engine().current());
+  rig->run(app, 3000);
+  TEST_ASSERT_EQUAL(RunState::Running, app.runState());
+  TEST_ASSERT_TRUE(rig->litPixels() > 500);  // o rosto continua na tela
+
+  CapturingOutput output;
+  dbmo::app::Console console(output);
+  TEST_ASSERT_OK(app.registerCommands(console));
+  TEST_ASSERT_OK(console.execute("status"));
+  TEST_ASSERT_TRUE(output.contains("display      Degraded      IoError"));
+}
+
+void test_menu_opens_learns_infrared_and_returns_to_the_face() {
+  Application app(rig->fullHardware());
+  TEST_ASSERT_OK(app.begin());
+  rig->run(app, 200);
+  TEST_ASSERT_TRUE(facePixel(80, 60));  // olho esquerdo do rosto
+
+  rig->click(app, mcp::kActionA);  // OK no rosto abre o menu
+  TEST_ASSERT_TRUE(app.menu().isOpen());
+  TEST_ASSERT_FALSE(app.face().visible());
+  TEST_ASSERT_EQUAL_STRING("Menu", app.menuScreen().line(0));
+  TEST_ASSERT_EQUAL_STRING("> Estado", app.menuScreen().line(2));
+  TEST_ASSERT_FALSE(facePixel(80, 60));                                     // o menu cobriu o rosto
+  TEST_ASSERT_EQUAL_HEX16(dbmo::display::palette::kSignalRed, gPixels[0]);  // faixa do título
+
+  rig->click(app, mcp::kDpadDown);
+  TEST_ASSERT_EQUAL_STRING("> Infravermelho", app.menuScreen().line(3));
+  // BAIXO segurado: repetições aos 400, 520 e 640 ms, e soltar não anda mais um item.
+  rig->mcp.press(mcp::kDpadDown);
+  rig->run(app, 700);
+  TEST_ASSERT_EQUAL_STRING("> Sobre", app.menuScreen().line(6));
+  rig->mcp.release(mcp::kDpadDown);
+  rig->run(app, 60);
+  TEST_ASSERT_EQUAL_STRING("> Sobre", app.menuScreen().line(6));
+  for (int i = 0; i < 3; ++i) rig->click(app, mcp::kDpadUp);
+  TEST_ASSERT_EQUAL_STRING("> Infravermelho", app.menuScreen().line(3));
+  rig->click(app, mcp::kActionA);
+  TEST_ASSERT_EQUAL_STRING("Infravermelho", app.menuScreen().line(0));
+  TEST_ASSERT_TRUE(screenHas(app, "nada recebido"));
+  TEST_ASSERT_TRUE(screenHas(app, "Envio: desabilitado"));
+
+  rig->click(app, mcp::kActionA);  // OK aprende
+  TEST_ASSERT_TRUE(app.infrared().learning());
+  TEST_ASSERT_TRUE(screenHas(app, "aponte e aperte a tecla"));
+  dbmo::infrared::IrCode code;
+  code.protocol = dbmo::infrared::IrProtocol::Nec;
+  code.bits = 32;
+  code.address = 0x20;
+  code.command = 0xDF;
+  TEST_ASSERT_OK(dbmo::infrared::encode(code, &rig->irReceiver.next));
+  rig->irReceiver.pending = true;
+  rig->run(app, 20);
+  TEST_ASSERT_EQUAL_STRING("  ok: nec:0020:DF", app.menuScreen().line(6));
+  TEST_ASSERT_EQUAL_STRING("  nec:0020:DF", app.menuScreen().line(3));
+
+  rig->longPress(app, mcp::kActionA);  // toque longo volta à lista, no mesmo item
+  TEST_ASSERT_EQUAL_STRING("> Infravermelho", app.menuScreen().line(3));
+  rig->click(app, mcp::kActionB);  // B volta ao rosto (perfil target)
+  TEST_ASSERT_FALSE(app.menu().isOpen());
+  TEST_ASSERT_TRUE(app.face().visible());
+  rig->run(app, 2000);
+  TEST_ASSERT_TRUE(rig->litPixels() > 500);
+  TEST_ASSERT_EQUAL_HEX16(dbmo::display::palette::kBlack, gPixels[0]);  // sem a faixa do menu
+  TEST_ASSERT_EQUAL_INT(0, rig->irTransmitter.sendCount);
+  TEST_ASSERT_EQUAL_UINT(0, rig->radioChip.transmitCount);
+}
+
+void test_menu_status_shows_absent_subsystems_and_hides_their_items() {
+  Hardware hw = rig->fullHardware();
+  hw.radioSpi = nullptr;  // sem CC1101, como na bancada sem o rádio
+  hw.irReceiver = nullptr;
+  hw.irTransmitter = nullptr;
+  Application app(hw);
+  TEST_ASSERT_OK(app.begin());
+  rig->run(app, 100);
+  rig->click(app, mcp::kActionA);
+  TEST_ASSERT_FALSE(screenHas(app, "Radio"));
+  TEST_ASSERT_FALSE(screenHas(app, "Infravermelho"));
+  TEST_ASSERT_EQUAL_STRING("  Botoes", app.menuScreen().line(3));
+
+  rig->click(app, mcp::kActionA);  // Estado
+  TEST_ASSERT_EQUAL_STRING("Estado", app.menuScreen().line(0));
+  TEST_ASSERT_TRUE(screenHas(app, "sistema: degradado"));
+  TEST_ASSERT_TRUE(screenHas(app, "radio      ausente"));
+  TEST_ASSERT_TRUE(screenHas(app, "infrared   ausente"));
+  TEST_ASSERT_TRUE(screenHas(app, "display    pronto"));
+  TEST_ASSERT_TRUE(screenHas(app, "OK longo: volta"));
+}
+
+void test_menu_radio_screen_only_toggles_reception() {
+  Application app(rig->fullHardware());
+  TEST_ASSERT_OK(app.begin());
+  rig->run(app, 100);
+  rig->click(app, mcp::kActionA);
+  rig->click(app, mcp::kDpadDown);
+  rig->click(app, mcp::kDpadDown);
+  rig->click(app, mcp::kActionA);
+  TEST_ASSERT_EQUAL_STRING("Radio", app.menuScreen().line(0));
+  TEST_ASSERT_TRUE(screenHas(app, "estado: em repouso"));
+  TEST_ASSERT_TRUE(screenHas(app, "freq: 433.920 MHz"));
+  TEST_ASSERT_TRUE(screenHas(app, "transmissao: desabilitada"));
+
+  rig->click(app, mcp::kActionA);
+  TEST_ASSERT_EQUAL(dbmo::radio::RadioState::Receiving, app.radio().state());
+  TEST_ASSERT_TRUE(screenHas(app, "estado: recebendo"));
+  TEST_ASSERT_TRUE(screenHas(app, "recepcao: Ok"));
+  const uint8_t payload[2] = {1, 2};
+  TEST_ASSERT_TRUE(rig->radioChip.injectPacket(payload, 2));
+  rig->run(app, 50);
+  TEST_ASSERT_TRUE(screenHas(app, "pacotes  1"));
+
+  rig->click(app, mcp::kActionA);
+  TEST_ASSERT_EQUAL(dbmo::radio::RadioState::Idle, app.radio().state());
+  TEST_ASSERT_TRUE(screenHas(app, "estado: em repouso"));
+  TEST_ASSERT_EQUAL_UINT(0, rig->radioChip.transmitCount);
+}
+
+void test_menu_buttons_and_about_screens() {
+  Hardware hw = rig->fullHardware();
+  hw.profile = "bench";
+  Application app(hw);
+  TEST_ASSERT_OK(app.begin());
+  rig->run(app, 100);
+  rig->click(app, mcp::kActionA);
+  for (int i = 0; i < 3; ++i) rig->click(app, mcp::kDpadDown);
+  rig->click(app, mcp::kActionA);
+  TEST_ASSERT_EQUAL_STRING("Botoes", app.menuScreen().line(0));
+  TEST_ASSERT_TRUE(screenHas(app, "aperte um botao"));
+  rig->click(app, mcp::kDpadUp);
+  TEST_ASSERT_EQUAL_STRING("  up: clique", app.menuScreen().line(3));
+  TEST_ASSERT_EQUAL_STRING("  up: soltou", app.menuScreen().line(4));
+  TEST_ASSERT_EQUAL_STRING("  up: apertou", app.menuScreen().line(5));
+  TEST_ASSERT_EQUAL_STRING("Botoes", app.menuScreen().line(0));  // CIMA não navegou
+
+  rig->longPress(app, mcp::kActionA);
+  rig->click(app, mcp::kDpadDown);
+  rig->click(app, mcp::kActionA);
+  TEST_ASSERT_EQUAL_STRING("Sobre", app.menuScreen().line(0));
+  TEST_ASSERT_EQUAL_STRING("d-BMO v1", app.menuScreen().line(2));
+  TEST_ASSERT_EQUAL_STRING("firmware 0.1.0", app.menuScreen().line(3));
+  TEST_ASSERT_EQUAL_STRING("perfil: bench", app.menuScreen().line(4));
+}
+
+void test_idle_menu_redraws_nothing_and_returns_to_the_face() {
+  Application app(rig->fullHardware());
+  TEST_ASSERT_OK(app.begin());
+  rig->run(app, 100);
+  rig->click(app, mcp::kActionA);
+  rig->run(app, 1000);
+  // Parado e sem nada mudando: o menu não repinta a tela (nem o rosto escondido).
+  const unsigned calls = rig->display.fillRectCalls;
+  rig->run(app, 5000);
+  TEST_ASSERT_EQUAL_UINT(calls, rig->display.fillRectCalls);
+
+  // Um botão no menu conta como atividade: a tela não escurece aos 30 s do último toque
+  // de antes, e o menu só fecha 30 s depois deste.
+  rig->click(app, mcp::kDpadDown);
+  rig->run(app, 25000);
+  TEST_ASSERT_TRUE(app.menu().isOpen());
+  TEST_ASSERT_TRUE(app.display().power() == dbmo::display::ScreenPower::On);
+  TEST_ASSERT_TRUE(rig->runUntil(app, 6000, [&] { return !app.menu().isOpen(); }));
+  TEST_ASSERT_TRUE(app.face().visible());
+  rig->run(app, 100);
+  TEST_ASSERT_TRUE(rig->litPixels() > 500);
+  TEST_ASSERT_EQUAL_HEX16(dbmo::display::palette::kBlack, gPixels[0]);
 }
 
 void test_missing_required_hardware_is_refused() {
@@ -541,6 +749,54 @@ void test_infrared_code_is_received_and_send_is_gated() {
   TEST_ASSERT_EQUAL_INT(1, rig->irTransmitter.sendCount);
 }
 
+void test_received_infrared_code_is_written_to_the_log_once() {
+  // Bancada, 2026-11-21: para ver o código recebido foi preciso mandar "ir last" à mão.
+  dbmo::mock::RecordingLogSink sink;
+  TEST_ASSERT_OK(dbmo::logger().addSink(&sink));
+  Application app(rig->fullHardware());
+  TEST_ASSERT_OK(app.begin());
+  rig->run(app, 50);
+  sink.clear();
+
+  dbmo::infrared::IrCode code;
+  code.protocol = dbmo::infrared::IrProtocol::Nec;
+  code.bits = 32;
+  code.address = 0x04;
+  code.command = 0x17;
+  TEST_ASSERT_OK(dbmo::infrared::encode(code, &rig->irReceiver.next));
+  rig->irReceiver.pending = true;
+  rig->run(app, 10);
+  TEST_ASSERT_TRUE(sink.contains("infravermelho: nec:0004:17"));
+
+  // O mesmo quadro logo em seguida (tecla segurada) é repetição: não vai para o log.
+  sink.clear();
+  rig->irReceiver.pending = true;
+  rig->run(app, 10);
+  TEST_ASSERT_FALSE(sink.contains("infravermelho:"));
+
+  // Sinal de protocolo desconhecido: registra o tamanho, não as durações. Com a tecla
+  // segurada o quadro volta a cada ~110 ms (RC5, por exemplo): só o primeiro vai ao log.
+  rig->run(app, 500);
+  sink.clear();
+  rig->irReceiver.next.count = 5;
+  for (int frame = 0; frame < 9; ++frame) {
+    rig->irReceiver.pending = true;
+    rig->run(app, 114);
+  }
+  TEST_ASSERT_EQUAL_UINT(1, sink.countContaining("infravermelho: sinal desconhecido (5 duracoes)"));
+  rig->run(app, 500);  // soltou e apertou de novo
+  rig->irReceiver.pending = true;
+  rig->run(app, 10);
+  TEST_ASSERT_EQUAL_UINT(2, sink.countContaining("infravermelho: sinal desconhecido"));
+  // Outra tecla logo em seguida, com outro tamanho: é um sinal novo.
+  rig->run(app, 150);
+  rig->irReceiver.next.count = 7;
+  rig->irReceiver.pending = true;
+  rig->run(app, 10);
+  TEST_ASSERT_EQUAL_UINT(1, sink.countContaining("infravermelho: sinal desconhecido (7 duracoes)"));
+  dbmo::logger().clearSinks();
+}
+
 void test_learned_infrared_code_is_stored_on_the_card() {
   Application app(rig->fullHardware());
   TEST_ASSERT_OK(app.begin());
@@ -622,6 +878,61 @@ void test_peripheral_connected_after_boot_is_picked_up() {
   rig->run(app, Application::kRetryPeriodMs + 1000);
   TEST_ASSERT_EQUAL(SubsystemState::Ready, stateOf(app, "nfc"));
   TEST_ASSERT_EQUAL(SystemState::Running, app.system().state());
+}
+
+void test_mic_command_records_only_when_enabled_and_logs_the_peak() {
+  // Bancada, 2026-11-22: primeiro teste do INMP441 pelo console, sem alto-falante.
+  dbmo::mock::RecordingLogSink sink;
+  TEST_ASSERT_OK(dbmo::logger().addSink(&sink));
+  Application app(rig->fullHardware());
+  TEST_ASSERT_OK(app.begin());
+  CapturingOutput output;
+  dbmo::app::Console console(output);
+  TEST_ASSERT_OK(app.registerCommands(console));
+  rig->run(app, 50);
+
+  // Microfone desabilitado por padrão: o comando não grava e diz como habilitar.
+  TEST_ASSERT_OK(console.execute("mic"));
+  TEST_ASSERT_TRUE(output.contains("audio.mic_enabled"));
+  TEST_ASSERT_FALSE(app.audio().recording());
+  TEST_ASSERT_FALSE(rig->microphone.running);
+
+  output.clear();
+  TEST_ASSERT_OK(console.execute("mic 5000"));
+  TEST_ASSERT_TRUE(output.contains("uso: mic"));
+
+  TEST_ASSERT_OK(console.execute("config audio.mic_enabled 1"));
+  rig->run(app, 5);  // a configuração nova vale a partir da próxima volta do laço
+  output.clear();
+  sink.clear();
+  TEST_ASSERT_OK(console.execute("mic 300"));
+  TEST_ASSERT_TRUE(output.contains("gravando 300 ms"));
+  TEST_ASSERT_TRUE(app.audio().recording());
+  rig->run(app, 400);
+  TEST_ASSERT_FALSE(app.audio().recording());
+  TEST_ASSERT_FALSE(rig->microphone.running);  // o microfone só fica ligado gravando
+  TEST_ASSERT_TRUE(app.audio().recordedSamples() > 0);
+  TEST_ASSERT_TRUE(sink.contains("gravacao encerrada"));
+  // O microfone falso entrega 100 constante: o passa-altas da gravação tira esse DC.
+  TEST_ASSERT_TRUE(sink.contains("pico 0"));
+
+  // Estatísticas da última gravação, para separar som de desvio de DC na bancada.
+  output.clear();
+  TEST_ASSERT_OK(console.execute("mic last"));
+  TEST_ASSERT_TRUE(output.contains("media 0; min 0; max 0; rms 0"));
+  TEST_ASSERT_TRUE(output.contains("media por 100 ms: 0"));
+  TEST_ASSERT_TRUE(output.contains("rms por 100 ms: 0"));
+  TEST_ASSERT_TRUE(output.contains("pico por 100 ms: 0"));
+
+  // Com o filtro desligado, a amostra crua.
+  TEST_ASSERT_OK(console.execute("config audio.mic_highpass_hz 0"));
+  rig->run(app, 5);
+  TEST_ASSERT_OK(console.execute("mic 300"));
+  rig->run(app, 400);
+  output.clear();
+  TEST_ASSERT_OK(console.execute("mic last"));
+  TEST_ASSERT_TRUE(output.contains("media 100; min 100; max 100; rms 100"));
+  dbmo::logger().clearSinks();
 }
 
 void test_console_commands() {
@@ -716,6 +1027,12 @@ int main() {
   UNITY_BEGIN();
   RUN_TEST(test_boot_with_all_hardware);
   RUN_TEST(test_boot_on_todays_bench_with_only_a_display);
+  RUN_TEST(test_display_with_unexpected_id_is_degraded_and_still_draws);
+  RUN_TEST(test_menu_opens_learns_infrared_and_returns_to_the_face);
+  RUN_TEST(test_menu_status_shows_absent_subsystems_and_hides_their_items);
+  RUN_TEST(test_menu_radio_screen_only_toggles_reception);
+  RUN_TEST(test_menu_buttons_and_about_screens);
+  RUN_TEST(test_idle_menu_redraws_nothing_and_returns_to_the_face);
   RUN_TEST(test_missing_required_hardware_is_refused);
   RUN_TEST(test_button_press_reaches_the_event_bus);
   RUN_TEST(test_button_press_is_written_to_the_log);
@@ -730,10 +1047,12 @@ int main() {
   RUN_TEST(test_shutdown_without_a_way_to_cut_power_halts);
   RUN_TEST(test_radio_receive_and_transmit_policy);
   RUN_TEST(test_infrared_code_is_received_and_send_is_gated);
+  RUN_TEST(test_received_infrared_code_is_written_to_the_log_once);
   RUN_TEST(test_learned_infrared_code_is_stored_on_the_card);
   RUN_TEST(test_recording_is_visible_on_the_face);
   RUN_TEST(test_card_removed_in_use_keeps_the_device_running);
   RUN_TEST(test_peripheral_connected_after_boot_is_picked_up);
+  RUN_TEST(test_mic_command_records_only_when_enabled_and_logs_the_peak);
   RUN_TEST(test_console_commands);
   RUN_TEST(test_long_run_is_stable);
   return UNITY_END();
