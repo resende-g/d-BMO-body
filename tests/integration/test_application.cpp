@@ -200,6 +200,19 @@ struct Rig {
     bus.detach(i2c::kCartridgeEeprom);
     bus.detach(dbmo::cartridges::examples::ExampleSensorCartridge::kSensorAddress);
   }
+  // Toque curto e toque longo (input.long_press_ms = 600) num botão do MCP23017.
+  void click(Application &app, uint8_t pin) {
+    mcp.press(pin);
+    run(app, 60);
+    mcp.release(pin);
+    run(app, 60);
+  }
+  void longPress(Application &app, uint8_t pin) {
+    mcp.press(pin);
+    run(app, 800);
+    mcp.release(pin);
+    run(app, 60);
+  }
   size_t litPixels() const {
     size_t lit = 0;
     for (dbmo::display::Color color : gPixels)
@@ -209,6 +222,19 @@ struct Rig {
 };
 
 Rig *rig = nullptr;
+
+namespace mcp = dbmo::config::mcp_buttons;
+
+// Alguma linha do menu contém o trecho?
+bool screenHas(const Application &app, const char *fragment) {
+  for (size_t row = 0; row < app.menuScreen().rows(); ++row)
+    if (strstr(app.menuScreen().line(row), fragment) != nullptr) return true;
+  return false;
+}
+
+bool facePixel(uint16_t x, uint16_t y) {
+  return gPixels[static_cast<size_t>(y) * 320 + x] == dbmo::display::palette::kSignalRed;
+}
 
 SubsystemState stateOf(Application &app, const char *name) {
   const dbmo::SubsystemInfo *info = app.system().find(name);
@@ -291,6 +317,153 @@ void test_display_with_unexpected_id_is_degraded_and_still_draws() {
   TEST_ASSERT_OK(app.registerCommands(console));
   TEST_ASSERT_OK(console.execute("status"));
   TEST_ASSERT_TRUE(output.contains("display      Degraded      IoError"));
+}
+
+void test_menu_opens_learns_infrared_and_returns_to_the_face() {
+  Application app(rig->fullHardware());
+  TEST_ASSERT_OK(app.begin());
+  rig->run(app, 200);
+  TEST_ASSERT_TRUE(facePixel(80, 60));  // olho esquerdo do rosto
+
+  rig->click(app, mcp::kActionA);  // OK no rosto abre o menu
+  TEST_ASSERT_TRUE(app.menu().isOpen());
+  TEST_ASSERT_FALSE(app.face().visible());
+  TEST_ASSERT_EQUAL_STRING("Menu", app.menuScreen().line(0));
+  TEST_ASSERT_EQUAL_STRING("> Estado", app.menuScreen().line(2));
+  TEST_ASSERT_FALSE(facePixel(80, 60));                                     // o menu cobriu o rosto
+  TEST_ASSERT_EQUAL_HEX16(dbmo::display::palette::kSignalRed, gPixels[0]);  // faixa do título
+
+  rig->click(app, mcp::kDpadDown);
+  TEST_ASSERT_EQUAL_STRING("> Infravermelho", app.menuScreen().line(3));
+  rig->click(app, mcp::kActionA);
+  TEST_ASSERT_EQUAL_STRING("Infravermelho", app.menuScreen().line(0));
+  TEST_ASSERT_TRUE(screenHas(app, "nada recebido"));
+  TEST_ASSERT_TRUE(screenHas(app, "Envio: desabilitado"));
+
+  rig->click(app, mcp::kActionA);  // OK aprende
+  TEST_ASSERT_TRUE(app.infrared().learning());
+  TEST_ASSERT_TRUE(screenHas(app, "aponte e aperte a tecla"));
+  dbmo::infrared::IrCode code;
+  code.protocol = dbmo::infrared::IrProtocol::Nec;
+  code.bits = 32;
+  code.address = 0x20;
+  code.command = 0xDF;
+  TEST_ASSERT_OK(dbmo::infrared::encode(code, &rig->irReceiver.next));
+  rig->irReceiver.pending = true;
+  rig->run(app, 20);
+  TEST_ASSERT_EQUAL_STRING("  ok: nec:0020:DF", app.menuScreen().line(6));
+  TEST_ASSERT_EQUAL_STRING("  nec:0020:DF", app.menuScreen().line(3));
+
+  rig->longPress(app, mcp::kActionA);  // toque longo volta à lista, no mesmo item
+  TEST_ASSERT_EQUAL_STRING("> Infravermelho", app.menuScreen().line(3));
+  rig->click(app, mcp::kActionB);  // B volta ao rosto (perfil target)
+  TEST_ASSERT_FALSE(app.menu().isOpen());
+  TEST_ASSERT_TRUE(app.face().visible());
+  rig->run(app, 2000);
+  TEST_ASSERT_TRUE(rig->litPixels() > 500);
+  TEST_ASSERT_EQUAL_HEX16(dbmo::display::palette::kBlack, gPixels[0]);  // sem a faixa do menu
+  TEST_ASSERT_EQUAL_INT(0, rig->irTransmitter.sendCount);
+  TEST_ASSERT_EQUAL_UINT(0, rig->radioChip.transmitCount);
+}
+
+void test_menu_status_shows_absent_subsystems_and_hides_their_items() {
+  Hardware hw = rig->fullHardware();
+  hw.radioSpi = nullptr;  // sem CC1101, como na bancada sem o rádio
+  hw.irReceiver = nullptr;
+  hw.irTransmitter = nullptr;
+  Application app(hw);
+  TEST_ASSERT_OK(app.begin());
+  rig->run(app, 100);
+  rig->click(app, mcp::kActionA);
+  TEST_ASSERT_FALSE(screenHas(app, "Radio"));
+  TEST_ASSERT_FALSE(screenHas(app, "Infravermelho"));
+  TEST_ASSERT_EQUAL_STRING("  Botoes", app.menuScreen().line(3));
+
+  rig->click(app, mcp::kActionA);  // Estado
+  TEST_ASSERT_EQUAL_STRING("Estado", app.menuScreen().line(0));
+  TEST_ASSERT_TRUE(screenHas(app, "sistema: degradado"));
+  TEST_ASSERT_TRUE(screenHas(app, "radio      ausente"));
+  TEST_ASSERT_TRUE(screenHas(app, "infrared   ausente"));
+  TEST_ASSERT_TRUE(screenHas(app, "display    pronto"));
+  TEST_ASSERT_TRUE(screenHas(app, "OK longo: volta"));
+}
+
+void test_menu_radio_screen_only_toggles_reception() {
+  Application app(rig->fullHardware());
+  TEST_ASSERT_OK(app.begin());
+  rig->run(app, 100);
+  rig->click(app, mcp::kActionA);
+  rig->click(app, mcp::kDpadDown);
+  rig->click(app, mcp::kDpadDown);
+  rig->click(app, mcp::kActionA);
+  TEST_ASSERT_EQUAL_STRING("Radio", app.menuScreen().line(0));
+  TEST_ASSERT_TRUE(screenHas(app, "estado: em repouso"));
+  TEST_ASSERT_TRUE(screenHas(app, "freq: 433.920 MHz"));
+  TEST_ASSERT_TRUE(screenHas(app, "transmissao: desabilitada"));
+
+  rig->click(app, mcp::kActionA);
+  TEST_ASSERT_EQUAL(dbmo::radio::RadioState::Receiving, app.radio().state());
+  TEST_ASSERT_TRUE(screenHas(app, "estado: recebendo"));
+  TEST_ASSERT_TRUE(screenHas(app, "recepcao: Ok"));
+  const uint8_t payload[2] = {1, 2};
+  TEST_ASSERT_TRUE(rig->radioChip.injectPacket(payload, 2));
+  rig->run(app, 50);
+  TEST_ASSERT_TRUE(screenHas(app, "pacotes  1"));
+
+  rig->click(app, mcp::kActionA);
+  TEST_ASSERT_EQUAL(dbmo::radio::RadioState::Idle, app.radio().state());
+  TEST_ASSERT_TRUE(screenHas(app, "estado: em repouso"));
+  TEST_ASSERT_EQUAL_UINT(0, rig->radioChip.transmitCount);
+}
+
+void test_menu_buttons_and_about_screens() {
+  Hardware hw = rig->fullHardware();
+  hw.profile = "bench";
+  Application app(hw);
+  TEST_ASSERT_OK(app.begin());
+  rig->run(app, 100);
+  rig->click(app, mcp::kActionA);
+  for (int i = 0; i < 3; ++i) rig->click(app, mcp::kDpadDown);
+  rig->click(app, mcp::kActionA);
+  TEST_ASSERT_EQUAL_STRING("Botoes", app.menuScreen().line(0));
+  TEST_ASSERT_TRUE(screenHas(app, "aperte um botao"));
+  rig->click(app, mcp::kDpadUp);
+  TEST_ASSERT_EQUAL_STRING("  up: clique", app.menuScreen().line(3));
+  TEST_ASSERT_EQUAL_STRING("  up: soltou", app.menuScreen().line(4));
+  TEST_ASSERT_EQUAL_STRING("  up: apertou", app.menuScreen().line(5));
+  TEST_ASSERT_EQUAL_STRING("Botoes", app.menuScreen().line(0));  // CIMA não navegou
+
+  rig->longPress(app, mcp::kActionA);
+  rig->click(app, mcp::kDpadDown);
+  rig->click(app, mcp::kActionA);
+  TEST_ASSERT_EQUAL_STRING("Sobre", app.menuScreen().line(0));
+  TEST_ASSERT_EQUAL_STRING("d-BMO v1", app.menuScreen().line(2));
+  TEST_ASSERT_EQUAL_STRING("firmware 0.1.0", app.menuScreen().line(3));
+  TEST_ASSERT_EQUAL_STRING("perfil: bench", app.menuScreen().line(4));
+}
+
+void test_idle_menu_redraws_nothing_and_returns_to_the_face() {
+  Application app(rig->fullHardware());
+  TEST_ASSERT_OK(app.begin());
+  rig->run(app, 100);
+  rig->click(app, mcp::kActionA);
+  rig->run(app, 1000);
+  // Parado e sem nada mudando: o menu não repinta a tela (nem o rosto escondido).
+  const unsigned calls = rig->display.fillRectCalls;
+  rig->run(app, 5000);
+  TEST_ASSERT_EQUAL_UINT(calls, rig->display.fillRectCalls);
+
+  // Um botão no menu conta como atividade: a tela não escurece aos 30 s do último toque
+  // de antes, e o menu só fecha 30 s depois deste.
+  rig->click(app, mcp::kDpadDown);
+  rig->run(app, 25000);
+  TEST_ASSERT_TRUE(app.menu().isOpen());
+  TEST_ASSERT_TRUE(app.display().power() == dbmo::display::ScreenPower::On);
+  TEST_ASSERT_TRUE(rig->runUntil(app, 6000, [&] { return !app.menu().isOpen(); }));
+  TEST_ASSERT_TRUE(app.face().visible());
+  rig->run(app, 100);
+  TEST_ASSERT_TRUE(rig->litPixels() > 500);
+  TEST_ASSERT_EQUAL_HEX16(dbmo::display::palette::kBlack, gPixels[0]);
 }
 
 void test_missing_required_hardware_is_refused() {
@@ -773,6 +946,11 @@ int main() {
   RUN_TEST(test_boot_with_all_hardware);
   RUN_TEST(test_boot_on_todays_bench_with_only_a_display);
   RUN_TEST(test_display_with_unexpected_id_is_degraded_and_still_draws);
+  RUN_TEST(test_menu_opens_learns_infrared_and_returns_to_the_face);
+  RUN_TEST(test_menu_status_shows_absent_subsystems_and_hides_their_items);
+  RUN_TEST(test_menu_radio_screen_only_toggles_reception);
+  RUN_TEST(test_menu_buttons_and_about_screens);
+  RUN_TEST(test_idle_menu_redraws_nothing_and_returns_to_the_face);
   RUN_TEST(test_missing_required_hardware_is_refused);
   RUN_TEST(test_button_press_reaches_the_event_bus);
   RUN_TEST(test_button_press_is_written_to_the_log);

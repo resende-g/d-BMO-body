@@ -23,7 +23,7 @@ foreach(dependency ${DBMO_APP_DEPENDENCIES})
 endforeach()
 
 if(DBMO_APP_COMPLETE)
-  add_library(dbmo_app STATIC src/application.cpp src/app_commands.cpp)
+  add_library(dbmo_app STATIC src/application.cpp src/app_commands.cpp src/menu_screens.cpp)
   target_include_directories(dbmo_app PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
   target_link_libraries(dbmo_app
     PUBLIC dbmo_core dbmo_config dbmo_app_console dbmo_app_menu ${DBMO_APP_DEPENDENCIES}

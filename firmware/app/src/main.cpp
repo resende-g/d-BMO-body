@@ -110,6 +110,7 @@ dbmo::app::Hardware makeHardware() {
   hw.powerButtonGpio = &gGpio;
   hw.powerButtonPin = pins::kPowerButton;
 #if defined(DBMO_PROFILE_TARGET)
+  hw.profile = "target";
   hw.stickLeft = &gStickLeft;
   hw.stickRight = &gStickRight;
   hw.batteryAdc = &gBatteryAdc;
@@ -117,6 +118,8 @@ dbmo::app::Hardware makeHardware() {
   hw.audioOutput = &gAudio.output();
   hw.audioInput = &gAudio.input();
   hw.cartridgeSpi = &gCartridgeSpi;
+#else
+  hw.profile = "bench";
 #endif
   return hw;
 }

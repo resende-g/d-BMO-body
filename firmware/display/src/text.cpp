@@ -50,12 +50,19 @@ Status drawText(IDisplay &display, int16_t x, int16_t y, const char *text, uint8
   return Status::Ok;
 }
 
-TextScreen::TextScreen(IDisplay &display) : display_(display) {
+TextScreen::TextScreen(IDisplay &display) : display_(display) { fit(); }
+
+void TextScreen::fit() {
   const size_t fitColumns = display_.width() / kCellWidth;
   const size_t fitRows = display_.height() / kCellHeight;
   columns_ = fitColumns < kMaxColumns ? fitColumns : kMaxColumns;
   rows_ = fitRows < kMaxRows ? fitRows : kMaxRows;
   marginX_ = static_cast<int16_t>((display_.width() - columns_ * kCellWidth) / 2);
+}
+
+void TextScreen::invalidate() {
+  valid_ = false;
+  fit();
 }
 
 void TextScreen::clear() {

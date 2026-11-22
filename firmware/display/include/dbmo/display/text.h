@@ -54,8 +54,9 @@ class TextScreen {
   const char *line(size_t row) const { return row < rows_ ? wanted_[row].text : ""; }
   Style style(size_t row) const { return row < rows_ ? wanted_[row].style : Style::Normal; }
 
-  // Esquece o que está na tela: o próximo render() pinta tudo de novo.
-  void invalidate() { valid_ = false; }
+  // Esquece o que está na tela: o próximo render() pinta tudo de novo. Também recalcula
+  // a grade pelo tamanho atual da tela (a ILI9341 só fica em 320 x 240 depois de girada).
+  void invalidate();
   // Desenha as linhas que mudaram. Em caso de erro da tela, a linha fica para a próxima.
   Status render();
 
@@ -65,6 +66,7 @@ class TextScreen {
     Style style = Style::Normal;
   };
   static bool same(const Line &a, const Line &b);
+  void fit();
   Status drawLine(size_t row);
 
   IDisplay &display_;

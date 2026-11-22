@@ -166,7 +166,8 @@ Application::Application(const Hardware &hardware)
                        config::i2c::kCartridgeEeprom),
       cartridges_(cartridgeEeprom_, cartridgeDrivers_, bus_, config_, resources_),
       irStorage_(storage_),
-      irLibrary_(irStorage_) {}
+      irLibrary_(irStorage_),
+      menuText_(*hardware.display) {}
 
 Status Application::registerConfig() {
   DBMO_TRY(display::DisplaySubsystem::registerConfig(config_));
@@ -269,6 +270,7 @@ Status Application::begin() {
   if (screen != nullptr && screen->state == SubsystemState::Ready &&
       !isOk(display_.controllerCheck()))
     system_.reportFault(display_, display_.controllerCheck(), SubsystemState::Degraded);
+  updateMenuAvailability();
   // A energia leu a configuração antes de o cartão ser montado.
   power_.applyConfig();
   lastRetryMs_ = hw_.clock->nowMs();
@@ -311,7 +313,20 @@ void Application::handle(const Event &event) {
       // Qualquer uso dos controles conta como atividade.
       display_.notifyActivity(now);
       power_.notifyActivity(now);
+      if (event.id == input::input_event::kButton)
+        handleMenu(static_cast<input::Button>(event.a), static_cast<input::ButtonAction>(event.b),
+                   now);
       break;
+
+    case EventDomain::System:
+      // Um periférico apareceu ou sumiu: o menu mostra ou esconde o item dele.
+      if (event.id == system_event::kSubsystemChanged) {
+        updateMenuAvailability();
+        menuDirty_ = true;
+      }
+      break;
+
+    case EventDomain::Radio: menuDirty_ = true; break;
 
     case EventDomain::Power:
       if (event.id == power::power_event::kShutdownRequested) {
@@ -332,6 +347,12 @@ void Application::handle(const Event &event) {
       break;
 
     case EventDomain::Infrared:
+      menuDirty_ = true;
+      if (event.id == infrared::infrared_event::kLearned) {
+        if (irLearnNote_ == IrLearnNote::Waiting) irLearnNote_ = IrLearnNote::Learned;
+      } else if (event.id == infrared::infrared_event::kLearnTimeout) {
+        if (irLearnNote_ == IrLearnNote::Waiting) irLearnNote_ = IrLearnNote::TimedOut;
+      }
       // Cada código recebido vai para o log, como os botões, para conferir o receptor na
       // bancada sem precisar de "ir last". A repetição (tecla segurada) fica de fora.
       if (event.id == infrared::infrared_event::kCodeReceived) {
@@ -388,6 +409,12 @@ void Application::startShutdown() {
   runState_ = RunState::ShuttingDown;
 }
 
+bool Application::inOperation(const ISubsystem &subsystem) const {
+  const SubsystemInfo *info = system_.find(subsystem);
+  return info != nullptr &&
+         (info->state == SubsystemState::Ready || info->state == SubsystemState::Degraded);
+}
+
 void Application::retryAbsent(uint32_t nowMs) {
   if (elapsedMs(nowMs, lastRetryMs_) < kRetryPeriodMs) return;
   lastRetryMs_ = nowMs;
@@ -419,6 +446,7 @@ void Application::loop() {
       // O fundo do rosto acompanha o que o aparelho está fazendo, inclusive o que começa
       // sem evento (aprendizado de infravermelho).
       updateBaseExpression(hw_.clock->nowMs());
+      updateMenu(hw_.clock->nowMs());
       if (shutdownPending_) {
         startShutdown();
       } else {
