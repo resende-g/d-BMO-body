@@ -24,6 +24,10 @@ inline constexpr uint8_t kSync0 = 0x05;
 inline constexpr uint8_t kPktlen = 0x06;
 inline constexpr uint8_t kPktctrl1 = 0x07;
 inline constexpr uint8_t kPktctrl0 = 0x08;
+// Endereço do aparelho para o filtro de pacotes. Sem efeito com o filtro desligado
+// (PKTCTRL1, ADR_CHK = 0, que é o valor de reset e o que configure() grava): por isso
+// serve para conferir, por escrita e releitura, que há um chip no barramento.
+inline constexpr uint8_t kAddr = 0x09;
 inline constexpr uint8_t kChannr = 0x0A;
 inline constexpr uint8_t kFsctrl0 = 0x0C;
 inline constexpr uint8_t kFreq2 = 0x0D;

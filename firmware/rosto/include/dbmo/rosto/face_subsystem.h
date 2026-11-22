@@ -45,6 +45,13 @@ class FaceSubsystem final : public ISubsystem {
     renderer_.invalidate();
     redrawPending_ = true;
   }
+  // Com a tela ocupada por outra coisa (o menu), o rosto continua mudando de expressão,
+  // mas não desenha. Ao voltar a ficar visível, redesenha a tela inteira.
+  void setVisible(bool visible) {
+    if (visible && !visible_) invalidate();
+    visible_ = visible;
+  }
+  bool visible() const { return visible_; }
 
  private:
   struct Binding {
@@ -64,6 +71,7 @@ class FaceSubsystem final : public ISubsystem {
   size_t bindingCount_ = 0;
   bool subscribed_ = false;
   bool redrawPending_ = true;
+  bool visible_ = true;
   bool drawFailed_ = false;
   uint32_t lastAttemptMs_ = 0;
   uint32_t drawnRevision_ = 0;

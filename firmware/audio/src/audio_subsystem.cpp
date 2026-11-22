@@ -1,5 +1,7 @@
 #include "dbmo/audio/audio_subsystem.h"
 
+#include <cmath>
+
 #include "dbmo/core/log.h"
 
 namespace dbmo::audio {
@@ -17,13 +19,48 @@ Status AudioSubsystem::registerConfig(ConfigStore &config) {
   DBMO_TRY(
       config.define(ConfigSpec::integer(config_key::kSampleRate, kDefaultSampleRate, 8000, 48000)));
   DBMO_TRY(config.define(ConfigSpec::boolean(config_key::kMicEnabled, false)));
-  return Status::Ok;
+  return config.define(
+      ConfigSpec::integer(config_key::kMicHighPassHz, kDefaultMicHighPassHz, 0, 1000));
+}
+
+void HighPass::configure(uint32_t cutoffHz, uint32_t sampleRateHz) {
+  enabled_ = cutoffHz > 0 && sampleRateHz > 2 * cutoffHz;
+  primed_ = false;
+  if (!enabled_) return;
+  const float w0 = 2.0f * 3.14159265f * static_cast<float>(cutoffHz) / sampleRateHz;
+  const float cosine = std::cos(w0);
+  const float alpha = std::sin(w0) / (2.0f * 0.70710678f);  // Q = 1/√2: Butterworth
+  const float a0 = 1.0f + alpha;
+  b0_ = (1.0f + cosine) / 2.0f / a0;
+  b1_ = -2.0f * b0_;
+  b2_ = b0_;
+  a1_ = -2.0f * cosine / a0;
+  a2_ = (1.0f - alpha) / a0;
+}
+
+int16_t HighPass::process(int16_t sample) {
+  if (!enabled_) return sample;
+  const float x = sample;
+  if (!primed_) {
+    x1_ = x2_ = x;
+    y1_ = y2_ = 0.0f;
+    primed_ = true;
+  }
+  const float y = b0_ * x + b1_ * x1_ + b2_ * x2_ - a1_ * y1_ - a2_ * y2_;
+  x2_ = x1_;
+  x1_ = x;
+  y2_ = y1_;
+  y1_ = y;
+  const float clipped = y > 32767.0f ? 32767.0f : (y < -32768.0f ? -32768.0f : y);
+  return static_cast<int16_t>(std::lround(clipped));
 }
 
 void AudioSubsystem::applyConfig() {
   volume_.setPercent(static_cast<uint8_t>(config_.getInt(config_key::kVolume).valueOr(60)));
   volume_.setMuted(config_.getBool(config_key::kMuted).valueOr(false));
   micEnabled_ = config_.getBool(config_key::kMicEnabled).valueOr(false);
+  micHighPassHz_ = static_cast<uint32_t>(
+      config_.getInt(config_key::kMicHighPassHz).valueOr(kDefaultMicHighPassHz));
   // Desabilitar o microfone no meio de uma gravação a encerra.
   if (!micEnabled_ && recording_) finishRecording();
 }
@@ -170,6 +207,7 @@ Status AudioSubsystem::startRecording(int16_t *storage, size_t capacity, uint32_
   recordStartMs_ = clock_.nowMs();
   recordMaxMs_ = maxMs > kMaxRecordMs ? kMaxRecordMs : maxMs;
   discardLeft_ = static_cast<size_t>(static_cast<uint64_t>(kMicStartupMs) * sampleRateHz_ / 1000);
+  micFilter_.configure(micHighPassHz_, sampleRateHz_);
   inputErrors_ = 0;
   recording_ = true;
   // O aviso sai antes de qualquer amostra ser guardada.
@@ -187,7 +225,8 @@ void AudioSubsystem::finishRecording() {
   if (input_ != nullptr) (void)input_->end();  // microfone só fica ligado gravando
   (void)bus_.publish(audio_event::kRecordingFinished, static_cast<uint32_t>(recorded_),
                      recordPeak_);
-  DBMO_LOGI(kTag, "gravacao encerrada: %lu amostras", static_cast<unsigned long>(recorded_));
+  DBMO_LOGI(kTag, "gravacao encerrada: %lu amostras, pico %u",
+            static_cast<unsigned long>(recorded_), static_cast<unsigned>(recordPeak_));
 }
 
 void AudioSubsystem::serviceRecording(uint32_t nowMs) {
@@ -214,8 +253,8 @@ void AudioSubsystem::serviceRecording(uint32_t nowMs) {
     }
     const size_t room = capacity_ - recorded_;
     if (count > room) count = room;
-    for (size_t i = 0; i < count; ++i) storage_[recorded_ + i] = samples[i];
-    const uint16_t peak = peakLevel(samples, count);
+    for (size_t i = 0; i < count; ++i) storage_[recorded_ + i] = micFilter_.process(samples[i]);
+    const uint16_t peak = peakLevel(storage_ + recorded_, count);
     if (peak > recordPeak_) recordPeak_ = peak;
     recorded_ += count;
     if (recorded_ == capacity_) {

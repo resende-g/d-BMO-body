@@ -231,6 +231,14 @@ void System::reportFault(const ISubsystem &subsystem, Status status, SubsystemSt
   updateHealth();
 }
 
+void System::reportDegraded(const ISubsystem &subsystem, Status reason) {
+  const int index = indexOf(subsystem);
+  if (index < 0 || !inOperation(entries_[index].state)) return;
+  entries_[index].lastStatus = reason;
+  setSubsystemState(static_cast<size_t>(index), SubsystemState::Degraded);
+  updateHealth();
+}
+
 void System::reportRecovered(const ISubsystem &subsystem) {
   const int index = indexOf(subsystem);
   if (index < 0 || entries_[index].state != SubsystemState::Degraded) return;

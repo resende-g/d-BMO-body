@@ -28,6 +28,8 @@ class DisplaySubsystem final : public ISubsystem {
  public:
   // Brilho usado no estado Dimmed, em % do brilho configurado.
   static constexpr uint8_t kDimFactorPercent = 25;
+  // ID da ILI9341 (comando RDDID4, 0xD3), a tela do d-BMO.
+  static constexpr uint16_t kExpectedControllerId = 0x9341;
 
   DisplaySubsystem(IDisplay &display, EventBus &bus, ConfigStore &config);
 
@@ -48,10 +50,15 @@ class DisplaySubsystem final : public ISubsystem {
   ScreenPower power() const { return power_; }
   // Falso quando o hardware não controla o backlight (LED da tela direto no 3V3).
   bool backlightControlled() const { return backlightControlled_; }
+  // Resultado da conferência do ID do controlador feita no init. Ok quando o ID é o
+  // esperado ou a tela não informa ID; IoError para 0x0000 ou 0xFFFF (MISO da tela sem
+  // resposta); Incompatible para outro valor. Não impede a tela de desenhar.
+  Status controllerCheck() const { return controllerCheck_; }
   IDisplay &display() { return display_; }
 
  private:
   Status applyBacklight(uint8_t percent);
+  Status checkController();
   void setPower(ScreenPower power);
   uint8_t configuredBrightness() const;
 
@@ -60,6 +67,7 @@ class DisplaySubsystem final : public ISubsystem {
   ConfigStore &config_;
   ScreenPower power_ = ScreenPower::On;
   bool backlightControlled_ = true;
+  Status controllerCheck_ = Status::Ok;
   bool initialized_ = false;
   bool activitySeen_ = false;
   uint32_t lastActivityMs_ = 0;

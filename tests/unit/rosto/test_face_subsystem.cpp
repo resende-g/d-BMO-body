@@ -179,6 +179,30 @@ static void test_invalidate_repaints_everything() {
   TEST_ASSERT_EQUAL_HEX16(palette::kSignalRed, f.panel.pixel(80, 60));
 }
 
+static void test_hidden_face_keeps_changing_but_does_not_draw() {
+  // O menu ocupa a tela: o rosto continua mudando de expressão, mas não desenha por cima.
+  Fixture f;
+  TEST_ASSERT_OK(f.face.init());
+  f.face.setVisible(false);
+  TEST_ASSERT_FALSE(f.face.visible());
+  for (Color &pixel : gPixels) pixel = 0xFFFF;
+  const unsigned calls = f.panel.fillRectCalls;
+  TEST_ASSERT_OK(
+      f.bus.publish(face_event::kRequest, static_cast<uint32_t>(Expression::Error), 10000));
+  f.step();
+  f.step(5000);  // inclui piscadas
+  TEST_ASSERT_TRUE(f.face.engine().current() == Expression::Error);
+  TEST_ASSERT_EQUAL_INT(1, f.changes);  // a mudança é anunciada mesmo escondido
+  TEST_ASSERT_EQUAL_UINT(calls, f.panel.fillRectCalls);
+  TEST_ASSERT_EQUAL_HEX16(0xFFFF, f.panel.pixel(0, 0));
+
+  // Ao voltar, redesenha a tela inteira com a expressão atual.
+  f.face.setVisible(true);
+  f.step();
+  TEST_ASSERT_EQUAL_HEX16(palette::kBlack, f.panel.pixel(0, 0));
+  TEST_ASSERT_EQUAL_HEX16(palette::kSignalRed, f.panel.pixel(60, 60));
+}
+
 static void test_shutdown_stops_listening() {
   Fixture f;
   TEST_ASSERT_OK(f.face.init());
@@ -202,6 +226,7 @@ int main() {
   RUN_TEST(test_display_failure_at_init_is_reported);
   RUN_TEST(test_display_failure_during_tick_is_retried_after_a_pause);
   RUN_TEST(test_invalidate_repaints_everything);
+  RUN_TEST(test_hidden_face_keeps_changing_but_does_not_draw);
   RUN_TEST(test_shutdown_stops_listening);
   return UNITY_END();
 }

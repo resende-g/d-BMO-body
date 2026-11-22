@@ -1,5 +1,6 @@
 #include "dbmo/display/display_subsystem.h"
 #include "dbmo/display/framebuffer_display.h"
+#include "dbmo/mock/mock_hal.h"
 #include "dbmo_test.h"
 
 using dbmo::ConfigStore;
@@ -36,7 +37,7 @@ struct Fixture {
 void setUp() {
   for (Color &pixel : gPixels) pixel = 0xFFFF;
 }
-void tearDown() {}
+void tearDown() { dbmo::logger().clearSinks(); }  // um teste que falha não chega a limpar
 
 static void test_init_clears_to_black_and_applies_brightness() {
   Fixture f;
@@ -46,6 +47,33 @@ static void test_init_clears_to_black_and_applies_brightness() {
   TEST_ASSERT_EQUAL_UINT8(80, f.panel.backlightPercent);  // padrão
   TEST_ASSERT_FALSE(f.panel.asleep);
   TEST_ASSERT_TRUE(f.display.power() == ScreenPower::On);
+}
+
+static void test_controller_id_is_checked_without_blocking_the_screen() {
+  // Bancada, 2026-11-21: sem o SDO da tela ligado o ID lido foi 0xFFFF e depois 0x0000, e
+  // a tela foi dada como pronta. A tela desenha sem o MISO, então o init continua Ok.
+  struct Case {
+    dbmo::Result<uint16_t> id;
+    Status expected;
+  };
+  const Case cases[] = {
+      {static_cast<uint16_t>(0x9341), Status::Ok},
+      {Status::Unsupported, Status::Ok},  // tela que não informa o ID: nada a conferir
+      {static_cast<uint16_t>(0xFFFF), Status::IoError},
+      {static_cast<uint16_t>(0x0000), Status::IoError},
+      {static_cast<uint16_t>(0x7789), Status::Incompatible},
+  };
+  for (const Case &c : cases) {
+    dbmo::mock::RecordingLogSink sink;
+    TEST_ASSERT_OK(dbmo::logger().addSink(&sink));
+    Fixture f;
+    f.panel.controllerIdResult = c.id;
+    TEST_ASSERT_OK(f.display.init());
+    TEST_ASSERT_EQUAL_HEX16(palette::kBlack, f.panel.pixel(0, 0));  // desenhou
+    TEST_ASSERT_STATUS(c.expected, f.display.controllerCheck());
+    TEST_ASSERT_EQUAL_UINT(isOk(c.expected) ? 0 : 1, sink.countAtLevel(dbmo::LogLevel::Warn));
+    dbmo::logger().clearSinks();
+  }
 }
 
 static void test_inactivity_dims_then_turns_off_and_activity_wakes() {
@@ -107,17 +135,20 @@ static void test_idle_time_survives_clock_rollover() {
   TEST_ASSERT_TRUE(f.display.power() == ScreenPower::Dimmed);
 }
 
-static void test_uncontrolled_backlight_skips_dimming_but_still_sleeps() {
+// Com o LED aceso, o painel em repouso fica branco (bancada, 2026-11-22): sem controle do
+// backlight, a tela não esmaece nem dorme.
+static void test_uncontrolled_backlight_never_dims_or_sleeps() {
   Fixture f;
   f.panel.backlightSupported = false;  // LED da tela direto no 3V3
   TEST_ASSERT_OK(f.display.init());
   TEST_ASSERT_FALSE(f.display.backlightControlled());
   f.display.tick(0);
   f.display.tick(60000);
-  TEST_ASSERT_TRUE(f.display.power() == ScreenPower::On);  // não há como esmaecer
+  TEST_ASSERT_TRUE(f.display.power() == ScreenPower::On);
   f.display.tick(120000);
-  TEST_ASSERT_TRUE(f.display.power() == ScreenPower::Off);
-  TEST_ASSERT_TRUE(f.panel.asleep);
+  f.display.tick(3600000);
+  TEST_ASSERT_TRUE(f.display.power() == ScreenPower::On);
+  TEST_ASSERT_FALSE(f.panel.asleep);
 }
 
 static void test_brightness_is_validated_stored_and_applied() {
@@ -159,11 +190,12 @@ static void test_shutdown_blanks_and_sleeps_the_panel() {
 int main() {
   UNITY_BEGIN();
   RUN_TEST(test_init_clears_to_black_and_applies_brightness);
+  RUN_TEST(test_controller_id_is_checked_without_blocking_the_screen);
   RUN_TEST(test_inactivity_dims_then_turns_off_and_activity_wakes);
   RUN_TEST(test_activity_keeps_the_screen_on);
   RUN_TEST(test_timeouts_of_zero_disable_the_feature);
   RUN_TEST(test_idle_time_survives_clock_rollover);
-  RUN_TEST(test_uncontrolled_backlight_skips_dimming_but_still_sleeps);
+  RUN_TEST(test_uncontrolled_backlight_never_dims_or_sleeps);
   RUN_TEST(test_brightness_is_validated_stored_and_applied);
   RUN_TEST(test_panel_errors_are_reported_and_retried);
   RUN_TEST(test_shutdown_blanks_and_sleeps_the_panel);

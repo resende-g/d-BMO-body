@@ -2,11 +2,11 @@
 
 | Campo | Valor |
 |---|---|
-| Versão | 0.2 (2026-11-21) |
-| Escopo | Tela ligada direto na DevKitC; trilho da protoboard grande para o LED da tela, o receptor e o transmissor de IR e o CC1101 (só recepção); 3 botões numa protoboard pequena separada |
-| Fora do escopo | SD da tela e PN532 (pinos não soldados), áudio (sem pinos no perfil `dbmo-bench`; pinagem dos módulos e ligação do alto-falante não conferidas), MCP23017 (não possui) |
+| Versão | 0.3 (2026-11-22) |
+| Escopo | Tela ligada direto na DevKitC; trilho da protoboard grande para o LED da tela, o receptor e o transmissor de IR, o CC1101 (só recepção) e o microfone INMP441; 3 botões numa protoboard pequena separada |
+| Fora do escopo | SD da tela e PN532 (pinos não soldados), amplificador MAX98357A e alto-falante (sem pinos de saída no perfil `dbmo-bench`), MCP23017 (não possui) |
 | Pinagem | `firmware/config/include/dbmo/config/pins.h`, perfil `bench` ([`GPIO_MAP.md`](GPIO_MAP.md)) |
-| Estado | **v0.2 não montada.** A v0.1 (tela inteira alimentada pelo trilho grande) foi montada em 21/11/2026: a tela ficou apagada, com 2,65 V medidos no 3,3 V (ver [`../testing/TESTING.md`](../testing/TESTING.md)). Em uso agora: montagem mínima (tela direto na DevKitC e botões; IR e CC1101 desligados) |
+| Estado | Fases A a D montadas e testadas em 21 e 22/11/2026, com a tela e o CC1101 dividindo o SPI (ver [`../testing/TESTING.md`](../testing/TESTING.md)). Fase E (microfone) ainda não montada. A v0.1 (tela inteira alimentada pelo trilho grande) deixou a tela apagada, com 2,65 V medidos no 3,3 V |
 
 ## 1. Princípio da montagem
 
@@ -52,6 +52,7 @@ fonte apenas para alguns pinos (DKC-07, DKC-10, DKC-01, DKC-02, DKC-18 em
 | J1 | 2 | 3V3 | Trilho (+) |
 | J1 | 4 | 4 | Receptor de IR (OUT) |
 | J1 | 5 | 5 | Transmissor de IR (DAT) |
+| J1 | 7 | 7 | INMP441 SD (fase E) |
 | J1 | 8 | 15 | CC1101 GDO0 (fase D) |
 | J1 | 10 | 17 | Tela DC |
 | J1 | 11 | 18 | Tela RESET |
@@ -64,6 +65,8 @@ fonte apenas para alguns pinos (DKC-07, DKC-10, DKC-01, DKC-02, DKC-18 em
 | J1 | 22 | G / GND | Tela GND |
 | J3 | 1 | G / GND | Trilho (−) da protoboard grande |
 | J3 | 5 | 2 | Botão OK |
+| J3 | 7 | 41 | INMP441 WS (fase E) |
+| J3 | 8 | 40 | INMP441 SCK (fase E); fica ao lado do 39 (CIMA) |
 | J3 | 9 | 39 | Botão CIMA |
 | J3 | 17 | 47 | Botão BAIXO |
 | J3 | 22 | G / GND | Trilho (−) da protoboard pequena |
@@ -111,10 +114,18 @@ Tipos: **FF** fêmea-fêmea, **FM** fêmea-macho, **MM** macho-macho.
 | D11 | D | CC1101 pino 5 SCK | Col. 11, linha b | FM |
 | D12 | D | CC1101 pino 6 MOSI | Col. 8, linha b | FM |
 | D13 | D | CC1101 pino 7 MISO | Col. 14, linha b | FM |
+| E1 | E | INMP441 VDD | Trilho (+), col. 45 | FM |
+| E2 | E | INMP441 GND | Trilho (−), col. 49 | FM |
+| E3 | E | INMP441 L/R | Trilho (−), col. 50 | FM |
+| E4 | E | INMP441 SCK | DevKitC 40 (J3, pino 8) | FF |
+| E5 | E | INMP441 WS | DevKitC 41 (J3, pino 7) | FF |
+| E6 | E | INMP441 SD | DevKitC 7 (J1, pino 7) | FF |
 
 CC1101 pino 8 (GDO2) e pinos T_* da tela: sem ligação. Pinos 1 a 4 do CC1101 conforme o manual da Ebyte; 5 a 8 só por fonte secundária (ficha da LCSC do E07-M1101D-TH). Transmissor de IR ligado, mas o envio continua bloqueado no firmware (`infrared.tx_enabled` = 0) até o circuito da plaquinha ser identificado.
 
-Montagem completa (fases A a D, já sem A6–A8): 7 FF, 20 FM e 7 MM, mais 1 MM por trilho dividido.
+INMP441 (fase E) fora da protoboard, como o CC1101: seus pinos ficam em duas fileiras de 3, e uma fileira encaixada caberia num mesmo grupo de 5 furos, pondo os 3 pinos em curto. Pinagem pela serigrafia da placa (foto de 22/11): L/R, WS e SCK de um lado; GND, VDD e SD do outro, com o furo do som no meio, do lado da serigrafia. L/R vai ao GND: o microfone usa o canal esquerdo, que é o que o firmware lê (MIC-06 em `sources/PERIPHERALS.md`). A placa não expõe o CHIPEN.
+
+Montagem completa (fases A a E, já sem A6–A8): 10 FF, 23 FM e 7 MM, mais 1 MM por trilho dividido.
 
 ## 5. Conferências com o multímetro
 
@@ -132,6 +143,8 @@ tensão na faixa 20 V.
 | CC | Fase D, antes de ligar o CC1101 | Pino 1 do CC1101 contra a rosca do SMA; pino 2 contra a rosca | Pino 1 fecha; pino 2 não |
 | M5 | USB ligado, fase A montada | Tensão no J1 pino 1 contra GND; trilho (+) contra trilho (−) perto do A1 e na ponta oposta | Cerca de 3,3 V nos três pontos, praticamente iguais. Trilho abaixo do pino indica perda no caminho (jumper ou contato): desligar e refazer M1 e M4 |
 | IR | USB ligado, fase C (receptor) | Tensão entre VCC e GND do receptor, nas pernas dele | Cerca de 3,3 V |
+| MIC | Fase E, antes de ligar o USB | Continuidade entre o furo com o nome (lado da serigrafia) e a outra ponta de cada fio (E1–E6); L/R contra GND do módulo, antes do E3 | Perto de 0 Ω nos 6 fios. L/R contra GND: anotar o valor |
+| MV | USB ligado, fase E | Tensão entre VDD e GND do INMP441, nas pernas dele | Cerca de 3,3 V |
 
 ## 6. Ordem
 
@@ -146,5 +159,7 @@ montada e testada (TESTING.md, 21/11/2026).
    plaquinha.
 5. Fase D: trocar A6–A8 por D1–D6 e conferir a tela (rosto e `status`) antes do CC1101; depois
    CC, D7–D13, NÓ, M2, USB e `pio test -e dbmo-bench -f test_cc1101`.
+6. Fase E, microfone (E1–E6): MIC; M2; USB; MV; no console, `config audio.mic_enabled 1` e
+   `mic 1000` em silêncio e com som perto. Sem o microfone ligado, o firmware registra `pico 0`.
 
 Um módulo em Failed, ou tensão caindo: desligar o USB e conferir só os fios daquele módulo.

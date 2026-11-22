@@ -182,6 +182,27 @@ static void test_echo_repeats_typed_characters() {
   TEST_ASSERT_TRUE(out.contains("ping\r\n"));
 }
 
+static void test_keystrokes_one_by_one_like_the_default_monitor() {
+  // O "pio device monitor" padrão manda cada tecla na hora e o Enter como CRLF; com
+  // "--filter send_on_enter" a linha vai inteira. Bancada, 2026-11-21: só o segundo jeito
+  // respondeu. Do lado do console os dois são iguais (eco ligado, como em main.cpp), então
+  // a causa não está aqui: fica como hipótese para a bancada (docs/testing/TESTING.md).
+  CapturedOutput out;
+  Console console(out);
+  console.setEcho(true);
+  Call call;
+  TEST_ASSERT_OK(console.registerCommand({"status", "", record, &call}));
+  const char *keys[] = {"s", "t", "a", "t", "u", "s", "\r", "\n"};
+  for (const char *key : keys) console.feed(*key);
+  TEST_ASSERT_EQUAL_INT(1, call.count);
+  TEST_ASSERT_TRUE(out.contains("status\r\n"));
+
+  // Só CR (terminal sem tradução de Enter) e só LF também executam.
+  console.feed("status\r");
+  console.feed("status\n");
+  TEST_ASSERT_EQUAL_INT(3, call.count);
+}
+
 static void test_printf_truncates_instead_of_overflowing() {
   CapturedOutput out;
   Console console(out);
@@ -203,6 +224,7 @@ int main() {
   RUN_TEST(test_non_printable_bytes_are_ignored);
   RUN_TEST(test_registration_rules_and_help);
   RUN_TEST(test_echo_repeats_typed_characters);
+  RUN_TEST(test_keystrokes_one_by_one_like_the_default_monitor);
   RUN_TEST(test_printf_truncates_instead_of_overflowing);
   return UNITY_END();
 }
