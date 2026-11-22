@@ -913,16 +913,25 @@ void test_mic_command_records_only_when_enabled_and_logs_the_peak() {
   TEST_ASSERT_FALSE(rig->microphone.running);  // o microfone só fica ligado gravando
   TEST_ASSERT_TRUE(app.audio().recordedSamples() > 0);
   TEST_ASSERT_TRUE(sink.contains("gravacao encerrada"));
-  TEST_ASSERT_TRUE(sink.contains("pico 100"));
+  // O microfone falso entrega 100 constante: o passa-altas da gravação tira esse DC.
+  TEST_ASSERT_TRUE(sink.contains("pico 0"));
 
   // Estatísticas da última gravação, para separar som de desvio de DC na bancada.
   output.clear();
   TEST_ASSERT_OK(console.execute("mic last"));
-  TEST_ASSERT_TRUE(output.contains("media 100"));
-  TEST_ASSERT_TRUE(output.contains("min 100; max 100; rms 100"));
-  TEST_ASSERT_TRUE(output.contains("media por 100 ms: 100"));
+  TEST_ASSERT_TRUE(output.contains("media 0; min 0; max 0; rms 0"));
+  TEST_ASSERT_TRUE(output.contains("media por 100 ms: 0"));
   TEST_ASSERT_TRUE(output.contains("rms por 100 ms: 0"));
   TEST_ASSERT_TRUE(output.contains("pico por 100 ms: 0"));
+
+  // Com o filtro desligado, a amostra crua.
+  TEST_ASSERT_OK(console.execute("config audio.mic_highpass_hz 0"));
+  rig->run(app, 5);
+  TEST_ASSERT_OK(console.execute("mic 300"));
+  rig->run(app, 400);
+  output.clear();
+  TEST_ASSERT_OK(console.execute("mic last"));
+  TEST_ASSERT_TRUE(output.contains("media 100; min 100; max 100; rms 100"));
   dbmo::logger().clearSinks();
 }
 

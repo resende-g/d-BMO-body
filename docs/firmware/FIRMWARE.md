@@ -135,6 +135,7 @@ arquivo não impede as demais.
 | `audio.muted` | false | | |
 | `audio.sample_rate` | 16000 | 8000, 16000, 32000, 44100, 48000 | Outras caem para 16000 |
 | `audio.mic_enabled` | **false** | | Sem isto não há gravação |
+| `audio.mic_highpass_hz` | 60 | 0–1000 | Passa-altas de 2ª ordem na gravação; tira o desvio lento com que o INMP441 começa cada gravação. 0 = sem filtro |
 | `nfc.scan_enabled` | **false** | | Campo de RF desligado |
 | `nfc.scan_period_ms` | 250 | 100–5000 | |
 | `radio.tx_enabled` | **false** | | Transmissão desabilitada |
