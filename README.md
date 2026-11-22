@@ -128,7 +128,7 @@ digitar comando faz sentido. Fora do escopo deste repositório por enquanto.
 | Item | Qtd | Termo de busca | Situação / observação |
 |---|---:|---|---|
 | ESP32-S3 DevKitC-1 N16R8 | 1 | já disponível | **Placa principal** (16 MB flash, 8 MB PSRAM octal, WiFi + BLE no chip, antena de trilha). Já validada com tela, 3 botões e Bruce. Na PCB final, usar o módulo ESP32-S3-WROOM-1-N16R8 (conferir estoque na JLCPCB) |
-| MCP23017 (expansor de I/O I²C) | 1–2 | `MCP23017 DIP-28` | **A comprar.** Corrigido em 21/11/2026: o usuário não tem o chip; a afirmação anterior ("o usuário tem 2") não tinha origem confirmada. Sem ele, a bancada usa botões direto nos GPIO (perfil `dbmo-bench`). Um lê os botões por I²C (0x20): **14 entradas**, porque GPA7 e GPB7 são só saída na revisão D do datasheet (ver [`docs/hardware/COMPONENT_MATRIX.md`](docs/hardware/COMPONENT_MATRIX.md)); o segundo (0x21) é opcional, para vibração e GPIOs do cartucho |
+| MCP23017 (expansor de I/O I²C) | 1–2 | `CJMCU-2317` (variação **MCP23017**) ou `MCP23017-E/SP DIP-28` | **A comprar (decidido em 22/11/2026: é a única compra desta rodada).** Opção escolhida: placa CJMCU-2317, cerca de R$ 16 por unidade antes do imposto. Ela já vem com o chip soldado e furos de 2,54 mm, então dispensa soquete. **Atenção à variação:** o mesmo anúncio oferece a MCP23S17, que é SPI e não serve para o firmware (I²C, 0x20). Ao chegar, conferir A0–A2 (endereço), RESET (pull-up) e pull-ups de SDA/SCL. Corrigido em 21/11/2026: o usuário não tem o chip; a afirmação anterior ("o usuário tem 2") não tinha origem confirmada. Sem ele, a bancada usa botões direto nos GPIO (perfil `dbmo-bench`). Um lê os botões por I²C (0x20): **14 entradas**, porque GPA7 e GPB7 são só saída na revisão D do datasheet (ver [`docs/hardware/COMPONENT_MATRIX.md`](docs/hardware/COMPONENT_MATRIX.md)); o segundo (0x21) é opcional, para vibração e GPIOs do cartucho |
 | TFT 3,2" ILI9341 320×240 SPI | 1 | `3.2 ILI9341 320x240 SPI no touch` | Já comprada e validada (MSP3218 touch); pinos T_* sem ligação no v1. Tela única: rosto + menu + status |
 | CC1101 433 MHz + antena SMA | 1 | `CC1101 433MHz module SMA antenna` | Já chegou; falta testar na bancada (jumpers fêmea-fêmea) |
 | PN532 V3 NFC | 1 | `PN532 NFC module V3` | **Comprado em 02/11/2026** (aguardando entrega): "PN532 Set", R$ 17,20. DIP switch em I²C; endereço e compatibilidade a validar |
@@ -152,7 +152,25 @@ digitar comando faz sentido. Fora do escopo deste repositório por enquanto.
 | Fio fino 30 AWG | 1 rolo | `30 AWG silicone wire` | Comprar no Brasil (no AliExpress, o frete sai mais caro que o fio). Fiação fina e protótipos |
 | Conector/soquete card edge 2,54 mm, 20/34 pinos | 2 peças | `CE 225F 2.54mm 20 34 pin card edge slot connector` | Fase 4. Antes de comprar: confirmar se o anúncio "2*20P" (R$ 14,33) são **2 peças de 20P** (correto) ou **um soquete 2×20 = 40 contatos** (~55 mm, não cabe no cartucho de 52 mm); medir a peça real antes de fechar o footprint |
 
-**Comprado em 02/11/2026 (aguardando entrega):** jumpers R$ 22,10; protoboard MB-102 R$ 13,26; PN532 R$ 17,20; IR R$ 7,03; MAX98357A R$ 8,36; alto-falante R$ 7,44; INMP441 R$ 12,14; resistores R$ 19,96; capacitores 100 nF R$ 12,24. **Total R$ 119,73**, antes do cupom de R$ 16 (se valer para o carrinho inteiro) e do imposto. Fio de 30 AWG, malha e fluxo em loja brasileira. Resistores e capacitores avulsos só servem para bancada: na PCB, entram como SMD montados pela JLCPCB.
+**Comprado em 02/11/2026 (pago em 03/11/2026, R$ 107,56 no cartão; ver [Gastos](#gastos-até-agora)):** jumpers R$ 22,10; protoboard MB-102 R$ 13,26; PN532 R$ 17,20; IR R$ 7,03; MAX98357A R$ 8,36; alto-falante R$ 7,44; INMP441 R$ 12,14; resistores R$ 19,96; capacitores 100 nF R$ 12,24. **Total R$ 119,73**, antes do cupom de R$ 16 (se valer para o carrinho inteiro) e do imposto. Fio de 30 AWG, malha e fluxo em loja brasileira. Resistores e capacitores avulsos só servem para bancada: na PCB, entram como SMD montados pela JLCPCB.
+
+### Gastos até agora
+
+Valores **efetivamente pagos**, com imposto e cupons, conferidos nos pedidos do AliExpress e na
+fatura do cartão (registrado em 22/11/2026). A tabela de componentes acima traz os preços dos
+itens antes do imposto.
+
+| Compra | Data | Total pago | Fonte |
+|---|---|---:|---|
+| Tela 3,2" SPI com touch (MSP3218) | 10/10/2026 | R$ 64,62 | Pedido no AliExpress |
+| CC1101 433 MHz + antena | 10/10/2026 | R$ 23,88 | Pedido no AliExpress |
+| ESP32-S3 DevKitC-1 N16R8 (pinos soldados) | 10/10/2026 | R$ 31,30 | Pedido no AliExpress |
+| Fase 1: periféricos e bancada (lista acima) | 03/11/2026 | R$ 107,56 | Cobrança no cartão, informada pelo usuário |
+| **Total** | | **R$ 227,36** | |
+
+Limites: supõe que a cobrança de 03/11 é o carrinho inteiro da Fase 1, sem outras cobranças
+divididas. **Fora da conta:** ferro de solda, multímetro e consumíveis (sem valor registrado).
+Power bank e controle de PS3 são reaproveitados (custo zero para o projeto).
 
 **Carga, BMS e regulador são componentes SMD na própria PCB** (projetados no EasyEDA, fabricados pela JLCPCB), não módulos avulsos TP4056/MT3608. Ver seção Fabricação.
 
@@ -166,8 +184,8 @@ bateria, analógicos), então só é modelada depois da Fase 2.
 
 | Fase | Comprar | Custo aproximado | O que destrava |
 |---|---|---:|---|
-| 1. Núcleo + periféricos (comprada em 02/11/2026) | Jumpers, protoboard, resistores, capacitores 100 nF, PN532, IR, MAX98357A, alto-falante, INMP441 | R$ 119,73 antes do cupom e do imposto | CC1101, NFC, IR e áudio na S3 com o Bruce. Sem compra: slot SD da tela com adaptador, rosto do d-BMO. O MCP23017 dos botões precisa ser comprado (corrigido em 21/11/2026). A Fase 3 original foi antecipada para cá |
-| 2. Volume + energia (próxima rodada) | Bateria com PCM + NTC **e** módulo de carga com power-path (BQ24074 ou MCP73871) na mesma compra; botões tácteis de ângulo reto se faltarem no estoque; tirar os analógicos do controle de PS3 (sem compra) | ~R$ 80–100, ou zero com o [power bank externo](#alternativa-sem-custo-power-bank-externo-v0) no lugar da bateria e do módulo | Peças que definem o corpo em mãos: **modelar e imprimir a carcaça v0**. Bateria sem carregador adequado não se compra: os dois vão juntos. O módulo também valida a energia na bancada (ver [Riscos da bateria](#riscos-da-bateria-e-recomendações)) |
+| 1. Núcleo + periféricos (comprada em 02/11/2026) | Jumpers, protoboard, resistores, capacitores 100 nF, PN532, IR, MAX98357A, alto-falante, INMP441 | R$ 107,56 pagos (R$ 119,73 em itens, antes do cupom e do imposto) | CC1101, NFC, IR e áudio na S3 com o Bruce. Sem compra: slot SD da tela com adaptador, rosto do d-BMO. O MCP23017 dos botões precisa ser comprado (corrigido em 21/11/2026). A Fase 3 original foi antecipada para cá |
+| 2. Volume + energia (**adiada em 22/11/2026** para quando a carcaça estiver perto de ser modelada; nesta rodada só entra o MCP23017) | Bateria com PCM + NTC **e** módulo de carga com power-path (BQ24074 ou MCP73871) na mesma compra; botões tácteis de ângulo reto se faltarem no estoque; tirar os analógicos do controle de PS3 (sem compra) | ~R$ 80–100, ou zero com o [power bank externo](#alternativa-sem-custo-power-bank-externo-v0) no lugar da bateria e do módulo | Peças que definem o corpo em mãos: **modelar e imprimir a carcaça v0**. Bateria sem carregador adequado não se compra: os dois vão juntos. O módulo também valida a energia na bancada (ver [Riscos da bateria](#riscos-da-bateria-e-recomendações)) |
 | 3. Periféricos | — | — | Antecipada para a Fase 1 (comprada em 02/11/2026) |
 | 4. Cartuchos | Soquete card edge | ~R$ 15 | Cartucho no topo; até lá, a fenda fica com tampa cega |
 | 5. Definitivo | PCB própria na JLCPCB (ESP32-S3-WROOM-1-N16R8, carga/BMS/regulador SMD, MCP23017, riser do card edge) | ~R$ 100 por 5 placas + montagem, frete e imposto | Carcaça v1 em volta da PCB definitiva |
