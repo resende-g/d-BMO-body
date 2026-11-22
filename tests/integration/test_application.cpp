@@ -788,6 +788,12 @@ void test_received_infrared_code_is_written_to_the_log_once() {
   rig->irReceiver.pending = true;
   rig->run(app, 10);
   TEST_ASSERT_EQUAL_UINT(2, sink.countContaining("infravermelho: sinal desconhecido"));
+  // Outra tecla logo em seguida, com outro tamanho: é um sinal novo.
+  rig->run(app, 150);
+  rig->irReceiver.next.count = 7;
+  rig->irReceiver.pending = true;
+  rig->run(app, 10);
+  TEST_ASSERT_EQUAL_UINT(1, sink.countContaining("infravermelho: sinal desconhecido (7 duracoes)"));
   dbmo::logger().clearSinks();
 }
 

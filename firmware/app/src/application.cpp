@@ -362,11 +362,16 @@ void Application::handle(const Event &event) {
           DBMO_LOGI(kTag, "infravermelho: %s", text);
       } else if (event.id == infrared::infrared_event::kRawReceived) {
         // Protocolo desconhecido não passa pela detecção de repetição do subsistema; com a
-        // tecla segurada o quadro volta a cada ~110 ms. Só o primeiro da sequência vai ao log.
-        const bool repeat = irRawSeen_ && elapsedMs(now, lastIrRawMs_) <=
-                                              infrared::InfraredSubsystem::kRepeatWindowMs;
+        // tecla segurada o quadro volta a cada ~110 ms. Só o primeiro da sequência vai ao log;
+        // um tamanho diferente conta como outra tecla.
+        // ponytail: só compara o tamanho; duas teclas desconhecidas de mesmo tamanho em menos
+        // de 200 ms viram uma linha só. Comparar as durações se isso atrapalhar a bancada.
+        const bool repeat =
+            irRawSeen_ && event.a == lastIrRawCount_ &&
+            elapsedMs(now, lastIrRawMs_) <= infrared::InfraredSubsystem::kRepeatWindowMs;
         irRawSeen_ = true;
         lastIrRawMs_ = now;
+        lastIrRawCount_ = event.a;
         if (!repeat)
           DBMO_LOGI(kTag, "infravermelho: sinal desconhecido (%lu duracoes)",
                     static_cast<unsigned long>(event.a));

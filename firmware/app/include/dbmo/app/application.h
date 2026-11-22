@@ -231,6 +231,7 @@ class Application {
   uint32_t lastRetryMs_ = 0;
   bool irRawSeen_ = false;
   uint32_t lastIrRawMs_ = 0;
+  uint32_t lastIrRawCount_ = 0;
 
   Menu menu_;
   display::TextScreen menuText_;
