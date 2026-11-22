@@ -90,6 +90,8 @@ dbmo::input::GpioButtonSource gButtons(gGpio, kBenchButtons,
                                        sizeof(kBenchButtons) / sizeof(kBenchButtons[0]));
 esp32::RmtIrReceiver gIrReceiver(bench::kIrRx);
 esp32::RmtIrTransmitter gIrTransmitter(bench::kIrTx);
+// Só o microfone INMP441: sem saída de alto-falante nem pino do amplificador (-1).
+esp32::I2sAudio gAudio(pins::kI2sBclk, pins::kI2sLrclk, -1, pins::kI2sMicData, -1);
 #endif
 
 dbmo::app::Hardware makeHardware() {
@@ -120,6 +122,7 @@ dbmo::app::Hardware makeHardware() {
   hw.cartridgeSpi = &gCartridgeSpi;
 #else
   hw.profile = "bench";
+  hw.audioInput = &gAudio.input();
 #endif
   return hw;
 }

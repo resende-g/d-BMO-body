@@ -50,7 +50,7 @@ digitada aparece duas vezes.
 
 | Perfil | Hardware assumido |
 |---|---|
-| `dbmo-bench` | Tela; 3 botões em GPIO 39, 2 e 47; IR em GPIO 4 e 5; cartão, CC1101 e PN532 se estiverem ligados |
+| `dbmo-bench` | Tela; 3 botões em GPIO 39, 2 e 47; IR em GPIO 4 e 5; microfone INMP441 em GPIO 40 (SCK), 41 (WS) e 7 (SD), sem amplificador; cartão, CC1101 e PN532 se estiverem ligados |
 | `dbmo-target` | Pinagem de `pins.h` (namespace `target`): MCP23017, analógicos, áudio I2S, trava de alimentação, backlight por PWM |
 
 Um periférico que não está ligado não impede o boot: aparece como `Absent` em `status`.
@@ -67,6 +67,7 @@ Um periférico que não está ligado não impede o boot: aparece como `Absent` e
 | `save` | Grava a configuração agora |
 | `face [nome\|número]` | Mostra uma expressão; sem argumento, lista |
 | `tone [hz] [ms]` | Toca um tom |
+| `mic [ms]` / `mic last` | Grava até 1000 ms em memória e registra no log `gravacao encerrada: N amostras, pico P`. Exige `config audio.mic_enabled 1`; nada vai para arquivo. `mic last` mostra média, extremos e RMS da última gravação e, por trecho de 100 ms, a média, o RMS e o pico em volta da média do trecho |
 | `nfc [on\|off]` | Liga ou desliga a busca; sem argumento, mostra a etiqueta presente |
 | `ir learn` / `ir save <nome>` / `ir send <nome>` / `ir last` | Infravermelho |
 | `radio [rx on\|off]` | Recepção; sem argumento, mostra frequência e contadores |

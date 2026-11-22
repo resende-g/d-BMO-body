@@ -880,6 +880,52 @@ void test_peripheral_connected_after_boot_is_picked_up() {
   TEST_ASSERT_EQUAL(SystemState::Running, app.system().state());
 }
 
+void test_mic_command_records_only_when_enabled_and_logs_the_peak() {
+  // Bancada, 2026-11-22: primeiro teste do INMP441 pelo console, sem alto-falante.
+  dbmo::mock::RecordingLogSink sink;
+  TEST_ASSERT_OK(dbmo::logger().addSink(&sink));
+  Application app(rig->fullHardware());
+  TEST_ASSERT_OK(app.begin());
+  CapturingOutput output;
+  dbmo::app::Console console(output);
+  TEST_ASSERT_OK(app.registerCommands(console));
+  rig->run(app, 50);
+
+  // Microfone desabilitado por padrão: o comando não grava e diz como habilitar.
+  TEST_ASSERT_OK(console.execute("mic"));
+  TEST_ASSERT_TRUE(output.contains("audio.mic_enabled"));
+  TEST_ASSERT_FALSE(app.audio().recording());
+  TEST_ASSERT_FALSE(rig->microphone.running);
+
+  output.clear();
+  TEST_ASSERT_OK(console.execute("mic 5000"));
+  TEST_ASSERT_TRUE(output.contains("uso: mic"));
+
+  TEST_ASSERT_OK(console.execute("config audio.mic_enabled 1"));
+  rig->run(app, 5);  // a configuração nova vale a partir da próxima volta do laço
+  output.clear();
+  sink.clear();
+  TEST_ASSERT_OK(console.execute("mic 300"));
+  TEST_ASSERT_TRUE(output.contains("gravando 300 ms"));
+  TEST_ASSERT_TRUE(app.audio().recording());
+  rig->run(app, 400);
+  TEST_ASSERT_FALSE(app.audio().recording());
+  TEST_ASSERT_FALSE(rig->microphone.running);  // o microfone só fica ligado gravando
+  TEST_ASSERT_TRUE(app.audio().recordedSamples() > 0);
+  TEST_ASSERT_TRUE(sink.contains("gravacao encerrada"));
+  TEST_ASSERT_TRUE(sink.contains("pico 100"));
+
+  // Estatísticas da última gravação, para separar som de desvio de DC na bancada.
+  output.clear();
+  TEST_ASSERT_OK(console.execute("mic last"));
+  TEST_ASSERT_TRUE(output.contains("media 100"));
+  TEST_ASSERT_TRUE(output.contains("min 100; max 100; rms 100"));
+  TEST_ASSERT_TRUE(output.contains("media por 100 ms: 100"));
+  TEST_ASSERT_TRUE(output.contains("rms por 100 ms: 0"));
+  TEST_ASSERT_TRUE(output.contains("pico por 100 ms: 0"));
+  dbmo::logger().clearSinks();
+}
+
 void test_console_commands() {
   Application app(rig->fullHardware());
   TEST_ASSERT_OK(app.begin());
@@ -997,6 +1043,7 @@ int main() {
   RUN_TEST(test_recording_is_visible_on_the_face);
   RUN_TEST(test_card_removed_in_use_keeps_the_device_running);
   RUN_TEST(test_peripheral_connected_after_boot_is_picked_up);
+  RUN_TEST(test_mic_command_records_only_when_enabled_and_logs_the_peak);
   RUN_TEST(test_console_commands);
   RUN_TEST(test_long_run_is_stable);
   return UNITY_END();

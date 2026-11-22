@@ -187,7 +187,8 @@ void AudioSubsystem::finishRecording() {
   if (input_ != nullptr) (void)input_->end();  // microfone só fica ligado gravando
   (void)bus_.publish(audio_event::kRecordingFinished, static_cast<uint32_t>(recorded_),
                      recordPeak_);
-  DBMO_LOGI(kTag, "gravacao encerrada: %lu amostras", static_cast<unsigned long>(recorded_));
+  DBMO_LOGI(kTag, "gravacao encerrada: %lu amostras, pico %u",
+            static_cast<unsigned long>(recorded_), static_cast<unsigned>(recordPeak_));
 }
 
 void AudioSubsystem::serviceRecording(uint32_t nowMs) {

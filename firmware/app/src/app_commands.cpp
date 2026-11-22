@@ -1,4 +1,5 @@
 // Comandos do console serial: diagnóstico e operação de bancada.
+#include <cmath>
 #include <cstdlib>
 #include <cstring>
 
@@ -120,6 +121,87 @@ void toneCommand(Console &console, int argc, const char *const *argv, void *cont
   console.printf("tom: %s\r\n", toString(appOf(context).audio().playTone(frequency, duration)));
 }
 
+// Teste do microfone: grava em memória e mostra o pico no log ("gravacao encerrada").
+// Nada vai para arquivo. 16000 amostras = 1 s a 16 kHz (32 KB de RAM).
+int16_t gMicBuffer[16000];
+
+// Média, extremos e RMS da última gravação, e o pico a cada 100 ms descontada a média: separa
+// som de desvio de DC e mostra em que trecho o pico aconteceu.
+void micLast(Console &console, audio::AudioSubsystem &audio) {
+  if (audio.recording()) {
+    console.print("mic: gravando\r\n");
+    return;
+  }
+  const size_t n = audio.recordedSamples();
+  if (n == 0) {
+    console.print("mic: nenhuma gravacao\r\n");
+    return;
+  }
+  int64_t sum = 0;
+  uint64_t squares = 0;
+  int16_t low = gMicBuffer[0];
+  int16_t high = gMicBuffer[0];
+  for (size_t i = 0; i < n; ++i) {
+    const int32_t sample = gMicBuffer[i];
+    sum += sample;
+    squares += static_cast<uint64_t>(sample * sample);
+    if (sample < low) low = static_cast<int16_t>(sample);
+    if (sample > high) high = static_cast<int16_t>(sample);
+  }
+  const int32_t mean = static_cast<int32_t>(sum / static_cast<int64_t>(n));
+  console.printf("mic: %lu amostras; media %ld; min %d; max %d; rms %lu\r\n",
+                 static_cast<unsigned long>(n), static_cast<long>(mean), low, high,
+                 static_cast<unsigned long>(sqrt(static_cast<double>(squares) / n) + 0.5));
+  // Por trecho de 100 ms: a média (desvio lento) e o RMS e o pico em volta da média do próprio
+  // trecho (som e ruído), para separar um do outro.
+  const size_t block = audio.sampleRateHz() / 10 > 0 ? audio.sampleRateHz() / 10 : n;
+  const char *const labels[] = {"media", "rms", "pico"};
+  for (int line = 0; line < 3; ++line) {
+    console.printf("%s por 100 ms:", labels[line]);
+    for (size_t start = 0; start < n; start += block) {
+      const size_t end = start + block < n ? start + block : n;
+      int64_t blockSum = 0;
+      for (size_t i = start; i < end; ++i) blockSum += gMicBuffer[i];
+      const int32_t blockMean = static_cast<int32_t>(blockSum / static_cast<int64_t>(end - start));
+      uint64_t blockSquares = 0;
+      int32_t peak = 0;
+      for (size_t i = start; i < end; ++i) {
+        const int32_t deviation = gMicBuffer[i] - blockMean;
+        blockSquares += static_cast<uint64_t>(deviation * deviation);
+        if (abs(deviation) > peak) peak = abs(deviation);
+      }
+      const long value =
+          line == 0 ? blockMean
+          : line == 1
+              ? static_cast<long>(sqrt(static_cast<double>(blockSquares) / (end - start)) + 0.5)
+              : peak;
+      console.printf(" %ld", value);
+    }
+    console.print("\r\n");
+  }
+}
+
+void micCommand(Console &console, int argc, const char *const *argv, void *context) {
+  if (argc > 1 && isWord(argv[1], "last")) {
+    micLast(console, appOf(context).audio());
+    return;
+  }
+  uint32_t ms = 1000;
+  if (argc > 1 && !parseNumber(argv[1], 1000, &ms)) {
+    console.print("uso: mic [ms], ate 1000; mic last\r\n");
+    return;
+  }
+  const Status status = appOf(context).audio().startRecording(
+      gMicBuffer, sizeof(gMicBuffer) / sizeof(gMicBuffer[0]), ms);
+  if (status == Status::NotPermitted) {
+    console.print("mic: desabilitado; use config audio.mic_enabled 1\r\n");
+  } else if (isOk(status)) {
+    console.printf("mic: gravando %lu ms\r\n", static_cast<unsigned long>(ms));
+  } else {
+    console.printf("mic: %s\r\n", toString(status));
+  }
+}
+
 void nfcCommand(Console &console, int argc, const char *const *argv, void *context) {
   nfc::NfcSubsystem &nfc = appOf(context).nfc();
   if (argc >= 2 && isWord(argv[1], "on")) {
@@ -220,6 +302,8 @@ Status Application::registerCommands(Console &console) {
       {"save", "grava a configuracao agora", saveCommand, this},
       {"face", "face [nome|numero]: mostra uma expressao", faceCommand, this},
       {"tone", "tone [hz] [ms]: toca um tom", toneCommand, this},
+      {"mic", "mic [ms] | mic last: grava em memoria; estatisticas da ultima gravacao", micCommand,
+       this},
       {"nfc", "nfc [on|off]: busca de etiquetas", nfcCommand, this},
       {"ir", "ir learn|save|send|last: infravermelho", irCommand, this},
       {"radio", "radio [rx on|off]: radio sub-GHz", radioCommand, this},
