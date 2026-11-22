@@ -62,6 +62,19 @@ void Menu::record(Button button, ButtonAction action) {
 }
 
 MenuAction Menu::handle(Button button, ButtonAction action, uint32_t nowMs) {
+  // O ButtonProcessor manda Click ao soltar mesmo depois de repetições; esse clique não
+  // conta, senão segurar CIMA ou BAIXO passa um item além do que a tela mostrava.
+  const input::ButtonMask bit = input::maskOf(button);
+  bool clickAfterRepeat = false;
+  if (action == ButtonAction::Pressed) {
+    repeated_ &= ~bit;
+  } else if (action == ButtonAction::Repeat) {
+    repeated_ |= bit;
+  } else if (action == ButtonAction::Click) {
+    clickAfterRepeat = (repeated_ & bit) != 0;
+    repeated_ &= ~bit;
+  }
+
   if (!isOpen()) {
     if (button != Button::A || action != ButtonAction::Click) return MenuAction::None;
     screen_ = MenuScreen::Main;
@@ -84,7 +97,8 @@ MenuAction Menu::handle(Button button, ButtonAction action, uint32_t nowMs) {
     return MenuAction::Redraw;
   }
 
-  const bool step = action == ButtonAction::Click || action == ButtonAction::Repeat;
+  const bool step =
+      (action == ButtonAction::Click && !clickAfterRepeat) || action == ButtonAction::Repeat;
   const bool ok = button == Button::A && action == ButtonAction::Click;
   switch (screen_) {
     case MenuScreen::Main:

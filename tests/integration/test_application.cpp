@@ -335,6 +335,15 @@ void test_menu_opens_learns_infrared_and_returns_to_the_face() {
 
   rig->click(app, mcp::kDpadDown);
   TEST_ASSERT_EQUAL_STRING("> Infravermelho", app.menuScreen().line(3));
+  // BAIXO segurado: repetições aos 400, 520 e 640 ms, e soltar não anda mais um item.
+  rig->mcp.press(mcp::kDpadDown);
+  rig->run(app, 700);
+  TEST_ASSERT_EQUAL_STRING("> Sobre", app.menuScreen().line(6));
+  rig->mcp.release(mcp::kDpadDown);
+  rig->run(app, 60);
+  TEST_ASSERT_EQUAL_STRING("> Sobre", app.menuScreen().line(6));
+  for (int i = 0; i < 3; ++i) rig->click(app, mcp::kDpadUp);
+  TEST_ASSERT_EQUAL_STRING("> Infravermelho", app.menuScreen().line(3));
   rig->click(app, mcp::kActionA);
   TEST_ASSERT_EQUAL_STRING("Infravermelho", app.menuScreen().line(0));
   TEST_ASSERT_TRUE(screenHas(app, "nada recebido"));

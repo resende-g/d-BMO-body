@@ -54,6 +54,26 @@ static void test_up_and_down_walk_the_items_and_wrap() {
   TEST_ASSERT_TRUE(menu.cursor() == MenuItem::About);
 }
 
+static void test_release_after_auto_repeat_does_not_move_again() {
+  // O ButtonProcessor manda Click ao soltar mesmo depois de repetições (ver
+  // test_button_processor). Segurar BAIXO e soltar não pode passar um item além do que a
+  // tela mostrava.
+  Menu menu;
+  (void)click(menu, Button::A);
+  (void)menu.handle(Button::DpadDown, ButtonAction::Pressed, 0);
+  (void)menu.handle(Button::DpadDown, ButtonAction::Repeat, 400);
+  (void)menu.handle(Button::DpadDown, ButtonAction::Repeat, 520);
+  TEST_ASSERT_TRUE(menu.cursor() == MenuItem::Radio);
+  (void)menu.handle(Button::DpadDown, ButtonAction::Released, 600);
+  TEST_ASSERT_TRUE(menu.handle(Button::DpadDown, ButtonAction::Click, 600) == MenuAction::None);
+  TEST_ASSERT_TRUE(menu.cursor() == MenuItem::Radio);
+  // O toque curto seguinte volta a andar.
+  (void)menu.handle(Button::DpadDown, ButtonAction::Pressed, 900);
+  (void)menu.handle(Button::DpadDown, ButtonAction::Released, 950);
+  TEST_ASSERT_TRUE(click(menu, Button::DpadDown, 950) == MenuAction::Redraw);
+  TEST_ASSERT_TRUE(menu.cursor() == MenuItem::Buttons);
+}
+
 static void test_absent_items_are_skipped() {
   Menu menu;
   menu.setAvailable(MenuItem::Radio, false);
@@ -199,6 +219,7 @@ int main() {
   UNITY_BEGIN();
   RUN_TEST(test_only_an_ok_click_opens_the_menu);
   RUN_TEST(test_up_and_down_walk_the_items_and_wrap);
+  RUN_TEST(test_release_after_auto_repeat_does_not_move_again);
   RUN_TEST(test_absent_items_are_skipped);
   RUN_TEST(test_ok_enters_each_screen_and_long_press_goes_back);
   RUN_TEST(test_back_from_the_main_list_and_the_face_item_close_the_menu);

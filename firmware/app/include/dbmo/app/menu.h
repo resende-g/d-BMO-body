@@ -70,6 +70,8 @@ class Menu {
   MenuItem cursor_ = MenuItem::Status;
   bool available_[kMenuItemCount] = {true, true, true, true, true, true};
   uint32_t lastInputMs_ = 0;
+  // Botões que repetiram desde que foram apertados: o clique ao soltar não anda de novo.
+  input::ButtonMask repeated_ = 0;
   ButtonRecord history_[kHistorySize] = {};
   size_t historyCount_ = 0;
 };
