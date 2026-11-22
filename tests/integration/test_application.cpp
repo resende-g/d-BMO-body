@@ -563,6 +563,40 @@ void test_infrared_code_is_received_and_send_is_gated() {
   TEST_ASSERT_EQUAL_INT(1, rig->irTransmitter.sendCount);
 }
 
+void test_received_infrared_code_is_written_to_the_log_once() {
+  // Bancada, 2026-11-21: para ver o código recebido foi preciso mandar "ir last" à mão.
+  dbmo::mock::RecordingLogSink sink;
+  TEST_ASSERT_OK(dbmo::logger().addSink(&sink));
+  Application app(rig->fullHardware());
+  TEST_ASSERT_OK(app.begin());
+  rig->run(app, 50);
+  sink.clear();
+
+  dbmo::infrared::IrCode code;
+  code.protocol = dbmo::infrared::IrProtocol::Nec;
+  code.bits = 32;
+  code.address = 0x04;
+  code.command = 0x17;
+  TEST_ASSERT_OK(dbmo::infrared::encode(code, &rig->irReceiver.next));
+  rig->irReceiver.pending = true;
+  rig->run(app, 10);
+  TEST_ASSERT_TRUE(sink.contains("infravermelho: nec:0004:17"));
+
+  // O mesmo quadro logo em seguida (tecla segurada) é repetição: não vai para o log.
+  sink.clear();
+  rig->irReceiver.pending = true;
+  rig->run(app, 10);
+  TEST_ASSERT_FALSE(sink.contains("infravermelho:"));
+
+  // Sinal de protocolo desconhecido: registra o tamanho, não as durações.
+  rig->run(app, 500);
+  rig->irReceiver.next.count = 5;
+  rig->irReceiver.pending = true;
+  rig->run(app, 10);
+  TEST_ASSERT_TRUE(sink.contains("infravermelho: sinal desconhecido (5 duracoes)"));
+  dbmo::logger().clearSinks();
+}
+
 void test_learned_infrared_code_is_stored_on_the_card() {
   Application app(rig->fullHardware());
   TEST_ASSERT_OK(app.begin());
@@ -753,6 +787,7 @@ int main() {
   RUN_TEST(test_shutdown_without_a_way_to_cut_power_halts);
   RUN_TEST(test_radio_receive_and_transmit_policy);
   RUN_TEST(test_infrared_code_is_received_and_send_is_gated);
+  RUN_TEST(test_received_infrared_code_is_written_to_the_log_once);
   RUN_TEST(test_learned_infrared_code_is_stored_on_the_card);
   RUN_TEST(test_recording_is_visible_on_the_face);
   RUN_TEST(test_card_removed_in_use_keeps_the_device_running);

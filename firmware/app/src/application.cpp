@@ -331,6 +331,20 @@ void Application::handle(const Event &event) {
       }
       break;
 
+    case EventDomain::Infrared:
+      // Cada código recebido vai para o log, como os botões, para conferir o receptor na
+      // bancada sem precisar de "ir last". A repetição (tecla segurada) fica de fora.
+      if (event.id == infrared::infrared_event::kCodeReceived) {
+        infrared::StoredCode code;
+        char text[24];
+        if (infrared_.lastReceived(&code) && infrared::formatCode(code, text, sizeof(text)).ok())
+          DBMO_LOGI(kTag, "infravermelho: %s", text);
+      } else if (event.id == infrared::infrared_event::kRawReceived) {
+        DBMO_LOGI(kTag, "infravermelho: sinal desconhecido (%lu duracoes)",
+                  static_cast<unsigned long>(event.a));
+      }
+      break;
+
     case EventDomain::Cartridge:
       if (event.id == cartridges::cartridge_event::kStateChanged) {
         const auto state = static_cast<cartridges::SlotState>(event.b);
