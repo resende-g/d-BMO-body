@@ -438,7 +438,21 @@ quase igual de uma gravação para outra.
 **Hipótese, não verificada:** entre gravações o firmware desliga a entrada I2S (escolha de
 privacidade do subsistema de áudio), o clock para e o microfone entra em espera (MIC-09). Ao
 voltar, a saída dele leva mais de 1 s para assentar, e o firmware descarta só os primeiros
-100 ms (`kMicStartupMs`). Não corrigido.
+100 ms (`kMicStartupMs`). A causa não foi confirmada; o efeito foi corrigido em seguida pelo filtro
+abaixo.
+
+**Correção `8f1ffd0`: passa-altas na gravação.** Filtro de 2ª ordem (Butterworth) com corte em
+`audio.mic_highpass_hz` = 60 Hz, o canto inferior do próprio INMP441; o estado do filtro começa
+como se o sinal já estivesse parado no primeiro valor. No computador: um desvio de 2 Hz sobre DC
+de 10000 sai abaixo de 50 depois de 50 ms, e um tom de 1 kHz sobre DC de 5000 passa com o pico
+entre 7800 e 8200 (de 8000). Testes com UBSan: 48 executáveis aprovados; o perfil `dbmo-target`
+compila. Na placa, em silêncio, 3 gravações de 1 s:
+
+| Medida | Antes do filtro | Com o filtro |
+|---|---|---|
+| Pico no log (`gravacao encerrada`) | 17773 a 21277 | 279, 406 e 431 |
+| Média por trecho de 100 ms | de +11754 a −5500 | de −7 a +3 |
+| RMS por trecho de 100 ms | de 4280 (1º trecho) a cerca de 200 | de 50 a 92 |
 
 Limites da evidência:
 
@@ -449,6 +463,8 @@ Limites da evidência:
 - Nada foi ouvido: não há alto-falante ligado. Taxa de 16 kHz, palavras de 32 bits, só o canal
   esquerdo.
 - Os pinos I2S do perfil `bench` continuam como `Proposed` em `pins.h`.
+- As palmas não foram repetidas com o filtro: a passagem de som na faixa da voz foi conferida só
+  no computador (tom de 1 kHz).
 
 ### Testes no computador (2026-11-12)
 
