@@ -94,7 +94,8 @@ infravermelho nem transmite por rádio.
 
 "Volta" leva de uma tela à lista e da lista ao rosto. Sem nenhum botão por 30 s, o menu
 volta ao rosto. Todo botão continua contando como atividade, então escurecer e apagar a tela
-seguem funcionando.
+seguem funcionando onde há controle do backlight (na bancada não há, e a tela fica sempre
+acesa).
 
 | Item | O que mostra | OK curto |
 |---|---|---|
@@ -122,8 +123,8 @@ arquivo não impede as demais.
 | Chave | Padrão | Faixa | Observação |
 |---|---:|---|---|
 | `display.brightness` | 80 | 0–100 | % (só com controle de backlight) |
-| `display.dim_after_s` | 30 | 0–3600 | 0 = não escurece |
-| `display.off_after_s` | 120 | 0–3600 | 0 = não apaga |
+| `display.dim_after_s` | 30 | 0–3600 | 0 = não escurece; sem controle de backlight, não escurece |
+| `display.off_after_s` | 120 | 0–3600 | 0 = não apaga; sem controle de backlight, não apaga (o painel em repouso com o LED aceso fica branco) |
 | `input.debounce_ms` | 20 | 1–200 | |
 | `input.long_press_ms` | 600 | 200–5000 | |
 | `input.repeat_delay_ms` | 400 | 100–3000 | |

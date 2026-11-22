@@ -40,6 +40,10 @@ aplicação marca a tela como `Degraded`, o que aparece no `status`. Telas sem I
 | `display.dim_after_s` | 30 | 0–3600 | Segundos sem atividade até esmaecer; 0 desliga |
 | `display.off_after_s` | 120 | 0–3600 | Segundos sem atividade até apagar; 0 nunca apaga |
 
+Sem controle do backlight (`setBacklight` devolve `Unsupported`, como na bancada, com o LED
+no 3,3 V), a tela não esmaece nem apaga: com o LED aceso, o painel em repouso fica branco
+(visto na bancada em 2026-11-22).
+
 ## Evento (domínio `Display`)
 
 `display_event::kPowerChanged`: `a` = estado novo, `b` = estado anterior (`ScreenPower`).
@@ -49,6 +53,7 @@ aplicação marca a tela como `Degraded`, o que aparece no `status`. Telas sem I
 - Implementado e testado no computador (`tests/unit/display/`).
 - Aguarda hardware: controle do backlight pelo GPIO 16 (corrente e circuito do LED do
   módulo MSP3218 não foram verificados; ver `docs/hardware/sources/PERIPHERALS.md`,
-  MSP-05), e o comportamento do comando de repouso na tela real.
+  MSP-05), e o comportamento do comando de repouso na tela real com a luz apagada. Com a
+  luz acesa, o repouso deixa o painel branco (bancada, 2026-11-22).
 - Texto: só ASCII, sem acentos, um tamanho de letra (escala 2). Não implementado:
   indicadores de status (bateria, sinal).

@@ -135,17 +135,20 @@ static void test_idle_time_survives_clock_rollover() {
   TEST_ASSERT_TRUE(f.display.power() == ScreenPower::Dimmed);
 }
 
-static void test_uncontrolled_backlight_skips_dimming_but_still_sleeps() {
+// Com o LED aceso, o painel em repouso fica branco (bancada, 2026-11-22): sem controle do
+// backlight, a tela não esmaece nem dorme.
+static void test_uncontrolled_backlight_never_dims_or_sleeps() {
   Fixture f;
   f.panel.backlightSupported = false;  // LED da tela direto no 3V3
   TEST_ASSERT_OK(f.display.init());
   TEST_ASSERT_FALSE(f.display.backlightControlled());
   f.display.tick(0);
   f.display.tick(60000);
-  TEST_ASSERT_TRUE(f.display.power() == ScreenPower::On);  // não há como esmaecer
+  TEST_ASSERT_TRUE(f.display.power() == ScreenPower::On);
   f.display.tick(120000);
-  TEST_ASSERT_TRUE(f.display.power() == ScreenPower::Off);
-  TEST_ASSERT_TRUE(f.panel.asleep);
+  f.display.tick(3600000);
+  TEST_ASSERT_TRUE(f.display.power() == ScreenPower::On);
+  TEST_ASSERT_FALSE(f.panel.asleep);
 }
 
 static void test_brightness_is_validated_stored_and_applied() {
@@ -192,7 +195,7 @@ int main() {
   RUN_TEST(test_activity_keeps_the_screen_on);
   RUN_TEST(test_timeouts_of_zero_disable_the_feature);
   RUN_TEST(test_idle_time_survives_clock_rollover);
-  RUN_TEST(test_uncontrolled_backlight_skips_dimming_but_still_sleeps);
+  RUN_TEST(test_uncontrolled_backlight_never_dims_or_sleeps);
   RUN_TEST(test_brightness_is_validated_stored_and_applied);
   RUN_TEST(test_panel_errors_are_reported_and_retried);
   RUN_TEST(test_shutdown_blanks_and_sleeps_the_panel);

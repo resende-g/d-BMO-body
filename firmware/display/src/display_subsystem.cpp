@@ -115,6 +115,9 @@ void DisplaySubsystem::tick(uint32_t nowMs) {
     activitySeen_ = true;
     return;
   }
+  // Sem controle do backlight o LED fica aceso, e o painel em repouso fica branco: a tela só
+  // esmaece e apaga quando dá para baixar a luz.
+  if (!backlightControlled_) return;
 
   const uint32_t idleMs = elapsedMs(nowMs, lastActivityMs_);
   const uint32_t offAfterMs =
@@ -124,8 +127,7 @@ void DisplaySubsystem::tick(uint32_t nowMs) {
 
   if (offAfterMs != 0 && idleMs >= offAfterMs) {
     setPower(ScreenPower::Off);
-  } else if (dimAfterMs != 0 && idleMs >= dimAfterMs && backlightControlled_ &&
-             power_ == ScreenPower::On) {
+  } else if (dimAfterMs != 0 && idleMs >= dimAfterMs && power_ == ScreenPower::On) {
     setPower(ScreenPower::Dimmed);
   }
 }
