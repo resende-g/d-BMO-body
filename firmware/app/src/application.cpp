@@ -269,7 +269,7 @@ Status Application::begin() {
   const SubsystemInfo *screen = system_.find(display_);
   if (screen != nullptr && screen->state == SubsystemState::Ready &&
       !isOk(display_.controllerCheck()))
-    system_.reportFault(display_, display_.controllerCheck(), SubsystemState::Degraded);
+    system_.reportDegraded(display_, display_.controllerCheck());
   updateMenuAvailability();
   // A energia leu a configuração antes de o cartão ser montado.
   power_.applyConfig();

@@ -306,6 +306,38 @@ static void test_runtime_fault_degrades_and_recovery_restores() {
   TEST_ASSERT_TRUE(system.state() == SystemState::Running);
 }
 
+static void test_known_restriction_degrades_without_a_fault() {
+  // Ex.: a tela desenha, mas o ID do controlador não foi lido. É aviso, não falha.
+  MockClock clock;
+  EventBus bus(&clock);
+  System system(clock, bus);
+  FakeSubsystem display("display");
+  FakeSubsystem radio("radio");
+  radio.initStatus = Status::HardwareAbsent;
+  SubsystemOptions required;
+  required.required = true;
+  TEST_ASSERT_OK(system.add(display, required));
+  TEST_ASSERT_OK(system.add(radio));
+  TEST_ASSERT_OK(system.boot());
+  bus.dispatch();  // os eventos do boot ficam de fora da contagem
+  EventLog log;
+  TEST_ASSERT_OK(bus.subscribeAll(collect, &log));
+
+  system.reportDegraded(display, Status::IoError);
+  TEST_ASSERT_TRUE(system.info(0).state == SubsystemState::Degraded);
+  TEST_ASSERT_STATUS(Status::IoError, system.info(0).lastStatus);
+  TEST_ASSERT_TRUE(system.state() == SystemState::Degraded);  // obrigatório degradado não é fatal
+  TEST_ASSERT_EQUAL_size_t(0, system.faultCount());
+  bus.dispatch();
+  TEST_ASSERT_EQUAL_INT(0, log.countOf(dbmo::system_event::kFault));
+  TEST_ASSERT_EQUAL_INT(1, log.countOf(dbmo::system_event::kSubsystemChanged));
+
+  // Só vale para quem está em operação: um ausente continua ausente.
+  system.reportDegraded(radio, Status::IoError);
+  TEST_ASSERT_TRUE(system.info(1).state == SubsystemState::Absent);
+  TEST_ASSERT_STATUS(Status::HardwareAbsent, system.info(1).lastStatus);
+}
+
 static void test_losing_a_required_subsystem_is_fatal() {
   MockClock clock;
   EventBus bus(&clock);
@@ -400,6 +432,7 @@ int main() {
   RUN_TEST(test_shutdown_skips_subsystems_that_never_started);
   RUN_TEST(test_retry_brings_an_absent_subsystem_back);
   RUN_TEST(test_runtime_fault_degrades_and_recovery_restores);
+  RUN_TEST(test_known_restriction_degrades_without_a_fault);
   RUN_TEST(test_losing_a_required_subsystem_is_fatal);
   RUN_TEST(test_low_power_round_trip_recomputes_health);
   RUN_TEST(test_registration_rules);

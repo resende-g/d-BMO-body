@@ -308,6 +308,10 @@ void test_display_with_unexpected_id_is_degraded_and_still_draws() {
   TEST_ASSERT_EQUAL(SubsystemState::Degraded, stateOf(app, "display"));
   TEST_ASSERT_STATUS(Status::IoError, app.system().find("display")->lastStatus);
   TEST_ASSERT_EQUAL(SubsystemState::Ready, stateOf(app, "rosto"));
+  // Aviso, não falha: sem registro de falha e sem o rosto de erro.
+  TEST_ASSERT_EQUAL_UINT(0, app.system().faultCount());
+  rig->run(app, 10);
+  TEST_ASSERT_EQUAL(Expression::Idle, app.face().engine().current());
   rig->run(app, 3000);
   TEST_ASSERT_EQUAL(RunState::Running, app.runState());
   TEST_ASSERT_TRUE(rig->litPixels() > 500);  // o rosto continua na tela
