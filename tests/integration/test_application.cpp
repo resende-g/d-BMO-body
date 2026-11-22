@@ -271,6 +271,28 @@ void test_boot_on_todays_bench_with_only_a_display() {
   TEST_ASSERT_EQUAL_UINT32(0, app.bus().droppedCount());
 }
 
+void test_display_with_unexpected_id_is_degraded_and_still_draws() {
+  // Bancada, 2026-11-21: sem o SDO da tela, ID 0xFFFF e mesmo assim "display: Ready (Ok)".
+  rig->display.controllerIdResult = static_cast<uint16_t>(0xFFFF);
+  Hardware hw;
+  hw.clock = &rig->clock;
+  hw.display = &rig->display;
+  Application app(hw);
+  TEST_ASSERT_OK(app.begin());
+  TEST_ASSERT_EQUAL(SubsystemState::Degraded, stateOf(app, "display"));
+  TEST_ASSERT_STATUS(Status::IoError, app.system().find("display")->lastStatus);
+  TEST_ASSERT_EQUAL(SubsystemState::Ready, stateOf(app, "rosto"));
+  rig->run(app, 3000);
+  TEST_ASSERT_EQUAL(RunState::Running, app.runState());
+  TEST_ASSERT_TRUE(rig->litPixels() > 500);  // o rosto continua na tela
+
+  CapturingOutput output;
+  dbmo::app::Console console(output);
+  TEST_ASSERT_OK(app.registerCommands(console));
+  TEST_ASSERT_OK(console.execute("status"));
+  TEST_ASSERT_TRUE(output.contains("display      Degraded      IoError"));
+}
+
 void test_missing_required_hardware_is_refused() {
   Hardware hw;
   hw.clock = &rig->clock;
@@ -716,6 +738,7 @@ int main() {
   UNITY_BEGIN();
   RUN_TEST(test_boot_with_all_hardware);
   RUN_TEST(test_boot_on_todays_bench_with_only_a_display);
+  RUN_TEST(test_display_with_unexpected_id_is_degraded_and_still_draws);
   RUN_TEST(test_missing_required_hardware_is_refused);
   RUN_TEST(test_button_press_reaches_the_event_bus);
   RUN_TEST(test_button_press_is_written_to_the_log);

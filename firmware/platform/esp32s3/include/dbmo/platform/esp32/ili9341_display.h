@@ -27,6 +27,8 @@ class Ili9341Display final : public display::IDisplay {
   uint16_t readId() {
     return static_cast<uint16_t>((tft_.readcommand8(0xD3, 2) << 8) | tft_.readcommand8(0xD3, 3));
   }
+  // O DisplaySubsystem confere o ID no boot da aplicação.
+  Result<uint16_t> controllerId() override { return readId(); }
 
   uint16_t width() const override { return static_cast<uint16_t>(tft_.width()); }
   uint16_t height() const override { return static_cast<uint16_t>(tft_.height()); }

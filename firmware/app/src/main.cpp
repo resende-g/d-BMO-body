@@ -179,7 +179,8 @@ void setup() {
   gDisplay.begin(dbmo::config::spi::kDisplayHz, kDisplayRotation);
   (void)gDisplay.fillRect(0, 0, static_cast<int16_t>(gDisplay.width()),
                           static_cast<int16_t>(gDisplay.height()), dbmo::display::palette::kBlack);
-  DBMO_LOGI(kTag, "tela: id 0x%04X, %ux%u", gDisplay.readId(), gDisplay.width(), gDisplay.height());
+  // O ID do controlador é conferido pelo subsistema da tela, no boot da aplicação.
+  DBMO_LOGI(kTag, "tela: %ux%u", gDisplay.width(), gDisplay.height());
 
   (void)gConsole.registerCommand({"version", "versao do firmware", versionCommand, nullptr});
   (void)gConsole.registerCommand({"log", "ultimas mensagens de log", logCommand, nullptr});

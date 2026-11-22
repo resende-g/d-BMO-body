@@ -263,6 +263,12 @@ Status Application::begin() {
   DBMO_TRY(system_.add(cartridges_));
 
   const Status status = system_.boot();
+  // A tela desenha sem o MISO, então um ID de controlador inesperado não a impede de
+  // iniciar: ela fica Degraded (visível no status) em vez de Ready.
+  const SubsystemInfo *screen = system_.find(display_);
+  if (screen != nullptr && screen->state == SubsystemState::Ready &&
+      !isOk(display_.controllerCheck()))
+    system_.reportFault(display_, display_.controllerCheck(), SubsystemState::Degraded);
   // A energia leu a configuração antes de o cartão ser montado.
   power_.applyConfig();
   lastRetryMs_ = hw_.clock->nowMs();

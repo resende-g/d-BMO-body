@@ -68,7 +68,7 @@ const uint8_t kPayload[4] = {1, 2, 3, 4};
 }  // namespace
 
 void setUp() {}
-void tearDown() {}
+void tearDown() { dbmo::logger().clearSinks(); }  // um teste que falha não chega a limpar
 
 void test_init_identifies_and_leaves_the_chip_asleep() {
   Fixture f;
