@@ -295,6 +295,67 @@ o valor não foi registrado. A tela ficou sem SPI durante o teste: o firmware le
 depois `0x0000` e mesmo assim declarou `display: Ready` (imprecisão do firmware, não corrigida).
 O barramento dividido com a tela (fase D do mapa) ainda não foi testado.
 
+### Correções da bancada e menu, só no computador (2026-11-21)
+
+Branch `claude/firmware-menu`, a partir de `claude/adoring-heisenberg-b9zyh3` (`7b208bd`), numa
+sessão **sem a placa**: nada desta entrada foi executado em hardware. Itens do
+[`../HANDOFF_FIRMWARE.md`](../HANDOFF_FIRMWARE.md): correções F1 a F5 dos problemas vistos na
+bancada nesta data e o menu de 3 botões.
+
+Ambiente: macOS, Apple clang 17.0.0, CMake 4.4.5 e Ninja 1.13 (instalados por `pip` num
+ambiente isolado), PlatformIO com a plataforma de `platformio.ini`.
+
+| Verificação | Comando | Resultado |
+|---|---|---|
+| Linha de base, antes das mudanças | `cmake -S . -B build/plain -G Ninja && cmake --build build/plain && ctest --test-dir build/plain` | 46 executáveis, 539 testes, todos aprovados |
+| Testes com AddressSanitizer neste computador | `-DDBMO_SANITIZE=ON` | **Não executados:** o runtime do ASan do Apple clang 17 trava antes do `main()` neste macOS (amostra do processo parada em `__asan::InitializeShadowMemory`), já na linha de base. O ASan roda na CI (gcc + ASan/UBSan) |
+| Testes com UndefinedBehaviorSanitizer | `cmake -S . -B build/ubsan -G Ninja -DCMAKE_CXX_FLAGS="-fsanitize=undefined -fno-sanitize-recover=undefined" -DCMAKE_C_FLAGS=-fsanitize=undefined -DCMAKE_EXE_LINKER_FLAGS=-fsanitize=undefined` e `ctest` | 48 executáveis, 571 testes, todos aprovados |
+| Compilação do firmware | `pio run -e dbmo-bench` e `pio run -e dbmo-target` | Os dois perfis compilam. RAM 13,1 % e 13,4 %; flash 8,0 % e 8,8 % |
+| Integridade | `tools/check_pinmap.py`, `check_links.py`, `check_repo.py`; formatação com clang-format 18.1.8 nos mesmos arquivos de `tools/check_format.sh` | Sem problemas (o `check_format.sh` usa `mapfile`, que o bash 3.2 do macOS não tem; a lista de arquivos foi passada ao clang-format à mão) |
+| CI da branch | GitHub Actions, execução 44973165827, commit `9408729` | As 9 tarefas aprovadas, inclusive "Testes nativos (gcc + ASan/UBSan)" e "Firmware próprio (ESP32-S3)" (os dois perfis e os testes de bancada compilados, sem gravar) |
+
+Testes novos e o que cada um mostra (todos no computador, contra simuladores):
+
+| Item | Testes | O que foi conferido |
+|---|---|---|
+| F1, rádio com barramento solto | `test_floating_miso_with_odd_version_is_absent`, `test_documented_versions_are_accepted_without_the_write_check` (`test_cc1101`); `test_floating_miso_is_absent_and_never_failed`, `test_unknown_version_that_keeps_writes_is_accepted_with_a_warning` (`test_radio_subsystem`) | VERSION 0xE0 e 0x0B com um barramento que não guarda escrita: `Absent (HardwareAbsent)`, sem falha registrada. 0x14 e 0x04: aceitos. VERSION desconhecida que guarda a escrita em ADDR: aceita, com aviso no log. Os testes falharam antes da correção (`Failed` em vez de `Absent`) |
+| F2, ID da tela | `test_controller_id_is_checked_without_blocking_the_screen`; `test_known_restriction_degrades_without_a_fault` (`test_system`); `test_display_with_unexpected_id_is_degraded_and_still_draws` (integração) | ID 0xFFFF ou 0x0000: aviso no log, `display Degraded IoError` no `status`, rosto desenhado, sem registro de falha e sem o rosto de erro. Outro ID: `Incompatible`. Tela sem ID: sem conferência |
+| F3, IR no log | `test_received_infrared_code_is_written_to_the_log_once` (integração) | `infravermelho: nec:0004:17` no log; a repetição logo em seguida não entra; sinal desconhecido registra só o tamanho, uma vez por tecla segurada (9 quadros a cada 114 ms dão uma linha; outro tamanho logo em seguida conta como sinal novo) |
+| F4, console | `test_keystrokes_one_by_one_like_the_default_monitor` | Tecla a tecla com CRLF, só CR e só LF executam o comando, com eco: o console não explica a falha de 2026-11-21 |
+| F5, NVS | — | Código do porte: só compilado |
+| Texto na tela | `test_text` (6 testes) | Fonte com 95 caracteres distintos, desenho na escala certa, uma chamada de `fillRect` por sequência de pixels, só as linhas alteradas são redesenhadas |
+| Rosto escondido | `test_hidden_face_keeps_changing_but_does_not_draw` | Escondido, o rosto muda de expressão e não desenha; ao voltar, repinta a tela |
+| Lógica do menu | `test_menu` (11 testes) | Abrir, navegar com volta ao início, CIMA e BAIXO segurados sem passar do item ao soltar, itens ausentes pulados, entrar e voltar (toque longo no OK e B), ações só de recepção, histórico de botões, volta ao rosto por inatividade |
+| Menu na aplicação | 5 cenários de integração `test_menu_*` e `test_idle_menu_*` | Aprender um código pelo menu, Estado com `ausente` e sem os itens de rádio e IR quando faltam, recepção ligada e desligada pelo menu sem nenhuma transmissão, telas Botoes e Sobre, nenhum redesenho com o menu parado, botão no menu conta como atividade, volta ao rosto depois de 30 s |
+
+Revisão independente: quatro revisores por área (correções F1 a F5, menu, emissão e escopo,
+porte para o ESP32-S3), cada achado seguido de um verificador que tentou refutá-lo com
+reprodução no computador. Emissão e escopo: nenhum achado. Confirmados e corrigidos, com teste:
+o cursor passava um item além ao soltar CIMA ou BAIXO segurados (o `ButtonProcessor` manda um
+clique ao soltar depois das repetições); a F2 usava `reportFault`, o que punha um erro no log,
+um registro de falha e o rosto de erro por 2,5 s a cada boot sem o SDO da tela (passou a usar
+o novo `System::reportDegraded`, só aviso); um sinal de IR de protocolo desconhecido com a
+tecla segurada gerava uma linha a cada ~110 ms. Refutado: um MISO da tela solto lendo IDs
+mistos (rotulados como "controlador diferente"); a bancada só registrou 0xFFFF e 0x0000. Uma
+segunda leitura das correções achou que a supressão do IR desconhecido engolia outra tecla
+apertada em menos de 200 ms; corrigido (tamanho diferente conta como sinal novo), com teste.
+
+Duas mutações conferiram que os testes do menu pegam erros: sem esconder o rosto ao abrir o
+menu, dois cenários falham; repintando a tela inteira a cada `render()`, falham o cenário de
+redesenho e o teste da `TextScreen`. As telas do menu também foram renderizadas num
+`FramebufferDisplay` e conferidas visualmente (imagem fora do repositório).
+
+Hipóteses da F4 para a bancada, sem confirmação: o firmware recebe os mesmos bytes nos dois
+modos do monitor, então a diferença deve estar no caminho USB ou no terminal (por exemplo,
+teclas digitadas durante o boot que a abertura da porta provoca). Como contorno, o
+`platformio.ini` passou a usar a combinação que funcionou.
+
+Não testado na placa (pendente de bancada): tudo desta entrada. Em particular, o desenho e a
+legibilidade do menu na ILI9341, os botões navegando o menu, a leitura real do ID da tela
+pelo porte, a identificação do CC1101 com VERSION fora de 0x14 e 0x04, o aprendizado de IR
+pelo menu, a recepção do rádio ligada pelo menu, a ausência do `nvs_open failed` no primeiro
+boot e o `pio device monitor` com as opções novas.
+
 ### Testes no computador (2026-11-12)
 
 Comando:

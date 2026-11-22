@@ -3,8 +3,8 @@
 | Campo | Valor |
 |---|---|
 | Versão do firmware | 0.1.0 (`firmware/core/include/dbmo/core/version.h`) |
-| Versão do documento | 0.1 (2026-11-12) |
-| Estado | Testado no computador; compila para o ESP32-S3; **não testado em hardware** |
+| Versão do documento | 0.2 (2026-11-21) |
+| Estado | Testado no computador; compila para o ESP32-S3. Na bancada, em 2026-11-21: tela, 3 botões, receptor de IR e CC1101 com a versão anterior; **o menu e as correções desta versão não foram testados em hardware** |
 
 A arquitetura está em [`../architecture/ARCHITECTURE.md`](../architecture/ARCHITECTURE.md);
 os testes, em [`../testing/TESTING.md`](../testing/TESTING.md).
@@ -15,7 +15,7 @@ os testes, em [`../testing/TESTING.md`](../testing/TESTING.md).
 |---|---|---|---|
 | Núcleo | `firmware/core` | Erros, HAL, eventos, log, sistema, configuração, recursos | Testado no computador |
 | Pinos | `firmware/config` | Mapa de pinos e endereços, com verificações em tempo de compilação | Testado no computador |
-| Tela | [`firmware/display`](../../firmware/display/README.md) | Contrato de tela, brilho, apagamento por inatividade | Tela validada na bancada com outro firmware |
+| Tela | [`firmware/display`](../../firmware/display/README.md) | Contrato de tela, brilho, apagamento por inatividade, conferência do ID do controlador, texto (fonte 5x7 própria) | Tela validada na bancada com outro firmware |
 | Rosto | [`firmware/rosto`](../../firmware/rosto/README.md) | 17 expressões, máquina de estados, renderização | Testado no computador |
 | Controles | [`firmware/input`](../../firmware/input/README.md) | Botões (debounce, toque longo, repetição, combinações), analógicos, MCP23017 | Testado no computador |
 | Áudio | [`firmware/audio`](../../firmware/audio/README.md) | Tons, reprodução, gravação em memória, volume | Aguarda hardware |
@@ -25,7 +25,7 @@ os testes, em [`../testing/TESTING.md`](../testing/TESTING.md).
 | Armazenamento | [`firmware/storage`](../../firmware/storage/README.md) | Cartão, configuração atômica, log com rotação | Aguarda hardware |
 | Energia | [`firmware/power`](../../firmware/power/README.md) | Bateria, botão, trava, desligamento | Aguarda hardware e decisão de circuito |
 | Cartuchos | [`firmware/cartridges`](../../firmware/cartridges/README.md) | Identificação, compatibilidade, drivers | Aguarda hardware |
-| Aplicação | `firmware/app` | Liga tudo; console | Testado no computador |
+| Aplicação | `firmware/app` | Liga tudo; console; menu na tela | Testado no computador |
 | Porte | `firmware/platform/esp32s3` | HAL sobre o Arduino-ESP32 | Só compilado |
 
 ## 2. Compilar, testar e gravar
@@ -41,6 +41,12 @@ pio run -e dbmo-target               # pinagem proposta do v1
 pio run -e dbmo-bench -t upload      # gravar
 pio device monitor                   # console (USB nativa, 115200)
 ```
+
+O `platformio.ini` configura o monitor com `monitor_echo = yes`, `monitor_filters =
+send_on_enter` e `monitor_eol = CRLF`: a linha vai inteira ao apertar Enter. Foi a
+combinação com que o console respondeu na bancada em 2026-11-21; sem ela, o monitor padrão
+não teve resposta (causa não confirmada). Com o eco do terminal e o do firmware, a linha
+digitada aparece duas vezes.
 
 | Perfil | Hardware assumido |
 |---|---|
@@ -68,7 +74,44 @@ Um periférico que não está ligado não impede o boot: aparece como `Absent` e
 | `sd` | Tenta montar o cartão de novo |
 | `off` | Desliga em ordem |
 
-## 4. Configuração
+Sem comando nenhum, o log mostra cada botão (`botao a: clique`) e cada código de
+infravermelho recebido (`infravermelho: nec:0004:17`), sem as repetições de tecla segurada.
+No `status`, uma tela cujo ID não é 0x9341 aparece como `display Degraded IoError` (0x0000
+ou 0xFFFF: MISO da tela sem resposta) ou `Incompatible` (outro controlador), e um barramento
+SPI sem CC1101 aparece como `radio Absent HardwareAbsent`.
+
+## 4. Menu na tela
+
+O rosto é a tela inicial. O menu usa os botões que já existem; nada nele envia
+infravermelho nem transmite por rádio.
+
+| Botão | Perfil `dbmo-bench` (GPIO) | Perfil `dbmo-target` (MCP23017) | No rosto | No menu |
+|---|---|---|---|---|
+| OK | GPIO 2 (botão `a`) | A | Toque curto abre o menu | Toque curto escolhe; **toque longo volta** |
+| CIMA | GPIO 39 (`up`) | Cruz para cima | — | Item anterior (segurar repete) |
+| BAIXO | GPIO 47 (`down`) | Cruz para baixo | — | Próximo item (segurar repete) |
+| B | não existe | B | — | Toque curto volta |
+
+"Volta" leva de uma tela à lista e da lista ao rosto. Sem nenhum botão por 30 s, o menu
+volta ao rosto. Todo botão continua contando como atividade, então escurecer e apagar a tela
+seguem funcionando.
+
+| Item | O que mostra | OK curto |
+|---|---|---|
+| Estado | Estado do sistema e de cada subsistema (`pronto`, `parcial` com o motivo, `ausente`, `falha` com o motivo, `parado`) | — |
+| Infravermelho | Último código recebido; resultado do aprendizado; envio sempre como desabilitado ou "só pelo console" | Aprende um código (10 s para apertar a tecla do controle). Não envia nada |
+| Radio | Estado, frequência, contadores de pacotes, erros de CRC e transmissões negadas; resultado do último OK | Liga ou desliga a recepção. Não transmite |
+| Botoes | Os últimos 4 botões e ações (apertou, soltou, clique, toque longo, repetição), para conferir a fiação | — (o OK curto também entra na lista) |
+| Sobre | Nome do hardware, versão do firmware e perfil (`bench` ou `target`) | — |
+| Voltar ao rosto | — | Fecha o menu |
+
+Infravermelho e Radio só aparecem na lista quando o subsistema está em operação; o
+cartão, o NFC e o áudio não têm item no menu e aparecem só em Estado (como `ausente` quando
+não estão ligados). O texto usa a fonte de bitmap 5x7 do próprio projeto, em ASCII, sem
+acentos. A tela é remontada a cada evento ou a cada 0,5 s, e só as linhas que mudaram são
+redesenhadas.
+
+## 5. Configuração
 
 Guardada em `/dbmo/config/config.txt` no cartão (texto `chave=valor`, editável à mão) ou,
 sem cartão, na memória interna. Valores fora da faixa são recusados; uma linha inválida no
@@ -111,7 +154,7 @@ arquivo não impede as demais.
 | `power.sleep_after_s` | 0 | 0–86400 | 0 = não desliga por inatividade |
 | `cartridge.max_ma` | 100 | 0–500 | Provisório |
 
-## 5. Eventos
+## 6. Eventos
 
 Cada evento tem um identificador (domínio + código) e dois argumentos. Os identificadores
 e o significado dos argumentos estão no cabeçalho do subsistema, no namespace `*_event`.
@@ -130,7 +173,7 @@ e o significado dos argumentos estão no cabeçalho do subsistema, no namespace 
 | `Face` | Pedido de expressão, expressão alterada |
 | `Display` | Tela acesa, escurecida, apagada |
 
-## 6. Limites de uso embutidos
+## 7. Limites de uso embutidos
 
 | Função | Limite | Onde |
 |---|---|---|
@@ -144,9 +187,9 @@ Não existem no firmware próprio: interferência deliberada (jamming) de rádio
 infravermelho, portadora contínua, varredura automática de códigos, cópia de credenciais,
 telemetria ou qualquer envio de dados para fora do aparelho.
 
-## 7. O que ainda não existe
+## 8. O que ainda não existe
 
-- Menu e navegação na tela (o rosto e o console são a interface de hoje).
+- Telas além das do menu (o rosto, o menu e o console são a interface de hoje).
 - Calibração dos analógicos e gravação de áudio pelo console.
 - Leitura de arquivos de áudio do cartão.
 - UART e GPIOs do cartucho no porte (o I2C e o SPI estão ligados).
