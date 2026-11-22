@@ -17,7 +17,7 @@ ou **reprovado**. Um item só avança com evidência registrada (foto, leitura, 
 | PN532 V3 NFC | "PN532 Set" | Marcação "PN532" no CI; DIP switch e posições para I²C; o que veio no kit (cartão, chaveiro) | | recebido | Barra de pinos **não soldada** (20/11): bloqueado até haver ferro de solda |
 | Conjunto IR 38 kHz | "1set" | Se há **transmissor e receptor**; marcação do receptor (ex.: família 1838/TSOP) e do LED | | recebido | Duas placas com 3 pinos em fileira única (fotos de 21/11). Receptor "V1222": OUT, VCC, GND. Transmissor "V1221": DAT, VCC, GND; não se sabe se há transistor (componentes não identificados) |
 | MAX98357A | "Small Chip Welding" | Marcação do CI (pode ser ilegível no encapsulamento pequeno); pinos já soldados | | recebido | Pinos soldados (20/11). Ligação do alto-falante a confirmar (borne ou furo) |
-| Alto-falante 2030 | 8 Ω 2 W | Dimensões com paquímetro; resistência DC (fica abaixo de 8 Ω, é normal) | | esperado | |
+| Alto-falante 2030 | 8 Ω 2 W | Dimensões com paquímetro; resistência DC (fica abaixo de 8 Ω, é normal) | | recebido | Chegada informada pelo usuário em 23/11/2026; ainda não ligado nem testado |
 | INMP441 | — | Marcação do microfone; furo acústico; pinos | | recebido | Pinos soldados (20/11) |
 | Jumpers Dupont | 20 cm, F-F/M-M/M-F, 40 de cada | Quantidade por tipo | | esperado | |
 | Protoboard MB-102 | branca, 830 pontos | Trilhos de alimentação contínuos ou partidos ao meio | | esperado | |
