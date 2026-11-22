@@ -52,6 +52,7 @@ uma declaração de conformidade com norma alguma.
 |---|---|
 | Cabeçalho SPI, bit de rajada para registradores de status, PARTNUM/VERSION, sinal "pronto" no MISO, tempo de saída do sono, faixas de frequência | Conferido no datasheet: `docs/hardware/sources/PERIPHERALS.md`, CC-04 a CC-14 |
 | Demais endereços de registradores, comandos, estados de `MARCSTATE`, campos de `PKTCTRL`/`MDMCFG`, fórmulas de taxa/banda/desvio, deslocamento de RSSI (74 dB), valor 0x12 de PATABLE | Escritos a partir das tabelas do mesmo datasheet, **não reconferidos nesta sessão**. As fórmulas reproduzem valores conhecidos (433,92 MHz → `0x10B071`; 1200 baud → E=5, M=131), o que é verificação de coerência, não de fonte |
+| Identificação com VERSION fora de 0x14 e 0x04 | O chip só é aceito se o registrador ADDR (0x09) guardar dois padrões escritos e relidos; senão é `HardwareAbsent` (um MISO solto leu 0xE0 e 0x0B na bancada em 2026-11-21). O endereço de ADDR e a falta de efeito dele com o filtro de endereço desligado vêm da tabela do datasheet, **não reconferidos**. Testado só no computador, com o simulador |
 | Registradores de ajuste de RF (AGC, FOCCFG, BSCFG, FREND1, FSCAL, TEST) | Ficam no valor de reset. A sensibilidade real depende de ajuste (por exemplo, exportado do SmartRF Studio) aplicado com `applyOverrides()` na bancada |
 | Funcionamento com o módulo real | **Não testado.** Primeiro teste de bancada: ler PARTNUM/VERSION; depois reler os registradores escritos |
 

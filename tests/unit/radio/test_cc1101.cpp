@@ -55,6 +55,28 @@ void test_identify_accepts_other_version_values() {
   TEST_ASSERT_EQUAL_HEX8(0x04, f.chip.identify().value().version);
   f.sim.version = 0x18;  // "pode mudar sem aviso": o driver não recusa
   TEST_ASSERT_TRUE(f.chip.identify().ok());
+  // O registrador de teste volta ao valor de reset depois da conferência.
+  TEST_ASSERT_EQUAL_HEX8(0x00, f.sim.registers[reg::kAddr]);
+}
+
+void test_floating_miso_with_odd_version_is_absent() {
+  // Bancada, 2026-11-21: CC1101 desligado ou MISO solto leu VERSION 0xE0 e 0x0B. Um
+  // barramento sem chip não guarda o que se escreve, e isso decide a ausência.
+  Fixture f;
+  f.sim.registersWritable = false;
+  f.sim.version = 0xE0;
+  TEST_ASSERT_STATUS(Status::HardwareAbsent, f.chip.identify().status());
+  f.sim.version = 0x0B;
+  TEST_ASSERT_STATUS(Status::HardwareAbsent, f.chip.identify().status());
+}
+
+void test_documented_versions_are_accepted_without_the_write_check() {
+  Fixture f;
+  f.sim.registersWritable = false;
+  f.sim.version = 0x14;
+  TEST_ASSERT_TRUE(f.chip.identify().ok());
+  f.sim.version = 0x04;
+  TEST_ASSERT_TRUE(f.chip.identify().ok());
 }
 
 void test_absent_chip_with_miso_high() {
@@ -459,6 +481,8 @@ int main() {
   UNITY_BEGIN();
   RUN_TEST(test_reset_and_identify);
   RUN_TEST(test_identify_accepts_other_version_values);
+  RUN_TEST(test_floating_miso_with_odd_version_is_absent);
+  RUN_TEST(test_documented_versions_are_accepted_without_the_write_check);
   RUN_TEST(test_absent_chip_with_miso_high);
   RUN_TEST(test_absent_chip_when_miso_cannot_be_read);
   RUN_TEST(test_wrong_partnum_is_not_a_cc1101);

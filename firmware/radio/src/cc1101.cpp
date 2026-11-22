@@ -151,7 +151,26 @@ Result<ChipId> Cc1101::identify() {
   // quem decide a presença é VERSION, que nunca é 0x00 nem 0xFF num chip real.
   if (version.value() == 0x00 || version.value() == 0xFF) return Status::HardwareAbsent;
   if (partnum.value() != kExpectedPartnum) return Status::HardwareAbsent;
-  return ChipId{partnum.value(), version.value()};
+  const ChipId id{partnum.value(), version.value()};
+  if (id.version == kVersionCurrent || id.version == kVersionOlder) return id;
+  // VERSION fora das documentadas (CC-13): o datasheet avisa que ela pode mudar, mas um
+  // MISO solto também devolve valores assim (0xE0 e 0x0B na bancada, 2026-11-21). Só um
+  // chip de verdade guarda o que se escreve: confere num registrador sem efeito no rádio.
+  const Status check = checkWriteReadBack();
+  if (check == Status::Timeout) return Status::HardwareAbsent;
+  if (!isOk(check)) return check;
+  return id;
+}
+
+Status Cc1101::checkWriteReadBack() {
+  const uint8_t patterns[] = {0xA5, 0x5A};
+  for (uint8_t pattern : patterns) {
+    DBMO_TRY(writeRegister(kAddr, pattern));
+    const Result<uint8_t> readBack = readRegister(kAddr);
+    if (!readBack.ok()) return readBack.status();
+    if (readBack.value() != pattern) return Status::HardwareAbsent;
+  }
+  return writeRegister(kAddr, 0x00);  // valor de reset
 }
 
 Status Cc1101::configure(const RadioConfig &config, uint8_t paTable) {
