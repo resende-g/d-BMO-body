@@ -25,6 +25,17 @@ const char *toString(Button button) {
   return "?";
 }
 
+const char *toString(ButtonAction action) {
+  switch (action) {
+    case ButtonAction::Pressed: return "apertou";
+    case ButtonAction::Released: return "soltou";
+    case ButtonAction::Click: return "clique";
+    case ButtonAction::LongPress: return "toque longo";
+    case ButtonAction::Repeat: return "repeticao";
+  }
+  return "?";
+}
+
 Mcp23017ButtonSource::Map Mcp23017ButtonSource::defaultMap() {
   namespace pins = dbmo::config::mcp_buttons;
   Map map;

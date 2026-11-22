@@ -21,7 +21,7 @@ Colunas de estado:
 | Slot SD da própria tela | Configuração, log, códigos | SPI (CS próprio) | Pinos do slot no módulo: não lidos (MSP-06); slot de SD tamanho normal (MSP-08) | Cartão disponível | Não testado | `storage`: testado no computador |
 | CC1101 433 MHz | Rádio sub-GHz | SPI + GDO0 | 1,8 a 3,6 V; máximo 3,9 V (CC-01, CC-02) | Recebido | Não testado | `radio`: testado com simulador |
 | PN532 V3 | NFC | I2C (0x24) | VBAT 2,7 a 5,5 V; interface 1,6 a 3,6 V (PN-01, PN-02) | Comprado, aguardando | Não testado | `nfc`: testado com simulador |
-| MCP23017 (1 ou 2) | Botões | I2C (0x20, 0x21) | 1,8 a 5,5 V (MCP-08) | Disponível | Não testado | `input`: testado com simulador |
+| MCP23017 (1 ou 2) | Botões | I2C (0x20, 0x21) | 1,8 a 5,5 V (MCP-08) | **A comprar** (corrigido em 21/11/2026) | Não testado | `input`: testado com simulador |
 | Botões tácteis | D-pad, ações, ombros, energia | MCP23017 / GPIO | — | Estoque | **3 botões em GPIO validados** | `input` |
 | Analógicos de controle de PS3 | 2 sticks (4 eixos + 2 cliques) | ADC1 | 3,3 V, nunca 5 V (README) | Reaproveitar | Não testado | `input`: testado no computador |
 | MAX98357A | Amplificador | I2S + SD_MODE | 2,5 a 5,5 V (AMP-01) | Comprado, aguardando | Não testado | `audio`: testado no computador |
