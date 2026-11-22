@@ -68,6 +68,7 @@ Nenhum pino é "definitivo": a pinagem só fecha depois dos ensaios de bancada d
 | GPIO | Sinal | Classificação |
 |---:|---|---|
 | 2 | `BUTTON_OK` | VALIDADO EM BANCADA |
+| 3 | `AMP_SHUTDOWN` | PROPOSTO |
 | 4 | `IR_RX` | PROPOSTO |
 | 5 | `IR_TX` | PROPOSTO |
 | 7 | `I2S_MIC_DATA` | PROPOSTO |
@@ -88,6 +89,7 @@ Nenhum pino é "definitivo": a pinagem só fecha depois dos ensaios de bancada d
 | 39 | `BUTTON_UP` | VALIDADO EM BANCADA |
 | 40 | `I2S_BCLK` | PROPOSTO |
 | 41 | `I2S_LRCLK` | PROPOSTO |
+| 42 | `I2S_SPEAKER_DATA` | PROPOSTO |
 | 47 | `BUTTON_DOWN` | VALIDADO EM BANCADA |
 
 <!-- END pinmap:bench -->

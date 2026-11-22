@@ -4,7 +4,7 @@
 // testadas no computador.
 //
 // Dois perfis (platformio.ini):
-//   DBMO_PROFILE_BENCH   a protoboard de hoje: tela, três botões em GPIO, IR;
+//   DBMO_PROFILE_BENCH   a protoboard de hoje: tela, três botões em GPIO, IR, áudio;
 //   DBMO_PROFILE_TARGET  a pinagem proposta do v1 (pins.h, namespace target).
 // Periférico que não estiver ligado aparece como ausente no comando "status".
 #include <Adafruit_ILI9341.h>
@@ -90,8 +90,10 @@ dbmo::input::GpioButtonSource gButtons(gGpio, kBenchButtons,
                                        sizeof(kBenchButtons) / sizeof(kBenchButtons[0]));
 esp32::RmtIrReceiver gIrReceiver(bench::kIrRx);
 esp32::RmtIrTransmitter gIrTransmitter(bench::kIrTx);
-// Só o microfone INMP441: sem saída de alto-falante nem pino do amplificador (-1).
-esp32::I2sAudio gAudio(pins::kI2sBclk, pins::kI2sLrclk, -1, pins::kI2sMicData, -1);
+// INMP441 e MAX98357A nos pinos I2S do target. O amplificador fica em 3,3 V na bancada
+// (VDD = nível do GPIO, então o SD_MODE pode ser acionado direto: AMP-02, AMP-07).
+esp32::I2sAudio gAudio(pins::kI2sBclk, pins::kI2sLrclk, pins::kI2sSpeakerData, pins::kI2sMicData,
+                       pins::kAmpShutdown);
 #endif
 
 dbmo::app::Hardware makeHardware() {
@@ -122,6 +124,7 @@ dbmo::app::Hardware makeHardware() {
   hw.cartridgeSpi = &gCartridgeSpi;
 #else
   hw.profile = "bench";
+  hw.audioOutput = &gAudio.output();
   hw.audioInput = &gAudio.input();
 #endif
   return hw;
