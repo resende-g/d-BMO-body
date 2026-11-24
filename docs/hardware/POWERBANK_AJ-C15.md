@@ -270,3 +270,11 @@ tem saída com fio e o 5 V não apareceu (M2). As condições (inspeção, retir
 proteção 1S, NTC, limite de carga, ensaio de capacidade) e os componentes a comprar estão no
 README, seção [Bateria da v0](../../README.md#bateria-da-v0-célula-reaproveitada-do-power-bank-aj-c15).
 As etapas 8 e 9 desta investigação (medições na placa) deixam de ser necessárias.
+
+### 24/11/2026: célula retirada
+
+Relato do usuário: a célula foi retirada da placa e está "bem saudável"; **não tem placa de
+proteção própria**. Não foram registrados foto lateral, tensão depois da retirada, nem como as
+pontas foram isoladas. Sem PCM, a célula não pode ser ligada a nenhuma carga ou carregador antes
+da proteção 1S (README, "Bateria da v0", condição 3).
+

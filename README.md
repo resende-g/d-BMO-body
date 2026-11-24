@@ -356,7 +356,7 @@ O que se sabe da célula:
 | Tensão em repouso | 3,9 V, vermelho = positivo | Medido (M1, 21/11) |
 | Capacidade | Etiqueta do power bank: 5.000 mAh e 11,13 Wh, valores incoerentes entre si; 11,13 Wh a 3,7 V são ≈ 3.000 mAh | **A medir.** Trabalhar com ≈ 3.000 mAh até o ensaio |
 | Fabricante, modelo, datasheet | — | Desconhecidos |
-| Proteção própria (PCM) na célula | — | **A conferir.** Em power bank a proteção costuma ficar na placa principal: tratar a célula como **sem proteção** até ver o contrário |
+| Proteção própria (PCM) na célula | Não tem | Relatado pelo usuário em 24/11/2026, ao retirar a célula da placa. Proteção 1S obrigatória |
 | Termistor | — | Não tem: precisa de NTC avulso |
 | Dimensões | — | A medir com paquímetro (necessárias para o CAD) |
 
