@@ -261,3 +261,12 @@ Leitura: não há CI conversor dedicado com datasheet. O conversor parece montad
 |---|---|---|---|---|---|---|---|
 | M1 | 21/11 | Solda do fio vermelho da célula | Solda do fio preto da célula | DCV 20 | Parado, placa fora da carcaça | **3,9 V** (positivo) | Polaridade confirmada: vermelho = positivo. Tensão dentro da faixa normal de uma célula Li-ion (3,0 a 4,2 V); o estado de carga exato não se deduz só da tensão em repouso |
 | M2 | 21/11 | Lado direito dos 3 capacitores empilhados à direita do indutor "4R7" | Solda do fio preto da célula | DCV 20 | Parado, nada sobre a bobina | Lado esquerdo: **0 V**; lado direito: **3,86 V** (nos três) | Os três capacitores estão no mesmo nó, cerca de 0,04 V abaixo da célula (3,9 V). Em repouso **não há 5 V** nesse ponto: ele segue a tensão da bateria. Se é a entrada ou a saída do conversor parado, ainda não se sabe |
+
+### 24/11/2026: decisão
+
+O mantenedor escolheu o **cenário 2** da seção 10 (célula + circuito novo), como exceção aos
+critérios do README, para a v0 portátil com o menor custo. A placa original não é usada: não
+tem saída com fio e o 5 V não apareceu (M2). As condições (inspeção, retirada um fio por vez,
+proteção 1S, NTC, limite de carga, ensaio de capacidade) e os componentes a comprar estão no
+README, seção [Bateria da v0](../../README.md#bateria-da-v0-célula-reaproveitada-do-power-bank-aj-c15).
+As etapas 8 e 9 desta investigação (medições na placa) deixam de ser necessárias.

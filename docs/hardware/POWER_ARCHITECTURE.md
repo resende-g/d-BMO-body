@@ -15,7 +15,7 @@ tiveram datasheet verificado.
 
 | Decisão | Origem |
 |---|---|
-| Bateria LiPo de 1 célula (selecionada: anúncio de 4000 mAh; compra não confirmada) | README, "Compras" |
+| Bateria LiPo de 1 célula. Na v0: célula reaproveitada do power bank AJ-C15, com carregador com power-path, proteção 1S, NTC e regulador em módulos (decisão de 24/11/2026). Na PCB final: a escolher | README, "Bateria da v0" |
 | Carga por USB-C, proteção e regulação como componentes SMD na PCB própria | README, "Alimentação" |
 | Liga e desliga por botão momentâneo com circuito de trava (power-latch) | README, "Compras" |
 | Lógica em 3,3 V; nunca expor a tensão crua da bateria aos periféricos de 3,3 V | README, "Alimentação" |

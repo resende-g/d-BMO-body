@@ -2,8 +2,8 @@
 
 | Campo | Valor |
 |---|---|
-| Versão | 0.2 (2026-11-24): seção 4, itens do Projeto 2 (d-BMO Deck) |
-| Estado | **Modelo para preencher.** Em 20/11/2026 o usuário informou que as compras do AliExpress chegaram; nenhum item foi conferido peça a peça |
+| Versão | 0.3 (2026-11-24): itens da compra de 02/11 recebidos; célula do AJ-C15 para a v0; seção 4, Projeto 2 (d-BMO Deck) |
+| Estado | Em 20/11/2026 o usuário informou a chegada das compras do AliExpress e, em 23/11/2026, a das que faltavam. A conferência peça a peça (coluna "O que conferir") não foi registrada |
 | Fonte da lista | `README.md`, "Lista de componentes (BOM)" |
 
 Estados possíveis, nesta ordem: **esperado** → **recebido** (está na mão) → **identificado**
@@ -17,12 +17,12 @@ ou **reprovado**. Um item só avança com evidência registrada (foto, leitura, 
 | PN532 V3 NFC | "PN532 Set" | Marcação "PN532" no CI; DIP switch e posições para I²C; o que veio no kit (cartão, chaveiro) | | recebido | Barra de pinos **não soldada** (20/11): bloqueado até haver ferro de solda |
 | Conjunto IR 38 kHz | "1set" | Se há **transmissor e receptor**; marcação do receptor (ex.: família 1838/TSOP) e do LED | | recebido | Duas placas com 3 pinos em fileira única (fotos de 21/11). Receptor "V1222": OUT, VCC, GND. Transmissor "V1221": DAT, VCC, GND; não se sabe se há transistor (componentes não identificados) |
 | MAX98357A | "Small Chip Welding" | Marcação do CI (pode ser ilegível no encapsulamento pequeno); pinos já soldados | | recebido | Pinos soldados (20/11). Ligação do alto-falante a confirmar (borne ou furo) |
-| Alto-falante 2030 | 8 Ω 2 W | Dimensões com paquímetro; resistência DC (fica abaixo de 8 Ω, é normal) | | esperado | |
+| Alto-falante 2030 | 8 Ω 2 W | Dimensões com paquímetro; resistência DC (fica abaixo de 8 Ω, é normal) | | recebido | Recebido segundo o usuário (23/11/2026: "todas as peças que estavam pendentes chegaram"); não conferido peça a peça. Não testado |
 | INMP441 | — | Marcação do microfone; furo acústico; pinos | | recebido | Pinos soldados (20/11) |
-| Jumpers Dupont | 20 cm, F-F/M-M/M-F, 40 de cada | Quantidade por tipo | | esperado | |
-| Protoboard MB-102 | branca, 830 pontos | Trilhos de alimentação contínuos ou partidos ao meio | | esperado | |
-| Resistores | kit 1 %, 30 valores, 300 peças | Presença de 4,7 kΩ, 100 kΩ, 1 kΩ, 5,1 kΩ | | esperado | Potência 1/4 W: não servem como carga de teste |
-| Capacitores 100 nF | 100 peças "104" | Quantidade aproximada | | esperado | |
+| Jumpers Dupont | 20 cm, F-F/M-M/M-F, 40 de cada | Quantidade por tipo | | recebido | Em uso na bancada desde 21/11 (ver `docs/testing/TESTING.md`); quantidade não conferida |
+| Protoboard MB-102 | branca, 830 pontos | Trilhos de alimentação contínuos ou partidos ao meio | | recebido | Em uso na bancada desde 21/11 (trilho grande do `BREADBOARD_MAP.md`); continuidade dos trilhos (M1 a M5) não registrada |
+| Resistores | kit 1 %, 30 valores, 300 peças | Presença de 4,7 kΩ, 100 kΩ, 1 kΩ, 5,1 kΩ | | recebido | Recebido segundo o usuário (23/11/2026: "todas as peças que estavam pendentes chegaram"); não conferido peça a peça. Potência 1/4 W: não servem como carga de teste |
+| Capacitores 100 nF | 100 peças "104" | Quantidade aproximada | | recebido | Recebido segundo o usuário (23/11/2026: "todas as peças que estavam pendentes chegaram"); não conferido peça a peça |
 
 ## 2. Itens recebidos antes
 
@@ -33,17 +33,18 @@ ou **reprovado**. Um item só avança com evidência registrada (foto, leitura, 
 | ESP32-S3 DevKitC-1 N16R8 | — | testado | Validada com Bruce |
 | MCP23017 | — | **não possui** | Informado em 21/11; o README dizia o contrário por erro. A comprar |
 | Placa do controle genérico de PS3 | Sticks analógicos | identificado (placa) | Placa **BM-901 VER1.1**, CI marcado "ShanWan BM-901SWQP174 003" (fotos de 21/11; sem datasheet localizado). Dois sticks soldados na placa, cada um com dois potenciômetros de 3 pinos. Serigrafia: "R1 ADC R2", "L1 ADC L2", USB_CON (5V, D−, D+, GND, GND), fileira de furos vazios "Y B A X ADC PS ST SE GND AD AL AR AU", pontos "V5", "V3V", "GND". Reaproveitar os sticks exige solda ou dessolda; medições sem energia pendentes |
-| Power bank AJ-C15 | Ver [`POWERBANK_AJ-C15.md`](POWERBANK_AJ-C15.md) | recebido | Em investigação |
+| Power bank AJ-C15 | Ver [`POWERBANK_AJ-C15.md`](POWERBANK_AJ-C15.md) | aberto (21/11) | Sem saída com fio; nenhum 5 V encontrado. **A célula vai para a v0** (decisão de 24/11/2026), com carregador, proteção, NTC e regulador novos ([README, Bateria da v0](../../README.md#bateria-da-v0-célula-reaproveitada-do-power-bank-aj-c15)). Pendentes: foto lateral (inchaço), se a célula tem PCM própria, dimensões, ensaio de capacidade. A placa original não é usada |
 
 ## 3. Situação a confirmar com o usuário
 
 | Item | Dúvida |
 |---|---|
-| Bateria LiPo 4000 mAh | O README diz "compra não confirmada". Foi comprada? |
+| Bateria LiPo 4000 mAh | Não comprar na v0: substituída pela célula do AJ-C15 (24/11/2026) |
 | Soquete card edge | Comprado ou não? |
 | Fio 30 AWG, malha, fluxo | Comprados no Brasil? |
 | Multímetro e ferramentas | Em 20/11: só multímetro e kit de chaves; ferro de solda a caminho |
 | Outros itens | Algo chegou que não está nesta lista? |
+| Componentes da bateria da v0 | Carregador com power-path e entrada de NTC, proteção 1S, NTC de 10 kΩ, regulador de 3,3 V e conector: a comprar, preços não cotados |
 
 ## 4. Projeto 2: d-BMO Deck
 

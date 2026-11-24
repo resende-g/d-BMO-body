@@ -28,7 +28,7 @@ Colunas de estado:
 | Alto-falante 2030, 8 Ω, 2 W | Saída de som | — | — | Comprado, aguardando | Não testado | — |
 | INMP441 | Microfone | I2S | 1,62 a 3,63 V (MIC-01) | Comprado, aguardando | Não testado | `audio` |
 | Conjunto IR (emissor + receptor de 38 kHz) | Infravermelho | RMT | Receptor da família TSOP48xx: 2,5 a 5,5 V (IR-01). Peça real não identificada (IR-08) | Comprado, aguardando | Não testado | `infrared`: testado no computador |
-| Bateria LiPo 1S ~4000 mAh | Energia | — | 3,0 a 4,2 V (nominal de célula de lítio; datasheet da célula não existe) | Selecionada; compra não confirmada | — | `power`: leitura desabilitada |
+| Bateria LiPo 1S (v0: célula do power bank AJ-C15; PCB final: a escolher, referência ~4000 mAh) | Energia | — | 3,0 a 4,2 V (nominal de célula de lítio; datasheet da célula não existe) | Célula do AJ-C15 disponível (decisão de 24/11/2026; ver README, "Bateria da v0") | — | `power`: leitura desabilitada |
 | Carga, proteção, regulador, trava | Energia | GPIO / a definir | A definir ([`POWER_ARCHITECTURE.md`](POWER_ARCHITECTURE.md)) | Não comprado | — | `power`: contratos prontos |
 | Soquete card edge DK920A-20M | Cartucho | I2C, SPI, UART, GPIO | 3,3 V limitado; 5 V em aberto | Não comprado (fase 4) | — | `cartridges`: testado com simulador |
 | EEPROM 24C02 | Identificação do cartucho | I2C (0x50) | 2,5 a 5,5 V na Microchip 24LC02B (EE-01) | Não comprado | — | `cartridges` |

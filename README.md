@@ -153,11 +153,11 @@ nem desbloqueio de bootloader comprovados para o aparelho. Itens e testes penden
 | Alto-falante 2030, 8 Ω 2 W | 1 | `2030 8 ohm 2W speaker` | **Comprado em 02/11/2026** (aguardando entrega): R$ 7,44. Conferir dimensões e cavidade acústica |
 | Mic INMP441 (I²S) | 1 | `INMP441 I2S microphone` | **Comprado em 02/11/2026** (aguardando entrega): R$ 12,14. Captação de voz |
 | Cartões microSD | 2 | já disponível | ADATA de 16 GB e um segundo de 8 GB, cada um já num adaptador microSD→SD; não comprar. Formatar em FAT32. Entram no **slot SD do módulo da tela**: o MSP3218 tem slot de **SD tamanho normal** no verso (confirmado em 02/11/2026), então o cartão vai com o **adaptador microSD→SD**. Conferir se há chip buffer perto do slot (se houver, testar o SPI compartilhado). Na carcaça v0, o cartão fica atrás da tela, com troca rara. Na PCB final, slot microSD próprio na tampa traseira |
-| Bateria LiPo 3,7V 1S 4000 mAh (anúncio) | 1 | `4070115 3.7V 4000mAh` | Selecionada; R$ 59,48; compra não confirmada. Dimensão informada: 0,4 × 70 × 115 mm (provavelmente 4,0 × 70 × 115 mm; confirmar medida real). **Requisitos:** PCM de proteção integrado, termistor NTC (3 fios) e vendedor com datasheet. **Conferir a polaridade do JST antes de ligar**: baterias do AliExpress vêm invertidas com frequência, e a inversão queima o carregador. Se a bateria não tiver o terceiro fio, um NTC avulso serve: 10 kΩ (marcado "103"), constante B compatível com o datasheet do carregador (3435 ou 3950), colado na célula com fita kapton, sem criar ponto de pressão. O usuário já tem um sensor de temperatura: confirmar se é NTC analógico (serve) ou digital tipo DS18B20/DHT11 (não serve para o pino TS do carregador). Ver [Riscos da bateria](#riscos-da-bateria-e-recomendações) |
+| Bateria LiPo 3,7V 1S 4000 mAh (anúncio) | 1 | `4070115 3.7V 4000mAh` | **Não comprar na v0**: a [célula do AJ-C15](#bateria-da-v0-célula-reaproveitada-do-power-bank-aj-c15) a substitui (decisão de 24/11/2026); continua como referência para a PCB final. Selecionada antes por R$ 59,48. Dimensão informada: 0,4 × 70 × 115 mm (provavelmente 4,0 × 70 × 115 mm; confirmar medida real). **Requisitos:** PCM de proteção integrado, termistor NTC (3 fios) e vendedor com datasheet. **Conferir a polaridade do JST antes de ligar**: baterias do AliExpress vêm invertidas com frequência, e a inversão queima o carregador. Se a bateria não tiver o terceiro fio, um NTC avulso serve: 10 kΩ (marcado "103"), constante B compatível com o datasheet do carregador (3435 ou 3950), colado na célula com fita kapton, sem criar ponto de pressão. O usuário já tem um sensor de temperatura: confirmar se é NTC analógico (serve) ou digital tipo DS18B20/DHT11 (não serve para o pino TS do carregador). Ver [Riscos da bateria](#riscos-da-bateria-e-recomendações) |
 | Botões tácteis | — | estoque próprio | Usuário informa que já possui vários botões; não comprar. Confirmar dimensões e quantidade na montagem (D-pad, 4 ações, select/start, 2 gatilhos de ombro, energia) |
 | Analógicos (sticks de PS3) | 2 | reaproveitar | **Tirar do controle genérico de PS3 que o usuário já tem** (sem compra). Cada stick tem 2 potenciômetros (X/Y) e o clique L3/R3. Ver [Analógicos e gatilhos reaproveitados](#analógicos-e-gatilhos-reaproveitados) |
 | Gatilhos de ombro (L/R) | 2–4 | estoque próprio | Botões tácteis em **ângulo reto**, como nos portáteis de emulação. Conferir se há modelos de ângulo reto no estoque; se não, comprar. Tampas: as do L1/R1 do controle de PS3 ou impressas em grafite; alavancas do L2/R2 se couberem (ver [Analógicos e gatilhos reaproveitados](#analógicos-e-gatilhos-reaproveitados)) |
-| Power bank magnético 5000 mAh (compatível com MagSafe) | 1 | já disponível | Fonte externa pela USB da DevKitC, alternativa sem custo à bateria da Fase 2 na v0. Não abrir para aproveitar a célula. Ver [Alternativa sem custo](#alternativa-sem-custo-power-bank-externo-v0) |
+| Power bank AJ-C15 (etiqueta: 5000 mAh, 11,13 Wh; magnético) | 1 | já disponível | Não tem saída com fio (só Lightning; a face magnética é transmissor sem fio). Aberto em 21/11/2026. **A célula é reaproveitada na v0** (decisão de 24/11/2026), com carregador, proteção, NTC e regulador novos; a placa original não é usada. Ver [Bateria da v0](#bateria-da-v0-célula-reaproveitada-do-power-bank-aj-c15) |
 | Botão momentâneo de energia | 1 | `tactile momentary push button` | Usar botão, não chave deslizante. A PCB precisará de circuito de power-latch/gerenciamento de energia para ligar e desligar com pressão; definir CI/topologia e botão conforme esquema. Não comprar chave SPST |
 | Resistores 4,7k / 100k / 1k | kit | `resistor kit 4.7k 100k 1k` | **Comprado em 02/11/2026** (aguardando entrega): kit de filme metálico 1%, 30 valores (10 Ω–1 MΩ), 300 peças, R$ 19,96. Pull-ups do I²C, divisor da bateria e afins |
 | Capacitores 100nF (104) | ~5 | `100nF ceramic capacitor 104` | **Comprado em 02/11/2026** (aguardando entrega): pacote de 100 peças de 100 nF (104), R$ 12,24. Desacoplamento do MCP23017 e dos módulos |
@@ -183,7 +183,7 @@ bateria, analógicos), então só é modelada depois da Fase 2.
 | Fase | Comprar | Custo aproximado | O que destrava |
 |---|---|---:|---|
 | 1. Núcleo + periféricos (comprada em 02/11/2026) | Jumpers, protoboard, resistores, capacitores 100 nF, PN532, IR, MAX98357A, alto-falante, INMP441 | R$ 119,73 antes do cupom e do imposto | CC1101, NFC, IR e áudio na S3 com o Bruce. Sem compra: slot SD da tela com adaptador, rosto do d-BMO. O MCP23017 dos botões precisa ser comprado (corrigido em 21/11/2026). A Fase 3 original foi antecipada para cá |
-| 2. Volume + energia (próxima rodada) | Bateria com PCM + NTC **e** módulo de carga com power-path (BQ24074 ou MCP73871) na mesma compra; botões tácteis de ângulo reto se faltarem no estoque; tirar os analógicos do controle de PS3 (sem compra) | ~R$ 80–100, ou zero com o [power bank externo](#alternativa-sem-custo-power-bank-externo-v0) no lugar da bateria e do módulo | Peças que definem o corpo em mãos: **modelar e imprimir a carcaça v0**. Bateria sem carregador adequado não se compra: os dois vão juntos. O módulo também valida a energia na bancada (ver [Riscos da bateria](#riscos-da-bateria-e-recomendações)) |
+| 2. Volume + energia (próxima rodada) | Bateria com PCM + NTC **e** módulo de carga com power-path (BQ24074 ou MCP73871) na mesma compra; botões tácteis de ângulo reto se faltarem no estoque; tirar os analógicos do controle de PS3 (sem compra) | ~R$ 80–100 com a bateria nova. Na v0, a [célula do AJ-C15](#bateria-da-v0-célula-reaproveitada-do-power-bank-aj-c15) substitui a bateria: entram só carregador, proteção, NTC e regulador (preços não cotados) | Peças que definem o corpo em mãos: **modelar e imprimir a carcaça v0**. Bateria sem carregador adequado não se compra: os dois vão juntos. O módulo também valida a energia na bancada (ver [Riscos da bateria](#riscos-da-bateria-e-recomendações)) |
 | 3. Periféricos | — | — | Antecipada para a Fase 1 (comprada em 02/11/2026) |
 | 4. Cartuchos | Soquete card edge | ~R$ 15 | Cartucho no topo; até lá, a fenda fica com tampa cega |
 | 5. Definitivo | PCB própria na JLCPCB (ESP32-S3-WROOM-1-N16R8, carga/BMS/regulador SMD, MCP23017, riser do card edge) | ~R$ 100 por 5 placas + montagem, frete e imposto | Carcaça v1 em volta da PCB definitiva |
@@ -307,7 +307,8 @@ e pressão mecânica.
    - Corrente contínua e de pico acima do pico do sistema (WiFi + CC1101 + tela + áudio), com folga.
    - Dimensões que caibam no berço sem pressionar a pouch.
    - Sem inchaço, amassado ou furo, e sem origem desconhecida (célula tirada de power bank ou
-     de controle não serve).
+     de controle não serve). Exceção registrada em 24/11/2026: a [célula do AJ-C15](#bateria-da-v0-célula-reaproveitada-do-power-bank-aj-c15) na v0,
+     com as condições daquela seção.
 3. **Polaridade do JST:** conferir com multímetro antes de ligar qualquer bateria nova.
 4. **Corrente desligado ≤ ~10 µA**, somando power-latch, divisor de leitura da bateria, BMS e
    carregador. Vazamento esvazia a bateria em meses na gaveta, e recarregar depois da descarga
@@ -329,37 +330,74 @@ e pressão mecânica.
 8. **Validar na bancada antes da PCB:** testar o circuito de energia com um módulo pronto de
    carga com power-path, em superfície não inflamável e sem deixar carregando sozinho.
 
-### Alternativa sem custo: power bank externo (v0)
+### Bateria da v0: célula reaproveitada do power bank AJ-C15
 
-Registrada em 13/11/2026. O power bank magnético de 5000 mAh (compatível com MagSafe) que o
-usuário já tem pode alimentar a v0 pela USB da DevKitC, no lugar da bateria e do carregador da
-Fase 2. Lacrado, ele já traz carregador, proteção da célula e conversor de 5 V.
+Decidido em 24/11/2026. A v0 portátil usa a **célula do power bank AJ-C15**, já aberto, com
+componentes novos para carregar, proteger e regular. A bateria de 4000 mAh do anúncio não é
+comprada na v0.
 
-- **Ligação:** cabo que já existe, na porta USB da DevKitC (5 V, regulador da placa, 3,3 V). Se
-  o cabo C-C não ligar a placa, faltam os resistores de 5,1 kΩ no CC da DevKitC; testar um cabo
-  USB-A→C.
-- **Aliviar o regulador da DevKitC:** a tela (3,3–5 V) e o MAX98357A (2,5–5,5 V) no pino 5V; o
-  resto em 3,3 V. CC1101 e PN532 nunca em 5 V.
-- **Fixação:** encaixe impresso na traseira da carcaça v0. O ímã MagSafe só prende com anel de
-  aço, que seria compra.
-- **Autonomia (estimativa, não medida):** ~8–9 h com consumo de ~0,35 A. Medir na bancada.
+**A alternativa anterior não serve.** Em 13/11/2026 o README previa ligar o power bank lacrado
+à USB da DevKitC. A investigação ([`POWERBANK_AJ-C15.md`](docs/hardware/POWERBANK_AJ-C15.md))
+mostrou que o AJ-C15 não tem saída com fio: a única porta é Lightning e a face magnética é um
+**transmissor** sem fio (pads "TX"). Em repouso, o nó ao lado do indutor da placa segue a
+tensão da célula (3,86 V): nenhuma linha de 5 V foi encontrada. A placa original não é
+aproveitada.
 
-Limitações:
+**Exceção aos critérios de aceitação.** O item 2 dos [Riscos da bateria](#riscos-da-bateria-e-recomendações)
+recusa "célula tirada de power bank". O mantenedor aceitou esta célula como **exceção**, para
+gastar o mínimo, com as condições abaixo. Se uma delas falhar, a célula é descartada (ponto
+de coleta) e a v0 volta à bateria nova com PCM e NTC.
 
-- **Corte por consumo baixo:** o power bank desliga a saída com pouca carga, então o deep sleep
-  apaga tudo e o botão do power bank vira o botão de energia. Conferir se o modelo tem modo de
-  baixo consumo.
-- **Sem nível de bateria no firmware:** só os LEDs do power bank mostram a carga.
-- **Carregar com o d-BMO desligado:** em modelos baratos, a saída pisca quando o carregador é
-  ligado e o ESP32 reinicia.
-- **NFC:** ímãs, bobina e ferrite do power bank atrapalham o PN532. A antena fica fora da área
-  coberta por ele.
-- **Volume:** o corpo fica mais grosso e pesado. Medir o power bank com paquímetro antes do CAD
-  e conferir na etiqueta a saída USB (5 V, 2 A ou mais).
-- **Não abrir** o power bank para aproveitar a célula (ver item 2 dos riscos).
+O que se sabe da célula:
 
-Na PCB final, a mesma ideia permitiria tirar carregador, proteção, trava de energia e leitura da
-bateria, em troca de espessura, peso e do corte automático. **Decisão em aberto.**
+| Dado | Valor | Estado |
+|---|---|---|
+| Tipo | Pouch de Li-ion, uma célula | Observado na foto de 21/11 |
+| Tensão em repouso | 3,9 V, vermelho = positivo | Medido (M1, 21/11) |
+| Capacidade | Etiqueta do power bank: 5.000 mAh e 11,13 Wh, valores incoerentes entre si; 11,13 Wh a 3,7 V são ≈ 3.000 mAh | **A medir.** Trabalhar com ≈ 3.000 mAh até o ensaio |
+| Fabricante, modelo, datasheet | — | Desconhecidos |
+| Proteção própria (PCM) na célula | — | **A conferir.** Em power bank a proteção costuma ficar na placa principal: tratar a célula como **sem proteção** até ver o contrário |
+| Termistor | — | Não tem: precisa de NTC avulso |
+| Dimensões | — | A medir com paquímetro (necessárias para o CAD) |
+
+**Condições para usar a célula (portões, em ordem):**
+
+1. Sem inchaço, amassado, furo, cheiro ou aquecimento. Foto lateral para avaliar a espessura.
+2. Retirada da placa do power bank **um fio por vez**, isolando com kapton cada ponta solta
+   antes de mexer na outra; nunca as duas com a mesma ferramenta metálica. Superfície não
+   inflamável e recipiente com areia ao lado ([`POWERBANK_AJ-C15.md`](docs/hardware/POWERBANK_AJ-C15.md), seção 4).
+3. Proteção 1S entre a célula e o resto do circuito: sobretensão, subtensão, sobrecorrente e
+   curto.
+4. NTC de 10 kΩ colado na célula com kapton, ligado à entrada de temperatura do carregador.
+5. Carga limitada a ~0,5C da capacidade **medida** (≈ 1,5 A no máximo com ≈ 3.000 mAh; menos é
+   melhor), sempre com supervisão, até a célula provar comportamento estável.
+6. Ensaio de capacidade (carga completa, descarga com corrente conhecida até o corte) antes de
+   fechar a carcaça. Capacidade muito abaixo de ≈ 3.000 mAh, aquecimento ou inchaço
+   reprovam a célula.
+
+**Componentes a comprar (mínimo seguro; preços ainda não cotados):**
+
+| Função | Recomendado | Alternativa mais barata | Por que o recomendado |
+|---|---|---|---|
+| Carga | Módulo com **power-path** e entrada de NTC (TS), por exemplo BQ24074 | Módulo TP4056 com proteção DW01 + divisão de carga (MOSFET P + diodo Schottky) | Com o aparelho ligado na tomada, sem power-path o carregador não detecta o fim da carga e a célula fica presa em 4,2 V (item 1 dos riscos). Os módulos TP4056 comuns ligam o pino de temperatura ao GND: o NTC não protege |
+| Proteção 1S | Placa de proteção 1S (DW01A + MOSFET duplo, ou equivalente), se a célula não tiver PCM | — | Única camada contra descarga profunda e curto nesta v0 |
+| NTC | 10 kΩ, constante B compatível com o carregador escolhido (3435 ou 3950) | — | Pedido pelo item 2 dos riscos |
+| Regulador | **Buck-boost de 3,3 V**, ≥ 500 mA só para a S3 mais as cargas, no pino 3V3 da DevKitC | Boost de 5 V no pino 5V da DevKitC (o regulador da placa faz os 3,3 V) | Item 6 dos riscos: menos calor e menos perda. Com o boost de 5 V, o MAX98357A pode ir no 5 V |
+| Conector | JST de 2 vias e fio | — | Polaridade conferida com multímetro antes de cada ligação (item 3 dos riscos) |
+
+A DevKitC não aceita duas fontes ao mesmo tempo: o guia da placa declara a USB, o 5V e o 3V3
+mutuamente exclusivos. **Com a USB de dados ligada, a saída do regulador tem de estar
+desligada.** Como garantir isso com o botão e o power-latch, que continuam, está em aberto.
+
+O botão de energia com power-latch continua decidido (sem chave liga/desliga); o circuito da
+trava ainda precisa ser desenhado e cabe nos resistores do kit mais um MOSFET.
+
+Limitações desta escolha:
+
+- Sem datasheet, não há corrente máxima de descarga documentada: o pico do sistema (WiFi +
+  CC1101 + tela + áudio) não pode ser comparado com a célula; só o ensaio mostra se ela segura.
+- Autonomia desconhecida até medir o consumo real e a capacidade.
+- Solução de v0. Na PCB final, a escolha da célula volta a ser feita pelos critérios do item 2.
 
 ### Conector de carga USB-C dedicado
 
@@ -762,13 +800,13 @@ ser conferidos antes de congelar a PCB ou o CAD.
 - [x] Bancada: ESP32-S3 DevKitC confirmada (16 MB + 8 MB PSRAM), tela ILI9341 validada (ID 0x9341) e Bruce rodando com 3 botões
 - [x] Fase 1 + periféricos comprada no AliExpress em 02/11/2026 (R$ 119,73 antes do cupom e do imposto)
 - [ ] Comprar malha, fluxo e fio de 30 AWG no Brasil
-- [ ] Próxima rodada: bateria com PCM + NTC e módulo de carga com power-path, juntos (ou o power bank externo na v0)
-- [ ] Medir o power bank com paquímetro e conferir a saída USB na etiqueta
+- [ ] Próxima rodada: carregador com power-path e entrada de NTC, proteção 1S, NTC e regulador de 3,3 V para a célula do AJ-C15 (v0)
+- [ ] Célula do AJ-C15: foto lateral (inchaço), conferir se tem PCM, retirar da placa um fio por vez, medir com paquímetro e, com o carregador novo, ensaio de capacidade
 - [ ] Ligar o slot SD da tela (cartão microSD com adaptador SD) no CS 21
 - [ ] Ligar 1 MCP23017 e testar o ambiente `bmo-v1-mcp` do Bruce
 - [ ] Validar a pinagem proposta da S3 e atualizar o `bmo.ini`
 - [ ] Fase 2: tirar e testar os analógicos do controle de PS3; comprar a bateria (PCM + NTC); modelar e imprimir a carcaça v0
-- [ ] Decidir carregador (power-path), USB-C único vs OR com diodo ideal, se o cartucho mantém a linha de 5 V e se a PCB final usa power bank externo
+- [ ] Decidir carregador (power-path), USB-C único vs OR com diodo ideal, se o cartucho mantém a linha de 5 V e qual célula a PCB final usa
 - [ ] Validar o circuito de energia na bancada antes de fechar a PCB
 - [x] Alvo `dbmo-v1` do Retro-Go: launcher compila na CI
 - [ ] Compilar os emuladores e a imagem completa do Retro-Go
