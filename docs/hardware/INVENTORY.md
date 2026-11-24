@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |---|---|
-| Versão | 0.1 (2026-11-20) |
+| Versão | 0.2 (2026-11-24): seção 4, itens do Projeto 2 (d-BMO Deck) |
 | Estado | **Modelo para preencher.** Em 20/11/2026 o usuário informou que as compras do AliExpress chegaram; nenhum item foi conferido peça a peça |
 | Fonte da lista | `README.md`, "Lista de componentes (BOM)" |
 
@@ -44,3 +44,15 @@ ou **reprovado**. Um item só avança com evidência registrada (foto, leitura, 
 | Fio 30 AWG, malha, fluxo | Comprados no Brasil? |
 | Multímetro e ferramentas | Em 20/11: só multímetro e kit de chaves; ferro de solda a caminho |
 | Outros itens | Algo chegou que não está nesta lista? |
+
+## 4. Projeto 2: d-BMO Deck
+
+Projeto separado do d-BMO v1 (ver [README, Versões do projeto](../../README.md#projeto-2--d-bmo-deck-moto-g04s--teclado-rii)).
+Nenhum item desta seção entra no v1, e nenhuma peça do v1 vai para o Deck.
+
+| Item | O que conferir | Estado | Observação |
+|---|---|---|---|
+| Motorola Moto G04s, cinza | Modelo XT2421-x e armazenamento (Configurações › Sobre ou `adb shell getprop ro.product.model`); bateria sem inchaço; conta Google da antiga dona removida (FRP); carga; ADB | recebido | Informado pelo usuário em 23/11/2026: liga; tela com riscos, manchas e distorção; touch funcionava segundo a antiga dona. Placa-mãe, bateria, USB-C e ADB **não testados**. Especificações (Unisoc T606, Mali-G57 MP1, 4 GB, 6,56" 1612 × 720, 5000 mAh, Android 14) informadas, não conferidas no aparelho |
+| Tela de reposição do G04s | Anúncio cita XT2421; é conjunto display + touch; com ou sem aro | **não comprar ainda** | Anúncio visto pelo usuário: ~R$ 60 com frete grátis. Compatibilidade "G04/G04s/G24/E14" dos anúncios não é confirmação de peça igual. Comprar só depois do teste da placa, da bateria e do FRP |
+| Teclado Rii | Modelo exato na etiqueta; Bluetooth ou dongle USB de 2,4 GHz; funciona no computador | recebido (já estava em casa) | O README cita um Rii i8; o modelo deste exemplar **não foi conferido**. Se for de dongle, ocupa a única USB-C do celular |
+| Outros três celulares usados | Marca, modelo e defeito de cada um | recebido | Não identificados. Recebidos com o G04s, todos com defeito de tela |

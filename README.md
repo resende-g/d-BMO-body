@@ -99,9 +99,25 @@ portátil: **D-pad, quatro botões de ação, select/start, gatilhos de ombro e 
 analógicos** (sticks de controle de PS3 lidos pelo ADC). É o layout do personagem e
 simplifica a montagem em relação ao teclado.
 
-### Projeto 2 (futuro) — Raspberry Pi + teclado Rii
-Kali Linux de verdade para pentest sério. O teclado QWERTY do Rii i8 vai para cá, onde
-digitar comando faz sentido. Fora do escopo deste repositório por enquanto.
+**Prioridade de custo (decidida em 24/11/2026):** terminar primeiro uma **v0 funcional com o
+menor custo possível**: a DevKitC e os módulos já comprados, ligados por fio, numa carcaça
+impressa. Ficam **adiados** (não cancelados) a PCB na JLCPCB e o soquete de cartucho. A única
+compra eletrônica obrigatória é o MCP23017 dos botões; ligar 8 botões direto nos GPIO exigiria
+refazer o mapa de pinos e usar o GPIO 43, que recebe o log de boot da ROM. Energia em duas
+etapas: cabo USB na bancada e, para ficar portátil, bateria com PCM + NTC e carregador com
+power-path comprados juntos. O botão de energia com power-latch continua (sem chave
+liga/desliga).
+
+### Projeto 2 — d-BMO Deck (Moto G04s + teclado Rii)
+Redefinido em 24/11/2026. Terminal portátil Android com teclado físico: um Moto G04s
+reaproveitado (Unisoc T606, 4 GB, tela danificada) e o teclado Rii. Termux com Debian em
+proot, cliente do BMO Brain pela rede privada e emuladores. É um projeto **separado**: não usa
+peças do v1 e não se acopla a ele mecanicamente nem na energia. A única integração prevista,
+opcional, é o Deck servir de terminal do console do d-BMO pela USB (OTG). Substitui o plano
+anterior (Raspberry Pi + Rii + Kali), que fica sem data. Limites conhecidos: sem root, o Linux
+roda só em espaço de usuário (sem modo monitor de Wi-Fi nem socket cru); não há ROM alternativa
+nem desbloqueio de bootloader comprovados para o aparelho. Itens e testes pendentes no
+[inventário](docs/hardware/INVENTORY.md#4-projeto-2-d-bmo-deck).
 
 ---
 
@@ -765,13 +781,13 @@ ser conferidos antes de congelar a PCB ou o CAD.
 - [ ] Rosto animado na tela principal: 17 expressões em `firmware/rosto/`; falta testar na bancada e levar para o Bruce
 - [ ] Retro-Go rodando um jogo
 - [ ] Comprar o soquete DK920A-20M e medir a peça real (fenda, espessura aceita)
-- [ ] Projetar a PCB no EasyEDA (com carga/BMS/regulador/card edge) e cotar na JLCPCB
+- [ ] Projetar a PCB no EasyEDA (com carga/BMS/regulador/card edge) e cotar na JLCPCB (adiado para depois da v0, decisão de 24/11/2026)
 - [ ] Fechar a especificação do cartucho (língua, anti-inversão) e o modelo único no EasyEDA
 - [ ] Definir carcaça: impressão do Tiago Efraim vs JLCPCB
 - [ ] Modelar carcaça no CAD
 - [ ] Imprimir e montar
 - [ ] (Futuro) Modo agente via WiFi/BLE
-- [ ] (Futuro) Projeto 2: Raspberry Pi + Rii + Kali
+- [ ] Projeto 2, d-BMO Deck: testes sem compra do Moto G04s e do Rii (ver o [inventário](docs/hardware/INVENTORY.md#4-projeto-2-d-bmo-deck)); a tela de reposição só depois deles
 
 ---
 
@@ -781,12 +797,13 @@ Alternativas avaliadas e **descartadas** (documentadas para não repetir):
 
 | Alternativa | Por que não |
 |---|---|
-| Raspberry Pi / Kali no lugar do ESP32 | Categoria errada (computador vs microcontrolador). Vira o Projeto 2 separado |
+| Raspberry Pi / Kali no lugar do ESP32 | Categoria errada (computador vs microcontrolador). Era o Projeto 2; em 24/11/2026 o Projeto 2 passou a ser o d-BMO Deck (Moto G04s + Rii) |
+| d-BMO DS: celular como tela superior acoplada ao ESP32 num corpo de concha (avaliado em 23/11/2026) | Reabre duas decisões desta tabela (segunda tela; processamento acoplado por fio). O painel do celular não funciona sem a placa dele, então a "tampa" seria o celular inteiro, num corpo de ~165 mm. Os emuladores de DS desenham as duas telas no Android: a ILI9341 não serve de segunda tela de jogo. Mantém as compras obrigatórias do v1 e acrescenta app Android, protocolo e dobradiça. O celular foi para o Projeto 2, separado |
 | M5Stick / Cardputer ADV | Sem sub-GHz, NFC nem IR-RX de fábrica |
 | Placas ESP32 + tela integradas (Guition, JC3248) | Consomem quase todo o GPIO; algumas com 4MB flash matam o gaming |
 | Displays e-ink | Refresh lento demais para UI interativa e jogos |
 | Segundo ESP32 / placa de processamento acoplada | O "cérebro extra" é remoto por WiFi/BLE, não acoplado por fio |
-| Teclado QWERTY no v1 | Removido de propósito; vai para o Projeto 2 (Pi/Kali) |
+| Teclado QWERTY no v1 | Removido de propósito; vai para o Projeto 2 (d-BMO Deck) |
 | Pendrive USB como armazenamento | O microSD já cobre |
 | Botões físicos de volume ou roda de volume | Volume por atalho (select + cima/baixo); evita ocupar o 2º MCP23017 e o ADC1, que não tem canal livre, e um potenciômetro na saída do amplificador desperdiçaria energia |
 | Módulo microSD SPI com conversor de nível | Trava o SPI compartilhado; usar o slot SD da tela ou um slot na PCB |
