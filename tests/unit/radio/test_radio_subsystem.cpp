@@ -1,5 +1,6 @@
 #include <cstring>
 
+#include "dbmo/core/system.h"
 #include "dbmo/mock/mock_hal.h"
 #include "dbmo/radio/cc1101_regs.h"
 #include "dbmo/radio/radio_subsystem.h"
@@ -67,7 +68,7 @@ const uint8_t kPayload[4] = {1, 2, 3, 4};
 }  // namespace
 
 void setUp() {}
-void tearDown() {}
+void tearDown() { dbmo::logger().clearSinks(); }  // um teste que falha não chega a limpar
 
 void test_init_identifies_and_leaves_the_chip_asleep() {
   Fixture f;
@@ -86,6 +87,34 @@ void test_init_without_chip_is_hardware_absent() {
   TEST_ASSERT_STATUS(Status::NotInitialized, f.radio.startReceive());
   TEST_ASSERT_STATUS(Status::NotInitialized, f.radio.transmit(kPayload, 4));
   f.run(10000);  // sem atividade no barramento além da tentativa inicial
+}
+
+void test_floating_miso_is_absent_and_never_failed() {
+  // Bancada, 2026-11-21: VERSION 0xE0 e 0x0B com o CC1101 desligado davam Failed (IoError).
+  const uint8_t versions[] = {0xE0, 0x0B};
+  for (uint8_t version : versions) {
+    Fixture f;
+    f.sim.registersWritable = false;
+    f.sim.version = version;
+    dbmo::System system(f.clock, f.bus);
+    TEST_ASSERT_OK(system.add(f.radio));
+    TEST_ASSERT_OK(system.boot());
+    TEST_ASSERT_EQUAL(dbmo::SubsystemState::Absent, system.find(f.radio)->state);
+    TEST_ASSERT_STATUS(Status::HardwareAbsent, system.find(f.radio)->lastStatus);
+    TEST_ASSERT_EQUAL_UINT(0, system.faultCount());
+  }
+}
+
+void test_unknown_version_that_keeps_writes_is_accepted_with_a_warning() {
+  dbmo::mock::RecordingLogSink sink;
+  TEST_ASSERT_OK(dbmo::logger().addSink(&sink));
+  Fixture f;
+  f.sim.version = 0x18;
+  TEST_ASSERT_OK(f.radio.init());
+  TEST_ASSERT_EQUAL(RadioState::Idle, f.radio.state());
+  TEST_ASSERT_EQUAL_HEX8(0x18, f.radio.chipId().version);
+  TEST_ASSERT_TRUE(sink.contains("VERSION 0x18 fora das documentadas"));
+  dbmo::logger().clearSinks();
 }
 
 void test_receive_publishes_event_and_queues_the_packet() {
@@ -314,6 +343,8 @@ int main() {
   UNITY_BEGIN();
   RUN_TEST(test_init_identifies_and_leaves_the_chip_asleep);
   RUN_TEST(test_init_without_chip_is_hardware_absent);
+  RUN_TEST(test_floating_miso_is_absent_and_never_failed);
+  RUN_TEST(test_unknown_version_that_keeps_writes_is_accepted_with_a_warning);
   RUN_TEST(test_receive_publishes_event_and_queues_the_packet);
   RUN_TEST(test_bad_packets_are_counted_and_reception_continues);
   RUN_TEST(test_full_queue_drops_new_packets);

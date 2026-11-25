@@ -1,3 +1,4 @@
+#include <cmath>
 #include <cstring>
 
 #include "dbmo/audio/audio_subsystem.h"
@@ -66,7 +67,9 @@ class FakeInput final : public IAudioInput {
     if (!running) return static_cast<size_t>(0);
     const size_t count = n < perRead ? n : perRead;
     // Rampa: a amostra de índice i vale i (módulo 20000), para conferir o que foi guardado.
-    for (size_t i = 0; i < count; ++i) samples[i] = static_cast<int16_t>(produced++ % 20000);
+    // Com wave, a forma de onda dada.
+    for (size_t i = 0; i < count; ++i, ++produced)
+      samples[i] = wave != nullptr ? wave(produced) : static_cast<int16_t>(produced % 20000);
     return count;
   }
   Status end() override {
@@ -81,6 +84,7 @@ class FakeInput final : public IAudioInput {
   int endCalls = 0;
   size_t perRead = 16;  // 16 amostras por leitura ≈ 1 ms a 16 kHz
   uint32_t produced = 0;
+  int16_t (*wave)(uint32_t index) = nullptr;
   Status beginStatus = Status::Ok;
   Status readStatus = Status::Ok;
 };
@@ -321,8 +325,73 @@ void test_recording_announces_itself_before_any_sample() {
                    f.indexOf(audio_event::kRecordingFinished));
 }
 
+// Bancada, 2026-11-22: cada gravação do INMP441 começou com um desvio lento (média por trecho
+// de 100 ms indo de +10000 a −5500 em 1 s). Aqui: desvio de DC de 10000 mais 8000 de seno a 2 Hz.
+int16_t slowDrift(uint32_t i) {
+  return static_cast<int16_t>(
+      std::lround(10000.0 + 8000.0 * std::sin(2.0 * M_PI * 2.0 * i / 16000.0)));
+}
+// Tom de 1 kHz, dentro da faixa da voz, sobre um desvio de DC de 5000.
+int16_t toneOverDc(uint32_t i) {
+  return static_cast<int16_t>(
+      std::lround(5000.0 + 8000.0 * std::sin(2.0 * M_PI * 1000.0 * i / 16000.0)));
+}
+
+int16_t maxAbs(const int16_t *samples, size_t from, size_t to) {
+  int16_t peak = 0;
+  for (size_t i = from; i < to; ++i) {
+    const int16_t value = samples[i] < 0 ? static_cast<int16_t>(-samples[i]) : samples[i];
+    if (value > peak) peak = value;
+  }
+  return peak;
+}
+
+void test_recording_removes_a_slow_drift() {
+  Fixture f;
+  TEST_ASSERT_OK(f.audio.init());
+  f.enableMic();
+  f.input.wave = slowDrift;
+  static int16_t storage[8000];
+  TEST_ASSERT_OK(f.audio.startRecording(storage, 8000));
+  f.run(1000);
+  TEST_ASSERT_EQUAL_UINT(8000, f.audio.recordedSamples());
+  // Sem o filtro, as amostras guardadas iriam de 2000 a 18000.
+  TEST_ASSERT_TRUE(maxAbs(storage, 0, 800) < 600);  // começo, com o filtro assentando
+  TEST_ASSERT_TRUE(maxAbs(storage, 800, 8000) < 50);
+  TEST_ASSERT_TRUE(f.audio.recordedPeak() < 600);
+}
+
+void test_recording_keeps_a_voice_band_tone() {
+  Fixture f;
+  TEST_ASSERT_OK(f.audio.init());
+  f.enableMic();
+  f.input.wave = toneOverDc;
+  static int16_t storage[4000];
+  TEST_ASSERT_OK(f.audio.startRecording(storage, 4000));
+  f.run(1000);
+  const int16_t peak = maxAbs(storage, 800, 4000);
+  TEST_ASSERT_TRUE(peak > 7800 && peak < 8200);  // o tom passa; o DC de 5000 sai
+  long sum = 0;
+  for (size_t i = 800; i < 4000; ++i) sum += storage[i];
+  TEST_ASSERT_TRUE(labs(sum / 3200) < 50);
+}
+
+void test_high_pass_cutoff_is_configurable_and_zero_turns_it_off() {
+  Fixture f;
+  TEST_ASSERT_EQUAL_INT32(60, f.config.getInt(config_key::kMicHighPassHz).value());
+  TEST_ASSERT_OK(f.config.setInt(config_key::kMicHighPassHz, 0));
+  TEST_ASSERT_OK(f.audio.init());
+  f.enableMic();
+  f.input.wave = slowDrift;
+  static int16_t storage[1000];
+  TEST_ASSERT_OK(f.audio.startRecording(storage, 1000));
+  f.run(1000);
+  TEST_ASSERT_EQUAL_INT16(slowDrift(1600), storage[0]);  // sem filtro, a amostra como veio
+}
+
 void test_recording_discards_microphone_startup() {
   Fixture f;
+  TEST_ASSERT_OK(f.config.setInt(config_key::kMicHighPassHz, 0));  // confere a rampa crua
   TEST_ASSERT_OK(f.audio.init());
   f.enableMic();
   int16_t storage[100] = {};
@@ -486,6 +555,9 @@ int main() {
   RUN_TEST(test_recording_is_denied_while_the_microphone_is_disabled);
   RUN_TEST(test_recording_announces_itself_before_any_sample);
   RUN_TEST(test_recording_discards_microphone_startup);
+  RUN_TEST(test_recording_removes_a_slow_drift);
+  RUN_TEST(test_recording_keeps_a_voice_band_tone);
+  RUN_TEST(test_high_pass_cutoff_is_configurable_and_zero_turns_it_off);
   RUN_TEST(test_microphone_is_only_on_while_recording);
   RUN_TEST(test_recording_stops_at_max_duration);
   RUN_TEST(test_stop_recording);

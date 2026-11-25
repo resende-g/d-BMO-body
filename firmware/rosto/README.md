@@ -65,7 +65,9 @@ Três peças independentes:
   Não há humor autônomo: o rosto só muda por pedido.
 - **`FaceRenderer`** (`face_renderer.h`): desenha um quadro num `dbmo::display::IDisplay`,
   redesenhando só os blocos que mudaram. O bloco é o maior inteiro que cabe na tela.
-- **`FaceSubsystem`** (`face_subsystem.h`): liga os dois ao `EventBus`.
+- **`FaceSubsystem`** (`face_subsystem.h`): liga os dois ao `EventBus`. `setVisible(false)`
+  cede a tela (ao menu): as expressões continuam mudando, mas nada é desenhado; ao voltar,
+  a tela inteira é redesenhada.
 
 ### Eventos (domínio `Face`)
 

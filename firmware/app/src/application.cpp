@@ -166,7 +166,8 @@ Application::Application(const Hardware &hardware)
                        config::i2c::kCartridgeEeprom),
       cartridges_(cartridgeEeprom_, cartridgeDrivers_, bus_, config_, resources_),
       irStorage_(storage_),
-      irLibrary_(irStorage_) {}
+      irLibrary_(irStorage_),
+      menuText_(*hardware.display) {}
 
 Status Application::registerConfig() {
   DBMO_TRY(display::DisplaySubsystem::registerConfig(config_));
@@ -261,6 +262,13 @@ Status Application::begin() {
   DBMO_TRY(system_.add(cartridges_));
 
   const Status status = system_.boot();
+  // A tela desenha sem o MISO, então um ID de controlador inesperado não a impede de
+  // iniciar: ela fica Degraded (visível no status) em vez de Ready.
+  const SubsystemInfo *screen = system_.find(display_);
+  if (screen != nullptr && screen->state == SubsystemState::Ready &&
+      !isOk(display_.controllerCheck()))
+    system_.reportDegraded(display_, display_.controllerCheck());
+  updateMenuAvailability();
   // A energia leu a configuração antes de o cartão ser montado.
   power_.applyConfig();
   lastRetryMs_ = hw_.clock->nowMs();
@@ -303,7 +311,20 @@ void Application::handle(const Event &event) {
       // Qualquer uso dos controles conta como atividade.
       display_.notifyActivity(now);
       power_.notifyActivity(now);
+      if (event.id == input::input_event::kButton)
+        handleMenu(static_cast<input::Button>(event.a), static_cast<input::ButtonAction>(event.b),
+                   now);
       break;
+
+    case EventDomain::System:
+      // Um periférico apareceu ou sumiu: o menu mostra ou esconde o item dele.
+      if (event.id == system_event::kSubsystemChanged) {
+        updateMenuAvailability();
+        menuDirty_ = true;
+      }
+      break;
+
+    case EventDomain::Radio: menuDirty_ = true; break;
 
     case EventDomain::Power:
       if (event.id == power::power_event::kShutdownRequested) {
@@ -320,6 +341,38 @@ void Application::handle(const Event &event) {
         } else if (level == power::BatteryLevel::Critical) {
           (void)face_.engine().request(Expression::Alert, now, 3000);
         }
+      }
+      break;
+
+    case EventDomain::Infrared:
+      menuDirty_ = true;
+      if (event.id == infrared::infrared_event::kLearned) {
+        if (irLearnNote_ == IrLearnNote::Waiting) irLearnNote_ = IrLearnNote::Learned;
+      } else if (event.id == infrared::infrared_event::kLearnTimeout) {
+        if (irLearnNote_ == IrLearnNote::Waiting) irLearnNote_ = IrLearnNote::TimedOut;
+      }
+      // Cada código recebido vai para o log, como os botões, para conferir o receptor na
+      // bancada sem precisar de "ir last". A repetição (tecla segurada) fica de fora.
+      if (event.id == infrared::infrared_event::kCodeReceived) {
+        infrared::StoredCode code;
+        char text[24];
+        if (infrared_.lastReceived(&code) && infrared::formatCode(code, text, sizeof(text)).ok())
+          DBMO_LOGI(kTag, "infravermelho: %s", text);
+      } else if (event.id == infrared::infrared_event::kRawReceived) {
+        // Protocolo desconhecido não passa pela detecção de repetição do subsistema; com a
+        // tecla segurada o quadro volta a cada ~110 ms. Só o primeiro da sequência vai ao log;
+        // um tamanho diferente conta como outra tecla.
+        // ponytail: só compara o tamanho; duas teclas desconhecidas de mesmo tamanho em menos
+        // de 200 ms viram uma linha só. Comparar as durações se isso atrapalhar a bancada.
+        const bool repeat =
+            irRawSeen_ && event.a == lastIrRawCount_ &&
+            elapsedMs(now, lastIrRawMs_) <= infrared::InfraredSubsystem::kRepeatWindowMs;
+        irRawSeen_ = true;
+        lastIrRawMs_ = now;
+        lastIrRawCount_ = event.a;
+        if (!repeat)
+          DBMO_LOGI(kTag, "infravermelho: sinal desconhecido (%lu duracoes)",
+                    static_cast<unsigned long>(event.a));
       }
       break;
 
@@ -366,6 +419,12 @@ void Application::startShutdown() {
   runState_ = RunState::ShuttingDown;
 }
 
+bool Application::inOperation(const ISubsystem &subsystem) const {
+  const SubsystemInfo *info = system_.find(subsystem);
+  return info != nullptr &&
+         (info->state == SubsystemState::Ready || info->state == SubsystemState::Degraded);
+}
+
 void Application::retryAbsent(uint32_t nowMs) {
   if (elapsedMs(nowMs, lastRetryMs_) < kRetryPeriodMs) return;
   lastRetryMs_ = nowMs;
@@ -397,6 +456,7 @@ void Application::loop() {
       // O fundo do rosto acompanha o que o aparelho está fazendo, inclusive o que começa
       // sem evento (aprendizado de infravermelho).
       updateBaseExpression(hw_.clock->nowMs());
+      updateMenu(hw_.clock->nowMs());
       if (shutdownPending_) {
         startShutdown();
       } else {

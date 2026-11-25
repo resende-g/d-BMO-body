@@ -87,6 +87,10 @@ class System {
   // Absent. Se ele é obrigatório e saiu de operação, o sistema vai para Fault.
   void reportFault(const ISubsystem &subsystem, Status status,
                    SubsystemState newState = SubsystemState::Degraded);
+  // Um subsistema em operação funciona com uma restrição conhecida (ex.: a tela desenha,
+  // mas não respondeu à leitura do ID). Fica Degraded com o motivo em lastStatus, sem
+  // registro de falha nem evento kFault. Sem efeito em quem não está em operação.
+  void reportDegraded(const ISubsystem &subsystem, Status reason);
   // Um subsistema Degraded avisa que voltou ao normal.
   void reportRecovered(const ISubsystem &subsystem);
 

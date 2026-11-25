@@ -89,6 +89,9 @@ class Cc1101Sim final : public ISpiDevice {
 
   bool present = true;
   uint8_t absentValue = 0xFF;  // o que um MISO sem chip devolve
+  // false imita o barramento sem chip com o MISO solto (bancada, 2026-11-21): a leitura
+  // devolve valores sem sentido e o que se escreve num registrador não volta na releitura.
+  bool registersWritable = true;
   bool misoReadable = true;
   Status selectStatus = Status::Ok;
   unsigned failTransfers = 0;
@@ -230,7 +233,7 @@ class Cc1101Sim final : public ISpiDevice {
       }
     } else {
       if (address_ <= kLastConfigRegister) {
-        registers[address_] = in;
+        if (registersWritable) registers[address_] = in;
       } else if (address_ == kPatable) {
         patable[index_++ % 8] = in;
       } else if (address_ == kFifo && txCount < sizeof(txFifo)) {

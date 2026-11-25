@@ -373,7 +373,8 @@ Uma **porta USB-C só para carga**, separada da porta de dados, para o usuário 
   `USE_HSPI_PORT`, senão o Bruce trava no boot. A leitura dos botões pelo MCP23017 fica no
   ambiente `bmo-v1-mcp` (ver [`firmware/bruce/README.md`](firmware/bruce/README.md)).
 - **Retro-Go**: alvo `dbmo-v1` em `firmware/retro-go/targets/` (tela ILI9341, SD e botões via
-  MCP23017). O launcher compila na CI; nunca rodou no hardware (ver
+  MCP23017). A imagem completa (launcher e emuladores) compila no perfil de bancada e a CI a
+  publica como artefato; nunca rodou no hardware (ver
   [`firmware/retro-go/README.md`](firmware/retro-go/README.md)).
 - **Display**: driver ILI9341 (tela única).
 - **I²C**: pull-ups 4,7k em SDA/SCL. Scan deve achar `0x24` (PN532).
@@ -735,7 +736,8 @@ ser conferidos antes de congelar a PCB ou o CAD.
 - [ ] Decidir carregador (power-path), USB-C único vs OR com diodo ideal, se o cartucho mantém a linha de 5 V e se a PCB final usa power bank externo
 - [ ] Validar o circuito de energia na bancada antes de fechar a PCB
 - [x] Alvo `dbmo-v1` do Retro-Go: launcher compila na CI
-- [ ] Compilar os emuladores e a imagem completa do Retro-Go
+- [x] Compilar os emuladores e a imagem completa do Retro-Go (perfil de bancada)
+- [ ] Gravar a imagem de bancada do Retro-Go e testar com a tela e os três botões
 - [ ] CC1101 na bancada (`teste_cc1101` e captura de 433 MHz no Bruce): faltam jumpers fêmea
 - [ ] NFC (PN532) lendo tag
 - [ ] IR TX/RX

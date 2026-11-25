@@ -354,6 +354,15 @@ class RecordingLogSink final : public ILogSink {
     return matches;
   }
 
+  // Quantas das mensagens guardadas contêm este trecho.
+  size_t countContaining(const char *fragment) const {
+    const size_t stored = count < kCapacity ? count : kCapacity;
+    size_t matches = 0;
+    for (size_t i = 0; i < stored; ++i)
+      if (strstr(entries_[i].text, fragment) != nullptr) ++matches;
+    return matches;
+  }
+
   void clear() { count = 0; }
 
   size_t count = 0;

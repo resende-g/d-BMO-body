@@ -74,6 +74,7 @@ void FaceSubsystem::tick(uint32_t nowMs) {
     announced_ = engine_.current();
   }
 
+  if (!visible_) return;  // a tela é do menu agora
   if (!redrawPending_ && engine_.revision() == drawnRevision_) return;
   if (drawFailed_ && elapsedMs(nowMs, lastAttemptMs_) < kRedrawRetryMs) return;
 

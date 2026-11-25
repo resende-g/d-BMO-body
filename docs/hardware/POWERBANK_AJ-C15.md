@@ -3,7 +3,7 @@
 | Campo | Valor |
 |---|---|
 | Versão | 0.1 (2026-11-20) |
-| Estado | **Protocolo, ainda não executado.** O power bank não foi aberto nem medido |
+| Estado | **Aberto em 21/11/2026** pelo usuário (etapa 5). Nenhuma medição elétrica ainda |
 | Objetivo | Saber se a placa interna tem uma linha regulada de 5 V aproveitável pelo d-BMO e decidir entre os três cenários da seção 7 |
 | Regra | Nenhuma ligação elétrica, solda ou fio em ponto cuja função não esteja confirmada por inscrição, datasheet **e** medição |
 
@@ -202,3 +202,62 @@ Enviar, com escala e luz lateral:
 | Complexidade | Solda em placa desconhecida; botão e corte por baixo consumo da placa original | Alta | Média, com módulos de bancada; depois SMD na PCB |
 | Manutenção e reprodutibilidade | Baixa: peça sem documentação, difícil repetir | Baixa | Alta |
 | Pontos a confirmar | Existência, estabilidade e capacidade da linha de 5 V; liga/desliga automático da saída | Origem e especificação da célula | Compra da célula e do carregador |
+
+## 11. Registro de execução
+
+### 21/11/2026: abertura (foto do usuário)
+
+Não registrado: estado de carga antes da abertura, ferramentas usadas, se houve aquecimento.
+
+| Observação | Estado |
+|---|---|
+| Uma célula tipo pouch (prateada, bordas com fita amarela), com isolante verde (fishpaper) sobre a extremidade da placa e um adesivo amarelo no centro | Observado na foto |
+| Placa com serigrafia "C302-V8.8J6P-KCF" e "BE0514"; face visível com áreas de cobre estanhado; componentes provavelmente na outra face | Observado; face dos componentes não vista |
+| Fio vermelho (à esquerda) e fio preto (à direita) da célula soldados em pads da placa; marcação "B" perto do fio preto (provavelmente "B−", não legível por inteiro) | Observado; polaridade **não medida** |
+| Moldura cinza ao redor (material não confirmado; se for metálica, há risco de curto com soldas expostas) | Pendente |
+| Bobina/ímãs do carregamento sem fio | Não visíveis; provavelmente embaixo da célula |
+| Inchaço da célula | Não avaliável pela foto de cima; falta foto lateral |
+
+### 21/11/2026: placa e bobina expostas (segunda foto do usuário)
+
+| Observação | Estado |
+|---|---|
+| Placa retirada da moldura, face dos componentes visível; ainda ligada à célula pelos fios | Observado |
+| Bobina de cobre sobre ferrite, colada na outra face da célula com um tecido/fita preta (rasgado em vários pontos); dois fios da bobina soldados nos pads marcados **"TX" "TX"** | Observado: a face magnética é um **transmissor** sem fio |
+| Um CI de 16 pinos (SOP-16) à esquerda; vários CIs pequenos de 6 e 8 pinos; quatro capacitores grandes em fileira ao lado dos pads TX; um indutor blindado grande à direita | Observado; **nenhuma marcação lida** |
+| Conector no centro da borda | Tipo não confirmado pela foto (o usuário informou Lightning) |
+| Hipótese de arquitetura: um bloco de gerenciamento da bateria e conversor (indutor grande à direita) e um bloco do transmissor sem fio (CI de 16 pinos, transistores e capacitores de ressonância perto dos pads TX) | **Hipótese**, depende das marcações dos CIs |
+
+### 21/11/2026: fotos de perto da placa
+
+| Observação | Estado |
+|---|---|
+| Dois resistores marcados **"R025"** (0,025 Ω pela notação usual), entre os pads TX e o CI de 16 pinos | Marcação lida. Função provável: medição de corrente (shunt). **Hipótese** |
+| Dois LEDs pequenos ao lado da serigrafia "KCF"; três pads marcados **"G C Q"** perto do indutor | Observado; função dos pads desconhecida, **não usar** |
+| Marcações do CI de 16 pinos, dos CIs de 6 e 8 pinos e do indutor | **Ainda ilegíveis** |
+| Conector: carcaça retangular com cerca de 10 contatos visíveis | Tipo ainda não confirmado |
+
+### 21/11/2026: primeira marcação lida
+
+| Componente | Marcação | Identificação | Estado |
+|---|---|---|---|
+| Dois CIs de 6 pinos (SOT-23-6) ao lado dos pads TX | **"4608B"** | Candidato: BORN Semiconductor **BM4608B**, par de MOSFETs complementares (canal N + canal P) de 20 V em SOT-23-6, cuja ficha técnica usa a marcação "4608B" (atta.szlcsc.com, PDF BFCDB57A9EEF074ABEE4353B62206472) | **Hipótese provável.** Códigos de marcação podem se repetir entre fabricantes; a função (dois pares formando uma ponte H que aciona a bobina) é inferência pela posição na placa |
+| CI de 6 pinos à esquerda, abaixo do CI de 16 pinos | Começo parecido com "XB8…"/"YB8…", resto ilegível | Não identificado | Pendente |
+
+### 21/11/2026: bloco do conversor (lado direito)
+
+| Componente | Marcação | Identificação | Estado |
+|---|---|---|---|
+| CI de 6 pinos ao lado do indutor grande | **"4608B"** e "MR" | Mesma marcação dos dois CIs da ponte da bobina: par de MOSFETs complementares (candidato BM4608B). **Não é um CI controlador** | Marcação lida; identificação provável |
+| Indutor blindado grande | **"4R7"** | 4,7 µH pela notação usual | Marcação lida |
+| Diodo em encapsulamento SMA/SOD perto de "G C Q" | **"S4"** | Não identificado com segurança (marcação curta, usada por mais de uma peça) | Pendente |
+| CI de 16 pinos | Sem marcação visível em várias fotos | Provável controlador único da placa (carga, conversor e transmissor), com a marcação apagada | **Hipótese** |
+
+Leitura: não há CI conversor dedicado com datasheet. O conversor parece montado com um par de MOSFETs (4608B) e o indutor de 4,7 µH, comandado por um controlador sem marcação. Topologia (elevador ou abaixador), tensão de saída e quando ele liga (sempre, ou só durante a transmissão sem fio) **não podem ser determinadas por datasheet**: só por medição.
+
+### 21/11/2026: medição M1
+
+| # | Data | Ponto + | Ponto − | Modo/faixa | Condição | Leitura | Observação |
+|---|---|---|---|---|---|---|---|
+| M1 | 21/11 | Solda do fio vermelho da célula | Solda do fio preto da célula | DCV 20 | Parado, placa fora da carcaça | **3,9 V** (positivo) | Polaridade confirmada: vermelho = positivo. Tensão dentro da faixa normal de uma célula Li-ion (3,0 a 4,2 V); o estado de carga exato não se deduz só da tensão em repouso |
+| M2 | 21/11 | Lado direito dos 3 capacitores empilhados à direita do indutor "4R7" | Solda do fio preto da célula | DCV 20 | Parado, nada sobre a bobina | Lado esquerdo: **0 V**; lado direito: **3,86 V** (nos três) | Os três capacitores estão no mesmo nó, cerca de 0,04 V abaixo da célula (3,9 V). Em repouso **não há 5 V** nesse ponto: ele segue a tensão da bateria. Se é a entrada ou a saída do conversor parado, ainda não se sabe |

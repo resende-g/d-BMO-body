@@ -203,6 +203,286 @@ aparece mesmo com os módulos de IR desligados. Com o CC1101 desligado, a primei
 leu VERSION 0xE0 (MISO solto) e relatou `Failed (IoError)` antes de passar a `Absent`:
 classificação imprecisa do firmware, sem risco ao hardware.
 
+### Botões lidos pelo firmware próprio (2026-11-21)
+
+Montagem mínima (seção anterior): botões na protoboard pequena pelo J3, CIMA no 39, OK no 2,
+BAIXO no 47, GND do J3 (pino 22) no trilho (−); IR, CC1101, PN532 e SD desligados. Firmware
+`dbmo-bench` no commit `66a6723` (registro de botões no log desde `56cd461`), gravado com
+`pio run -e dbmo-bench -t upload --upload-port /dev/cu.usbmodem1101` (hash verificado). Console
+lido por um script pyserial a 115200 (DTR e RTS em 0, comandos terminados em CRLF), não pelo
+`pio device monitor`. Abrir a porta reinicia a placa: cada captura começa com o boot completo
+(`rst:0x15 (USB_UART_CHIP_RESET)`), sem precisar do RST.
+
+| Tentativa | Montagem | Resultado no log |
+|---|---|---|
+| 1 (capturas de 240 s e 900 s) | Como estava | Nenhum evento de botão; não se sabe se os botões foram apertados nessas janelas |
+| 2 (300 s) | Como estava; usuário apertou os três | Só `botao down: apertou / soltou / clique` (11,4 s). CIMA e OK sem nenhuma linha |
+| 3 (300 s) | Usuário desligou o USB e realinhou os jumpers dos botões | **Os três botões registrados** |
+
+Saída da tentativa 3 (linhas periódicas do PN532 e do CC1101 omitidas):
+
+```
+[   31163][I][app] botao down: apertou
+[   31418][I][app] botao down: soltou
+[   31418][I][app] botao down: clique
+[   32358][I][app] botao up: apertou
+[   32618][I][app] botao up: soltou
+[   32618][I][app] botao up: clique
+[   33403][I][app] botao a: apertou
+[   33648][I][app] botao a: soltou
+[   33648][I][app] botao a: clique
+```
+
+Leitura: o firmware próprio lê os três botões (GPIO 39, 2 e 47, com pull-up interno). Cada
+toque curto gerou um único apertou/soltou/clique, sem leitura duplicada. Os três pinos passam
+pela mesma rotina (`GpioButtonSource`, `firmware/app/src/main.cpp`), o que apontava a falha da
+tentativa 2 para a fiação; ela sumiu depois do realinhamento. Qual jumper ou furo estava errado
+não foi registrado.
+
+Limites desta evidência: um toque curto por botão, numa única rodada; toque longo e repetição
+não testados; continuidade com o multímetro não registrada.
+
+Rádio, na captura de 240 s, com o CC1101 desligado: aos 197 s o firmware leu
+`VERSION 0x0B fora das documentadas (0x04, 0x14)`, passou a `radio: Failed (IoError)` e voltou a
+`Absent` 15 s depois. É a mesma imprecisão já registrada com 0xE0 (MISO solto); não corrigida.
+
+### Trilho da protoboard grande e receptor de IR (2026-11-21)
+
+Montagem conforme [`../hardware/BREADBOARD_MAP.md`](../hardware/BREADBOARD_MAP.md) v0.2: fase A
+(VCC e GND da tela direto na DevKitC; trilho (+) no J1 pino 2; trilho (−) no J3 pino 1; LED da
+tela no trilho) e fase C (receptor de IR com OUT no GPIO 4, transmissor com DAT no GPIO 5, os
+dois alimentados pelo trilho); CC1101 desligado. Firmware `dbmo-bench` já gravado (seção
+anterior). Console pelo mesmo script pyserial, com `ir last` enviado depois de cada tentativa.
+
+| Etapa | Observação | Leitura |
+|---|---|---|
+| Primeira energização com o IR | Boot e `status` iguais aos da montagem mínima; depois de uma tecla do controle, `ir last` → `nada recebido` | — |
+| R1: VCC contra GND, nas pernas do receptor (USB ligado) | **0 V** | Receptor sem alimentação |
+| GND do receptor contra GND da DevKitC | **2,5 V** (sinal da leitura não registrado) | O GND do receptor não chegava ao GND da placa |
+| Troca dos jumpers de VCC (amarelo) e de GND (marrom) do receptor | `ir last` → `nada recebido` | Não resolveu |
+| Usuário encontrou o fio A2 (J3 pino 1 → trilho (−)) **não ligado** e o ligou | — | O trilho (−) estava sem GND |
+| Nova tentativa com o controle | `ir last` → **`nec:0004:17`** | Receptor recebeu e decodificou um quadro NEC |
+
+Leitura: o receptor de IR funciona com o firmware próprio no GPIO 4. É a primeira execução em
+hardware do driver de recepção (`RmtIrReceiver`, `firmware/platform/esp32s3/`) e do
+decodificador NEC. A hipótese de que este receptor tivesse sido danificado pela ligação errada do
+GND na v0.1 fica descartada. A causa da falha nesta montagem foi o fio A2 ausente; não se sabe se
+os jumpers trocados tinham algum defeito.
+
+Limites desta evidência: um controle (não identificado), uma tecla, uma leitura; R1 não foi
+medido de novo depois da correção; conferências M1 a M5 do mapa não registradas, então não se
+sabe se o trilho de cima é dividido; mudança do rosto na tela não confirmada; transmissor ligado
+mas não testado (envio bloqueado, `infrared.tx_enabled` = 0). Numa das capturas, o log registrou
+`botao up` e `botao a` (apertou, soltou, clique) aos 126–127 s sem confirmação de que os botões
+foram apertados. Em outra, com o CC1101 desligado, o rádio relatou `CC1101 nao respondeu: Timeout`
+em vez de `HardwareAbsent`: a mesma leitura de MISO solto já registrada.
+
+### CC1101 sozinho no SPI (2026-11-21)
+
+Passo anterior à fase D do mapa, para tirar a tela do caminho: os fios de SPI da tela (A6–A8)
+saíram da DevKitC e o CC1101 (Ebyte E07-M1101D, 433M, antena rosqueada) foi ligado direto, com
+jumpers fêmea: pino 1 GND e pino 2 VCC no trilho, 3 GDO0 → 15, 4 CSN → 14, 5 SCK → 12,
+6 MOSI → 11, 7 MISO → 13; pino 8 sem ligação. IR e botões continuaram ligados. Desenho:
+artifact "Ligação do CC1101" (https://claude.ai/artifact/KKHCduhNsNV6nBJWRAmhbM, privado).
+
+Medições do usuário (multímetro digital, faixa 20 V; continuidade na escala 200 Ω):
+
+| # | Pontas | Leitura | Leitura do resultado |
+|---|---|---|---|
+| M5 | Trilho (+) contra trilho (−) | 3,24 V | Dentro da faixa do CC1101 (CC-01, CC-02) |
+| V1 | Pino 2 contra pino 1 do módulo | 3,24 V | Alimentado, polaridade certa |
+| V2 | Pino 3 (GDO0) contra pino 1 | 1,61 V | Média do clock de fábrica no GDO0 (CC-12): cristal oscilando; confirma que o pino 3 é o GDO0 |
+| V3 | Pino 4 (CSN) contra pino 1 | 3,24 V | CSN chega ao módulo, em alto no repouso |
+| S5, S6 | Pino 12 da DevKitC contra pino 5; pino 11 contra pino 6 | 0,8 Ω cada | Fios de SCK e MOSI contínuos |
+
+| Tentativa | Resultado | Leitura |
+|---|---|---|
+| 1 | Boot: `radio: Absent (HardwareAbsent)`. `pio test -e dbmo-bench -f test_cc1101`: 1 de 4 (reset aprovado; identificação falhou com "VERSION 0x00 ou 0xFF"; configuração e recepção falharam; sono aprovado) | O fio do MISO (pino 7 → 13) **não estava ligado**, como o usuário encontrou ao medir S7. O GPIO 13 solto leu 0x00, e por isso a espera de "pronto" (MISO baixo) passou mesmo sem chip no barramento |
+| 2 (MISO ligado) | `test_cc1101`: **4 de 4 aprovados**, 19,0 s. Firmware regravado; boot: `CC1101 PARTNUM=0x00 VERSION=0x14; transmissao desabilitada`, `radio: Ready (Ok)`; comando `radio`: `Idle, 433920000 Hz` | CC1101 identificado (valores de CC-13) |
+
+Leitura: o CC1101 responde pelo driver do firmware próprio. A comunicação com a ligação acima
+confirma, na prática, a função dos pinos 5 (SCK), 6 (MOSI) e 7 (MISO), que até aqui vinham só da
+ficha da LCSC; o pino 8 (GDO2) continua sem verificação. Nada foi transmitido: o teste não
+transmite e o firmware relata a transmissão desabilitada.
+
+Limites desta evidência: a frequência do cristal **não** foi verificada. O teste de configuração
+relê FREQ2 = 0x10, valor que o próprio firmware calcula supondo 26 MHz, e por isso só prova a
+escrita e a leitura do registrador. O RSSI foi conferido só dentro da faixa plausível (−140 a 0);
+o valor não foi registrado. A tela ficou sem SPI durante o teste: o firmware leu o ID `0xFFFF` e
+depois `0x0000` e mesmo assim declarou `display: Ready` (imprecisão do firmware, não corrigida).
+O barramento dividido com a tela (fase D do mapa) ainda não foi testado.
+
+### Correções da bancada e menu, só no computador (2026-11-21)
+
+Branch `claude/firmware-menu`, a partir de `claude/adoring-heisenberg-b9zyh3` (`7b208bd`), numa
+sessão **sem a placa**: nada desta entrada foi executado em hardware. Itens do
+[`../HANDOFF_FIRMWARE.md`](../HANDOFF_FIRMWARE.md): correções F1 a F5 dos problemas vistos na
+bancada nesta data e o menu de 3 botões.
+
+Ambiente: macOS, Apple clang 17.0.0, CMake 4.4.5 e Ninja 1.13 (instalados por `pip` num
+ambiente isolado), PlatformIO com a plataforma de `platformio.ini`.
+
+| Verificação | Comando | Resultado |
+|---|---|---|
+| Linha de base, antes das mudanças | `cmake -S . -B build/plain -G Ninja && cmake --build build/plain && ctest --test-dir build/plain` | 46 executáveis, 539 testes, todos aprovados |
+| Testes com AddressSanitizer neste computador | `-DDBMO_SANITIZE=ON` | **Não executados:** o runtime do ASan do Apple clang 17 trava antes do `main()` neste macOS (amostra do processo parada em `__asan::InitializeShadowMemory`), já na linha de base. O ASan roda na CI (gcc + ASan/UBSan) |
+| Testes com UndefinedBehaviorSanitizer | `cmake -S . -B build/ubsan -G Ninja -DCMAKE_CXX_FLAGS="-fsanitize=undefined -fno-sanitize-recover=undefined" -DCMAKE_C_FLAGS=-fsanitize=undefined -DCMAKE_EXE_LINKER_FLAGS=-fsanitize=undefined` e `ctest` | 48 executáveis, 571 testes, todos aprovados |
+| Compilação do firmware | `pio run -e dbmo-bench` e `pio run -e dbmo-target` | Os dois perfis compilam. RAM 13,1 % e 13,4 %; flash 8,0 % e 8,8 % |
+| Integridade | `tools/check_pinmap.py`, `check_links.py`, `check_repo.py`; formatação com clang-format 18.1.8 nos mesmos arquivos de `tools/check_format.sh` | Sem problemas (o `check_format.sh` usa `mapfile`, que o bash 3.2 do macOS não tem; a lista de arquivos foi passada ao clang-format à mão) |
+| CI da branch | GitHub Actions, execução 44973165827, commit `9408729` | As 9 tarefas aprovadas, inclusive "Testes nativos (gcc + ASan/UBSan)" e "Firmware próprio (ESP32-S3)" (os dois perfis e os testes de bancada compilados, sem gravar) |
+
+Testes novos e o que cada um mostra (todos no computador, contra simuladores):
+
+| Item | Testes | O que foi conferido |
+|---|---|---|
+| F1, rádio com barramento solto | `test_floating_miso_with_odd_version_is_absent`, `test_documented_versions_are_accepted_without_the_write_check` (`test_cc1101`); `test_floating_miso_is_absent_and_never_failed`, `test_unknown_version_that_keeps_writes_is_accepted_with_a_warning` (`test_radio_subsystem`) | VERSION 0xE0 e 0x0B com um barramento que não guarda escrita: `Absent (HardwareAbsent)`, sem falha registrada. 0x14 e 0x04: aceitos. VERSION desconhecida que guarda a escrita em ADDR: aceita, com aviso no log. Os testes falharam antes da correção (`Failed` em vez de `Absent`) |
+| F2, ID da tela | `test_controller_id_is_checked_without_blocking_the_screen`; `test_known_restriction_degrades_without_a_fault` (`test_system`); `test_display_with_unexpected_id_is_degraded_and_still_draws` (integração) | ID 0xFFFF ou 0x0000: aviso no log, `display Degraded IoError` no `status`, rosto desenhado, sem registro de falha e sem o rosto de erro. Outro ID: `Incompatible`. Tela sem ID: sem conferência |
+| F3, IR no log | `test_received_infrared_code_is_written_to_the_log_once` (integração) | `infravermelho: nec:0004:17` no log; a repetição logo em seguida não entra; sinal desconhecido registra só o tamanho, uma vez por tecla segurada (9 quadros a cada 114 ms dão uma linha; outro tamanho logo em seguida conta como sinal novo) |
+| F4, console | `test_keystrokes_one_by_one_like_the_default_monitor` | Tecla a tecla com CRLF, só CR e só LF executam o comando, com eco: o console não explica a falha de 2026-11-21 |
+| F5, NVS | — | Código do porte: só compilado |
+| Texto na tela | `test_text` (6 testes) | Fonte com 95 caracteres distintos, desenho na escala certa, uma chamada de `fillRect` por sequência de pixels, só as linhas alteradas são redesenhadas |
+| Rosto escondido | `test_hidden_face_keeps_changing_but_does_not_draw` | Escondido, o rosto muda de expressão e não desenha; ao voltar, repinta a tela |
+| Lógica do menu | `test_menu` (11 testes) | Abrir, navegar com volta ao início, CIMA e BAIXO segurados sem passar do item ao soltar, itens ausentes pulados, entrar e voltar (toque longo no OK e B), ações só de recepção, histórico de botões, volta ao rosto por inatividade |
+| Menu na aplicação | 5 cenários de integração `test_menu_*` e `test_idle_menu_*` | Aprender um código pelo menu, Estado com `ausente` e sem os itens de rádio e IR quando faltam, recepção ligada e desligada pelo menu sem nenhuma transmissão, telas Botoes e Sobre, nenhum redesenho com o menu parado, botão no menu conta como atividade, volta ao rosto depois de 30 s |
+
+Revisão independente: quatro revisores por área (correções F1 a F5, menu, emissão e escopo,
+porte para o ESP32-S3), cada achado seguido de um verificador que tentou refutá-lo com
+reprodução no computador. Emissão e escopo: nenhum achado. Confirmados e corrigidos, com teste:
+o cursor passava um item além ao soltar CIMA ou BAIXO segurados (o `ButtonProcessor` manda um
+clique ao soltar depois das repetições); a F2 usava `reportFault`, o que punha um erro no log,
+um registro de falha e o rosto de erro por 2,5 s a cada boot sem o SDO da tela (passou a usar
+o novo `System::reportDegraded`, só aviso); um sinal de IR de protocolo desconhecido com a
+tecla segurada gerava uma linha a cada ~110 ms. Refutado: um MISO da tela solto lendo IDs
+mistos (rotulados como "controlador diferente"); a bancada só registrou 0xFFFF e 0x0000. Uma
+segunda leitura das correções achou que a supressão do IR desconhecido engolia outra tecla
+apertada em menos de 200 ms; corrigido (tamanho diferente conta como sinal novo), com teste.
+
+Duas mutações conferiram que os testes do menu pegam erros: sem esconder o rosto ao abrir o
+menu, dois cenários falham; repintando a tela inteira a cada `render()`, falham o cenário de
+redesenho e o teste da `TextScreen`. As telas do menu também foram renderizadas num
+`FramebufferDisplay` e conferidas visualmente (imagem fora do repositório).
+
+Hipóteses da F4 para a bancada, sem confirmação: o firmware recebe os mesmos bytes nos dois
+modos do monitor, então a diferença deve estar no caminho USB ou no terminal (por exemplo,
+teclas digitadas durante o boot que a abertura da porta provoca). Como contorno, o
+`platformio.ini` passou a usar a combinação que funcionou.
+
+Não testado na placa (pendente de bancada): tudo desta entrada. Em particular, o desenho e a
+legibilidade do menu na ILI9341, os botões navegando o menu, a leitura real do ID da tela
+pelo porte, a identificação do CC1101 com VERSION fora de 0x14 e 0x04, o aprendizado de IR
+pelo menu, a recepção do rádio ligada pelo menu, a ausência do `nvs_open failed` no primeiro
+boot e o `pio device monitor` com as opções novas.
+
+### Menu na placa, SPI dividido e tela branca por inatividade (2026-11-22)
+
+**Montagem:** fase D do [mapa v0.2](../hardware/BREADBOARD_MAP.md) completa, com a tela e o
+CC1101 dividindo SCK, MOSI e MISO pelos nós das colunas 8, 11 e 14 (D1 a D13), mais
+alimentação (A), botões (B) e IR (C). A tela tinha sido tirada inteira ao fim de 21/11 e foi
+religada nesta data. O M2 foi relatado como "zerado", sem o valor do visor; as conferências
+NÓ não foram relatadas.
+
+**Firmware:** `claude/firmware-menu` (`f508cb6`), gravado com
+`pio run -e dbmo-bench -t upload --upload-port /dev/cu.usbmodem1101`. O console foi lido por
+um script pyserial (DTR e RTS em 0; linhas com CRLF); abrir a porta reinicia a placa.
+
+| Etapa | Comando ou ação | Saída | Leitura |
+|---|---|---|---|
+| Boot, firmware anterior (`7b208bd`) | Abrir a porta e `status` | `tela: id 0x9341, 320x240`; `CC1101 PARTNUM=0x00 VERSION=0x14`; `display Ready Ok`; `radio Ready Ok`; `nvs_open failed: NOT_FOUND` 2 vezes; `sdCommand(): Card Failed!` 3 vezes | Tela e CC1101 respondem no barramento dividido |
+| Boot, `f508cb6` | `status` e `radio` | `controlador 0x9341`; `display: Ready (Ok)`; `CC1101 PARTNUM=0x00 VERSION=0x14`; `radio: Idle, 433920000 Hz; pacotes 0, crc 0, negados 0`; sem `nvs_open failed`; sem `sdCommand(): Card Failed!` (restam 2 `f_mount failed`) | F5 confirmada neste boot |
+| Menu | Roteiro de 9 passos com os 3 botões, relatado pelo Gabriel | Rosto; OK abre; CIMA e BAIXO andam e repetem ao segurar; Estado; Infravermelho; Radio; Botoes; Sobre; volta ao rosto depois de 30 s parado: todos relatados como funcionando | O log mostra `botao up/down/a` com `apertou`, `soltou`, `clique` e `toque longo` |
+| Rádio pelo menu | OK no item Radio | `recepcao do radio ligada: Ok` e `recepcao do radio desligada: Ok`, 8 vezes alternadas | Só recepção; o menu não tem envio |
+| IR pelo menu e no log | OK no item Infravermelho (aprender) e teclas de um controle | `aprender infravermelho: Ok` 4 vezes; `infravermelho: nec:0004:44`, `:41`, `:07`, `:06`, `:40`, `:14`; 3 `sinal desconhecido` (67, 21 e 11 durações) | F3: o código entra no log sem `ir last` |
+
+**Tela branca.** Depois de uns 2 minutos sem botão, a tela ficou toda branca e o rosto sumiu;
+CIMA trouxe o rosto de volta. Causa no código: `display.off_after_s` (120 s) levava a tela ao
+estado `Off`, que chama `setSleep(true)` (`ILI9341_DISPOFF` e `ILI9341_SLPIN`) mesmo sem
+controle do backlight. Com o LED no trilho de 3,3 V aceso, o painel em repouso fica branco. O
+comportamento existia desde 2026-11-12 e um teste o exigia.
+
+Correção `6073bcf`: sem controle do backlight, o `DisplaySubsystem::tick` não esmaece nem
+apaga a tela. O teste `test_uncontrolled_backlight_never_dims_or_sleeps` falhou antes da
+correção (linha 150) e passou depois. Testes com UBSan no computador: 48 executáveis, todos
+aprovados (ASan só na CI). `check_pinmap.py`, `check_links.py` e `check_repo.py` sem
+problemas. Na placa, gravado o `6073bcf`: 170 s sem nenhum botão no log e o rosto continuou na
+tela.
+
+Nesse boot a leitura do ID deu `ID do controlador 0x0000, esperado 0x9341 (MISO da tela sem
+resposta)` e o `status` passou a `display: Degraded (IoError)`, com o rosto desenhado: é o
+comportamento esperado da F2, visto por acaso. Nos 3 boots anteriores, com a mesma montagem, o
+ID foi `0x9341`.
+
+Limites da evidência:
+
+- F1 (rádio com o barramento sem chip) não foi exercitada: o CC1101 respondeu em todos os
+  boots. O teste tirando o D13 foi adiado.
+- A leitura do ID da tela variou entre boots (`0x9341` e `0x0000`). Hipótese: mau contato no
+  D3 ou no D6, ou disputa no MISO dividido. Não verificado.
+- F4: os comandos foram só pelo script; o `pio device monitor` com as opções novas não foi
+  testado digitando à mão.
+- Cada código de IR apareceu de 2 a 4 vezes, com uns 0,5 s entre eles: pelo log não dá para
+  separar toques seguidos de repetições. Os 3 `sinal desconhecido` não foram investigados.
+- A legibilidade do texto na tela foi relatada como boa, sem foto.
+- O NFC registra `PN532 nao respondeu: HardwareAbsent` e `nfc: hardware ausente` a cada 15 s
+  (ruído no log, não corrigido). Segurar um botão repete na tela, mas o log não registra as
+  repetições.
+
+### Microfone INMP441 no perfil bench (2026-11-22)
+
+**Montagem:** fase E do [mapa v0.3](../hardware/BREADBOARD_MAP.md), sobre as fases A a D. O
+INMP441 fica fora da protoboard, ligado por jumpers: VDD no trilho (+), GND e L/R no trilho
+(−), SCK no GPIO 40, WS no 41 e SD no 7. Pinagem pela serigrafia da placa (fotos de 22/11):
+L/R, WS e SCK de um lado; GND, VDD e SD do outro. As conferências MIC e MV e o valor de L/R
+contra GND não foram relatados.
+
+**Firmware:** `d33f036` (comando `mic`), gravado com
+`pio run -e dbmo-bench -t upload --upload-port /dev/cu.usbmodem1101`; console pelo script
+pyserial. O microfone foi habilitado em cada sessão com `config audio.mic_enabled 1`, sem
+`save`: a configuração não ficou gravada.
+
+| Etapa | Comando | Saída | Leitura |
+|---|---|---|---|
+| Sem o microfone ligado | `mic 500`, duas vezes | `gravacao encerrada: 6320 amostras, pico 0` | Base: com o SD solto, só zeros |
+| Com o microfone, em silêncio | `mic 1000`, duas vezes | `14240 amostras, pico 21277` e `pico 17773` | Chegam dados pelo SD |
+| Estatística por trecho, em silêncio | `mic 1000` e `mic last`, 3 vezes | Na 1ª: `media por 100 ms: 11754 2832 -1493 -3085 -3432 -3353 -2867 -2445 -1931`; `rms por 100 ms: 3584 1780 855 285 184 195 212 198 217`. As outras duas, com o mesmo formato | Cada gravação começa com um desvio lento, igual em todas |
+| Palmas | `mic 1000` e `mic last` a cada 2,2 s por 2 minutos; o Gabriel bateu 5 a 10 palmas | Na gravação dos 82 s, pico (já sem a média) de `35359`, `35177` e `35089` nos trechos 3, 6 e 9 de 100 ms, com `min -32638; max 32767`. Nas gravações sem palma, os trechos do meio ficaram entre 3000 e 5000 nessa medida | O microfone responde ao som até o fundo de escala |
+
+**Leitura.** O INMP441 funciona: sem ele o firmware lê só zeros, com ele chegam dados, e as
+palmas levam o sinal ao fundo de escala. Cada gravação, porém, começa com um desvio lento que
+não é som: a média por trecho de 100 ms vai de cerca de +10000 a −5500 e volta a −2000 ao fim de
+1 s, e o RMS dentro do trecho só cai para cerca de 200 depois de 300 ms. O desvio se repete
+quase igual de uma gravação para outra.
+
+**Hipótese, não verificada:** entre gravações o firmware desliga a entrada I2S (escolha de
+privacidade do subsistema de áudio), o clock para e o microfone entra em espera (MIC-09). Ao
+voltar, a saída dele leva mais de 1 s para assentar, e o firmware descarta só os primeiros
+100 ms (`kMicStartupMs`). A causa não foi confirmada; o efeito foi corrigido em seguida pelo filtro
+abaixo.
+
+**Correção `8f1ffd0`: passa-altas na gravação.** Filtro de 2ª ordem (Butterworth) com corte em
+`audio.mic_highpass_hz` = 60 Hz, o canto inferior do próprio INMP441; o estado do filtro começa
+como se o sinal já estivesse parado no primeiro valor. No computador: um desvio de 2 Hz sobre DC
+de 10000 sai abaixo de 50 depois de 50 ms, e um tom de 1 kHz sobre DC de 5000 passa com o pico
+entre 7800 e 8200 (de 8000). Testes com UBSan: 48 executáveis aprovados; o perfil `dbmo-target`
+compila. Na placa, em silêncio, 3 gravações de 1 s:
+
+| Medida | Antes do filtro | Com o filtro |
+|---|---|---|
+| Pico no log (`gravacao encerrada`) | 17773 a 21277 | 279, 406 e 431 |
+| Média por trecho de 100 ms | de +11754 a −5500 | de −7 a +3 |
+| RMS por trecho de 100 ms | de 4280 (1º trecho) a cerca de 200 | de 50 a 92 |
+
+Limites da evidência:
+
+- As palmas aparecem nítidas em uma gravação só: cada gravação cobre cerca de 45 % do tempo,
+  e não se sabe quando cada palma foi batida.
+- O RMS de cerca de 200 no fim inclui a parte final do desvio lento: não é o ruído próprio do
+  microfone.
+- Nada foi ouvido: não há alto-falante ligado. Taxa de 16 kHz, palavras de 32 bits, só o canal
+  esquerdo.
+- Os pinos I2S do perfil `bench` continuam como `Proposed` em `pins.h`.
+- As palmas não foram repetidas com o filtro: a passagem de som na faixa da voz foi conferida só
+  no computador (tom de 1 kHz).
+
 ### Testes no computador (2026-11-12)
 
 Comando:
@@ -347,7 +627,7 @@ passou por verificação independente. Isso deve ser refeito antes de confiar no
 |---|---|
 | Qualquer teste em hardware (`tests/hardware/`, firmware próprio na placa) | Não executado: sem acesso à bancada. A CI só prova que compila |
 | Bruce e Retro-Go na placa | Compilados na CI; **nunca gravados nem executados** |
-| Emuladores do Retro-Go e imagem completa (`build-img`) | Não compilados; só o launcher |
+| Emuladores do Retro-Go e imagem completa (`build-img`) | Compilados em 24/11/2026 no contêiner `espressif/idf:v4.4.8`, no perfil de bancada (imagem de 6,5 MB; ver `firmware/retro-go/README.md`); nunca gravados |
 | Testes com clang + sanitizers | Não executado no computador de desenvolvimento (falta a biblioteca de runtime); a CI roda clang sem sanitizers |
 | Medições elétricas, de consumo e de RF | Não executadas |
 | Cobertura de ramos | Não medida (só a de linhas, acima) |

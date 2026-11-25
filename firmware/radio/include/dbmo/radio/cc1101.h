@@ -51,7 +51,9 @@ class Cc1101 {
   // Comando de reset e espera pelo cristal.
   Status reset();
   // Lê PARTNUM e VERSION. HardwareAbsent quando a resposta é a de um barramento sem
-  // chip (0x00 ou 0xFF em VERSION) ou PARTNUM não é o do CC1101.
+  // chip (0x00 ou 0xFF em VERSION) ou PARTNUM não é o do CC1101. VERSION 0x14 e 0x04
+  // (as documentadas) bastam; com outra, o chip só é aceito se guardar um valor escrito
+  // num registrador sem efeito no rádio (um MISO solto devolve VERSION sem sentido).
   Result<ChipId> identify();
 
   // Aplica a configuração e confere, relendo, a frequência gravada. paTable é o byte de
@@ -88,6 +90,8 @@ class Cc1101 {
 
  private:
   Status writePaTable();
+  // Escreve e relê dois padrões em ADDR. HardwareAbsent se a releitura não confere.
+  Status checkWriteReadBack();
   Status begin();  // abre a transação já com o chip pronto; quem chama fecha
   Status writeRegisterRaw(uint8_t address, uint8_t value);
   Status strobe(uint8_t command);

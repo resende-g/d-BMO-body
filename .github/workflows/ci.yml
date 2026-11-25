@@ -139,7 +139,7 @@ jobs:
         run: firmware/retro-go/tests/host_check.sh
 
   retro-go:
-    name: Retro-Go para o d-BMO (launcher, ESP-IDF 4.4.8)
+    name: Retro-Go para o d-BMO (imagem de bancada, ESP-IDF 4.4.8)
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     container: espressif/idf:v4.4.8
@@ -147,10 +147,27 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Compilar o launcher do Retro-Go para o alvo dbmo-v1
+      # Launcher e emuladores numa imagem .img, no perfil de bancada (3 botões diretos, sem
+      # MCP23017), com a partição FAT interna "vfs" de 2 MB que o perfil usa se o SD não montar.
+      - name: Compilar a imagem completa do Retro-Go (perfil de bancada)
         shell: bash
+        env:
+          DBMO_RG_BENCH: "1"
         run: |
           git config --global --add safe.directory '*'
+          . "$IDF_PATH/export.sh"
+          XDG_CACHE_HOME="$PWD/build/cache" firmware/retro-go/build.sh --fatsize 0x200000 build-img
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: dbmo-retro-go-bancada
+          path: build/cache/d-bmo/retro-go-*/retro-go_*_dbmo-v1.img
+          if-no-files-found: error
+          retention-days: 14
+      # O perfil padrão (botões no MCP23017) continua conferido pelo launcher. O build é
+      # incremental: só muda o dbmo_build_flags.h.
+      - name: Compilar o launcher no perfil padrão (MCP23017)
+        shell: bash
+        run: |
           . "$IDF_PATH/export.sh"
           XDG_CACHE_HOME="$PWD/build/cache" firmware/retro-go/build.sh
 

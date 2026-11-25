@@ -7,6 +7,7 @@
 #include <cstdint>
 
 #include "dbmo/app/console.h"
+#include "dbmo/app/menu.h"
 #include "dbmo/app/null_hal.h"
 #include "dbmo/audio/audio_subsystem.h"
 #include "dbmo/cartridges/cartridge_subsystem.h"
@@ -19,6 +20,7 @@
 #include "dbmo/core/resource_registry.h"
 #include "dbmo/core/system.h"
 #include "dbmo/display/display_subsystem.h"
+#include "dbmo/display/text.h"
 #include "dbmo/infrared/infrared_subsystem.h"
 #include "dbmo/infrared/ir_library.h"
 #include "dbmo/input/input_subsystem.h"
@@ -58,6 +60,9 @@ struct Hardware {
   ISpiDevice *radioSpi = nullptr;
   ISpiDevice *cartridgeSpi = nullptr;
   cartridges::ISerialPort *cartridgeUart = nullptr;
+
+  // Nome do perfil de compilação ("bench" ou "target"), mostrado na tela Sobre.
+  const char *profile = nullptr;
 };
 
 // Guarda da configuração como subsistema: carrega logo depois do armazenamento, antes
@@ -120,6 +125,9 @@ class Application {
  public:
   // Intervalo entre tentativas de reiniciar NFC e rádio ausentes.
   static constexpr uint32_t kRetryPeriodMs = 15000;
+  // Com o menu aberto, o texto é remontado a cada evento e, sem evento, neste intervalo
+  // (contadores do rádio, fim do aprendizado). Só as linhas que mudaram são redesenhadas.
+  static constexpr uint32_t kMenuRefreshMs = 500;
 
   explicit Application(const Hardware &hardware);
 
@@ -156,8 +164,13 @@ class Application {
   nfc::NfcSubsystem &nfc() { return nfc_; }
   radio::RadioSubsystem &radio() { return radio_; }
   cartridges::CartridgeSubsystem &cartridges() { return cartridges_; }
+  const Menu &menu() const { return menu_; }
+  const display::TextScreen &menuScreen() const { return menuText_; }
 
  private:
+  // Resultado do último "aprender" pedido pelo menu.
+  enum class IrLearnNote : uint8_t { None, Waiting, Learned, TimedOut, Failed };
+
   static void onEvent(const Event &event, void *context);
   static void onConfigChanged(const char *key, void *context);
   void handle(const Event &event);
@@ -168,6 +181,18 @@ class Application {
   void updateBaseExpression(uint32_t nowMs);
   void startShutdown();
   void retryAbsent(uint32_t nowMs);
+  bool inOperation(const ISubsystem &subsystem) const;
+  // Menu de tela (menu_screens.cpp).
+  void handleMenu(input::Button button, input::ButtonAction action, uint32_t nowMs);
+  void updateMenuAvailability();
+  void updateMenu(uint32_t nowMs);
+  void composeMenu();
+  void composeMain();
+  void composeStatus();
+  void composeInfrared();
+  void composeRadio();
+  void composeButtons();
+  void composeAbout();
 
   Hardware hw_;
   NullI2cBus nullI2c_;
@@ -202,6 +227,18 @@ class Application {
   bool configChanged_ = false;
   rosto::Expression baseExpression_ = rosto::Expression::Idle;
   uint32_t lastRetryMs_ = 0;
+  bool irRawSeen_ = false;
+  uint32_t lastIrRawMs_ = 0;
+  uint32_t lastIrRawCount_ = 0;
+
+  Menu menu_;
+  display::TextScreen menuText_;
+  bool menuDirty_ = false;
+  uint32_t menuComposedMs_ = 0;
+  IrLearnNote irLearnNote_ = IrLearnNote::None;
+  Status irLearnStatus_ = Status::Ok;
+  bool radioToggled_ = false;
+  Status radioToggleStatus_ = Status::Ok;
 };
 
 }  // namespace dbmo::app

@@ -34,12 +34,33 @@ Status DisplaySubsystem::applyBacklight(uint8_t percent) {
   return status;
 }
 
+Status DisplaySubsystem::checkController() {
+  const Result<uint16_t> id = display_.controllerId();
+  if (id.status() == Status::Unsupported) return Status::Ok;  // a tela não informa o ID
+  if (!id.ok()) {
+    DBMO_LOGW(kTag, "ID do controlador nao lido: %s", toString(id.status()));
+    return id.status();
+  }
+  if (id.value() == kExpectedControllerId) {
+    DBMO_LOGI(kTag, "controlador 0x%04X", static_cast<unsigned>(id.value()));
+    return Status::Ok;
+  }
+  // 0x0000 e 0xFFFF são o MISO da tela sem resposta (fio do SDO solto, por exemplo): a tela
+  // desenha mesmo assim, só de escrita. Outro valor indica um controlador diferente.
+  const bool silent = id.value() == 0x0000 || id.value() == 0xFFFF;
+  DBMO_LOGW(kTag, "ID do controlador 0x%04X, esperado 0x%04X (%s)",
+            static_cast<unsigned>(id.value()), static_cast<unsigned>(kExpectedControllerId),
+            silent ? "MISO da tela sem resposta" : "controlador diferente");
+  return silent ? Status::IoError : Status::Incompatible;
+}
+
 Status DisplaySubsystem::init() {
   backlightControlled_ = true;
   DBMO_TRY(display_.setSleep(false));
   DBMO_TRY(display_.fillRect(0, 0, static_cast<int16_t>(display_.width()),
                              static_cast<int16_t>(display_.height()), palette::kBlack));
   DBMO_TRY(applyBacklight(configuredBrightness()));
+  controllerCheck_ = checkController();
   power_ = ScreenPower::On;
   activitySeen_ = false;
   initialized_ = true;
@@ -94,6 +115,9 @@ void DisplaySubsystem::tick(uint32_t nowMs) {
     activitySeen_ = true;
     return;
   }
+  // Sem controle do backlight o LED fica aceso, e o painel em repouso fica branco: a tela só
+  // esmaece e apaga quando dá para baixar a luz.
+  if (!backlightControlled_) return;
 
   const uint32_t idleMs = elapsedMs(nowMs, lastActivityMs_);
   const uint32_t offAfterMs =
@@ -103,8 +127,7 @@ void DisplaySubsystem::tick(uint32_t nowMs) {
 
   if (offAfterMs != 0 && idleMs >= offAfterMs) {
     setPower(ScreenPower::Off);
-  } else if (dimAfterMs != 0 && idleMs >= dimAfterMs && backlightControlled_ &&
-             power_ == ScreenPower::On) {
+  } else if (dimAfterMs != 0 && idleMs >= dimAfterMs && power_ == ScreenPower::On) {
     setPower(ScreenPower::Dimmed);
   }
 }

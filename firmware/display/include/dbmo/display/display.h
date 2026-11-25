@@ -46,6 +46,9 @@ class IDisplay {
 
   // Põe o painel em repouso (true) ou o acorda (false).
   virtual Status setSleep(bool asleep) = 0;
+  // Identificador lido do controlador (0x9341 na ILI9341). Unsupported quando a tela não
+  // tem como informar. Ler o ID precisa do MISO; desenhar, não.
+  virtual Result<uint16_t> controllerId() { return Status::Unsupported; }
 };
 
 }  // namespace dbmo::display
