@@ -17,7 +17,7 @@ os testes, em [`../testing/TESTING.md`](../testing/TESTING.md).
 | Pinos | `firmware/config` | Mapa de pinos e endereços, com verificações em tempo de compilação | Testado no computador |
 | Tela | [`firmware/display`](../../firmware/display/README.md) | Contrato de tela, brilho, apagamento por inatividade | Tela validada na bancada com outro firmware |
 | Rosto | [`firmware/rosto`](../../firmware/rosto/README.md) | 17 expressões, máquina de estados, renderização | Testado no computador |
-| Controles | [`firmware/input`](../../firmware/input/README.md) | Botões (debounce, toque longo, repetição, combinações), analógicos, MCP23017 | Testado no computador |
+| Controles | [`firmware/input`](../../firmware/input/README.md) | Botões (debounce, toque longo, repetição, combinações), MCP23017 | Testado no computador |
 | Áudio | [`firmware/audio`](../../firmware/audio/README.md) | Tons, reprodução, gravação em memória, volume | Aguarda hardware |
 | Rádio | [`firmware/radio`](../../firmware/radio/README.md) | CC1101: recepção de pacotes; transmissão condicionada | Aguarda hardware |
 | NFC | [`firmware/nfc`](../../firmware/nfc/README.md) | PN532: identificação do chip e de etiquetas | Aguarda hardware |
@@ -45,7 +45,7 @@ pio device monitor                   # console (USB nativa, 115200)
 | Perfil | Hardware assumido |
 |---|---|
 | `dbmo-bench` | Tela; 3 botões em GPIO 39, 2 e 47; IR em GPIO 4 e 5; cartão, CC1101 e PN532 se estiverem ligados |
-| `dbmo-target` | Pinagem de `pins.h` (namespace `target`): MCP23017, analógicos, áudio I2S, trava de alimentação, backlight por PWM |
+| `dbmo-target` | Pinagem de `pins.h` (namespace `target`): MCP23017, áudio I2S, trava de alimentação, backlight por PWM |
 
 Um periférico que não está ligado não impede o boot: aparece como `Absent` em `status`.
 
@@ -85,7 +85,6 @@ arquivo não impede as demais.
 | `input.long_press_ms` | 600 | 200–5000 | |
 | `input.repeat_delay_ms` | 400 | 100–3000 | |
 | `input.repeat_ms` | 120 | 30–1000 | |
-| `input.deadzone` | 120 | 0–900 | Milésimos do curso do analógico |
 | `audio.volume` | 60 | 0–100 | Curva quadrática |
 | `audio.muted` | false | | |
 | `audio.sample_rate` | 16000 | 8000, 16000, 32000, 44100, 48000 | Outras caem para 16000 |
@@ -119,7 +118,7 @@ e o significado dos argumentos estão no cabeçalho do subsistema, no namespace 
 | Domínio | Eventos |
 |---|---|
 | `System` | Mudança de estado do sistema, de um subsistema, falha |
-| `Input` | Botão (apertou, soltou, toque longo, repetição), combinação, analógico, falha e recuperação de origem |
+| `Input` | Botão (apertou, soltou, toque longo, repetição), combinação, falha e recuperação de origem |
 | `Power` | Nível da bateria, estado de carga, toque no botão, pedido de desligamento, falha de leitura, inatividade |
 | `Audio` | Reprodução iniciada e terminada, gravação iniciada e terminada, falha |
 | `Radio` | Estado, pacote recebido, transmissão concluída, falhou ou foi negada, falha do chip |
@@ -147,7 +146,7 @@ telemetria ou qualquer envio de dados para fora do aparelho.
 ## 7. O que ainda não existe
 
 - Menu e navegação na tela (o rosto e o console são a interface de hoje).
-- Calibração dos analógicos e gravação de áudio pelo console.
+- Gravação de áudio pelo console.
 - Leitura de arquivos de áudio do cartão.
 - UART e GPIOs do cartucho no porte (o I2C e o SPI estão ligados).
 - Wi-Fi, Bluetooth e o "modo agente" descrito no `README.md`.

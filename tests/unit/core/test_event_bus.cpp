@@ -12,7 +12,7 @@ using dbmo::Status;
 namespace {
 
 constexpr EventId kButton = makeEventId(EventDomain::Input, 1);
-constexpr EventId kStick = makeEventId(EventDomain::Input, 2);
+constexpr EventId kCombo = makeEventId(EventDomain::Input, 2);
 constexpr EventId kTag = makeEventId(EventDomain::Nfc, 1);
 
 struct Recorder {
@@ -62,7 +62,7 @@ static void test_filters_exact_domain_and_all() {
   TEST_ASSERT_OK(bus.subscribeAll(record, &all));
 
   TEST_ASSERT_OK(bus.publish(kButton));
-  TEST_ASSERT_OK(bus.publish(kStick));
+  TEST_ASSERT_OK(bus.publish(kCombo));
   TEST_ASSERT_OK(bus.publish(kTag));
   TEST_ASSERT_EQUAL_size_t(3, bus.dispatch());
 
@@ -114,7 +114,7 @@ static void test_subscription_errors_and_unsubscribe() {
   TEST_ASSERT_STATUS(Status::InvalidArgument, bus.subscribe(kButton, nullptr, nullptr));
   TEST_ASSERT_OK(bus.subscribe(kButton, record, &recorder));
   TEST_ASSERT_STATUS(Status::AlreadyInitialized, bus.subscribe(kButton, record, &recorder));
-  TEST_ASSERT_OK(bus.subscribe(kStick, record, &recorder));
+  TEST_ASSERT_OK(bus.subscribe(kCombo, record, &recorder));
 
   TEST_ASSERT_OK(bus.unsubscribe(record, &recorder));
   TEST_ASSERT_EQUAL_size_t(0, bus.subscriberCount());

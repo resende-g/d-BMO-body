@@ -104,6 +104,23 @@ de evidência, com o estado de cada um.
 Registro do que foi **executado de fato** nesta etapa de desenvolvimento. O que não foi
 executado está na última tabela, sem resultado atribuído.
 
+### Retirada dos analógicos e dos gatilhos (2026-11-25, no computador)
+
+Executado num macOS (Darwin 27), sem placa:
+
+| O que | Resultado |
+|---|---|
+| `ctest` com `-DDBMO_SANITIZE=OFF` (CMake e Ninja instalados por `pip`) | **45 de 45 executáveis aprovados** |
+| `ctest` com `-DDBMO_SANITIZE=ON` | **Não executado.** Neste macOS, todo executável trava antes do `main`, dentro de `__asan::InitializeShadowMemory` (pilha obtida com `sample`). É problema do ambiente: o sanitizer continua só na CI |
+| `clang-format` 18.1.8, `--dry-run --Werror`, nos arquivos C++ alterados | Sem diferenças. O `tools/check_format.sh` não roda no bash 3.2 do macOS (`mapfile`) |
+| `tools/check_pinmap.py`, `check_links.py`, `check_repo.py` | Aprovados: 27 sinais no perfil `target`, 19 no `bench`; 0 links quebrados; 0 problemas |
+| `firmware/retro-go/tests/host_check.sh` | Todas as conferências passaram (mapa I2C com 10 botões) |
+| `mechanical/cad/test_generate_models.py` | 19 ok, 0 falhas, 3 ignorados (geometria: sem cadquery) |
+| `pio run -e dbmo-target -e dbmo-bench` | Os dois perfis compilam (`SUCCESS`) |
+
+Não executado: compilação do Bruce e do Retro-Go com o ESP-IDF (ficam para a CI) e qualquer
+teste na placa.
+
 ### Primeira gravação na placa (2026-11-21)
 
 Firmware próprio, perfil `dbmo-bench`, gravado pela USB nativa da DevKitC-1 N16R8

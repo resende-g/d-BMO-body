@@ -338,9 +338,8 @@ Leitura da pinagem do README e de `pins.h` à luz das evidências acima. Nada aq
 | Item do projeto | Evidência | Classificação |
 |---|---|---|
 | SPI em GPIO10/11/12/13 (tela, CC1101, SD, cartucho) | Coincide com os pinos IO_MUX do SPI2 (S3-SPI-01). Até 40 MHz, matriz e IO_MUX se comportam igual (S3-SPI-03). O README registra a tela funcionando nesses pinos a 10 MHz | Mapa IO_MUX: CONFIRMADO (fabricante). Tela a 10 MHz: VALIDADO EM BANCADA. Barramento com CC1101, SD e cartucho: PENDENTE DE VALIDAÇÃO FÍSICA |
-| VBAT em GPIO1; analógicos em GPIO2/4/5/6 | São ADC1_CH0, CH1, CH3, CH4 e CH5 (S3-ADC-01) | Canais: CONFIRMADO (fabricante). Uso: PROPOSTO |
+| VBAT em GPIO1 | É o ADC1_CH0 (S3-ADC-01). Os analógicos em GPIO2/4/5/6 (ADC1_CH1, CH3, CH4 e CH5) saíram do v1 em 2026-11-25 | Canal: CONFIRMADO (fabricante). Uso: PROPOSTO |
 | VBAT com divisor 100k/100k | 4,2 V viram 2,1 V, dentro da faixa efetiva de 0–2900 mV em ATTEN3, com erro total de ±50 mV no pino (S3-ADC-09), ou seja, cerca de ±100 mV na bateria depois do ×2. O fabricante pede 0,1 µF no pino (S3-ADC-10) | PROPOSTO; PENDENTE DE VALIDAÇÃO FÍSICA |
-| Analógicos alimentados em 3,3 V | O cursor pode ir de 0 a 3,3 V; a faixa efetiva calibrada termina em 2900 mV (S3-ADC-09). O trecho final do curso pode saturar ou perder exatidão. Falta medir o curso elétrico real dos sticks | PROPOSTO; PENDENTE DE VALIDAÇÃO FÍSICA |
 | Botão de energia em GPIO0 | Ver seção 6 | PROPOSTO com risco aberto; PENDENTE DE VALIDAÇÃO FÍSICA |
 | Shutdown do MAX98357A em GPIO3 | Strap de JTAG só atua com o eFuse `STRAP_JTAG_SEL` queimado (S3-STRAP-13). No reset o pino fica flutuante (S3-STRAP-14) e tem glitch de nível baixo de cerca de 60 µs (S3-GLT-01). Ocupa o canal ADC1_CH2 | PROPOSTO; estado do amplificador durante o boot: PENDENTE DE VALIDAÇÃO FÍSICA |
 | UART do cartucho em GPIO43/44 | É o UART0: a ROM imprime o log de boot em U0TXD por padrão (S3-STRAP-16, S3-UART-04), U0RXD é entrada de download em Joint Download Boot, e o fabricante recomenda outro UART para a aplicação (S3-UART-03). Na DevKitC esses pinos também estão na ponte USB-UART (DKC-06, DKC-07) | PROPOSTO com risco aberto |

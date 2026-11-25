@@ -161,14 +161,10 @@ bancada). INMP441: mesmos BCLK e LRCLK, SD no GPIO 7, L/R ao GND, VDD em 3,3 V.
 | Ligar e desligar a placa | Observar se há estalo no alto-falante (risco 5 de `GPIO_MAP.md`) |
 | `config audio.mic_enabled 1` e gravação | Ainda não há comando de console para gravar: validar quando houver |
 
-## Etapa 9: analógicos (perfil `dbmo-target`)
+## Etapa 9: removida
 
-Pontas em 3,3 V e GND, cursor no ADC (GPIO 2, 4, 5, 6). **Nunca 5 V** (README).
-
-| Passo | Esperado |
-|---|---|
-| Medir a tensão do cursor nos extremos do curso | Registrar; acima de 2,9 V o ADC perde exatidão (S3-ADC-09) |
-| Calibração de centro e de curso | Ainda sem comando de console: validar quando houver |
+Era a dos analógicos, retirados do v1 em 2026-11-25. A numeração das etapas seguintes não
+mudou.
 
 ## Etapa 10: desligamento
 

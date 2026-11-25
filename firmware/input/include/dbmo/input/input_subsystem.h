@@ -1,5 +1,5 @@
-// Subsistema de controles: consulta as origens de botões e os analógicos em período
-// fixo, aplica o tratamento e publica eventos. Funciona com qualquer subconjunto do
+// Subsistema de controles: consulta as origens de botões em período fixo, aplica o
+// tratamento e publica eventos. Funciona com qualquer subconjunto do
 // hardware (na bancada de hoje, só três botões em GPIO).
 #pragma once
 
@@ -11,7 +11,6 @@
 #include "dbmo/core/subsystem.h"
 #include "dbmo/input/button_processor.h"
 #include "dbmo/input/button_source.h"
-#include "dbmo/input/stick_processor.h"
 #include "dbmo/input/types.h"
 
 namespace dbmo::input {
@@ -21,8 +20,7 @@ namespace input_event {
 inline constexpr EventId kButton = makeEventId(EventDomain::Input, 1);
 // a = id da combinação.
 inline constexpr EventId kCombo = makeEventId(EventDomain::Input, 2);
-// a = Stick, b = x nos 16 bits baixos e y nos 16 altos (int16 cada, -1000..+1000).
-inline constexpr EventId kStick = makeEventId(EventDomain::Input, 3);
+// 3 era kStick (analógicos, retirados do v1 em 2026-11-25).
 // Uma origem de botões parou de responder. a = índice da origem, b = Status.
 inline constexpr EventId kSourceFault = makeEventId(EventDomain::Input, 4);
 // A origem voltou a responder. a = índice da origem.
@@ -34,16 +32,7 @@ inline constexpr char kDebounceMs[] = "input.debounce_ms";
 inline constexpr char kLongPressMs[] = "input.long_press_ms";
 inline constexpr char kRepeatDelayMs[] = "input.repeat_delay_ms";
 inline constexpr char kRepeatMs[] = "input.repeat_ms";
-inline constexpr char kDeadzone[] = "input.deadzone";  // milésimos do curso
 }  // namespace config_key
-
-constexpr uint32_t packStick(StickPosition position) {
-  return static_cast<uint16_t>(position.x) |
-         (static_cast<uint32_t>(static_cast<uint16_t>(position.y)) << 16);
-}
-constexpr StickPosition unpackStick(uint32_t packed) {
-  return StickPosition{static_cast<int16_t>(packed & 0xFFFF), static_cast<int16_t>(packed >> 16)};
-}
 
 class InputSubsystem final : public ISubsystem {
  public:
@@ -60,7 +49,6 @@ class InputSubsystem final : public ISubsystem {
 
   // Registrar antes de init(). As máscaras das origens são somadas.
   Status addButtonSource(IButtonSource &source);
-  void setStick(Stick which, StickProcessor &stick);
 
   const char *name() const override { return "input"; }
   // HardwareAbsent se nenhuma origem de botões respondeu.
@@ -70,11 +58,10 @@ class InputSubsystem final : public ISubsystem {
 
   ButtonProcessor &buttons() { return buttons_; }
   bool isPressed(Button button) const { return buttons_.isPressed(button); }
-  StickPosition stick(Stick which) const;
   // Quantas origens de botões estão respondendo.
   size_t healthySources() const;
 
-  // Relê os tempos e a zona morta do ConfigStore (chamar depois de alterá-los).
+  // Relê os tempos do ConfigStore (chamar depois de alterá-los).
   void applyConfig();
 
  private:
@@ -93,7 +80,6 @@ class InputSubsystem final : public ISubsystem {
   ButtonProcessor buttons_;
   Source sources_[kMaxSources] = {};
   size_t sourceCount_ = 0;
-  StickProcessor *sticks_[2] = {nullptr, nullptr};
   bool initialized_ = false;
   bool polled_ = false;
   uint32_t lastPollMs_ = 0;

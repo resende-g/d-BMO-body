@@ -43,8 +43,6 @@ struct Hardware {
   storage::IFileSystem *fileSystem = nullptr;
 
   input::IButtonSource *buttonSources[input::InputSubsystem::kMaxSources] = {};
-  input::StickProcessor *stickLeft = nullptr;
-  input::StickProcessor *stickRight = nullptr;
 
   IAdcChannel *batteryAdc = nullptr;
   power::IChargerStatus *charger = nullptr;

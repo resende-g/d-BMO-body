@@ -58,7 +58,7 @@ Data do registro: 2026-11-12. Todas as fontes abaixo foram abertas nessa data.
 | `ESPRESSIF_HDG_PCB_LAYOUT` | fabricante | diretrizes de projeto de hardware (texto-fonte) | espressif/esp-hardware-design-guidelines — docs/en/pcb-layout-design.rst. Local: seção 'General Principles of PCB Layout for Modules (Positioning a Module on a Base Board)', linhas 334 a 377 | <https://raw.githubusercontent.com/espressif/esp-hardware-design-guidelines/12c39ca361650334fbe72fdc13385a6913e75edf/docs/en/pcb-layout-design.rst> | `97b0972dac243e2e691b4b7ca70ea910bbccbc14404ac3772985f45f82653be9` |
 | `ESPRESSIF_HDG_CLEARANCE_FIG` | fabricante | figura cotada das diretrizes de projeto de hardware | espressif/esp-hardware-design-guidelines — docs/_static/esp32s3/esp32s3-module-clearance.png. Local: cotas 'Min15', '6', 'Max 2' e 'Max 1'; legenda 'Unit: mm' e 'Clearance Area' | <https://raw.githubusercontent.com/espressif/esp-hardware-design-guidelines/12c39ca361650334fbe72fdc13385a6913e75edf/docs/_static/esp32s3/esp32s3-module-clearance.png> | `ea84d1e439d2818ee4d9dc9a8578c433833409d69f77a24ce4c87b23b2f67d3d` |
 | `ESPRESSIF_DEVKITC_GUIDE` | fabricante | guia do usuário (texto-fonte) | espressif/esp-dev-kits — docs/en/esp32-s3-devkitc-1/user_guide_v1.1.rst e ordering-info.inc. Local: tabela de componentes (portas Micro-USB), 'Hardware Revision Details' e 'Related Documents' (links do desenho cotado); ordering-info.inc (variante N16R8), sha256 962e485a50b17e9665660345b0f0cae8d111f1b3350ab0b645dbc2772f5100f4; ramo master, sem commit fixado | <https://raw.githubusercontent.com/espressif/esp-dev-kits/master/docs/en/esp32-s3-devkitc-1/user_guide_v1.1.rst> | `ee0b339051b013bdccbed9134335ee5d78e6564072d636c7127c3495936b116d` |
-| `README` | projeto | decisões e anotações do projeto | README.md deste repositório. Local: seções Lista de componentes, Carcaça 3D, Especificação do cartucho, Dimensões conhecidas, Analógicos e gatilhos reaproveitados | — | — |
+| `README` | projeto | decisões e anotações do projeto | README.md deste repositório. Local: seções Lista de componentes, Carcaça 3D, Especificação do cartucho, Dimensões conhecidas, Tampas reaproveitadas do controle de PS3 | — | — |
 
 ### 2.2 Documentos de fabricante que não puderam ser abertos
 
@@ -93,17 +93,15 @@ Nenhum valor destes documentos foi usado. Eles são o caminho para promover linh
 | `max98357a_breakout` | Placa do amplificador MAX98357A (I2S) | 1 | 0 | 0 | 3 | não: pcb_length: status PENDENTE; pcb_width: status PENDENTE; total_thickness: status PENDENTE |
 | `speaker_2030` | Alto-falante 2030, 8 ohms, 2 W | 1 | 0 | 2 | 2 | não: length: status NOMINAL; width: status NOMINAL; thickness: status PENDENTE |
 | `ir_kit` | Conjunto IR: emissor e receptor de 38 kHz | 1 | 0 | 0 | 4 | não: length: status PENDENTE; width: status PENDENTE; height: status PENDENTE |
-| `analog_stick_ps3` | Analógico reaproveitado de controle genérico de PS3 | 2 | 0 | 0 | 6 | não: base_length: status PENDENTE; base_width: status PENDENTE; height_with_cap: status PENDENTE |
 | `tactile_switch` | Botão táctil (cruz, ações, select/start) | 10 | 0 | 2 | 2 | não: body_length: status NOMINAL; body_width: status NOMINAL; total_height: status PENDENTE |
-| `tactile_switch_right_angle` | Botão táctil de ângulo reto (gatilhos de ombro) | 2 a 4 | 0 | 0 | 3 | não: body_length: status PENDENTE; body_depth: status PENDENTE; body_height: status PENDENTE |
 | `power_button` | Botão momentâneo de energia | 1 | 0 | 0 | 3 | não: body_length: status PENDENTE; body_width: status PENDENTE; total_height: status PENDENTE |
-| `button_caps_ps3` | Tampas reaproveitadas do controle de PS3 | 1 conjunto | 0 | 0 | 5 | não: body_diameter: status PENDENTE; total_height: status PENDENTE |
+| `button_caps_ps3` | Tampas reaproveitadas do controle de PS3 | 1 conjunto | 0 | 0 | 4 | não: body_diameter: status PENDENTE; total_height: status PENDENTE |
 | `sd_card_with_adapter` | Cartão microSD com adaptador para SD de tamanho normal | 1 | 0 | 0 | 3 | não: width: status PENDENTE; length: status PENDENTE; thickness: status PENDENTE |
 | `charger_module` | Módulo de carga com power-path (BQ24074 ou MCP73871) | 1 | 0 | 0 | 4 | não: pcb_length: status PENDENTE; pcb_width: status PENDENTE; total_thickness: status PENDENTE |
 | `usb_c_receptacle` | Conector USB-C da PCB definitiva | 1 a 2 | 0 | 0 | 3 | não: shell_width: status PENDENTE; shell_depth: status PENDENTE; shell_height: status PENDENTE |
 | `hex_standoff` | Standoff hexagonal de metal reaproveitado (de placa-mãe) | 1 | 0 | 0 | 3 | não: across_flats: status PENDENTE; body_length: status PENDENTE |
 | `heat_set_insert` | Inserto roscado heat-set (plano B e demais parafusos) | — | 0 | 0 | 2 | não: outer_diameter: status PENDENTE; length: status PENDENTE |
-| **Total** | 22 componentes | | 14 | 21 | 76 | 1 com modelo, 21 recusados |
+| **Total** | 20 componentes | | 14 | 21 | 66 | 1 com modelo, 19 recusados |
 
 ## 4. Registro por componente
 
@@ -214,7 +212,7 @@ Rádio sub-GHz. Módulo genérico, sem desenho de fabricante. Quantidade: 1.
 
 ### `mcp23017` — Expansor de I/O MCP23017
 
-Lê os 16 botões por I2C. O README não informa o encapsulamento. Quantidade: 1 a 2.
+Lê os 10 botões por I2C. O README não informa o encapsulamento. Quantidade: 1 a 2.
 
 | ID | Dimensão | Valor | Un. | Tolerância | STATUS | Origem do valor | Fonte | Observação |
 |---|---|---:|---|---|---|---|---|---|
@@ -266,19 +264,6 @@ Infravermelho, atrás da janela AB-07. Aguardando entrega; conferir se o conjunt
 | `ir_kit.height` | Altura de cada peça | — | mm | — | PENDENTE (medir com paquímetro) | — | — | — |
 | `ir_kit.optical_axis` | Diâmetro do LED, face sensível do receptor e posição do eixo óptico | — | mm | — | PENDENTE (medir com paquímetro) | — | — | — |
 
-### `analog_stick_ps3` — Analógico reaproveitado de controle genérico de PS3
-
-Dois sticks, um de cada lado, na parte inferior da frente. Peça não identificada. Quantidade: 2.
-
-| ID | Dimensão | Valor | Un. | Tolerância | STATUS | Origem do valor | Fonte | Observação |
-|---|---|---:|---|---|---|---|---|---|
-| `analog_stick_ps3.base_length` | Base: comprimento, com os potenciômetros | — | mm | — | PENDENTE (medir com paquímetro) | — | — | O README pede medir área e altura com a capa, com o stick já fora do controle. |
-| `analog_stick_ps3.base_width` | Base: largura, com o botão de clique | — | mm | — | PENDENTE (medir com paquímetro) | — | — | — |
-| `analog_stick_ps3.height_with_cap` | Altura total, da face de assentamento ao topo da capa | — | mm | — | PENDENTE (medir com paquímetro) | — | — | Entra na espessura da carcaça v0 (README). |
-| `analog_stick_ps3.cap_diameter` | Diâmetro da capa e do colar | — | mm | — | PENDENTE (medir com paquímetro) | — | — | Define o furo AB-05. |
-| `analog_stick_ps3.tilt_envelope` | Ângulo máximo de inclinação e deslocamento lateral da capa | — | grau | — | PENDENTE (medir com paquímetro) | — | — | — |
-| `analog_stick_ps3.carrier_outline` | Contorno do pedaço de placa, se o stick for cortado com a placa do controle | — | mm | — | PENDENTE (medir com paquímetro) | — | — | Alternativa de retirada descrita no README; fica um pouco maior. |
-
 ### `tactile_switch` — Botão táctil (cruz, ações, select/start)
 
 Estoque próprio; modelo não identificado. Quantidade: 10.
@@ -289,16 +274,6 @@ Estoque próprio; modelo não identificado. Quantidade: 10.
 | `tactile_switch.body_width` | Corpo: largura | 6,0 | mm | não publicada | NOMINAL (anúncio/designação) | designação '6 x 6 mm' citada no README | `README` | — |
 | `tactile_switch.total_height` | Altura total, da placa ao topo do atuador | — | mm | — | PENDENTE (medir com paquímetro) | — | — | Define o espaçador sob cada tampa. |
 | `tactile_switch.travel` | Curso do atuador | — | mm | — | PENDENTE (medir com paquímetro) | — | — | — |
-
-### `tactile_switch_right_angle` — Botão táctil de ângulo reto (gatilhos de ombro)
-
-Estoque próprio, se houver; senão, comprar. Quantidade: 2 a 4.
-
-| ID | Dimensão | Valor | Un. | Tolerância | STATUS | Origem do valor | Fonte | Observação |
-|---|---|---:|---|---|---|---|---|---|
-| `tactile_switch_right_angle.body_length` | Corpo: comprimento | — | mm | — | PENDENTE (medir com paquímetro) | — | — | — |
-| `tactile_switch_right_angle.body_depth` | Profundidade com o atuador | — | mm | — | PENDENTE (medir com paquímetro) | — | — | — |
-| `tactile_switch_right_angle.body_height` | Altura acima da placa e altura do eixo do atuador | — | mm | — | PENDENTE (medir com paquímetro) | — | — | — |
 
 ### `power_button` — Botão momentâneo de energia
 
@@ -312,7 +287,7 @@ Numa lateral. Peça a definir com o esquema elétrico. Quantidade: 1.
 
 ### `button_caps_ps3` — Tampas reaproveitadas do controle de PS3
 
-Cruz, quatro botões de ação, L1/R1, alavancas L2/R2 e botão redondo, se forem usados (decisões D-10 e D-11). Quantidade: 1 conjunto.
+Cruz, quatro botões de ação e botão redondo, se forem usados (decisão D-10). Quantidade: 1 conjunto.
 
 | ID | Dimensão | Valor | Un. | Tolerância | STATUS | Origem do valor | Fonte | Observação |
 |---|---|---:|---|---|---|---|---|---|
@@ -320,7 +295,6 @@ Cruz, quatro botões de ação, L1/R1, alavancas L2/R2 e botão redondo, se fore
 | `button_caps_ps3.flange` | Diâmetro ou contorno da aba de cada tampa | — | mm | — | PENDENTE (medir com paquímetro) | — | — | — |
 | `button_caps_ps3.total_height` | Altura total de cada tampa | — | mm | — | PENDENTE (medir com paquímetro) | — | — | Define o espaçador impresso. |
 | `button_caps_ps3.dpad_pivot` | Cruz de peça única: posição e altura do pino central | — | mm | — | PENDENTE (medir com paquímetro) | — | — | — |
-| `button_caps_ps3.trigger_lever` | Alavancas L2/R2: comprimento, largura, eixo do pivô e curso | — | mm | — | PENDENTE (medir com paquímetro) | — | — | O README alerta que podem ser grandes demais para o topo do corpo vertical. |
 
 ### `sd_card_with_adapter` — Cartão microSD com adaptador para SD de tamanho normal
 
@@ -385,8 +359,8 @@ Não são medidas de peça: são decisões do README. Não têm STATUS e não vi
 | `cartridge_contact_span` | Cartucho: distância do primeiro ao último contato de um lado | 22,86 | mm | README, Especificação do cartucho | 9 x 2,54 mm. |
 | `cartridge_contact_edge_offset` | Cartucho: distância dos contatos à borda | 0,6 | mm | README, Especificação do cartucho | — |
 | `battery_bay_thickness_margin` | Berço da bateria: folga na espessura, como fração da espessura medida | 0,1 | fração | README, Riscos da bateria e recomendações, item 7 | O README registra '~10%'. |
-| `button_cap_hole_clearance_min` | Furo das tampas de botão: folga mínima | 0,2 | mm | README, Analógicos e gatilhos reaproveitados | O README registra '~0,2 a 0,3 mm'. |
-| `button_cap_hole_clearance_max` | Furo das tampas de botão: folga máxima | 0,3 | mm | README, Analógicos e gatilhos reaproveitados | — |
+| `button_cap_hole_clearance_min` | Furo das tampas de botão: folga mínima | 0,2 | mm | README, Tampas reaproveitadas do controle de PS3 | O README registra '~0,2 a 0,3 mm'. |
+| `button_cap_hole_clearance_max` | Furo das tampas de botão: folga máxima | 0,3 | mm | README, Tampas reaproveitadas do controle de PS3 | — |
 
 <!-- END: REGISTRO-GERADO -->
 
@@ -410,7 +384,7 @@ Procedimento proposto por este documento (não vem do README). Instrumento: paqu
    documento.
 
 Segundo o README, já estão em mãos e podem ser medidos agora: a DevKitC, a tela, o módulo CC1101, os
-MCP23017, os botões tácteis, o controle de PS3 (analógicos e tampas), os cartões microSD com adaptador e os
+MCP23017, os botões tácteis, as tampas do controle de PS3, os cartões microSD com adaptador e os
 standoffs. Os itens comprados em 02/11/2026 aguardam entrega; a compra da bateria não está
 confirmada e o soquete do cartucho fica para a Fase 4.
 
@@ -436,7 +410,7 @@ feito com cada uma.
 | Cartucho 52 × 52 mm, 1,6 mm, língua ~27,8 mm | Decisão do projeto | — | Parâmetro de projeto (seção 5), sem STATUS |
 | Soquete DK920A-20M: corpo 31,7 × 9,2 mm, altura ~10,2 mm, fileiras a 5,08 mm, fenda 1,9 mm, abertura ~28,3 mm, furos ~1,0 mm | Sem fonte citada | Fabricante não identificado; a busca pelo código não devolveu datasheet | `NOMINAL` |
 | Soquete: profundidade da fenda ~8 mm | Estimativa, "a medir na peça" | — | `PENDENTE` |
-| Botões tácteis de 6 × 6 mm | Designação, em *Analógicos e gatilhos reaproveitados* | Modelo do estoque não identificado | Corpo `NOMINAL`, altura `PENDENTE` |
+| Botões tácteis de 6 × 6 mm | Designação, em *Tampas reaproveitadas do controle de PS3* | Modelo do estoque não identificado | Corpo `NOMINAL`, altura `PENDENTE` |
 | Alto-falante "2030" | Designação | O README não traz medidas | 20 × 30 mm `NOMINAL` pela leitura usual da designação; espessura `PENDENTE` |
 
 ## 8. Notas sobre as fontes da Espressif

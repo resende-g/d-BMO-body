@@ -23,7 +23,7 @@ command -v "$CC" >/dev/null 2>&1 || {
 }
 
 # As opções do ambiente de quem chama não entram no teste.
-unset DBMO_RG_BENCH DBMO_RG_ENABLE_BATTERY_ADC DBMO_RG_ENABLE_STICK_DPAD DBMO_RG_ENABLE_POWER_HOLD \
+unset DBMO_RG_BENCH DBMO_RG_ENABLE_BATTERY_ADC DBMO_RG_ENABLE_POWER_HOLD \
   DBMO_RG_POWER_HOLD_LEVEL DBMO_RG_LCD_MADCTL DBMO_RG_SCREEN_SPEED_HZ
 
 prepara() { # [VAR=valor ...] -> imprime a pasta do Retro-Go preparado
@@ -84,14 +84,12 @@ echo "-- config.h do alvo, uma combinação de opções por vez:"
 deve_passar "padrão (perfil target)" "$DIRETO"
 deve_passar "DBMO_RG_BENCH=1" "$DIRETO" -DDBMO_RG_BENCH=1
 deve_passar "DBMO_RG_ENABLE_BATTERY_ADC=1" "$DIRETO" -DDBMO_RG_ENABLE_BATTERY_ADC=1
-deve_passar "DBMO_RG_ENABLE_STICK_DPAD=1" "$DIRETO" -DDBMO_RG_ENABLE_STICK_DPAD=1
 deve_passar "DBMO_RG_ENABLE_POWER_HOLD=1, nível 1" "$DIRETO" -DDBMO_RG_ENABLE_POWER_HOLD=1 -DDBMO_RG_POWER_HOLD_LEVEL=1
-deve_passar "bateria + analógico + power-hold nível 0" "$DIRETO" -DDBMO_RG_ENABLE_BATTERY_ADC=1 \
-  -DDBMO_RG_ENABLE_STICK_DPAD=1 -DDBMO_RG_ENABLE_POWER_HOLD=1 -DDBMO_RG_POWER_HOLD_LEVEL=0
+deve_passar "bateria + power-hold nível 0" "$DIRETO" -DDBMO_RG_ENABLE_BATTERY_ADC=1 \
+  -DDBMO_RG_ENABLE_POWER_HOLD=1 -DDBMO_RG_POWER_HOLD_LEVEL=0
 deve_passar "bancada + bateria" "$DIRETO" -DDBMO_RG_BENCH=1 -DDBMO_RG_ENABLE_BATTERY_ADC=1
 deve_passar "MADCTL e clock SPI informados" "$DIRETO" -DDBMO_RG_LCD_MADCTL=0x68 -DDBMO_RG_SCREEN_SPEED_HZ=20000000
 deve_falhar "power-hold sem nível" "DBMO_RG_POWER_HOLD_LEVEL" "$DIRETO" -DDBMO_RG_ENABLE_POWER_HOLD=1
-deve_falhar "bancada + analógico" "DBMO_RG_ENABLE_STICK_DPAD" "$DIRETO" -DDBMO_RG_BENCH=1 -DDBMO_RG_ENABLE_STICK_DPAD=1
 
 if [ "$falhas" -ne 0 ]; then
   echo "host_check.sh: $falhas conferência(s) falharam" >&2

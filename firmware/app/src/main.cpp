@@ -63,12 +63,6 @@ esp32::Ili9341Display gDisplay(gTft, gClock, &gBacklight);
 dbmo::input::Mcp23017 gExpander(gI2c, dbmo::config::i2c::kMcp23017Buttons);
 dbmo::input::Mcp23017ButtonSource gButtons(gExpander,
                                            dbmo::input::Mcp23017ButtonSource::defaultMap());
-esp32::ArduinoAdcChannel gStickLeftX(static_cast<uint8_t>(pins::kStickLeftX));
-esp32::ArduinoAdcChannel gStickLeftY(static_cast<uint8_t>(pins::kStickLeftY));
-esp32::ArduinoAdcChannel gStickRightX(static_cast<uint8_t>(pins::kStickRightX));
-esp32::ArduinoAdcChannel gStickRightY(static_cast<uint8_t>(pins::kStickRightY));
-dbmo::input::StickProcessor gStickLeft(gStickLeftX, gStickLeftY);
-dbmo::input::StickProcessor gStickRight(gStickRightX, gStickRightY);
 esp32::ArduinoAdcChannel gBatteryAdc(static_cast<uint8_t>(pins::kVbatSense));
 dbmo::power::GpioPowerLatch gPowerLatch(gGpio, pins::kPowerHold);
 esp32::I2sAudio gAudio(pins::kI2sBclk, pins::kI2sLrclk, pins::kI2sSpeakerData, pins::kI2sMicData,
@@ -110,8 +104,6 @@ dbmo::app::Hardware makeHardware() {
   hw.powerButtonGpio = &gGpio;
   hw.powerButtonPin = pins::kPowerButton;
 #if defined(DBMO_PROFILE_TARGET)
-  hw.stickLeft = &gStickLeft;
-  hw.stickRight = &gStickRight;
   hw.batteryAdc = &gBatteryAdc;
   hw.powerSwitch = &gPowerLatch;
   hw.audioOutput = &gAudio.output();

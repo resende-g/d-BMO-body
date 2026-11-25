@@ -15,12 +15,6 @@ const char *toString(Button button) {
     case Button::Y: return "y";
     case Button::Select: return "select";
     case Button::Start: return "start";
-    case Button::L1: return "l1";
-    case Button::R1: return "r1";
-    case Button::L2: return "l2";
-    case Button::R2: return "r2";
-    case Button::StickLeft: return "l3";
-    case Button::StickRight: return "r3";
   }
   return "?";
 }
@@ -53,10 +47,6 @@ Mcp23017ButtonSource::Map Mcp23017ButtonSource::defaultMap() {
   assign(pins::kActionY, Button::Y);
   assign(pins::kSelect, Button::Select);
   assign(pins::kStart, Button::Start);
-  assign(pins::kL1, Button::L1);
-  assign(pins::kR1, Button::R1);
-  assign(pins::kL2, Button::L2);
-  assign(pins::kR2, Button::R2);
   return map;
 }
 

@@ -84,7 +84,7 @@ sources:
     url: null
     sha256: null
     accessed: "2026-11-12"
-    location: "seções Lista de componentes, Carcaça 3D, Especificação do cartucho, Dimensões conhecidas, Analógicos e gatilhos reaproveitados"
+    location: "seções Lista de componentes, Carcaça 3D, Especificação do cartucho, Dimensões conhecidas, Tampas reaproveitadas do controle de PS3"
 
 # Documentos de fabricante que seriam a fonte adequada e NÃO puderam ser abertos
 # nesta sessão (host fora da lista permitida pela rede da sessão).
@@ -669,7 +669,7 @@ components:
 
   mcp23017:
     name: "Expansor de I/O MCP23017"
-    role: "Lê os 16 botões por I2C. O README não informa o encapsulamento."
+    role: "Lê os 10 botões por I2C. O README não informa o encapsulamento."
     qty: "1 a 2"
     cad:
       local_frame: "Origem no centro da face de assentamento. +X ao longo do comprimento do corpo; +Y ao longo da largura com terminais; +Z para cima."
@@ -885,68 +885,6 @@ components:
         source: []
         note: null
 
-  analog_stick_ps3:
-    name: "Analógico reaproveitado de controle genérico de PS3"
-    role: "Dois sticks, um de cada lado, na parte inferior da frente. Peça não identificada."
-    qty: 2
-    cad:
-      local_frame: "Origem no centro da face de assentamento. +X e +Y nos eixos dos potenciômetros; +Z ao longo da haste."
-      solids:
-        - name: envelope
-          x: base_length
-          y: base_width
-          z: height_with_cap
-    dimensions:
-      base_length:
-        label: "Base: comprimento, com os potenciômetros"
-        value: null
-        tolerance: null
-        status: PENDENTE
-        basis: null
-        source: []
-        note: "O README pede medir área e altura com a capa, com o stick já fora do controle."
-      base_width:
-        label: "Base: largura, com o botão de clique"
-        value: null
-        tolerance: null
-        status: PENDENTE
-        basis: null
-        source: []
-        note: null
-      height_with_cap:
-        label: "Altura total, da face de assentamento ao topo da capa"
-        value: null
-        tolerance: null
-        status: PENDENTE
-        basis: null
-        source: []
-        note: "Entra na espessura da carcaça v0 (README)."
-      cap_diameter:
-        label: "Diâmetro da capa e do colar"
-        value: null
-        tolerance: null
-        status: PENDENTE
-        basis: null
-        source: []
-        note: "Define o furo AB-05."
-      tilt_envelope:
-        label: "Ângulo máximo de inclinação e deslocamento lateral da capa"
-        value: null
-        unit: grau
-        tolerance: null
-        status: PENDENTE
-        basis: null
-        source: []
-        note: null
-      carrier_outline:
-        label: "Contorno do pedaço de placa, se o stick for cortado com a placa do controle"
-        value: null
-        tolerance: null
-        status: PENDENTE
-        basis: null
-        source: []
-        note: "Alternativa de retirada descrita no README; fica um pouco maior."
-
   tactile_switch:
     name: "Botão táctil (cruz, ações, select/start)"
     role: "Estoque próprio; modelo não identificado."
@@ -985,43 +923,6 @@ components:
         note: "Define o espaçador sob cada tampa."
       travel:
         label: "Curso do atuador"
-        value: null
-        tolerance: null
-        status: PENDENTE
-        basis: null
-        source: []
-        note: null
-
-  tactile_switch_right_angle:
-    name: "Botão táctil de ângulo reto (gatilhos de ombro)"
-    role: "Estoque próprio, se houver; senão, comprar."
-    qty: "2 a 4"
-    cad:
-      local_frame: "Origem no centro da face de assentamento. +Y ao longo do atuador."
-      solids:
-        - name: envelope
-          x: body_length
-          y: body_depth
-          z: body_height
-    dimensions:
-      body_length:
-        label: "Corpo: comprimento"
-        value: null
-        tolerance: null
-        status: PENDENTE
-        basis: null
-        source: []
-        note: null
-      body_depth:
-        label: "Profundidade com o atuador"
-        value: null
-        tolerance: null
-        status: PENDENTE
-        basis: null
-        source: []
-        note: null
-      body_height:
-        label: "Altura acima da placa e altura do eixo do atuador"
         value: null
         tolerance: null
         status: PENDENTE
@@ -1068,7 +969,7 @@ components:
 
   button_caps_ps3:
     name: "Tampas reaproveitadas do controle de PS3"
-    role: "Cruz, quatro botões de ação, L1/R1, alavancas L2/R2 e botão redondo, se forem usados (decisões D-10 e D-11)."
+    role: "Cruz, quatro botões de ação e botão redondo, se forem usados (decisão D-10)."
     qty: "1 conjunto"
     cad:
       local_frame: "Uma peça por tampa; a definir depois da medição."
@@ -1110,14 +1011,6 @@ components:
         basis: null
         source: []
         note: null
-      trigger_lever:
-        label: "Alavancas L2/R2: comprimento, largura, eixo do pivô e curso"
-        value: null
-        tolerance: null
-        status: PENDENTE
-        basis: null
-        source: []
-        note: "O README alerta que podem ser grandes demais para o topo do corpo vertical."
 
   sd_card_with_adapter:
     name: "Cartão microSD com adaptador para SD de tamanho normal"
@@ -1347,10 +1240,10 @@ design_parameters:
   button_cap_hole_clearance_min:
     label: "Furo das tampas de botão: folga mínima"
     value: 0.2
-    source: "README, Analógicos e gatilhos reaproveitados"
+    source: "README, Tampas reaproveitadas do controle de PS3"
     note: "O README registra '~0,2 a 0,3 mm'."
   button_cap_hole_clearance_max:
     label: "Furo das tampas de botão: folga máxima"
     value: 0.3
-    source: "README, Analógicos e gatilhos reaproveitados"
+    source: "README, Tampas reaproveitadas do controle de PS3"
     note: null

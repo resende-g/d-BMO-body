@@ -106,7 +106,7 @@ _Static_assert(RG_COUNT(keymap_gpio) == 3 && RG_COUNT(keymap_virt) == 4, "bancad
 #error "o perfil de bancada nao deve selecionar o extensor de GPIO"
 #endif
 #else
-_Static_assert(RG_COUNT(keymap_i2c) == 14, "o mapa I2C deve ter as 14 teclas do Retro-Go");
+_Static_assert(RG_COUNT(keymap_i2c) == 10, "o mapa I2C deve ter os 10 botoes do d-BMO");
 _Static_assert(RG_I2C_GPIO_DRIVER == 3 && RG_I2C_GPIO_ADDR == 0x20, "MCP23017 (driver 3) em 0x20");
 #endif
 
