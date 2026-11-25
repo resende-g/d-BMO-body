@@ -122,12 +122,24 @@ void toneCommand(Console &console, int argc, const char *const *argv, void *cont
 }
 
 // Teste do microfone: grava em memória e mostra o pico no log ("gravacao encerrada").
-// Nada vai para arquivo. 16000 amostras = 1 s a 16 kHz (32 KB de RAM).
+// Nada vai para arquivo. Reserva de 16000 amostras = 1 s a 16 kHz (32 KB de RAM), usada quando
+// a plataforma não dá um buffer maior (Application::setRecordBuffer).
 int16_t gMicBuffer[16000];
+
+struct MicBuffer {
+  int16_t *samples;
+  size_t capacity;
+};
+
+MicBuffer micBufferOf(const Application &app) {
+  if (app.recordBuffer() != nullptr && app.recordCapacity() > 0)
+    return {app.recordBuffer(), app.recordCapacity()};
+  return {gMicBuffer, sizeof(gMicBuffer) / sizeof(gMicBuffer[0])};
+}
 
 // Média, extremos e RMS da última gravação, e o pico a cada 100 ms descontada a média: separa
 // som de desvio de DC e mostra em que trecho o pico aconteceu.
-void micLast(Console &console, audio::AudioSubsystem &audio) {
+void micLast(Console &console, audio::AudioSubsystem &audio, const int16_t *samples) {
   if (audio.recording()) {
     console.print("mic: gravando\r\n");
     return;
@@ -139,10 +151,10 @@ void micLast(Console &console, audio::AudioSubsystem &audio) {
   }
   int64_t sum = 0;
   uint64_t squares = 0;
-  int16_t low = gMicBuffer[0];
-  int16_t high = gMicBuffer[0];
+  int16_t low = samples[0];
+  int16_t high = samples[0];
   for (size_t i = 0; i < n; ++i) {
-    const int32_t sample = gMicBuffer[i];
+    const int32_t sample = samples[i];
     sum += sample;
     squares += static_cast<uint64_t>(sample * sample);
     if (sample < low) low = static_cast<int16_t>(sample);
@@ -152,21 +164,23 @@ void micLast(Console &console, audio::AudioSubsystem &audio) {
   console.printf("mic: %lu amostras; media %ld; min %d; max %d; rms %lu\r\n",
                  static_cast<unsigned long>(n), static_cast<long>(mean), low, high,
                  static_cast<unsigned long>(sqrt(static_cast<double>(squares) / n) + 0.5));
-  // Por trecho de 100 ms: a média (desvio lento) e o RMS e o pico em volta da média do próprio
-  // trecho (som e ruído), para separar um do outro.
-  const size_t block = audio.sampleRateHz() / 10 > 0 ? audio.sampleRateHz() / 10 : n;
+  // Por trecho (100 ms até 1 s de gravação, 1 s acima disso): a média (desvio lento) e o RMS e o
+  // pico em volta da média do próprio trecho (som e ruído), para separar um do outro.
+  const uint32_t blockMs = n <= audio.sampleRateHz() ? 100 : 1000;
+  const size_t perBlock = static_cast<size_t>(audio.sampleRateHz()) * blockMs / 1000;
+  const size_t block = perBlock > 0 ? perBlock : n;
   const char *const labels[] = {"media", "rms", "pico"};
   for (int line = 0; line < 3; ++line) {
-    console.printf("%s por 100 ms:", labels[line]);
+    console.printf("%s por %lu ms:", labels[line], static_cast<unsigned long>(blockMs));
     for (size_t start = 0; start < n; start += block) {
       const size_t end = start + block < n ? start + block : n;
       int64_t blockSum = 0;
-      for (size_t i = start; i < end; ++i) blockSum += gMicBuffer[i];
+      for (size_t i = start; i < end; ++i) blockSum += samples[i];
       const int32_t blockMean = static_cast<int32_t>(blockSum / static_cast<int64_t>(end - start));
       uint64_t blockSquares = 0;
       int32_t peak = 0;
       for (size_t i = start; i < end; ++i) {
-        const int32_t deviation = gMicBuffer[i] - blockMean;
+        const int32_t deviation = samples[i] - blockMean;
         blockSquares += static_cast<uint64_t>(deviation * deviation);
         if (abs(deviation) > peak) peak = abs(deviation);
       }
@@ -182,17 +196,21 @@ void micLast(Console &console, audio::AudioSubsystem &audio) {
 }
 
 void micCommand(Console &console, int argc, const char *const *argv, void *context) {
+  Application &app = appOf(context);
+  const MicBuffer buffer = micBufferOf(app);
   if (argc > 1 && isWord(argv[1], "last")) {
-    micLast(console, appOf(context).audio());
+    micLast(console, app.audio(), buffer.samples);
     return;
   }
-  uint32_t ms = 1000;
-  if (argc > 1 && !parseNumber(argv[1], 1000, &ms)) {
-    console.print("uso: mic [ms], ate 1000; mic last\r\n");
+  // Duração que cabe no buffer; os 100 ms descartados na partida do microfone não ocupam espaço.
+  const uint32_t rate = app.audio().sampleRateHz() > 0 ? app.audio().sampleRateHz() : 16000;
+  const uint32_t limitMs = static_cast<uint32_t>(buffer.capacity * 1000 / rate);
+  uint32_t ms = 1000 < limitMs ? 1000 : limitMs;
+  if (argc > 1 && !parseNumber(argv[1], limitMs, &ms)) {
+    console.printf("uso: mic [ms], ate %lu; mic last\r\n", static_cast<unsigned long>(limitMs));
     return;
   }
-  const Status status = appOf(context).audio().startRecording(
-      gMicBuffer, sizeof(gMicBuffer) / sizeof(gMicBuffer[0]), ms);
+  const Status status = app.audio().startRecording(buffer.samples, buffer.capacity, ms);
   if (status == Status::NotPermitted) {
     console.print("mic: desabilitado; use config audio.mic_enabled 1\r\n");
   } else if (isOk(status)) {

@@ -11,6 +11,7 @@
 #include <Arduino.h>
 #include <SPI.h>
 #include <Wire.h>
+#include <esp_heap_caps.h>
 
 #include "dbmo/app/application.h"
 #include "dbmo/app/console.h"
@@ -184,6 +185,17 @@ void setup() {
   (void)gConsole.registerCommand({"log", "ultimas mensagens de log", logCommand, nullptr});
   (void)gApp.registerCommands(gConsole);
   gConsole.setEcho(true);
+
+  // Buffer do comando "mic" na PSRAM: 10 s a 16 kHz (320 KB). Sem PSRAM, o comando fica com
+  // o buffer próprio de 1 s.
+  constexpr size_t kMicSamples = 160000;
+  auto *micBuffer =
+      static_cast<int16_t *>(heap_caps_malloc(kMicSamples * sizeof(int16_t), MALLOC_CAP_SPIRAM));
+  if (micBuffer != nullptr) {
+    gApp.setRecordBuffer(micBuffer, kMicSamples);
+  } else {
+    DBMO_LOGW(kTag, "sem PSRAM para o microfone: gravacao de ate 1 s");
+  }
 
   const dbmo::Status status = gApp.begin();
   if (!dbmo::isOk(status)) DBMO_LOGE(kTag, "inicializacao falhou: %s", dbmo::toString(status));

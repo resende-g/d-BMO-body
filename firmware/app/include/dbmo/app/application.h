@@ -159,6 +159,14 @@ class Application {
   rosto::FaceSubsystem &face() { return face_; }
   input::InputSubsystem &input() { return input_; }
   audio::AudioSubsystem &audio() { return audio_; }
+  // Buffer do comando "mic". A plataforma pode dar um maior (na placa, 10 s na PSRAM); sem
+  // ele, o comando usa o buffer próprio de 1 s.
+  void setRecordBuffer(int16_t *samples, size_t capacity) {
+    recordBuffer_ = samples;
+    recordCapacity_ = capacity;
+  }
+  int16_t *recordBuffer() const { return recordBuffer_; }
+  size_t recordCapacity() const { return recordCapacity_; }
   infrared::InfraredSubsystem &infrared() { return infrared_; }
   infrared::IrLibrary &irLibrary() { return irLibrary_; }
   nfc::NfcSubsystem &nfc() { return nfc_; }
@@ -195,6 +203,8 @@ class Application {
   void composeAbout();
 
   Hardware hw_;
+  int16_t *recordBuffer_ = nullptr;
+  size_t recordCapacity_ = 0;
   NullI2cBus nullI2c_;
   NullSpiDevice nullSpi_;
   NullFileSystem nullFs_;

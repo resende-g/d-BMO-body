@@ -935,6 +935,36 @@ void test_mic_command_records_only_when_enabled_and_logs_the_peak() {
   dbmo::logger().clearSinks();
 }
 
+void test_mic_command_uses_the_longer_buffer_the_platform_gives() {
+  // Na placa, main.cpp entrega um buffer na PSRAM: o rosto "ouvindo" passa de 1 s para 10 s.
+  dbmo::mock::RecordingLogSink sink;
+  TEST_ASSERT_OK(dbmo::logger().addSink(&sink));
+  Application app(rig->fullHardware());
+  static int16_t longBuffer[48000];  // 3 s a 16 kHz
+  app.setRecordBuffer(longBuffer, 48000);
+  TEST_ASSERT_OK(app.begin());
+  CapturingOutput output;
+  dbmo::app::Console console(output);
+  TEST_ASSERT_OK(app.registerCommands(console));
+  TEST_ASSERT_OK(console.execute("config audio.mic_enabled 1"));
+  rig->run(app, 50);
+
+  TEST_ASSERT_OK(console.execute("mic 3001"));
+  TEST_ASSERT_TRUE(output.contains("uso: mic [ms], ate 3000"));
+  output.clear();
+  TEST_ASSERT_OK(console.execute("mic 3000"));
+  TEST_ASSERT_TRUE(output.contains("gravando 3000 ms"));
+  rig->run(app, 3200);
+  TEST_ASSERT_FALSE(app.audio().recording());
+  // O microfone falso entrega amostras mais rápido que o tempo real: o que importa é que a
+  // gravação passou de 1 s de amostras, o tamanho do buffer próprio.
+  TEST_ASSERT_TRUE(app.audio().recordedSamples() > 16000);
+  output.clear();
+  TEST_ASSERT_OK(console.execute("mic last"));
+  TEST_ASSERT_TRUE(output.contains("media por 1000 ms:"));  // trechos de 1 s acima de 1 s
+  dbmo::logger().clearSinks();
+}
+
 void test_console_commands() {
   Application app(rig->fullHardware());
   TEST_ASSERT_OK(app.begin());
@@ -1053,6 +1083,7 @@ int main() {
   RUN_TEST(test_card_removed_in_use_keeps_the_device_running);
   RUN_TEST(test_peripheral_connected_after_boot_is_picked_up);
   RUN_TEST(test_mic_command_records_only_when_enabled_and_logs_the_peak);
+  RUN_TEST(test_mic_command_uses_the_longer_buffer_the_platform_gives);
   RUN_TEST(test_console_commands);
   RUN_TEST(test_long_run_is_stable);
   return UNITY_END();
