@@ -120,7 +120,10 @@
 #define RG_SCREEN_ROTATE            0
 #define RG_SCREEN_VISIBLE_AREA      {0, 0, 0, 0}
 #define RG_SCREEN_SAFE_AREA         {0, 0, 0, 0}
-// Sequência do alvo esp32-s3-devkit; só o valor do MADCTL (0x36) é do d-BMO.
+// Sequência do alvo esp32-s3-devkit; o MADCTL (0x36) e o 2º byte do 0xB6 são do d-BMO. O alvo de
+// origem usa 0xB6 = 0x0A, 0xA2 (SS=1, colunas do painel invertidas). Com o MADCTL 0x28, tirado de
+// um driver com SS=0, isso deixou a imagem de cabeça para baixo e espelhada na bancada em
+// 25/11/2026. 0x82 (SS=0) é o valor do Adafruit_ILI9341 do firmware próprio, cuja imagem saiu certa.
 #define RG_SCREEN_INIT()                                                                                         \
     ILI9341_CMD(0xCF, 0x00, 0xc3, 0x30);                                                                         \
     ILI9341_CMD(0xED, 0x64, 0x03, 0x12, 0x81);                                                                   \
@@ -134,7 +137,7 @@
     ILI9341_CMD(0xC7, 0x91);                 /* VCM control2 */                                                  \
     ILI9341_CMD(0x36, DBMO_RG_LCD_MADCTL);   /* Memory Access Control */                                         \
     ILI9341_CMD(0xB1, 0x00, 0x10);           /* Frame Rate Control (1B=70, 1F=61, 10=119) */                     \
-    ILI9341_CMD(0xB6, 0x0A, 0xA2);           /* Display Function Control */                                      \
+    ILI9341_CMD(0xB6, 0x0A, 0x82);           /* Display Function Control: SS=0, como o Adafruit (ver acima) */   \
     ILI9341_CMD(0xF6, 0x01, 0x30);                                                                               \
     ILI9341_CMD(0xF2, 0x00);                 /* 3Gamma Function Disable */                                       \
     ILI9341_CMD(0x26, 0x01);                 /* Gamma curve selected */                                          \
