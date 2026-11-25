@@ -7,7 +7,8 @@
 //   - targets/esp32-s3-devkit/config.h: estrutura, sequência de init do ILI9341 320x240, DAC I2S externo;
 //   - targets/fri3d-2024/config.h: mesmo módulo N16R8, tela e cartão SD no mesmo host SPI.
 //
-// ESTADO: o launcher compila na CI (ESP-IDF 4.4.8); nunca executado no hardware. A pinagem é a
+// ESTADO: a imagem completa compila (ESP-IDF 4.4.8, perfil de bancada) e o launcher do perfil
+// padrão compila na CI; nunca executado no hardware. A pinagem é a
 // do perfil "target" de firmware/config/include/dbmo/config/pins.h (PROPOSTA do v1); na bancada
 // só existem a tela e três botões diretos.
 // Ver firmware/retro-go/README.md (tabela de status, limitações e pendências).
