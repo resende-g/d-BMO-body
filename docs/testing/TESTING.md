@@ -155,7 +155,7 @@ no cartão, e no boot seguinte apareceu `microfone: desabilitado` e `audio.mic_e
 
 Limites da evidência:
 
-- O desenho do rosto não foi confirmado nesta sessão: só o ID da tela e o `status`.
+- O rosto aparece na tela, relatado pelo Gabriel depois das etapas acima, sem foto.
 - A memória interna continua com `audio.mic_enabled=1`; ela só é regravada num boot sem
   cartão.
 - No cartão, só o arquivo de configuração foi gravado e lido. O log no cartão e a pasta de IR
