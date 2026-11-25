@@ -121,6 +121,47 @@ Executado num macOS (Darwin 27), sem placa:
 Não executado: compilação do Bruce e do Retro-Go com o ESP-IDF (ficam para a CI) e qualquer
 teste na placa.
 
+### Tela branca resolvida e SD da tela lendo e gravando (2026-11-25)
+
+**Montagem:** fases A a E do [mapa v0.3](../hardware/BREADBOARD_MAP.md), mais os 4 fios do SD
+da tela, cujos pinos foram soldados em 24/11: SD_MOSI, SD_SCK e SD_MISO na linha c das colunas
+8, 11 e 14 (os nós do SPI) e SD_CS no GPIO 21 (J3 pino 18). Essa ligação está só no artefato
+da montagem com o SD; o `BREADBOARD_MAP.md` ainda não a traz. Placa em
+`/dev/cu.usbmodem2101`, com o firmware que já estava gravado (`version`:
+`d-BMO v1 firmware 0.1.0`; o commit não foi registrado). Console pelo script pyserial.
+Cartão: SD de 2 GB em FAT32, volume `DBMO`, colocado e tirado com o USB desligado.
+
+| Etapa | Montagem | Saída | Leitura |
+|---|---|---|---|
+| 1 | Sem cartão; LED da tela ligado no lugar errado (posição não registrada); 10, 11 e 12 da DevKitC sem fio | `ID do controlador 0xFFFF`; `CC1101 nao respondeu: Timeout`; `sdCommand(): Card Failed!` | Nenhum dos três responde pelo MISO |
+| 2 | LED corrigido; 10, 11 e 12 ainda sem fio | `ID do controlador 0x0000`; `CC1101 nao respondeu: HardwareAbsent` | Continua sem SPI |
+| 3 | 10 (CS da tela), 11 (MOSI) e 12 (SCK) ligados; sem cartão | `controlador 0x9341`; `CC1101 PARTNUM=0x00 VERSION=0x14`; `radio: Idle, 433920000 Hz`; `storage: Absent` | Tela e CC1101 normais com os fios do SD no barramento |
+| 4 | Com o cartão | `cartao: Ok`; `cartao montado`; `storage: Ready (Ok)`; `sd` respondeu `cartao: Ok`; tela e CC1101 `Ready` | O SD responde no SPI dividido |
+| 5 | `save` e reinício | `gravar configuracao: Ok`; no boot seguinte, `configuracao carregada (35 chaves, cartao)` | Escrita e leitura no cartão |
+
+**Leitura.** Nesta sessão, as falhas vieram dos fios faltando: sem o SCK e o MOSI da DevKitC,
+nenhum dos três dispositivos do SPI recebe nada, e sem o CS a tela não é selecionada. Se a
+tela branca de 24/11 teve a mesma causa, não se sabe.
+
+**Microfone habilitado sem querer.** No boot sem cartão, a configuração veio da memória interna
+(`configuracao carregada (34 chaves, memoria interna)`) com `microfone: habilitado`. A causa
+foram os `config audio.mic_enabled 1` de 22/11: toda chave alterada é gravada sozinha 2 s
+depois (`kSaveDelayMs`), mesmo sem `save`. Com o cartão sem arquivo de configuração, o boot
+registrou `nenhuma configuracao salva: usando os padroes`, mas o microfone continuou
+habilitado: `Application::begin` carrega a configuração da memória interna antes da do cartão,
+e o log não diz isso (imprecisão do log, não corrigida). O `save` da etapa 5 gravou
+`audio.mic_enabled=1` no cartão. Em seguida, `config audio.mic_enabled 0` foi gravado sozinho
+no cartão, e no boot seguinte apareceu `microfone: desabilitado` e `audio.mic_enabled=0`.
+
+Limites da evidência:
+
+- O desenho do rosto não foi confirmado nesta sessão: só o ID da tela e o `status`.
+- A memória interna continua com `audio.mic_enabled=1`; ela só é regravada num boot sem
+  cartão.
+- No cartão, só o arquivo de configuração foi gravado e lido. O log no cartão e a pasta de IR
+  não foram conferidos, e o cartão não foi lido no Mac depois.
+- A posição em que o fio do LED estava antes não foi registrada.
+
 ### Primeira gravação na placa (2026-11-21)
 
 Firmware próprio, perfil `dbmo-bench`, gravado pela USB nativa da DevKitC-1 N16R8
@@ -437,7 +478,10 @@ contra GND não foram relatados.
 **Firmware:** `d33f036` (comando `mic`), gravado com
 `pio run -e dbmo-bench -t upload --upload-port /dev/cu.usbmodem1101`; console pelo script
 pyserial. O microfone foi habilitado em cada sessão com `config audio.mic_enabled 1`, sem
-`save`: a configuração não ficou gravada.
+`save`. **Correção em 2026-11-25:** o texto original dizia que, sem `save`, a configuração não
+ficou gravada. Está errado: toda chave alterada é gravada sozinha 2 s depois
+(`kSaveDelayMs`), e o microfone ficou habilitado na memória interna (ver a entrada de
+2026-11-25).
 
 | Etapa | Comando | Saída | Leitura |
 |---|---|---|---|
