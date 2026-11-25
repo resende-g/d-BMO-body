@@ -7,10 +7,12 @@ Alvo de build do [Retro-Go](https://github.com/ducalex/retro-go) para o d-BMO v1
 
 ## Estado
 
-- **O launcher compila na CI** desde 12/11/2026 (tarefa `retro-go` do fluxo `CI`: ESP-IDF
-  4.4.8 no contêiner `espressif/idf:v4.4.8`, alvo `dbmo-v1`, `launcher.bin` gerado). Os
-  emuladores e a imagem completa (`build-img`) **ainda não foram compilados**. O que mais foi
-  conferido está em [Declaração de verificação](#declaração-de-verificação).
+- **A imagem completa compila no perfil de bancada** (`DBMO_RG_BENCH=1`): launcher e os quatro
+  emuladores numa `.img` de 6,5 MB, compilada em 24/11/2026 no contêiner `espressif/idf:v4.4.8`
+  (ver [Imagem de bancada](#imagem-de-bancada)). A tarefa `retro-go` do fluxo `CI` passa a gerar
+  essa imagem e a publicá-la como artefato, e também compila o launcher no perfil padrão
+  (MCP23017), como fazia desde 12/11/2026. O que mais foi conferido está em
+  [Declaração de verificação](#declaração-de-verificação).
 - **Nunca rodou no hardware.** Nada aqui afirma que o Retro-Go funciona no d-BMO.
 - A pinagem é a do perfil `target` de
   [`firmware/config/include/dbmo/config/pins.h`](../config/include/dbmo/config/pins.h), que é uma
@@ -247,24 +249,67 @@ usado para outro alvo, rodar `clean` antes: o `sdkconfig` gerado em cada app é 
 
 A imagem da Espressif define `IDF_PATH=/opt/esp/idf` e ativa o ESP-IDF no `ENTRYPOINT`
 (ESP-IDF v4.4.8, `tools/docker/Dockerfile:56,86` e `tools/docker/entrypoint.sh:4`). Com
-`docker run` basta chamar o script:
+`docker run` basta chamar o script. Este é o comando que gerou a imagem de bancada em 24/11/2026,
+num Mac com Apple Silicon (a tag tem variante arm64):
 
 ```bash
 docker run --rm -v "$PWD":/project -w /project -e XDG_CACHE_HOME=/project/build/cache \
-  espressif/idf:v4.4.8 firmware/retro-go/build.sh build-img
+  -e DBMO_RG_BENCH=1 \
+  -e GIT_CONFIG_COUNT=1 -e GIT_CONFIG_KEY_0=safe.directory -e GIT_CONFIG_VALUE_0='*' \
+  espressif/idf:v4.4.8 firmware/retro-go/build.sh --fatsize 0x200000 build-img
 ```
 
+As três variáveis `GIT_CONFIG_*` liberam o git do contêiner para ler o clone do Retro-Go, que
+pertence a outro usuário (sem elas a versão sai `desconhecido-dbmo`). Não use
+`git config --global` dentro do contêiner a partir de um worktree do git: o `.git` do worktree
+aponta para uma pasta do computador que não está montada, e o git para com `fatal: not a git
+repository`.
+
 Num job do GitHub Actions com `container: espressif/idf:v4.4.8`, o `ENTRYPOINT` não roda nos
-passos; ativar o ESP-IDF no próprio passo:
+passos; ativar o ESP-IDF no próprio passo. É o que a tarefa `retro-go` do fluxo `CI` faz:
 
 ```bash
+git config --global --add safe.directory '*'
 . "$IDF_PATH/export.sh"
-XDG_CACHE_HOME="$PWD/build/cache" firmware/retro-go/build.sh build-img
+DBMO_RG_BENCH=1 XDG_CACHE_HOME="$PWD/build/cache" firmware/retro-go/build.sh --fatsize 0x200000 build-img
 ```
 
 A imagem sai em `build/cache/d-bmo/retro-go-4ced12066975/retro-go_<versão>_dbmo-v1.img`
-(`rg_tool.py:224`; a versão padrão é `4ced120-dbmo`). Na CI roda a variante sem argumentos
-(só o launcher); `build-img` nunca foi executado.
+(`rg_tool.py:224`; a versão padrão é `4ced120-dbmo`). Na CI ela é publicada como o artefato
+`dbmo-retro-go-bancada` (guardado por 14 dias), na página da execução do fluxo `CI`. Depois a
+mesma tarefa compila o launcher no perfil padrão, para manter conferido o caminho do MCP23017.
+
+### Imagem de bancada
+
+Compilada em 24/11/2026 com o comando de `docker run` acima: ESP-IDF 4.4.8, alvo `dbmo-v1`,
+`DBMO_RG_BENCH=1`, sem rede, com a partição `vfs` de 2 MB. São os cinco apps padrão do
+`rg_tool.py` (`rg_tool.py:17`):
+
+| Subtipo | App | Sistemas | Binário | Partição na imagem |
+|---|---|---|---:|---:|
+| `ota_0` | `launcher` | menu, explorador de arquivos | 406.688 B | 1.024 KiB |
+| `ota_1` | `retro-core` | NES, Game Boy, Game Boy Color, SNES, Master System, Game Gear, ColecoVision, PC Engine, Lynx, Game & Watch | 945.584 B | 1.024 KiB |
+| `ota_2` | `prboom-go` | DOOM | 786.496 B | 832 KiB |
+| `ota_3` | `gwenesis` | Mega Drive | 990.432 B | 1.024 KiB |
+| `ota_4` | `fmsx` | MSX | 592.080 B | 640 KiB |
+| dados FAT | `vfs` | reserva do SD no perfil de bancada | vazia | 2.048 KiB |
+
+Os sistemas de cada app vêm de `launcher/main/applications.c:692-708`.
+
+- **Tamanho:** a imagem tem 6.816.000 bytes (6,5 MB de partições mais 256 bytes de rodapé do
+  `mkfw.py`, `tools/mkfw.py:90-102`). A flash do N16R8 tem 16 MB (16.777.216 bytes): a imagem
+  ocupa 41 % dela e sobram cerca de 9,5 MB livres depois da última partição.
+- **Avisos do empacotamento:** o `prboom-go` passou 64 bytes e o `fmsx` 2.256 bytes do tamanho
+  declarado no `rg_tool.py` (`:20-27`). O `mkfw.py` aumenta a partição até o próximo múltiplo
+  de 64 KiB e monta a tabela já com o tamanho novo (`tools/mkfw.py:25-36`), por isso as duas
+  ficaram com 832 KiB e 640 KiB. É o comportamento previsto do upstream, não um erro.
+- **Avisos do compilador:** um só, repetido uma vez por app: `unused variable 'raw_value'` em
+  `components/retro-go/rg_input.c:71`, porque o perfil de bancada não tem driver de bateria
+  (`RG_BATTERY_DRIVER 0`). Nenhum erro.
+- **Não é reprodutível byte a byte:** o rodapé guarda a hora do empacotamento
+  (`tools/mkfw.py:99`), então a imagem da CI tem outro SHA-256.
+- A imagem inclui o fMSX, que tem licença própria, não comercial (ver
+  [Origem e licença](#origem-e-licença)). O artefato da CI é privado ao repositório.
 
 ### Conferência sem ESP-IDF
 
@@ -279,37 +324,62 @@ firmware.
 
 ## Como gravar
 
-A gravação é pela imagem `.img`, na porta USB nativa (USB Serial/JTAG, GPIO 19/20):
+A gravação é pela imagem `.img` inteira, a partir do endereço 0, na porta USB nativa (USB
+Serial/JTAG, GPIO 19/20). **Isso apaga o firmware anterior** (o Bruce, por exemplo). Nada disto
+foi executado: o Retro-Go nunca foi gravado na placa.
+
+**Imagem de bancada da CI.** Baixar o artefato `dbmo-retro-go-bancada` da execução do fluxo
+`CI` (vem num `.zip`), descompactar e gravar. No Mac, o `esptool` que o PlatformIO já instalou
+serve (v5.3.0, que usa `write-flash` e `--flash-size`):
 
 ```bash
-firmware/retro-go/build.sh --port /dev/ttyACM0 install     # compila tudo, gera a imagem e grava
+~/.platformio/penv/bin/python ~/.platformio/packages/tool-esptoolpy/esptool.py --chip esp32s3 --port /dev/cu.usbmodem<N> write-flash --flash-size detect 0x0 retro-go_4ced120-dbmo_dbmo-v1.img
 ```
 
-O `install` grava a imagem inteira a partir do endereço 0 (`rg_tool.py:144-150,222-231`), o que
-apaga o firmware anterior (o Bruce, por exemplo). Para gravar à mão uma imagem pronta, o comando
-do upstream é `esptool.py write_flash --flash_size detect 0x0 <imagem>` (`BUILDING.md:61`).
-Depois da primeira gravação dá para regravar um app só: `build.sh --port <porta> flash launcher`,
-e acompanhar o log com `build.sh --port <porta> monitor launcher` (`BUILDING.md:69-74`).
+É o comando do upstream (`esptool.py write_flash --flash_size detect 0x0 <imagem>`,
+`BUILDING.md:61`), com os nomes novos das opções. Com o ESP-IDF ativado, `esptool.py` e os
+nomes antigos também servem.
 
-O nome da porta depende do sistema (`/dev/ttyACM0` é o usual no Linux). Se a placa não entrar em
-modo de gravação sozinha, usar o procedimento da própria placa (na DevKitC, segurar BOOT e
-apertar RESET). Essas duas informações não foram verificadas nesta sessão.
-
-O cartão SD tem que estar em FAT32. O Retro-Go procura as ROMs em `/roms/<sistema>`, com o
-nome curto de cada sistema: `nes`, `gb`, `gbc`, `sms`, `gg` e os demais
-(`rg_storage.h:14`; `launcher/main/applications.c:680,692-702`).
-
-### Teste só com a bancada de hoje
-
-Com tela e três botões, sem SD:
+**Compilando e gravando de uma vez**, com o ESP-IDF ativado:
 
 ```bash
-DBMO_RG_BENCH=1 firmware/retro-go/build.sh --port /dev/ttyACM0 --fatsize 0x200000 install launcher
+DBMO_RG_BENCH=1 firmware/retro-go/build.sh --port /dev/ttyACM0 --fatsize 0x200000 install
 ```
+
+O `install` faz o mesmo `write_flash` em 0 (`rg_tool.py:144-150,222-231`). Depois da primeira
+gravação dá para regravar um app só: `build.sh --port <porta> flash launcher`, e acompanhar o log
+com `build.sh --port <porta> monitor launcher` (`BUILDING.md:69-74`).
+
+O nome da porta depende do sistema (`/dev/cu.usbmodem<N>` no macOS, `/dev/ttyACM0` no Linux). Se
+a placa não entrar em modo de gravação sozinha, usar o procedimento da própria placa (na
+DevKitC, segurar BOOT e apertar RESET). Essas duas informações não foram verificadas.
 
 `--fatsize` cria a partição FAT interna `vfs` (`rg_tool.py:93-94`), que o perfil de bancada usa
-quando o SD não monta (`rg_storage.c:168-183`). O valor tem que ser numérico: o `mkfw.py` o
-converte com `int()` (`tools/mkfw.py:19`), apesar de a ajuda do `rg_tool.py` citar `500K` e `5M`.
+quando o SD não monta (`rg_storage.c:168-183`). Sem rede não há como copiar ROMs para ela: pelo
+código, ela só dá ao launcher onde guardar a configuração quando não há cartão. O valor tem que ser numérico: o
+`mkfw.py` o converte com `int()` (`tools/mkfw.py:19`), apesar de a ajuda do `rg_tool.py` citar
+`500K` e `5M`.
+
+### ROMs no cartão SD
+
+O cartão tem que estar em FAT32 (o de teste é o de 2 GB com o volume `DBMO`). O Retro-Go procura
+as ROMs em `/roms/<sistema>` (`rg_storage.h:14`; `launcher/main/applications.c:680`):
+
+| Sistema | Pasta no cartão | Extensões aceitas (`applications.c:692-695`) |
+|---|---|---|
+| NES | `/roms/nes` | `.nes`, `.fc`, `.fds`, `.nsf`, `.zip` |
+| Game Boy | `/roms/gb` | `.gb`, `.gbc`, `.zip` |
+| Game Boy Color | `/roms/gbc` | `.gbc`, `.gb`, `.zip` |
+
+Os demais sistemas seguem a mesma regra, com o nome curto de cada um (`sms`, `gg`, `md`, `pce`,
+`doom`, `msx` e outros; `applications.c:692-708`). O `.7z` não é aceito: descompactar antes, ou
+recompactar em `.zip`. Os saves ficam em `/retro-go/saves/<sistema>` e a configuração em
+`/retro-go/config` (`rg_storage.h:8-15`). O launcher ignora arquivos que começam com ponto
+(`applications.c:33-35`), então os `._*` que o macOS cria no FAT32 não aparecem como jogos.
+
+O cartão de teste ainda não respondeu na bancada (24/11/2026: nenhuma resposta ao CMD0); até
+isso ser resolvido, o perfil de bancada deve recorrer à partição `vfs`, sem jogos (pela leitura
+do código; não testado).
 
 ## sdkconfig: PSRAM octal, flash e console
 
@@ -398,11 +468,13 @@ dependem de que ela os ignore.
 
 ## Pendências bloqueantes
 
-1. **Compilar.** O alvo nunca passou pelo ESP-IDF. O primeiro passo é um job de CI com
-   `espressif/idf:v4.4.8` rodando `firmware/retro-go/build.sh build-img`.
+1. **Rodar na placa.** A imagem completa compila (ver [Imagem de bancada](#imagem-de-bancada)),
+   mas nunca foi gravada nem executada. O primeiro teste é a imagem de bancada com a tela e os
+   três botões.
 2. **MCP23017 ausente.** Sem ele o perfil padrão não tem botões. Bloqueia o uso, não o build.
-3. **SD no barramento compartilhado ainda não foi ligado nem testado.** O Retro-Go precisa de
-   armazenamento para ROMs e configuração; sem ele o launcher mostra erro de cartão
+3. **SD no barramento compartilhado ainda não funciona.** O leitor da tela foi soldado em
+   24/11/2026, mas o cartão não respondeu ao CMD0 (diagnóstico da fiação pendente). O Retro-Go
+   precisa de armazenamento para ROMs e configuração; sem ele o launcher mostra erro de cartão
    (`launcher/main/main.c:453-457`).
 4. **Power-latch não decidido.** Com o latch montado e sem `DBMO_RG_ENABLE_POWER_HOLD`, nada
    segura a alimentação depois que o botão é solto. O desligamento por software exigiria alterar
@@ -416,8 +488,9 @@ dependem de que ela os ignore.
 
 ## Declaração de verificação
 
-Nada foi compilado com o ESP-IDF e nada foi executado no hardware nesta sessão. O que segue foi
-conferido por leitura do código, com arquivo e linha.
+Nada foi executado no hardware. A compilação com o ESP-IDF está em
+[Executado com o ESP-IDF](#executado-com-o-esp-idf); o resto foi conferido por leitura do código,
+com arquivo e linha.
 
 **Retro-Go, commit `4ced120669750ca7228fd0414211430c1d923166`:**
 
@@ -475,5 +548,16 @@ conferido por leitura do código, com arquivo e linha.
   compila.
 - Cada pino do `config.h` comparado com o `pins.h` por um script: 40 linhas, nenhuma divergência.
 
-**Não feito:** build com o ESP-IDF; execução da ferramenta de configuração do ESP-IDF; qualquer
-teste em hardware; conferência do `docker run` e do job de CI descritos acima.
+### Executado com o ESP-IDF
+
+- 12/11/2026, CI: launcher no perfil padrão, ESP-IDF 4.4.8 (`docs/testing/TESTING.md`).
+- 24/11/2026, num Mac com Apple Silicon, Docker Desktop e `espressif/idf:v4.4.8` (arm64): o
+  `docker run` de [Docker e CI](#docker-e-ci), com `DBMO_RG_BENCH=1` e `--fatsize 0x200000`.
+  Os cinco apps compilaram e o `mkfw.py` gerou `retro-go_4ced120-dbmo_dbmo-v1.img` com
+  6.816.000 bytes; avisos e tamanhos em [Imagem de bancada](#imagem-de-bancada). Com isso a
+  ferramenta de configuração do ESP-IDF rodou com o `sdkconfig` do alvo, sem erro.
+- A tarefa `retro-go` da CI foi alterada para gerar e publicar essa imagem; ainda não rodou na
+  CI com a alteração.
+
+**Não feito:** qualquer teste em hardware; build da imagem completa no perfil padrão (MCP23017),
+do qual só o launcher compila na CI.

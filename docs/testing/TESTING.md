@@ -610,7 +610,7 @@ passou por verificação independente. Isso deve ser refeito antes de confiar no
 |---|---|
 | Qualquer teste em hardware (`tests/hardware/`, firmware próprio na placa) | Não executado: sem acesso à bancada. A CI só prova que compila |
 | Bruce e Retro-Go na placa | Compilados na CI; **nunca gravados nem executados** |
-| Emuladores do Retro-Go e imagem completa (`build-img`) | Não compilados; só o launcher |
+| Emuladores do Retro-Go e imagem completa (`build-img`) | Compilados em 24/11/2026 no contêiner `espressif/idf:v4.4.8`, no perfil de bancada (imagem de 6,5 MB; ver `firmware/retro-go/README.md`); nunca gravados |
 | Testes com clang + sanitizers | Não executado no computador de desenvolvimento (falta a biblioteca de runtime); a CI roda clang sem sanitizers |
 | Medições elétricas, de consumo e de RF | Não executadas |
 | Cobertura de ramos | Não medida (só a de linhas, acima) |
