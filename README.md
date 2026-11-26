@@ -212,11 +212,11 @@ serigrafia da placa.
 
 | Função | GPIO | Nota |
 |---|---:|---|
-| VBAT sense | 1 | ADC1; divisor 100k/100k, ×2 no firmware |
+| VBAT sense | 1 | ADC1; divisor 100k/100k, ×2 no firmware. Vem da placa de energia pelo conector placa a placa |
 | I²S SD IN (mic) | 7 | mic em 3,3 V, L/R no GND |
 | I²C SDA / SCL | 8 / 9 | pull-up 4,7k; PN532 0x24, MCP23017 0x20, EEPROM do cartucho |
 | CS Display | 10 | |
-| SPI MOSI / SCK / MISO | 11 / 12 / 13 | compartilhado: tela, CC1101, microSD, cartucho |
+| SPI MOSI / SCK / MISO | 11 / 12 / 13 | compartilhado: tela, CC1101, microSD |
 | CS CC1101 | 14 | |
 | CC1101 GDO0 | 15 | interrupção RF |
 | Display BLK | 16 | backlight (3,3 V fixo ou PWM) |
@@ -225,13 +225,13 @@ serigrafia da placa.
 | CS microSD | 21 | slot do módulo da tela |
 | Botão de energia | 2 | GPIO RTC (acorda do deep sleep) fora dos pinos de strapping. Estava no GPIO 0 até 2026-11-25: segurar o botão ao ligar entraria no modo de download e o aparelho não ligaria. O GPIO 0 fica só como BOOT (ver [`docs/hardware/GPIO_MAP.md`](docs/hardware/GPIO_MAP.md), risco 1) |
 | Shutdown do MAX98357A (SD) | 3 | strapping (JTAG); seguro como saída depois do boot |
-| CS do cartucho | 38 | na DevKitC, 38 ou 48 é o LED RGB, conforme a revisão: na bancada, usar o que não for LED |
 | IR RX | 39 | |
 | I²S BCLK / LRC / DOUT | 40 / 41 / 42 | DOUT para o MAX98357A |
-| UART do cartucho TX / RX | 43 / 44 | UART0. **Risco aberto:** mesmo com o console no USB, a ROM imprime o log de boot no GPIO 43 a cada partida (ver `docs/hardware/GPIO_MAP.md`, risco 2) |
-| Power-latch (HOLD) | 48 | segura a alimentação ligada depois do clique no botão |
+| Power-latch (HOLD) | 48 | segura a alimentação ligada depois do clique no botão; vai à placa de energia |
+| Status do carregador | 6 | GPIO RTC: acorda o chip ao ligar o carregador; vem da placa de energia |
 | IR TX | 47 | |
-| Livre | 2, 4, 5, 6 | ADC1; eram dos analógicos, retirados em 25/11/2026. Na bancada, o 2 é o botão OK e o 4 / 5 são o IR RX / TX no `bmo.ini` |
+| Livre | 4, 5 | ADC1; eram dos analógicos, retirados em 25/11/2026. Na bancada, o 4 / 5 são o IR RX / TX no `bmo.ini` |
+| Livre | 38, 43, 44 | eram do cartucho, retirado em 25/11/2026. 38: LED RGB na DevKitC v1.1. 43 / 44: UART0, com o log de boot da ROM e a ponte USB-serial da DevKitC |
 | Livre | 45, 46 | strapping: o 45 define a tensão da flash no boot, **não usar** como saída que possa estar em alto no boot |
 
 **MCP23017 (0x20):** 10 botões (D-pad 4, ação 4, select/start 2), botão ao GND com pull-up

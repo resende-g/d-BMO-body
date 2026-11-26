@@ -58,7 +58,10 @@ namespace target {
 // GPIO RTC fora dos pinos de strapping: acorda do deep sleep e não é lido como strap no reset.
 // Estava no GPIO 0 até 2026-11-25 (risco 1 do GPIO_MAP.md); o GPIO 0 ficou só como BOOT.
 inline constexpr int8_t kPowerButton = 2;
-inline constexpr int8_t kVbatSense = 1;    // ADC1; divisor 100k/100k
+inline constexpr int8_t kVbatSense = 1;  // ADC1; divisor 100k/100k, na placa de energia
+// Status do carregador, da placa de energia. GPIO RTC (acorda ao ligar o carregador) fora dos
+// pinos que a bancada usa (o IR da bancada está no 4 e no 5).
+inline constexpr int8_t kChargerStatus = 6;
 inline constexpr int8_t kAmpShutdown = 3;  // MAX98357A SD_MODE; strapping (JTAG)
 inline constexpr int8_t kI2sMicData = 7;   // INMP441 SD
 inline constexpr int8_t kI2cSda = 8;
@@ -75,19 +78,17 @@ inline constexpr int8_t kDisplayReset = 18;
 inline constexpr int8_t kUsbDm = 19;
 inline constexpr int8_t kUsbDp = 20;
 inline constexpr int8_t kSdCs = 21;
-inline constexpr int8_t kCartridgeCs = 38;  // na DevKitC, 38 ou 48 é o LED RGB (revisão)
 inline constexpr int8_t kIrRx = 39;
 inline constexpr int8_t kI2sBclk = 40;
 inline constexpr int8_t kI2sLrclk = 41;
-inline constexpr int8_t kI2sSpeakerData = 42;   // MAX98357A DIN
-inline constexpr int8_t kCartridgeUartTx = 43;  // UART0 TX
-inline constexpr int8_t kCartridgeUartRx = 44;  // UART0 RX
+inline constexpr int8_t kI2sSpeakerData = 42;  // MAX98357A DIN
 inline constexpr int8_t kIrTx = 47;
-inline constexpr int8_t kPowerHold = 48;  // power-latch
+inline constexpr int8_t kPowerHold = 48;  // power-latch, na placa de energia
 
 inline constexpr PinAssignment kPins[] = {
     {"POWER_BUTTON", kPowerButton, PinStatus::Proposed},
     {"VBAT_SENSE", kVbatSense, PinStatus::Proposed},
+    {"CHARGER_STATUS", kChargerStatus, PinStatus::Proposed},
     {"AMP_SHUTDOWN", kAmpShutdown, PinStatus::Proposed},
     {"I2S_MIC_DATA", kI2sMicData, PinStatus::BenchValidated},
     {"I2C_SDA", kI2cSda, PinStatus::Proposed},
@@ -104,21 +105,20 @@ inline constexpr PinAssignment kPins[] = {
     {"USB_DM", kUsbDm, PinStatus::ChipFixed},
     {"USB_DP", kUsbDp, PinStatus::ChipFixed},
     {"SD_CS", kSdCs, PinStatus::BenchValidated},
-    {"CARTRIDGE_CS", kCartridgeCs, PinStatus::Proposed},
     {"IR_RX", kIrRx, PinStatus::Proposed},
     {"I2S_BCLK", kI2sBclk, PinStatus::BenchValidated},
     {"I2S_LRCLK", kI2sLrclk, PinStatus::BenchValidated},
     {"I2S_SPEAKER_DATA", kI2sSpeakerData, PinStatus::Proposed},
-    {"CARTRIDGE_UART_TX", kCartridgeUartTx, PinStatus::ProposedAtRisk},
-    {"CARTRIDGE_UART_RX", kCartridgeUartRx, PinStatus::ProposedAtRisk},
     {"IR_TX", kIrTx, PinStatus::Proposed},
     {"POWER_HOLD", kPowerHold, PinStatus::Proposed},
 };
 
-// Livres no perfil target. 4, 5 e 6 (ADC1) eram dos analógicos, retirados do v1 em 2026-11-25
-// (o 2 virou o botão de energia). 0, 45 e 46 são de strapping: o 0 fica só como BOOT (pad de
-// teste ou botão interno), e 45 e 46 não podem ser puxados no reset.
-inline constexpr int8_t kFreePins[] = {0, 4, 5, 6, 45, 46};
+// Livres no perfil target. 4 e 5 (ADC1) eram dos analógicos, retirados do v1 em 2026-11-25 (o 2
+// virou o botão de energia e o 6 o status do carregador). 38, 43 e 44 eram do cartucho, também
+// retirado em 2026-11-25; 43 e 44 são a UART0, ligada ao conversor USB-serial da DevKitC. 0, 45 e
+// 46 são de strapping: o 0 fica só como BOOT (pad de teste ou botão interno), e 45 e 46 não podem
+// ser puxados no reset.
+inline constexpr int8_t kFreePins[] = {0, 4, 5, 38, 43, 44, 45, 46};
 
 }  // namespace target
 
@@ -239,8 +239,8 @@ static_assert(isAdc1Gpio(target::kVbatSense),
               "a leitura da bateria precisa estar no ADC1 (GPIO 1-10)");
 static_assert(!isStrappingGpio(target::kPowerButton),
               "botao de energia no target fora dos pinos de strapping (GPIO_MAP.md, risco 1)");
-static_assert(isRtcGpio(target::kPowerButton) && isRtcGpio(bench::kPowerButton) &&
-                  isRtcGpio(bench::kButtonOk),
+static_assert(isRtcGpio(target::kPowerButton) && isRtcGpio(target::kChargerStatus) &&
+                  isRtcGpio(bench::kPowerButton) && isRtcGpio(bench::kButtonOk),
               "o pino que acorda do deep sleep precisa ser GPIO RTC (0-21)");
 
 }  // namespace dbmo::config

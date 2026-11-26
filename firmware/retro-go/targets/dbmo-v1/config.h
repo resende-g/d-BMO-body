@@ -245,7 +245,6 @@
 // Pinos do d-BMO que o Retro-Go não conhece, tratados em RG_CUSTOM_PLATFORM_INIT().
 // ---------------------------------------------------------------------------
 #define DBMO_GPIO_CC1101_CS         GPIO_NUM_14 // pins.h target::kCc1101Cs
-#define DBMO_GPIO_CARTRIDGE_CS      GPIO_NUM_38 // pins.h target::kCartridgeCs
 #define DBMO_GPIO_POWER_HOLD        GPIO_NUM_48 // pins.h target::kPowerHold
 
 #if DBMO_RG_ENABLE_POWER_HOLD
@@ -275,8 +274,8 @@
     }
 
 // Executado pelo Retro-Go dentro de platform_init(), antes do SD e da tela (rg_system.c).
-// O barramento SPI do d-BMO também tem o CC1101 e o cartucho: os CS deles ficam em nível alto
-// para não responderem durante a inicialização do SD. O próprio Retro-Go já faz isso com os CS
+// O barramento SPI do d-BMO também tem o CC1101: o CS dele fica em nível alto para não
+// responder durante a inicialização do SD. O próprio Retro-Go já faz isso com os CS
 // da tela e do SD. O pull-up interno no MISO repete o que o alvo t-deck-plus faz; ele não
 // substitui o resistor externo que o cartão SD pede.
 #define RG_CUSTOM_PLATFORM_INIT()                                 \
@@ -285,7 +284,4 @@
     gpio_reset_pin(DBMO_GPIO_CC1101_CS);                          \
     gpio_set_level(DBMO_GPIO_CC1101_CS, 1);                       \
     gpio_set_direction(DBMO_GPIO_CC1101_CS, GPIO_MODE_OUTPUT);    \
-    gpio_reset_pin(DBMO_GPIO_CARTRIDGE_CS);                       \
-    gpio_set_level(DBMO_GPIO_CARTRIDGE_CS, 1);                    \
-    gpio_set_direction(DBMO_GPIO_CARTRIDGE_CS, GPIO_MODE_OUTPUT); \
     gpio_set_pull_mode(RG_GPIO_SDSPI_MISO, GPIO_PULLUP_ONLY);

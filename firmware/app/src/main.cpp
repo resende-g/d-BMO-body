@@ -93,7 +93,6 @@ esp32::ArduinoAdcChannel gBatteryAdc(static_cast<uint8_t>(pins::kVbatSense));
 dbmo::power::GpioPowerLatch gPowerLatch(gGpio, pins::kPowerHold);
 esp32::I2sAudio gAudio(pins::kI2sBclk, pins::kI2sLrclk, pins::kI2sSpeakerData, pins::kI2sMicData,
                        pins::kAmpShutdown);
-esp32::ArduinoSpiDevice gCartridgeSpi(SPI, pins::kCartridgeCs, pins::kSpiMiso, 1000000);
 esp32::RmtIrReceiver gIrReceiver(pins::kIrRx);
 esp32::RmtIrTransmitter gIrTransmitter(pins::kIrTx);
 #else
@@ -138,7 +137,6 @@ dbmo::app::Hardware makeHardware() {
   hw.powerSwitch = &gPowerLatch;
   hw.audioOutput = &gAudio.output();
   hw.audioInput = &gAudio.input();
-  hw.cartridgeSpi = &gCartridgeSpi;
 #else
   hw.profile = "bench";
   hw.powerButtonPin = bench::kPowerButton;  // BOOT da DevKitC; o GPIO 2 é o OK
@@ -172,9 +170,6 @@ void parkChipSelects() {
       pins::kDisplayCs,
       pins::kCc1101Cs,
       pins::kSdCs,
-#if defined(DBMO_PROFILE_TARGET)
-      pins::kCartridgeCs,
-#endif
   };
   for (int8_t cs : chipSelects) {
     pinMode(static_cast<uint8_t>(cs), OUTPUT);
