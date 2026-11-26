@@ -5,7 +5,7 @@
 | Versão | 0.1 (2026-11-12) |
 | Fonte de verdade | `firmware/config/include/dbmo/config/pins.h` |
 | Evidências | `docs/hardware/sources/ESP32-S3.md` (identificadores `S3-…`, `MOD-…`, `DKC-…`) |
-| Estado | Pinagem **proposta**. Só a tela e os três botões da bancada foram validados em hardware |
+| Estado | Pinagem **proposta**. Validados em hardware na bancada (21 a 25/11/2026): tela, três botões, receptor de IR (GPIO 4), CS do CC1101, CS do SD e os três pinos I2S do microfone |
 
 As tabelas entre os marcadores `BEGIN pinmap` são **geradas** a partir de `pins.h`
 (`python3 tools/check_pinmap.py --write`) e conferidas na CI: não editar à mão.
@@ -15,7 +15,7 @@ As tabelas entre os marcadores `BEGIN pinmap` são **geradas** a partir de `pins
 | Rótulo | Significado |
 |---|---|
 | Fixo no chip | Função presa ao pino pelo ESP32-S3 (por exemplo, USB em 19/20). Confirmado em fonte do fabricante |
-| Validado em bancada | Já funcionou na protoboard, com o registro no `README.md` |
+| Validado em bancada | Já funcionou na protoboard, com o registro em `docs/testing/TESTING.md` |
 | Proposto | Escolha do projeto, coerente com as restrições do fabricante, **sem** validação física |
 | Proposto, com risco aberto | Proposto, e há um problema conhecido que pode obrigar a mudar o pino |
 
@@ -30,25 +30,25 @@ Nenhum pino é "definitivo": a pinagem só fecha depois dos ensaios de bancada d
 | 0 | `POWER_BUTTON` | PROPOSTO, COM RISCO ABERTO |
 | 1 | `VBAT_SENSE` | PROPOSTO |
 | 3 | `AMP_SHUTDOWN` | PROPOSTO |
-| 7 | `I2S_MIC_DATA` | PROPOSTO |
+| 7 | `I2S_MIC_DATA` | VALIDADO EM BANCADA |
 | 8 | `I2C_SDA` | PROPOSTO |
 | 9 | `I2C_SCL` | PROPOSTO |
 | 10 | `DISPLAY_CS` | VALIDADO EM BANCADA |
 | 11 | `SPI_MOSI` | VALIDADO EM BANCADA |
 | 12 | `SPI_SCK` | VALIDADO EM BANCADA |
 | 13 | `SPI_MISO` | VALIDADO EM BANCADA |
-| 14 | `CC1101_CS` | PROPOSTO |
+| 14 | `CC1101_CS` | VALIDADO EM BANCADA |
 | 15 | `CC1101_GDO0` | PROPOSTO |
 | 16 | `DISPLAY_BACKLIGHT` | PROPOSTO |
 | 17 | `DISPLAY_DC` | VALIDADO EM BANCADA |
 | 18 | `DISPLAY_RESET` | VALIDADO EM BANCADA |
 | 19 | `USB_DM` | CONFIRMADO (fabricante) |
 | 20 | `USB_DP` | CONFIRMADO (fabricante) |
-| 21 | `SD_CS` | PROPOSTO |
+| 21 | `SD_CS` | VALIDADO EM BANCADA |
 | 38 | `CARTRIDGE_CS` | PROPOSTO |
 | 39 | `IR_RX` | PROPOSTO |
-| 40 | `I2S_BCLK` | PROPOSTO |
-| 41 | `I2S_LRCLK` | PROPOSTO |
+| 40 | `I2S_BCLK` | VALIDADO EM BANCADA |
+| 41 | `I2S_LRCLK` | VALIDADO EM BANCADA |
 | 42 | `I2S_SPEAKER_DATA` | PROPOSTO |
 | 43 | `CARTRIDGE_UART_TX` | PROPOSTO, COM RISCO ABERTO |
 | 44 | `CARTRIDGE_UART_RX` | PROPOSTO, COM RISCO ABERTO |
@@ -64,26 +64,26 @@ Nenhum pino é "definitivo": a pinagem só fecha depois dos ensaios de bancada d
 | GPIO | Sinal | Classificação |
 |---:|---|---|
 | 2 | `BUTTON_OK` | VALIDADO EM BANCADA |
-| 4 | `IR_RX` | PROPOSTO |
+| 4 | `IR_RX` | VALIDADO EM BANCADA |
 | 5 | `IR_TX` | PROPOSTO |
-| 7 | `I2S_MIC_DATA` | PROPOSTO |
+| 7 | `I2S_MIC_DATA` | VALIDADO EM BANCADA |
 | 8 | `I2C_SDA` | PROPOSTO |
 | 9 | `I2C_SCL` | PROPOSTO |
 | 10 | `DISPLAY_CS` | VALIDADO EM BANCADA |
 | 11 | `SPI_MOSI` | VALIDADO EM BANCADA |
 | 12 | `SPI_SCK` | VALIDADO EM BANCADA |
 | 13 | `SPI_MISO` | VALIDADO EM BANCADA |
-| 14 | `CC1101_CS` | PROPOSTO |
+| 14 | `CC1101_CS` | VALIDADO EM BANCADA |
 | 15 | `CC1101_GDO0` | PROPOSTO |
 | 16 | `DISPLAY_BACKLIGHT` | PROPOSTO |
 | 17 | `DISPLAY_DC` | VALIDADO EM BANCADA |
 | 18 | `DISPLAY_RESET` | VALIDADO EM BANCADA |
 | 19 | `USB_DM` | CONFIRMADO (fabricante) |
 | 20 | `USB_DP` | CONFIRMADO (fabricante) |
-| 21 | `SD_CS` | PROPOSTO |
+| 21 | `SD_CS` | VALIDADO EM BANCADA |
 | 39 | `BUTTON_UP` | VALIDADO EM BANCADA |
-| 40 | `I2S_BCLK` | PROPOSTO |
-| 41 | `I2S_LRCLK` | PROPOSTO |
+| 40 | `I2S_BCLK` | VALIDADO EM BANCADA |
+| 41 | `I2S_LRCLK` | VALIDADO EM BANCADA |
 | 42 | `I2S_SPEAKER_DATA` | PROPOSTO |
 | 47 | `BUTTON_DOWN` | VALIDADO EM BANCADA |
 
