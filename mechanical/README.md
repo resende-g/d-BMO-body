@@ -47,14 +47,14 @@ documento do fabricante aberto na data do registro: o footprint e o modelo 3D of
 KiCad da Espressif, e as diretrizes de hardware da Espressif para a folga da antena. As URLs e os
 SHA-256 dos arquivos lidos estão no registro.
 
-Os outros 21 componentes foram recusados. Os motivos, por componente, estão em `cad/out/manifest.json`
+Os outros 19 componentes foram recusados. Os motivos, por componente, estão em `cad/out/manifest.json`
 e na seção 3 de `COMPONENT_DIMENSIONS.md`. Em resumo:
 
 - **DevKitC:** o desenho cotado da Espressif existe, mas o host dele estava bloqueado na sessão em
   que o registro foi feito. Contorno e altura ficaram `PENDENTE`.
 - **Tela, bateria, soquete do cartucho, alto-falante, botões tácteis:** só há valores `NOMINAL`
   (README, anúncio, designação) e faltam cotas.
-- **Módulos genéricos, analógicos, conectores e fixadores:** sem desenho de fabricante; `PENDENTE`.
+- **Módulos genéricos, conectores e fixadores:** sem desenho de fabricante; `PENDENTE`.
 
 O módulo WROOM-1 só entra na carcaça v1 (PCB definitiva). Na v0 ele está soldado na DevKitC, que
 ainda não tem modelo.

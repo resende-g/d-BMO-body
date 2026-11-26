@@ -31,7 +31,7 @@ class Mcp23017ButtonSource final : public IButtonSource {
     uint8_t buttonOfPin[16];
   };
 
-  // Mapa proposto em pins.h (namespace mcp_buttons): 14 botões, GPA7 e GPB7 livres.
+  // Mapa proposto em pins.h (namespace mcp_buttons): 10 botões, nenhum em GPA7 ou GPB7.
   static Map defaultMap();
 
   Mcp23017ButtonSource(Mcp23017 &chip, const Map &map) : chip_(chip), map_(map) {}

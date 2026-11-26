@@ -11,6 +11,7 @@
 #include <Arduino.h>
 #include <SPI.h>
 #include <Wire.h>
+#include <esp_heap_caps.h>
 
 #include "dbmo/app/application.h"
 #include "dbmo/app/console.h"
@@ -63,12 +64,6 @@ esp32::Ili9341Display gDisplay(gTft, gClock, &gBacklight);
 dbmo::input::Mcp23017 gExpander(gI2c, dbmo::config::i2c::kMcp23017Buttons);
 dbmo::input::Mcp23017ButtonSource gButtons(gExpander,
                                            dbmo::input::Mcp23017ButtonSource::defaultMap());
-esp32::ArduinoAdcChannel gStickLeftX(static_cast<uint8_t>(pins::kStickLeftX));
-esp32::ArduinoAdcChannel gStickLeftY(static_cast<uint8_t>(pins::kStickLeftY));
-esp32::ArduinoAdcChannel gStickRightX(static_cast<uint8_t>(pins::kStickRightX));
-esp32::ArduinoAdcChannel gStickRightY(static_cast<uint8_t>(pins::kStickRightY));
-dbmo::input::StickProcessor gStickLeft(gStickLeftX, gStickLeftY);
-dbmo::input::StickProcessor gStickRight(gStickRightX, gStickRightY);
 esp32::ArduinoAdcChannel gBatteryAdc(static_cast<uint8_t>(pins::kVbatSense));
 dbmo::power::GpioPowerLatch gPowerLatch(gGpio, pins::kPowerHold);
 esp32::I2sAudio gAudio(pins::kI2sBclk, pins::kI2sLrclk, pins::kI2sSpeakerData, pins::kI2sMicData,
@@ -113,8 +108,6 @@ dbmo::app::Hardware makeHardware() {
   hw.powerButtonPin = pins::kPowerButton;
 #if defined(DBMO_PROFILE_TARGET)
   hw.profile = "target";
-  hw.stickLeft = &gStickLeft;
-  hw.stickRight = &gStickRight;
   hw.batteryAdc = &gBatteryAdc;
   hw.powerSwitch = &gPowerLatch;
   hw.audioOutput = &gAudio.output();
@@ -192,6 +185,17 @@ void setup() {
   (void)gConsole.registerCommand({"log", "ultimas mensagens de log", logCommand, nullptr});
   (void)gApp.registerCommands(gConsole);
   gConsole.setEcho(true);
+
+  // Buffer do comando "mic" na PSRAM: 10 s a 16 kHz (320 KB). Sem PSRAM, o comando fica com
+  // o buffer próprio de 1 s.
+  constexpr size_t kMicSamples = 160000;
+  auto *micBuffer =
+      static_cast<int16_t *>(heap_caps_malloc(kMicSamples * sizeof(int16_t), MALLOC_CAP_SPIRAM));
+  if (micBuffer != nullptr) {
+    gApp.setRecordBuffer(micBuffer, kMicSamples);
+  } else {
+    DBMO_LOGW(kTag, "sem PSRAM para o microfone: gravacao de ate 1 s");
+  }
 
   const dbmo::Status status = gApp.begin();
   if (!dbmo::isOk(status)) DBMO_LOGE(kTag, "inicializacao falhou: %s", dbmo::toString(status));

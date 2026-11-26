@@ -16,14 +16,8 @@ enum class Button : uint8_t {
   Y,
   Select,
   Start,
-  L1,
-  R1,
-  L2,
-  R2,
-  StickLeft,   // clique do analógico esquerdo
-  StickRight,  // clique do analógico direito
 };
-inline constexpr uint8_t kButtonCount = 16;
+inline constexpr uint8_t kButtonCount = 10;
 
 // Um bit por Button.
 using ButtonMask = uint32_t;
@@ -37,14 +31,6 @@ enum class ButtonAction : uint8_t {
   Click,      // apertou e soltou antes do tempo de toque longo
   LongPress,  // está segurado há mais que o tempo de toque longo (uma vez)
   Repeat,     // repetição automática enquanto segurado
-};
-
-enum class Stick : uint8_t { Left = 0, Right = 1 };
-
-// Posição de um analógico, de -1000 a +1000 em cada eixo, já com zona morta.
-struct StickPosition {
-  int16_t x = 0;
-  int16_t y = 0;
 };
 
 const char *toString(Button button);

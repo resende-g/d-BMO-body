@@ -235,27 +235,11 @@
       ]
     },
     {
-      "component": "analog_stick_ps3",
-      "reasons": [
-        "base_length: status PENDENTE",
-        "base_width: status PENDENTE",
-        "height_with_cap: status PENDENTE"
-      ]
-    },
-    {
       "component": "tactile_switch",
       "reasons": [
         "body_length: status NOMINAL",
         "body_width: status NOMINAL",
         "total_height: status PENDENTE"
-      ]
-    },
-    {
-      "component": "tactile_switch_right_angle",
-      "reasons": [
-        "body_length: status PENDENTE",
-        "body_depth: status PENDENTE",
-        "body_height: status PENDENTE"
       ]
     },
     {

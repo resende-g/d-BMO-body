@@ -29,11 +29,7 @@ Nenhum pino é "definitivo": a pinagem só fecha depois dos ensaios de bancada d
 |---:|---|---|
 | 0 | `POWER_BUTTON` | PROPOSTO, COM RISCO ABERTO |
 | 1 | `VBAT_SENSE` | PROPOSTO |
-| 2 | `STICK_LEFT_X` | PROPOSTO |
 | 3 | `AMP_SHUTDOWN` | PROPOSTO |
-| 4 | `STICK_LEFT_Y` | PROPOSTO |
-| 5 | `STICK_RIGHT_X` | PROPOSTO |
-| 6 | `STICK_RIGHT_Y` | PROPOSTO |
 | 7 | `I2S_MIC_DATA` | PROPOSTO |
 | 8 | `I2C_SDA` | PROPOSTO |
 | 9 | `I2C_SCL` | PROPOSTO |
@@ -112,7 +108,7 @@ DevKitC, nas cópias identificadas em `sources/ESP32-S3.md`):
 | LED RGB da DevKitC | GPIO 48 (placa v1.0) ou 38 (v1.1) | DKC-01, DKC-02 |
 
 As verificações estáticas de `pins.h` (`static_assert`) já garantem em tempo de compilação:
-nenhum pino repetido, nenhum pino inexistente ou de flash/PSRAM, analógicos só no ADC1 e
+nenhum pino repetido, nenhum pino inexistente ou de flash/PSRAM, leitura da bateria no ADC1 e
 botão de energia em GPIO de RTC.
 
 ## 5. Riscos abertos, por pino
@@ -125,7 +121,7 @@ botão de energia em GPIO de RTC.
 | 4 | GPIO 38 | CS do cartucho | Na DevKitC v1.1 é o LED RGB (DKC-02). Com o USB-OTG Download Boot habilitado, a ROM leva o pino a nível baixo (S3-USB-10), o que selecionaria o cartucho | Proposto; conferir na bancada |
 | 5 | GPIO 3 | Desligamento do amplificador | Flutuante no reset (S3-STRAP-14) e com glitch ao energizar (S3-GLT-01): o estado do amplificador durante o boot depende de resistor externo | Proposto; conferir se há estalo no alto-falante ao ligar |
 | 6 | GPIO 39–42 | IR RX e I2S | Pinos de JTAG; a ROM aciona 39 e 40 em um dos modos de download (S3-USB-10) | Proposto; conferir na bancada |
-| 7 | GPIO 2, 4, 5, 6 | Analógicos em 3,3 V | A faixa calibrada do ADC termina em 2900 mV (S3-ADC-09): o fim do curso pode saturar | Proposto; medir o curso elétrico real dos analógicos |
+| 7 | GPIO 2, 4, 5, 6 | Livres | Eram os analógicos, retirados do v1 em 2026-11-25 | Removido em 2026-11-25: v1 sem analógicos nem gatilhos |
 | 8 | GPIO 16 | Backlight por PWM | Na bancada o LED da tela está direto no 3V3; o controle por PWM nunca foi testado, e a corrente do backlight não é conhecida (`PERIPHERALS.md`, MSP-05) | Proposto; pode exigir transistor |
 | 9 | GPIO 47, 48 | IR TX e trava | Dividem o domínio de alimentação da flash/PSRAM (S3-GPIO-09, S3-GPIO-11). O estado de fábrica do eFuse que fixa essa tensão no N16R8 não foi verificado (S3-STRAP-11); o registro de bancada indica 3,3 V | Proposto |
 | 10 | GPIO 45, 46 | Livres | GPIO 45 em nível alto no reset leva a alimentação da flash a 1,8 V (S3-STRAP-09); GPIO 46 participa do modo de boot | **Manter livres**; nunca ligar a algo que os puxe no reset |
@@ -141,7 +137,7 @@ Em ordem de custo, todos possíveis com a DevKitC:
 4. **Deep sleep com despertar pelo GPIO 0**: gravar o firmware próprio, usar o comando `off`
    e acordar pelo botão BOOT; conferir se o chip volta ao firmware ou ao modo de download
    (a fonte não esclarece se os straps são reamostrados ao acordar: S3-STRAP-21).
-5. **Curso dos analógicos** (risco 7): medir a tensão do cursor nos extremos.
+5. Removido em 2026-11-25 (curso dos analógicos; o v1 não tem mais analógicos).
 6. **Estalo do amplificador ao ligar** (risco 5).
 
 ## 7. Divergências em relação ao `README.md`
@@ -152,5 +148,5 @@ Registradas em `sources/ESP32-S3.md`, seção 9. As que afetam o mapa:
 - O README dá a UART em 43/44 como "liberada porque o console usa o USB CDC": a ROM
   continua imprimindo o log de boot nesses pinos.
 - O README conta 16 botões no MCP23017; a revisão D do datasheet restringe GPA7 e GPB7 a
-  saída, o que deixa **14 entradas** (`PERIPHERALS.md`, MCP-03 a MCP-05). `pins.h` já usa
-  14 e reserva os dois cliques dos analógicos para um segundo expansor ou outra solução.
+  saída, o que deixa **14 entradas** (`PERIPHERALS.md`, MCP-03 a MCP-05). Resolvido em
+  2026-11-25: sem analógicos nem gatilhos, o v1 tem 10 botões e o README já conta 10.

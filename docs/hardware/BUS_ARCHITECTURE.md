@@ -24,7 +24,7 @@
   I2S0 (full-duplex)   │ BCLK 40 · LRCLK 41 · DOUT 42 → MAX98357A · DIN 7 ← INMP441 │
   UART0                │ TX 43 · RX 44 → cartucho (risco aberto)                │
   RMT                  │ IR RX 39 · IR TX 47                                    │
-  ADC1                 │ VBAT 1 · analógicos 2, 4, 5, 6                         │
+  ADC1                 │ VBAT 1 (2, 4, 5 e 6 livres desde 2026-11-25)           │
   USB                  │ D− 19 · D+ 20 (console, gravação)                      │
                        └────────────────────────────────────────────────────────┘
 ```
@@ -144,17 +144,16 @@ LED não foram verificadas (IR-08 a IR-10).
 | Sinal | GPIO | Canal | Observação |
 |---|---:|---|---|
 | Tensão da bateria | 1 | ADC1_CH0 | Divisor 100k/100k proposto; 0,1 µF no pino (S3-ADC-10) |
-| Analógico esquerdo X / Y | 2 / 4 | ADC1_CH1 / CH3 | Faixa calibrada até 2900 mV (S3-ADC-09) |
-| Analógico direito X / Y | 5 / 6 | ADC1_CH4 / CH5 | Idem |
 
-Só o ADC1 é usado: o ADC2 é compartilhado com o Wi-Fi e a leitura pode falhar
+Os analógicos (GPIO 2, 4, 5 e 6) saíram do v1 em 2026-11-25; esses canais do ADC1 estão
+livres. Só o ADC1 é usado: o ADC2 é compartilhado com o Wi-Fi e a leitura pode falhar
 (S3-ADC-04, S3-ADC-05).
 
 ## 8. Conflitos conhecidos entre barramentos e pinos
 
 | Conflito | Situação |
 |---|---|
-| Bancada × alvo: GPIO 2, 4, 5 e 39/47 | Na protoboard são botão e IR; no alvo, analógicos e IR em outros pinos. Os dois perfis de compilação (`dbmo-bench`, `dbmo-target`) resolvem isso; não dá para montar os dois ao mesmo tempo |
+| Bancada × alvo: GPIO 39/47 | Na protoboard são botões; no alvo, IR RX e IR TX. Os GPIO 2, 4 e 5 da bancada (botão OK e IR) ficam livres no alvo. Os dois perfis de compilação (`dbmo-bench`, `dbmo-target`) resolvem isso; não dá para montar os dois ao mesmo tempo |
 | UART do cartucho × log da ROM × ponte USB-UART da DevKitC | Risco aberto (seção 5) |
 | PN532 em HSU × UART do cartucho | Só no plano B |
 | LED RGB da DevKitC × GPIO 48 (trava) ou 38 (CS do cartucho) | Depende da revisão da placa (DKC-01, DKC-02) |

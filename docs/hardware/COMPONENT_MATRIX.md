@@ -22,8 +22,7 @@ Colunas de estado:
 | CC1101 433 MHz | Rádio sub-GHz | SPI + GDO0 | 1,8 a 3,6 V; máximo 3,9 V (CC-01, CC-02) | Recebido | Não testado | `radio`: testado com simulador |
 | PN532 V3 | NFC | I2C (0x24) | VBAT 2,7 a 5,5 V; interface 1,6 a 3,6 V (PN-01, PN-02) | Comprado, aguardando | Não testado | `nfc`: testado com simulador |
 | MCP23017 (1 ou 2) | Botões | I2C (0x20, 0x21) | 1,8 a 5,5 V (MCP-08) | **A comprar** (corrigido em 21/11/2026) | Não testado | `input`: testado com simulador |
-| Botões tácteis | D-pad, ações, ombros, energia | MCP23017 / GPIO | — | Estoque | **3 botões em GPIO validados** | `input` |
-| Analógicos de controle de PS3 | 2 sticks (4 eixos + 2 cliques) | ADC1 | 3,3 V, nunca 5 V (README) | Reaproveitar | Não testado | `input`: testado no computador |
+| Botões tácteis | D-pad, ações, select/start, energia | MCP23017 / GPIO | — | Estoque | **3 botões em GPIO validados** | `input` |
 | MAX98357A | Amplificador | I2S + SD_MODE | 2,5 a 5,5 V (AMP-01) | Comprado, aguardando | Não testado | `audio`: testado no computador |
 | Alto-falante 2030, 8 Ω, 2 W | Saída de som | — | — | Comprado, aguardando | Não testado | — |
 | INMP441 | Microfone | I2S | 1,62 a 3,63 V (MIC-01) | Comprado, aguardando | Não testado | `audio` |
@@ -50,7 +49,7 @@ Todos os componentes operam em lógica de 3,3 V, com uma ressalva por componente
 
 | Componente | Risco | Evidência | Estado |
 |---|---|---|---|
-| MCP23017 | GPA7 e GPB7 são só saída na revisão D do datasheet: 14 entradas, não 16 | MCP-03 a MCP-07 | Tratado em `pins.h`; os 2 cliques dos analógicos precisam de outro lugar |
+| MCP23017 | GPA7 e GPB7 são só saída na revisão D do datasheet: 14 entradas, não 16 | MCP-03 a MCP-07 | Tratado em `pins.h`: 10 botões, nenhum em GPA7 ou GPB7 (sem analógicos nem gatilhos desde 2026-11-25) |
 | EEPROM 24C02 | Tamanho de página e endereçamento variam por fabricante | EE-02, EE-03, EE-08, EE-11 | Tratado no driver (página de 8, faixa 0x50–0x57 reservada) |
 | CC1101 | Cristal e casamento de antena do módulo comprado não conferidos | CC-21 | `radio.xtal_khz` configurável; conferir na peça |
 | PN532 | I2C com o ESP32 pode exigir o modo HSU (README); endereço não conferido em fonte da NXP | PN-09, PN-13 | Em aberto |

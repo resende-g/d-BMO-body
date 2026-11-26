@@ -47,7 +47,6 @@ Condições das fontes: valores típicos, a 25 °C, na tensão de ensaio de cada
 | **LED de IR** | Emitindo | **sem dado** (peça não identificada) | IR-09 |
 | **Cartão SD** | Leitura e escrita | **sem dado** | — |
 | **EEPROM do cartucho** | Leitura e escrita | **sem dado** | — |
-| **Analógicos** (4 potenciômetros) | Ligados | **sem dado** (resistência não medida) | — |
 | **Divisor da bateria** (100k + 100k) | Sempre ligado | 21 µA a 4,2 V | Calculado |
 | **Cartucho** | Limite adotado pelo firmware | 100 mA (provisório) | `cartridge.max_ma` |
 
@@ -72,7 +71,7 @@ pequenas.
 
 | Cenário | O que está ligado | Soma parcial | Fora da soma (sem dado) |
 |---|---|---:|---|
-| Rosto na tela, sem rádio | ESP32-S3 ativo (23,9) + MCP23017 (1) + receptor de IR (0,7) + CC1101 dormindo + PN532 em soft-power-down | ≈ 25,6 mA | Tela, **backlight**, cartão, analógicos |
+| Rosto na tela, sem rádio | ESP32-S3 ativo (23,9) + MCP23017 (1) + receptor de IR (0,7) + CC1101 dormindo + PN532 em soft-power-down | ≈ 25,6 mA | Tela, **backlight**, cartão |
 | Recebendo em 433 MHz | Anterior + CC1101 em recepção (17,1) | ≈ 42,7 mA | Idem |
 | Buscando etiqueta NFC | Rosto na tela + PN532 com campo (31 + 60) | ≈ 116,6 mA | Idem; a medida do PN532 é a 5 V |
 | Tocando áudio | Rosto na tela + MAX98357A em repouso (2,4) + INMP441 (2,2) | ≈ 30,2 mA | Idem, **mais a potência entregue ao alto-falante** |

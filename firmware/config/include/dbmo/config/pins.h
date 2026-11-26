@@ -57,11 +57,7 @@ namespace target {
 
 inline constexpr int8_t kPowerButton = 0;  // strapping de boot: ver risco em GPIO_MAP.md
 inline constexpr int8_t kVbatSense = 1;    // ADC1; divisor 100k/100k
-inline constexpr int8_t kStickLeftX = 2;   // ADC1
 inline constexpr int8_t kAmpShutdown = 3;  // MAX98357A SD_MODE; strapping (JTAG)
-inline constexpr int8_t kStickLeftY = 4;   // ADC1
-inline constexpr int8_t kStickRightX = 5;  // ADC1
-inline constexpr int8_t kStickRightY = 6;  // ADC1
 inline constexpr int8_t kI2sMicData = 7;   // INMP441 SD
 inline constexpr int8_t kI2cSda = 8;
 inline constexpr int8_t kI2cScl = 9;
@@ -90,11 +86,7 @@ inline constexpr int8_t kPowerHold = 48;  // power-latch
 inline constexpr PinAssignment kPins[] = {
     {"POWER_BUTTON", kPowerButton, PinStatus::ProposedAtRisk},
     {"VBAT_SENSE", kVbatSense, PinStatus::Proposed},
-    {"STICK_LEFT_X", kStickLeftX, PinStatus::Proposed},
     {"AMP_SHUTDOWN", kAmpShutdown, PinStatus::Proposed},
-    {"STICK_LEFT_Y", kStickLeftY, PinStatus::Proposed},
-    {"STICK_RIGHT_X", kStickRightX, PinStatus::Proposed},
-    {"STICK_RIGHT_Y", kStickRightY, PinStatus::Proposed},
     {"I2S_MIC_DATA", kI2sMicData, PinStatus::Proposed},
     {"I2C_SDA", kI2cSda, PinStatus::Proposed},
     {"I2C_SCL", kI2cScl, PinStatus::Proposed},
@@ -121,8 +113,9 @@ inline constexpr PinAssignment kPins[] = {
     {"POWER_HOLD", kPowerHold, PinStatus::Proposed},
 };
 
-// Livres no perfil target; os dois são de strapping.
-inline constexpr int8_t kFreePins[] = {45, 46};
+// Livres no perfil target. 2, 4, 5 e 6 (ADC1) eram dos analógicos, retirados do v1 em
+// 2026-11-25; 45 e 46 são de strapping.
+inline constexpr int8_t kFreePins[] = {2, 4, 5, 6, 45, 46};
 
 }  // namespace target
 
@@ -191,6 +184,8 @@ inline constexpr uint32_t kSdInitHz = 400000;
 // O datasheet do MCP23017 (Microchip DS20001952, revisão D) declara GPA7 e GPB7 como
 // somente saída. Por isso os bits 7 e 15 não recebem botão: um MCP23017 oferece 14
 // entradas. Ver docs/hardware/sources/PERIPHERALS.md (MCP-03 a MCP-06).
+// São 10 botões; os bits 11 a 14 ficaram livres quando o v1 perdeu os gatilhos de ombro
+// (2026-11-25).
 namespace mcp_buttons {
 inline constexpr uint8_t kDpadUp = 0;
 inline constexpr uint8_t kDpadDown = 1;
@@ -202,21 +197,9 @@ inline constexpr uint8_t kActionX = 6;
 inline constexpr uint8_t kActionY = 8;
 inline constexpr uint8_t kSelect = 9;
 inline constexpr uint8_t kStart = 10;
-inline constexpr uint8_t kL1 = 11;
-inline constexpr uint8_t kR1 = 12;
-inline constexpr uint8_t kL2 = 13;
-inline constexpr uint8_t kR2 = 14;
 // GPA7 e GPB7: não usar como entrada.
 inline constexpr uint16_t kOutputOnlyMask = 0x8080;
 }  // namespace mcp_buttons
-
-// Cliques dos analógicos (L3/R3): não cabem nas 14 entradas do primeiro MCP23017.
-// Proposta PENDENTE DE DECISÃO: entradas do segundo MCP23017 (0x21), que o README já
-// previa como opcional. Alternativas em docs/hardware/GPIO_MAP.md.
-namespace mcp_aux {
-inline constexpr uint8_t kStickLeftClick = 0;
-inline constexpr uint8_t kStickRightClick = 1;
-}  // namespace mcp_aux
 
 // ---------------------------------------------------------------------------
 // Verificações em tempo de compilação.
@@ -244,10 +227,8 @@ static_assert(detail::allUsable(target::kPins), "perfil target usa GPIO indispon
 static_assert(detail::noDuplicates(target::kPins), "perfil target tem GPIO duplicado");
 static_assert(detail::allUsable(bench::kPins), "perfil bench usa GPIO indisponível no N16R8");
 static_assert(detail::noDuplicates(bench::kPins), "perfil bench tem GPIO duplicado");
-static_assert(isAdc1Gpio(target::kVbatSense) && isAdc1Gpio(target::kStickLeftX) &&
-                  isAdc1Gpio(target::kStickLeftY) && isAdc1Gpio(target::kStickRightX) &&
-                  isAdc1Gpio(target::kStickRightY),
-              "entradas analógicas precisam estar no ADC1 (GPIO 1-10)");
+static_assert(isAdc1Gpio(target::kVbatSense),
+              "a leitura da bateria precisa estar no ADC1 (GPIO 1-10)");
 static_assert(isRtcGpio(target::kPowerButton) && isRtcGpio(bench::kButtonOk),
               "o pino que acorda do deep sleep precisa ser GPIO RTC (0-21)");
 

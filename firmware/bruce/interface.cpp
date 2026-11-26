@@ -72,7 +72,7 @@ constexpr bool mcpIsInput(uint8_t bit) { return (kMcpInputMask >> bit) & 1; }
 static_assert(
     mcpIsInput(btn::kDpadUp) && mcpIsInput(btn::kDpadDown) && mcpIsInput(btn::kDpadLeft) &&
         mcpIsInput(btn::kDpadRight) && mcpIsInput(btn::kActionA) && mcpIsInput(btn::kActionB) &&
-        mcpIsInput(btn::kL1) && mcpIsInput(btn::kR1),
+        mcpIsInput(btn::kActionX) && mcpIsInput(btn::kActionY),
     "botão de navegação mapeado em GPA7/GPB7, que o MCP23017 não lê"
 );
 
@@ -181,7 +181,7 @@ void _setBrightness(uint8_t brightval) {
 
 #ifdef DBMO_INPUT_MCP23017
 // Mapa do perfil de 5 botões do Bruce (boards/smoochiee-board/interface.cpp): esquerda/direita
-// = anterior/próximo, cima/baixo, A = OK, B = voltar, L1/R1 = página. Os demais botões só
+// = anterior/próximo, cima/baixo, A = OK, B = voltar, X/Y = página. Select e Start só
 // acordam a tela.
 void InputHandler(void) {
     static unsigned long tm = 0;
@@ -208,8 +208,8 @@ void InputHandler(void) {
     DownPress = isDown(btn::kDpadDown);
     SelPress = isDown(btn::kActionA);
     EscPress = isDown(btn::kActionB);
-    PrevPagePress = isDown(btn::kL1);
-    NextPagePress = isDown(btn::kR1);
+    PrevPagePress = isDown(btn::kActionX);
+    NextPagePress = isDown(btn::kActionY);
 }
 #else
 void InputHandler(void) {

@@ -229,8 +229,6 @@ Status Application::begin() {
 
   for (input::IButtonSource *source : hw_.buttonSources)
     if (source != nullptr) DBMO_TRY(input_.addButtonSource(*source));
-  if (hw_.stickLeft != nullptr) input_.setStick(input::Stick::Left, *hw_.stickLeft);
-  if (hw_.stickRight != nullptr) input_.setStick(input::Stick::Right, *hw_.stickRight);
 
   if (hw_.audioOutput != nullptr) audio_.setOutput(*hw_.audioOutput);
   if (hw_.audioInput != nullptr) audio_.setInput(*hw_.audioInput);

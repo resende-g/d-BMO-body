@@ -4,5 +4,4 @@ dbmo_add_library(input
     src/button_sources.cpp
     src/input_subsystem.cpp
     src/mcp23017.cpp
-    src/stick_processor.cpp
   DEPENDS core config)

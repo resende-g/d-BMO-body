@@ -79,7 +79,7 @@ Você está numa sessão local, no meu Mac, dentro do clone do repositório `res
 - **SD da tela:** o conector de 4 pinos só tem furos; precisa de solda.
 - **PN532:** pinos não soldados.
 - **Áudio (MAX98357A e INMP441, com pinos soldados):** o perfil `dbmo-bench` não tem pinos de áudio, e a ligação do alto-falante não foi confirmada. Os pinos 40, 41, 42, 3 e 7 estão livres na bancada; acrescentá-los ao perfil `bench` só com meu pedido.
-- **Analógicos:** placa do controle de PS3 BM-901 VER1.1 (chip ShanWan, sem datasheet). Recomendação registrada: dessoldar os sticks quando chegarem as ferramentas. Medições sem energia pendentes: resistência dos potenciômetros, curso e ligação com V3V/GND. Conflito: no perfil de bancada, os pinos de ADC previstos para os sticks (2, 4, 5, 6) estão ocupados.
+- **Analógicos e gatilhos:** fora do v1 desde 2026-11-25 (README, d-BMO v1). Os sticks da placa do controle de PS3 não serão dessoldados; os GPIO 2, 4, 5 e 6 ficaram livres no perfil `target`.
 - **Power bank AJ-C15:** investigação pausada (`docs/hardware/POWERBANK_AJ-C15.md`). Não abrir nem ligar nada a ele.
 
 ## 8. Regras de segurança da bancada

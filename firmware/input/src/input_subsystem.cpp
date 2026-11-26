@@ -21,9 +21,8 @@ Status InputSubsystem::registerConfig(ConfigStore &config) {
       ConfigSpec::integer(config_key::kLongPressMs, defaults.longPressMs, 200, 5000)));
   DBMO_TRY(config.define(
       ConfigSpec::integer(config_key::kRepeatDelayMs, defaults.repeatDelayMs, 100, 3000)));
-  DBMO_TRY(config.define(
-      ConfigSpec::integer(config_key::kRepeatMs, defaults.repeatIntervalMs, 30, 1000)));
-  return config.define(ConfigSpec::integer(config_key::kDeadzone, 120, 0, 900));
+  return config.define(
+      ConfigSpec::integer(config_key::kRepeatMs, defaults.repeatIntervalMs, 30, 1000));
 }
 
 Status InputSubsystem::addButtonSource(IButtonSource &source) {
@@ -31,10 +30,6 @@ Status InputSubsystem::addButtonSource(IButtonSource &source) {
   if (sourceCount_ == kMaxSources) return Status::NoSpace;
   sources_[sourceCount_++] = Source{&source, false, 0, 0};
   return Status::Ok;
-}
-
-void InputSubsystem::setStick(Stick which, StickProcessor &stick) {
-  sticks_[static_cast<uint8_t>(which)] = &stick;
 }
 
 void InputSubsystem::applyConfig() {
@@ -49,11 +44,6 @@ void InputSubsystem::applyConfig() {
   timing.repeatIntervalMs = static_cast<uint16_t>(
       config_.getInt(config_key::kRepeatMs).valueOr(defaults.repeatIntervalMs));
   buttons_.setTiming(timing);
-
-  const uint16_t deadzone =
-      static_cast<uint16_t>(config_.getInt(config_key::kDeadzone).valueOr(120));
-  for (StickProcessor *stick : sticks_)
-    if (stick != nullptr) (void)stick->setDeadzonePermille(deadzone);
 }
 
 Status InputSubsystem::init() {
@@ -82,11 +72,6 @@ size_t InputSubsystem::healthySources() const {
   for (size_t i = 0; i < sourceCount_; ++i)
     if (sources_[i].healthy) ++count;
   return count;
-}
-
-StickPosition InputSubsystem::stick(Stick which) const {
-  const StickProcessor *processor = sticks_[static_cast<uint8_t>(which)];
-  return processor != nullptr ? processor->position() : StickPosition{};
 }
 
 void InputSubsystem::onButton(const ButtonEvent &event, void *context) {
@@ -152,14 +137,6 @@ void InputSubsystem::tick(uint32_t nowMs) {
     buttons_.update(raw, nowMs);
   } else if (buttons_.pressed() != 0) {
     buttons_.releaseAll(nowMs);  // nada responde: nenhuma tecla pode ficar presa
-  }
-
-  for (uint8_t i = 0; i < 2; ++i) {
-    StickProcessor *processor = sticks_[i];
-    if (processor == nullptr) continue;
-    const Result<bool> changed = processor->update();
-    if (changed.ok() && changed.value())
-      (void)bus_.publish(input_event::kStick, i, packStick(processor->position()));
   }
 }
 

@@ -3,7 +3,7 @@
 # Retro-Go para o d-BMO v1 (alvo `dbmo-v1`)
 
 Alvo de build do [Retro-Go](https://github.com/ducalex/retro-go) para o d-BMO v1
-(ESP32-S3-WROOM-1-N16R8, tela ILI9341 320x240, SD em SPI, MAX98357A, 14 botões no MCP23017).
+(ESP32-S3-WROOM-1-N16R8, tela ILI9341 320x240, SD em SPI, MAX98357A, 10 botões no MCP23017).
 
 ## Estado
 
@@ -13,11 +13,15 @@ Alvo de build do [Retro-Go](https://github.com/ducalex/retro-go) para o d-BMO v1
   essa imagem e a publicá-la como artefato, e também compila o launcher no perfil padrão
   (MCP23017), como fazia desde 12/11/2026. O que mais foi conferido está em
   [Declaração de verificação](#declaração-de-verificação).
-- **Nunca rodou no hardware.** Nada aqui afirma que o Retro-Go funciona no d-BMO.
+- **Rodou na placa em 25/11/2026**, no perfil de bancada (tela, 3 botões e o SD da tela): o
+  launcher abriu, montou o cartão e iniciou um jogo de Game Boy Color, que rodou por mais de
+  2 minutos sem travar (frameskip de 1 a 3, com o SPI da tela a 10 MHz). Sem som (o
+  MAX98357A não está ligado) e sem Start na bancada. Registro em
+  [`docs/testing/TESTING.md`](../../docs/testing/TESTING.md), entrada de 25/11/2026.
 - A pinagem é a do perfil `target` de
   [`firmware/config/include/dbmo/config/pins.h`](../config/include/dbmo/config/pins.h), que é uma
   **proposta**. Na bancada só existem hoje a tela e três botões diretos. MCP23017, MAX98357A,
-  analógicos, divisor da bateria e power-latch ainda não estão ligados.
+  divisor da bateria e power-latch ainda não estão ligados.
 - O Retro-Go fica fixado no commit `4ced120669750ca7228fd0414211430c1d923166` (2026-01-19).
 
 ## Arquivos
@@ -80,18 +84,14 @@ Todos os itens, inclusive os confirmados, ainda precisam ser validados com o Ret
 | I2C SCL | 9 | `RG_GPIO_I2C_SCL` | `target::kI2cScl` | PROPOSTO |
 | MCP23017 dos botões | I2C 0x20 | `RG_I2C_GPIO_DRIVER 3`, `RG_I2C_GPIO_ADDR` | `i2c::kMcp23017Buttons` | PROPOSTO |
 | Bateria (ADC1 canal 0, divisor 100k/100k) | 1 | `RG_BATTERY_*`, atrás de `DBMO_RG_ENABLE_BATTERY_ADC` | `target::kVbatSense` | PROPOSTO, desligado |
-| Analógico esquerdo X (ADC1 canal 1) | 2 | `RG_GAMEPAD_ADC_MAP`, atrás de `DBMO_RG_ENABLE_STICK_DPAD` | `target::kStickLeftX` | PROPOSTO, desligado |
-| Analógico esquerdo Y (ADC1 canal 3) | 4 | idem | `target::kStickLeftY` | PROPOSTO, desligado |
 | Power-latch | 48 | `DBMO_GPIO_POWER_HOLD`, atrás de `DBMO_RG_ENABLE_POWER_HOLD` | `target::kPowerHold` | PROPOSTO, desligado |
 | USB D- / D+ (console e gravação) | 19 / 20 | `CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG` no `sdkconfig` | `target::kUsbDm`, `kUsbDp` | CONFIRMADO (função fixa do chip) |
-| Orientação da tela (MADCTL `0x28`) | - | `DBMO_RG_LCD_MADCTL` | - | PENDENTE DE VALIDAÇÃO FÍSICA |
+| Orientação da tela (MADCTL `0x28`, com `0xB6` = `0x0A, 0x82`) | - | `DBMO_RG_LCD_MADCTL`, `RG_SCREEN_INIT` | - | VALIDADO EM BANCADA em 25/11/2026 (com `0xB6` = `0x0A, 0xA2` a imagem saiu de cabeça para baixo e espelhada) |
 | Clock SPI da tela (40 MHz) | - | `DBMO_RG_SCREEN_SPEED_HZ` | `spi::kDisplayHz` é 10 MHz | PENDENTE DE VALIDAÇÃO FÍSICA |
 | Clock do SD (20 MHz) | - | `RG_STORAGE_SDSPI_SPEED` | - | PENDENTE DE VALIDAÇÃO FÍSICA |
 | Curva de carga da bateria | - | `RG_BATTERY_CALC_PERCENT` | - | PENDENTE DE VALIDAÇÃO FÍSICA |
-| Sentido dos eixos do analógico | - | `RG_GAMEPAD_ADC_MAP` | - | PENDENTE DE VALIDAÇÃO FÍSICA |
 
-Pinos do perfil `target` que o Retro-Go não usa nem configura: botão de energia (0), analógico
-direito (5, 6), microfone I2S (7), GDO0 do CC1101 (15), IR RX (39), IR TX (47) e o UART0 do
+Pinos do perfil `target` que o Retro-Go não usa nem configura: botão de energia (0), microfone I2S (7), GDO0 do CC1101 (15), IR RX (39), IR TX (47) e o UART0 do
 cartucho (43, 44; ver a nota sobre o console em [sdkconfig](#sdkconfig-psram-octal-flash-e-console)).
 
 Cada linha do `config.h` que fixa um pino termina com o comentário
@@ -99,8 +99,11 @@ Cada linha do `config.h` que fixa um pino termina com o comentário
 
 ## Botões
 
-O Retro-Go tem 14 teclas (`rg_input.h:6-26`, `RG_KEY_COUNT = 14`). O d-BMO tem 16 botões. L2 e R2
-viram MENU e OPTION; os cliques dos analógicos ficam sem função.
+O Retro-Go tem 14 teclas (`rg_input.h:6-26`, `RG_KEY_COUNT = 14`). O d-BMO tem 10 botões e, desde
+2026-11-25, nenhum analógico nem gatilho de ombro. No commit fixado nenhum emulador lê `RG_KEY_X`,
+`RG_KEY_Y`, `RG_KEY_L` ou `RG_KEY_R` (o Mega Drive usa A, B e SELECT, `gwenesis/main/main.c:268`; o
+SNES troca os ombros por MENU+B e MENU+A, `main_snes.c:22-23`). Por isso os botões X e Y viram
+MENU e OPTION.
 
 | Tecla do Retro-Go | Bit do MCP23017 | Pino | Botão do d-BMO (`pins.h mcp_buttons`) |
 |---|---:|---|---|
@@ -110,19 +113,15 @@ viram MENU e OPTION; os cliques dos analógicos ficam sem função.
 | `RG_KEY_RIGHT` | 3 | GPA3 | D-pad direita (`kDpadRight`) |
 | `RG_KEY_A` | 4 | GPA4 | A (`kActionA`) |
 | `RG_KEY_B` | 5 | GPA5 | B (`kActionB`) |
-| `RG_KEY_X` | 6 | GPA6 | X (`kActionX`) |
+| `RG_KEY_MENU` | 6 | GPA6 | X (`kActionX`) |
 | sem botão | 7 | GPA7 | somente saída no MCP23017 (datasheet rev. D) |
-| `RG_KEY_Y` | 8 | GPB0 | Y (`kActionY`) |
+| `RG_KEY_OPTION` | 8 | GPB0 | Y (`kActionY`) |
 | `RG_KEY_SELECT` | 9 | GPB1 | Select (`kSelect`) |
 | `RG_KEY_START` | 10 | GPB2 | Start (`kStart`) |
-| `RG_KEY_L` | 11 | GPB3 | L1 (`kL1`) |
-| `RG_KEY_R` | 12 | GPB4 | R1 (`kR1`) |
-| `RG_KEY_MENU` | 13 | GPB5 | L2 (`kL2`) |
-| `RG_KEY_OPTION` | 14 | GPB6 | R2 (`kR2`) |
+| sem botão | 11 a 14 | GPB3 a GPB6 | livres |
 | sem botão | 15 | GPB7 | somente saída no MCP23017 (datasheet rev. D) |
 
-Os cliques dos analógicos não cabem nas 14 entradas de um MCP23017; a proposta, pendente de
-decisão, é lê-los no segundo MCP23017 (`pins.h mcp_aux`). O Retro-Go não tem tecla para eles.
+Segurar MENU (o botão X) no boot abre o menu de recuperação (`RG_RECOVERY_BTN`).
 
 Botão ligado ao GND, pull-up interno do MCP23017 (`.pullup = 1`), ativo em nível baixo
 (`.level = 0`). Nos emuladores, MENU abre o menu do jogo e OPTION abre as opções (por exemplo
@@ -185,7 +184,6 @@ arquivo se ele existir.
 |---|---|
 | `DBMO_RG_BENCH=1` | perfil de bancada: 3 botões diretos, sem I2C nem MCP23017, tela a 10 MHz, partição FAT interna `vfs` como reserva do SD |
 | `DBMO_RG_ENABLE_BATTERY_ADC=1` | leitura da bateria no GPIO 1. Desligada porque o divisor não existe: com o pino solto o Retro-Go mostraria um nível falso |
-| `DBMO_RG_ENABLE_STICK_DPAD=1` | analógico esquerdo como D-pad. Desligada porque os analógicos não estão ligados: pino solto gera toque fantasma |
 | `DBMO_RG_ENABLE_POWER_HOLD=1` | aciona o GPIO 48 no começo do boot. Exige `DBMO_RG_POWER_HOLD_LEVEL` (0 ou 1): o circuito do power-latch não está decidido e não há valor padrão |
 | `DBMO_RG_LCD_MADCTL=0x..` | registrador de orientação e ordem de cor do ILI9341 (padrão `0x28`) |
 | `DBMO_RG_SCREEN_SPEED_HZ=n` | clock SPI da tela em Hz |
@@ -377,9 +375,9 @@ recompactar em `.zip`. Os saves ficam em `/retro-go/saves/<sistema>` e a configu
 `/retro-go/config` (`rg_storage.h:8-15`). O launcher ignora arquivos que começam com ponto
 (`applications.c:33-35`), então os `._*` que o macOS cria no FAT32 não aparecem como jogos.
 
-O cartão de teste ainda não respondeu na bancada (24/11/2026: nenhuma resposta ao CMD0); até
-isso ser resolvido, o perfil de bancada deve recorrer à partição `vfs`, sem jogos (pela leitura
-do código; não testado).
+O cartão de teste funciona na bancada desde 25/11/2026 (em 24/11 faltavam fios do SPI): o
+Retro-Go o montou em `/sd` e criou sozinho as pastas `/roms/<sistema>`, vazias. O `.7z` que o
+Gabriel tinha foi descompactado no Mac e o `.gbc` copiado para `/roms/gbc`.
 
 ## sdkconfig: PSRAM octal, flash e console
 
@@ -437,12 +435,11 @@ dependem de que ela os ignore.
 2. **O caminho do MCP23017 nunca é usado por um alvo do upstream.** O driver existe
    (`rg_i2c.c:155-163`), mas o único alvo com extensor por esse caminho usa o PCF9539
    (`byteboi-rev1/config.h:13-14`), e nenhum usa `.pullup = 1` num mapa I2C.
-3. **14 teclas para 16 botões.** Os cliques dos analógicos não têm tecla e não estão no
-   primeiro MCP23017 (GPA7 e GPB7 são somente saída; ver a tabela de botões).
-4. **Analógicos.** O Retro-Go não tem API de eixo analógico: a leitura é uma máscara de teclas
-   (`rg_input.h:96`). O driver ADC converte faixas de tensão em teclas (`rg_input.c:110-125`), e é
-   assim que o alvo `fri3d-2024` usa um joystick (`config.h:53-60`). Por isso só o analógico
-   esquerdo entra, como D-pad, e atrás de uma opção. O direito não tem uso.
+3. **Sem teclas X, Y, L e R.** Os botões X e Y fazem MENU e OPTION, então o Retro-Go não recebe
+   `RG_KEY_X` nem `RG_KEY_Y`. Nenhum emulador do commit fixado os lê; se uma versão futura do
+   Retro-Go passar a ler, o mapa precisa mudar.
+4. **Sem analógicos (desde 2026-11-25).** O Retro-Go não tem API de eixo analógico: a leitura é
+   uma máscara de teclas (`rg_input.h:96`). Por isso os analógicos saíram do v1.
 5. **I2C a 400 kHz.** A velocidade é fixa no código (`rg_i2c.c:30`), diferente dos 100 kHz de
    `pins.h i2c::kBusHz`. O Retro-Go também liga os pull-ups internos do ESP32-S3
    (`rg_i2c.c:28-29`). Mudar exige alterar o `rg_i2c.c`.
@@ -468,14 +465,12 @@ dependem de que ela os ignore.
 
 ## Pendências bloqueantes
 
-1. **Rodar na placa.** A imagem completa compila (ver [Imagem de bancada](#imagem-de-bancada)),
-   mas nunca foi gravada nem executada. O primeiro teste é a imagem de bancada com a tela e os
-   três botões.
+1. **Rodar na placa: feito em 25/11/2026** no perfil de bancada (ver [Estado](#estado)). Falta
+   o perfil padrão, que depende do MCP23017.
 2. **MCP23017 ausente.** Sem ele o perfil padrão não tem botões. Bloqueia o uso, não o build.
-3. **SD no barramento compartilhado ainda não funciona.** O leitor da tela foi soldado em
-   24/11/2026, mas o cartão não respondeu ao CMD0 (diagnóstico da fiação pendente). O Retro-Go
-   precisa de armazenamento para ROMs e configuração; sem ele o launcher mostra erro de cartão
-   (`launcher/main/main.c:453-457`).
+3. **SD no barramento compartilhado: resolvido em 25/11/2026.** Em 24/11 o cartão não respondeu
+   porque faltavam os fios dos GPIO 10, 11 e 12; com eles, o firmware próprio e o Retro-Go
+   montaram o cartão.
 4. **Power-latch não decidido.** Com o latch montado e sem `DBMO_RG_ENABLE_POWER_HOLD`, nada
    segura a alimentação depois que o botão é solto. O desligamento por software exigiria alterar
    o Retro-Go (por exemplo com `#ifdef RG_TARGET_DBMO_V1`, mecanismo descrito em

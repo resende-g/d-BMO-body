@@ -7,7 +7,6 @@ using dbmo::ConfigStore;
 using dbmo::Event;
 using dbmo::EventBus;
 using dbmo::Status;
-using dbmo::mock::MockAdcChannel;
 using dbmo::mock::MockI2cBus;
 using namespace dbmo::input;
 
@@ -180,33 +179,6 @@ static void test_failed_source_is_retried_and_recovers() {
   TEST_ASSERT_TRUE(f.input.isPressed(Button::A));
 }
 
-static void test_stick_events_carry_both_axes() {
-  Fixture f;
-  FakeSource source;
-  MockAdcChannel x, y;
-  x.raw = 2000;
-  y.raw = 2000;
-  StickProcessor stick(x, y);
-  TEST_ASSERT_OK(stick.setCalibration({0, 2000, 4000}, {0, 2000, 4000}));
-  TEST_ASSERT_OK(f.input.addButtonSource(source));
-  f.input.setStick(Stick::Right, stick);
-  TEST_ASSERT_OK(f.input.init());
-  f.run(20);
-  TEST_ASSERT_EQUAL_INT(0, f.countOf(input_event::kStick));  // parado no centro: sem eventos
-
-  x.raw = 3200;
-  y.raw = 800;  // -600 milésimos
-  f.run(10);
-  TEST_ASSERT_EQUAL_INT(1, f.countOf(input_event::kStick));
-  const Event &event = f.events[f.count - 1];
-  TEST_ASSERT_EQUAL_UINT32(static_cast<uint32_t>(Stick::Right), event.a);
-  const StickPosition position = unpackStick(event.b);
-  TEST_ASSERT_EQUAL_INT16(585, position.x);
-  TEST_ASSERT_EQUAL_INT16(-585, position.y);
-  TEST_ASSERT_EQUAL_INT16(585, f.input.stick(Stick::Right).x);
-  TEST_ASSERT_EQUAL_INT16(0, f.input.stick(Stick::Left).x);  // analógico não instalado
-}
-
 static void test_configuration_changes_the_timing() {
   Fixture f;
   FakeSource source;
@@ -266,7 +238,6 @@ int main() {
   RUN_TEST(test_init_reports_absent_hardware_only_when_nothing_answers);
   RUN_TEST(test_failing_source_releases_buttons_and_is_reported_once);
   RUN_TEST(test_failed_source_is_retried_and_recovers);
-  RUN_TEST(test_stick_events_carry_both_axes);
   RUN_TEST(test_configuration_changes_the_timing);
   RUN_TEST(test_polls_at_a_fixed_period);
   RUN_TEST(test_shutdown_releases_and_stops);

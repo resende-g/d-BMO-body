@@ -104,6 +104,116 @@ de evidência, com o estado de cada um.
 Registro do que foi **executado de fato** nesta etapa de desenvolvimento. O que não foi
 executado está na última tabela, sem resultado atribuído.
 
+### Retirada dos analógicos e dos gatilhos (2026-11-25, no computador)
+
+Executado num macOS (Darwin 27), sem placa:
+
+| O que | Resultado |
+|---|---|
+| `ctest` com `-DDBMO_SANITIZE=OFF` (CMake e Ninja instalados por `pip`) | **45 de 45 executáveis aprovados** |
+| `ctest` com `-DDBMO_SANITIZE=ON` | **Não executado.** Neste macOS, todo executável trava antes do `main`, dentro de `__asan::InitializeShadowMemory` (pilha obtida com `sample`). É problema do ambiente: o sanitizer continua só na CI |
+| `clang-format` 18.1.8, `--dry-run --Werror`, nos arquivos C++ alterados | Sem diferenças. O `tools/check_format.sh` não roda no bash 3.2 do macOS (`mapfile`) |
+| `tools/check_pinmap.py`, `check_links.py`, `check_repo.py` | Aprovados: 27 sinais no perfil `target`, 19 no `bench`; 0 links quebrados; 0 problemas |
+| `firmware/retro-go/tests/host_check.sh` | Todas as conferências passaram (mapa I2C com 10 botões) |
+| `mechanical/cad/test_generate_models.py` | 19 ok, 0 falhas, 3 ignorados (geometria: sem cadquery) |
+| `pio run -e dbmo-target -e dbmo-bench` | Os dois perfis compilam (`SUCCESS`) |
+
+Não executado: compilação do Bruce e do Retro-Go com o ESP-IDF (ficam para a CI) e qualquer
+teste na placa.
+
+### Vídeo de demonstração: rádio, microfone, IR e Retro-Go na placa (2026-11-25)
+
+Mesma montagem da entrada seguinte (fases A a E e o SD da tela, cartão `DBMO` inserido). Duas
+tomadas: a 1ª com o firmware próprio, a 2ª com o Retro-Go gravado por cima.
+
+**Microfone até 10 s (`a6a5739`).** O comando `mic` passou a usar um buffer de 160000 amostras
+(10 s a 16 kHz) reservado na PSRAM por `main.cpp`; sem PSRAM, continua com 1 s. No computador:
+47 executáveis de teste aprovados (`-DDBMO_SANITIZE=OFF`, ver a entrada "Retirada dos
+analógicos"); os perfis `dbmo-bench` e `dbmo-target` compilam. Na placa: `mic 10001` responde
+`uso: mic [ms], ate 10000; mic last`.
+
+**Tomada 1, firmware próprio (`a6a5739`).** Um roteiro mandou os comandos pelo console em tempos
+fixos; um ensaio e uma tomada, com o mesmo resultado:
+
+| Item | Comando | Saída | Leitura |
+|---|---|---|---|
+| Rádio | `radio rx on` e, 10 s depois, `radio rx off` | `recepcao: Ok` nos dois | Rosto "procurando" durante a recepção, relatado pelo Gabriel |
+| Microfone | `config audio.mic_enabled 1`; `mic 8000` | `gravacao encerrada: 126560 amostras, pico 32768` | Rosto "ouvindo" por 8 s, relatado pelo Gabriel |
+| Controle remoto | Menu Infravermelho, teclas do controle | **Nenhum código recebido**; 15 vezes `aprender infravermelho: Ok` sem resultado | **Falhou** |
+
+Com a recepção do rádio ligada, o GPIO 4 registrou de 14 a 33 `infravermelho: sinal
+desconhecido` por segundo, e nenhum fora desse intervalo. Em 22/11 isso não acontecia e o
+controle era lido (`nec:0004:...`). **Hipótese, não verificada:** o receptor de IR ficou sem
+alimentação ou com o OUT solto depois da religação de 24/11; com a linha solta, o GPIO 4 pega o
+ruído da fiação do rádio. Pendente: conferir C1 a C3 e a tensão nas pernas do receptor.
+
+**Tomada 2, Retro-Go.** Primeira vez na placa. Imagem de bancada da CI gravada com
+`esptool.py --chip esp32s3 write-flash --flash-size detect 0x0` (6.750.464 bytes, 35 s):
+
+| Etapa | Saída | Leitura |
+|---|---|---|
+| Imagem da execução 45712889400 (SHA-256 `a3858c90…632d`) | `Storage mounted at /sd`, `Input ready`, `Display ready`, `Retro-Go ready`, abas criadas | Launcher funciona; tela **de cabeça para baixo e espelhada** em relação ao firmware próprio |
+| Causa | Os dois enviam MADCTL `0x28`; o Retro-Go enviava `0xB6` = `0x0A, 0xA2` (SS=1), o Adafruit `0x08, 0x82` (SS=0) | Correção `c3aad60`: `0xB6` = `0x0A, 0x82` |
+| Imagem da execução 45724562378 (SHA-256 `9f1c6082…de2d`) | Mesmo boot | Orientação igual à do firmware próprio, relatado pelo Gabriel |
+| ROM | `/roms/gb`, `/roms/gbc`, `/roms/nes` e `/roms/pce` existiam vazias (criadas pelo Retro-Go). A ROM de Game Boy Color do Gabriel estava num `.7z`, que o Retro-Go não abre: descompactada no Mac e copiada para `/roms/gbc` (1.048.576 bytes, SHA-256 igual ao do original) | — |
+| Jogo | `Switching to app retro-core (gbc)`; `160x144@1.111 => 266x240`; frameskip entre 1 e 3; rodou de 31 s a pelo menos 183 s do log, sem reinício | Jogo de Game Boy Color rodando na placa; "rodou perfeito", relatado pelo Gabriel |
+
+Na troca do launcher para o jogo, o log registrou `spi_deinit: Failed to properly terminate SPI
+driver!`, sem efeito visível.
+
+Limites da evidência:
+
+- O vídeo não foi visto por mim: o rosto, a orientação da tela e o jogo vêm do relato do
+  Gabriel e do log.
+- O controle remoto não foi lido nesta sessão.
+- Na bancada não há Start, Select nem esquerda (3 botões); sem amplificador, sem som; o SPI da
+  tela a 10 MHz obriga o frameskip.
+- A placa ficou com o Retro-Go: o firmware próprio volta com
+  `pio run -e dbmo-bench -t upload`.
+- O `config audio.mic_enabled 1` da tomada 1 foi gravado sozinho no cartão: a configuração do
+  cartão está com o microfone habilitado até ser desfeita.
+
+### Tela branca resolvida e SD da tela lendo e gravando (2026-11-25)
+
+**Montagem:** fases A a E do [mapa v0.3](../hardware/BREADBOARD_MAP.md), mais os 4 fios do SD
+da tela, cujos pinos foram soldados em 24/11: SD_MOSI, SD_SCK e SD_MISO na linha c das colunas
+8, 11 e 14 (os nós do SPI) e SD_CS no GPIO 21 (J3 pino 18). Essa ligação está só no artefato
+da montagem com o SD; o `BREADBOARD_MAP.md` ainda não a traz. Placa em
+`/dev/cu.usbmodem2101`, com o firmware que já estava gravado (`version`:
+`d-BMO v1 firmware 0.1.0`; o commit não foi registrado). Console pelo script pyserial.
+Cartão: SD de 2 GB em FAT32, volume `DBMO`, colocado e tirado com o USB desligado.
+
+| Etapa | Montagem | Saída | Leitura |
+|---|---|---|---|
+| 1 | Sem cartão; LED da tela ligado no lugar errado (posição não registrada); 10, 11 e 12 da DevKitC sem fio | `ID do controlador 0xFFFF`; `CC1101 nao respondeu: Timeout`; `sdCommand(): Card Failed!` | Nenhum dos três responde pelo MISO |
+| 2 | LED corrigido; 10, 11 e 12 ainda sem fio | `ID do controlador 0x0000`; `CC1101 nao respondeu: HardwareAbsent` | Continua sem SPI |
+| 3 | 10 (CS da tela), 11 (MOSI) e 12 (SCK) ligados; sem cartão | `controlador 0x9341`; `CC1101 PARTNUM=0x00 VERSION=0x14`; `radio: Idle, 433920000 Hz`; `storage: Absent` | Tela e CC1101 normais com os fios do SD no barramento |
+| 4 | Com o cartão | `cartao: Ok`; `cartao montado`; `storage: Ready (Ok)`; `sd` respondeu `cartao: Ok`; tela e CC1101 `Ready` | O SD responde no SPI dividido |
+| 5 | `save` e reinício | `gravar configuracao: Ok`; no boot seguinte, `configuracao carregada (35 chaves, cartao)` | Escrita e leitura no cartão |
+
+**Leitura.** Nesta sessão, as falhas vieram dos fios faltando: sem o SCK e o MOSI da DevKitC,
+nenhum dos três dispositivos do SPI recebe nada, e sem o CS a tela não é selecionada. Se a
+tela branca de 24/11 teve a mesma causa, não se sabe.
+
+**Microfone habilitado sem querer.** No boot sem cartão, a configuração veio da memória interna
+(`configuracao carregada (34 chaves, memoria interna)`) com `microfone: habilitado`. A causa
+foram os `config audio.mic_enabled 1` de 22/11: toda chave alterada é gravada sozinha 2 s
+depois (`kSaveDelayMs`), mesmo sem `save`. Com o cartão sem arquivo de configuração, o boot
+registrou `nenhuma configuracao salva: usando os padroes`, mas o microfone continuou
+habilitado: `Application::begin` carrega a configuração da memória interna antes da do cartão,
+e o log não diz isso (imprecisão do log, não corrigida). O `save` da etapa 5 gravou
+`audio.mic_enabled=1` no cartão. Em seguida, `config audio.mic_enabled 0` foi gravado sozinho
+no cartão, e no boot seguinte apareceu `microfone: desabilitado` e `audio.mic_enabled=0`.
+
+Limites da evidência:
+
+- O rosto aparece na tela, relatado pelo Gabriel depois das etapas acima, sem foto.
+- A memória interna continua com `audio.mic_enabled=1`; ela só é regravada num boot sem
+  cartão.
+- No cartão, só o arquivo de configuração foi gravado e lido. O log no cartão e a pasta de IR
+  não foram conferidos, e o cartão não foi lido no Mac depois.
+- A posição em que o fio do LED estava antes não foi registrada.
+
 ### Primeira gravação na placa (2026-11-21)
 
 Firmware próprio, perfil `dbmo-bench`, gravado pela USB nativa da DevKitC-1 N16R8
@@ -420,7 +530,10 @@ contra GND não foram relatados.
 **Firmware:** `d33f036` (comando `mic`), gravado com
 `pio run -e dbmo-bench -t upload --upload-port /dev/cu.usbmodem1101`; console pelo script
 pyserial. O microfone foi habilitado em cada sessão com `config audio.mic_enabled 1`, sem
-`save`: a configuração não ficou gravada.
+`save`. **Correção em 2026-11-25:** o texto original dizia que, sem `save`, a configuração não
+ficou gravada. Está errado: toda chave alterada é gravada sozinha 2 s depois
+(`kSaveDelayMs`), e o microfone ficou habilitado na memória interna (ver a entrada de
+2026-11-25).
 
 | Etapa | Comando | Saída | Leitura |
 |---|---|---|---|

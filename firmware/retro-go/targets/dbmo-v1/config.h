@@ -36,20 +36,12 @@
 #ifndef DBMO_RG_ENABLE_BATTERY_ADC
 #define DBMO_RG_ENABLE_BATTERY_ADC 0
 #endif
-// 1 = analógico esquerdo como D-pad digital (ADC1, GPIO 2 e 4). Os analógicos ainda não estão
-// ligados: com os pinos soltos o ADC geraria toques fantasmas.
-#ifndef DBMO_RG_ENABLE_STICK_DPAD
-#define DBMO_RG_ENABLE_STICK_DPAD 0
-#endif
 // 1 = aciona o power-latch (GPIO 48) no início do boot. O circuito não está decidido: a
 // polaridade tem que ser informada em DBMO_RG_POWER_HOLD_LEVEL (0 ou 1), sem valor padrão.
 #ifndef DBMO_RG_ENABLE_POWER_HOLD
 #define DBMO_RG_ENABLE_POWER_HOLD 0
 #endif
 
-#if DBMO_RG_BENCH && DBMO_RG_ENABLE_STICK_DPAD
-#error "DBMO_RG_BENCH usa o GPIO 2 como botão OK; não combina com DBMO_RG_ENABLE_STICK_DPAD (GPIO 2 = eixo X)."
-#endif
 #if DBMO_RG_ENABLE_POWER_HOLD && !defined(DBMO_RG_POWER_HOLD_LEVEL)
 #error "DBMO_RG_ENABLE_POWER_HOLD exige DBMO_RG_POWER_HOLD_LEVEL (0 ou 1): o circuito do power-latch não está decidido."
 #endif
@@ -128,7 +120,10 @@
 #define RG_SCREEN_ROTATE            0
 #define RG_SCREEN_VISIBLE_AREA      {0, 0, 0, 0}
 #define RG_SCREEN_SAFE_AREA         {0, 0, 0, 0}
-// Sequência do alvo esp32-s3-devkit; só o valor do MADCTL (0x36) é do d-BMO.
+// Sequência do alvo esp32-s3-devkit; o MADCTL (0x36) e o 2º byte do 0xB6 são do d-BMO. O alvo de
+// origem usa 0xB6 = 0x0A, 0xA2 (SS=1, colunas do painel invertidas). Com o MADCTL 0x28, tirado de
+// um driver com SS=0, isso deixou a imagem de cabeça para baixo e espelhada na bancada em
+// 25/11/2026. 0x82 (SS=0) é o valor do Adafruit_ILI9341 do firmware próprio, cuja imagem saiu certa.
 #define RG_SCREEN_INIT()                                                                                         \
     ILI9341_CMD(0xCF, 0x00, 0xc3, 0x30);                                                                         \
     ILI9341_CMD(0xED, 0x64, 0x03, 0x12, 0x81);                                                                   \
@@ -142,7 +137,7 @@
     ILI9341_CMD(0xC7, 0x91);                 /* VCM control2 */                                                  \
     ILI9341_CMD(0x36, DBMO_RG_LCD_MADCTL);   /* Memory Access Control */                                         \
     ILI9341_CMD(0xB1, 0x00, 0x10);           /* Frame Rate Control (1B=70, 1F=61, 10=119) */                     \
-    ILI9341_CMD(0xB6, 0x0A, 0xA2);           /* Display Function Control */                                      \
+    ILI9341_CMD(0xB6, 0x0A, 0x82);           /* Display Function Control: SS=0, como o Adafruit (ver acima) */   \
     ILI9341_CMD(0xF6, 0x01, 0x30);                                                                               \
     ILI9341_CMD(0xF2, 0x00);                 /* 3Gamma Function Disable */                                       \
     ILI9341_CMD(0x26, 0x01);                 /* Gamma curve selected */                                          \
@@ -151,9 +146,9 @@
 
 // ---------------------------------------------------------------------------
 // Entrada
-// O Retro-Go tem 14 teclas (rg_input.h); o d-BMO tem 16 botões. L2 e R2 viram MENU e OPTION;
-// os cliques dos analógicos (propostos no segundo MCP23017, pins.h mcp_aux) ficam sem função
-// no Retro-Go.
+// O Retro-Go tem 14 teclas (rg_input.h), mas nenhum emulador do commit fixado lê X, Y, L ou R
+// (o Mega Drive usa A, B e SELECT). O d-BMO tem 10 botões e nenhum gatilho de ombro desde
+// 2026-11-25; por isso os botões X e Y viram MENU e OPTION.
 // ---------------------------------------------------------------------------
 #if DBMO_RG_BENCH
 
@@ -173,7 +168,7 @@
 
 #else
 
-// 14 botões no MCP23017: botão ao GND, pull-up interno do MCP (.pullup = 1), ativo em nível
+// 10 botões no MCP23017: botão ao GND, pull-up interno do MCP (.pullup = 1), ativo em nível
 // baixo (.level = 0). .num é o bit: 0-7 = GPA0-7, 8-15 = GPB0-7. Os bits 7 e 15 (GPA7 e GPB7)
 // ficam sem botão: o datasheet do MCP23017 (DS20001952, rev. D) os declara somente saída.
 #define RG_GAMEPAD_I2C_MAP {\
@@ -183,30 +178,12 @@
     {RG_KEY_RIGHT,  .num = 3,  .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kDpadRight */ \
     {RG_KEY_A,      .num = 4,  .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kActionA */ \
     {RG_KEY_B,      .num = 5,  .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kActionB */ \
-    {RG_KEY_X,      .num = 6,  .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kActionX */ \
-    {RG_KEY_Y,      .num = 8,  .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kActionY */ \
+    {RG_KEY_MENU,   .num = 6,  .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kActionX */ \
+    {RG_KEY_OPTION, .num = 8,  .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kActionY */ \
     {RG_KEY_SELECT, .num = 9,  .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kSelect */ \
     {RG_KEY_START,  .num = 10, .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kStart */ \
-    {RG_KEY_L,      .num = 11, .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kL1 */ \
-    {RG_KEY_R,      .num = 12, .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kR1 */ \
-    {RG_KEY_MENU,   .num = 13, .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kL2 */ \
-    {RG_KEY_OPTION, .num = 14, .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kR2 */ \
 }
 
-#endif
-
-#if DBMO_RG_ENABLE_STICK_DPAD
-// Analógico esquerdo como D-pad, pelo driver ADC do Retro-Go (faixas de valor bruto de 12 bits,
-// como no alvo fri3d-2024). O sentido de cada eixo depende de como o stick for montado:
-// PENDENTE DE VALIDAÇÃO FÍSICA (para inverter um eixo, trocar as faixas das duas linhas dele).
-// No ESP32-S3, ADC1 canal n = GPIO n+1. O analógico direito não tem uso: o Retro-Go não tem
-// API de eixo analógico (rg_input.h só expõe a máscara de 14 teclas).
-#define RG_GAMEPAD_ADC_MAP {\
-    {RG_KEY_UP,    ADC_UNIT_1, ADC_CHANNEL_3, ADC_ATTEN_DB_11, 3072, 4096}, /* GPIO 4: pins.h target::kStickLeftY */ \
-    {RG_KEY_DOWN,  ADC_UNIT_1, ADC_CHANNEL_3, ADC_ATTEN_DB_11, 0, 1024},    /* GPIO 4: pins.h target::kStickLeftY */ \
-    {RG_KEY_RIGHT, ADC_UNIT_1, ADC_CHANNEL_1, ADC_ATTEN_DB_11, 3072, 4096}, /* GPIO 2: pins.h target::kStickLeftX */ \
-    {RG_KEY_LEFT,  ADC_UNIT_1, ADC_CHANNEL_1, ADC_ATTEN_DB_11, 0, 1024},    /* GPIO 2: pins.h target::kStickLeftX */ \
-}
 #endif
 
 // ---------------------------------------------------------------------------

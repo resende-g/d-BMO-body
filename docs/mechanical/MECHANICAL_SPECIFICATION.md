@@ -37,7 +37,7 @@ Ele **não**:
 
 | Sigla | Documento | Natureza |
 |---|---|---|
-| **R** | `README.md` deste repositório (seções *Carcaça 3D*, *Carcaça v0*, *Especificação do cartucho*, *Dimensões conhecidas*, *Analógicos e gatilhos reaproveitados*, *Riscos da bateria e recomendações*, *Lista de componentes*, *Compras em fases*) | Decisões do projeto (fonte primária do projeto) |
+| **R** | `README.md` deste repositório (seções *Carcaça 3D*, *Carcaça v0*, *Especificação do cartucho*, *Dimensões conhecidas*, *Tampas reaproveitadas do controle de PS3*, *Riscos da bateria e recomendações*, *Lista de componentes*, *Compras em fases*) | Decisões do projeto (fonte primária do projeto) |
 | **M** | `docs/brand/CHARACTER_SPECIFICATION.md`, versão 2.0, do repositório `resende-g/d-BMO` (lido em cópia local nesta sessão) | Especificação visual do personagem (normativa para a identidade) |
 | **T** | `docs/brand/DESIGN_TOKENS.md`, versão 1.0, do mesmo repositório | Tokens de cor (normativos para a paleta) |
 | **F** | Documentos de fabricante abertos nesta sessão (lista na seção 2 de [COMPONENT_DIMENSIONS.md](COMPONENT_DIMENSIONS.md)) | Fonte primária externa |
@@ -128,10 +128,10 @@ há leitura deste documento, isso está marcado.
 | RM-01 | Corpo vertical, retangular, de cantos arredondados e espessura perceptível | `[M: §2]`, `[R: Carcaça 3D]` |
 | RM-02 | Uma tela só, 4:3, grande, na metade superior, com moldura preta generosa | `[M: §2]`, `[R: Carcaça 3D]` |
 | RM-03 | Cruz direcional à esquerda e quatro botões de ação em losango à direita, abaixo da tela | `[M: §2]`, `[R: Carcaça 3D]` |
-| RM-04 | Dois analógicos na parte inferior, um de cada lado | `[M: §2, §2.1]`, `[R: Carcaça 3D]` |
+| RM-04 | Removido em 2026-11-25: v1 sem analógicos nem gatilhos. | — (ver inconsistência I-10) |
 | RM-05 | Botões pequenos de select e start no centro | `[M: §2]` ("centro inferior"), `[R: Carcaça 3D]` ("no centro") |
-| RM-06 | Grade de alto-falante entre os analógicos | `[M: §2]`, `[R: Carcaça 3D]` (ver inconsistência I-2) |
-| RM-07 | Gatilhos de ombro no topo | `[M: §2, §2.1]`, `[R: Carcaça 3D]` |
+| RM-06 | Grade de alto-falante na parte inferior da frente | `[M: §2]`, `[R: Carcaça 3D]` (ver inconsistência I-2) |
+| RM-07 | Removido em 2026-11-25: v1 sem analógicos nem gatilhos. | — (ver inconsistência I-10) |
 | RM-08 | Sem membros. Em repouso, o aparelho fica num suporte inclinado grafite, separado | `[M: §2, §2.1]`, `[R: Carcaça 3D]` |
 | RM-09 | Sem teclado | `[R: Carcaça 3D]`, `[R: Versões do projeto]` |
 | RM-10 | Silhueta reconhecível em vista frontal e em tamanho reduzido | `[M: §2]` |
@@ -151,7 +151,7 @@ há leitura deste documento, isso está marcado.
 | RM-20 | Fenda de cartucho na face frontal | `[M: §2.2]`, `[R: Carcaça 3D]` |
 | RM-21 | Corpo verde-água ou em tons de ciano | `[M: §2.2]` |
 | RM-22 | Braços e pernas | `[M: §2.2]` |
-| RM-23 | Botões coloridos de formas geométricas diferentes; símbolos △ ○ × □ nas tampas reaproveitadas | `[M: §2.2]`, `[R: Analógicos e gatilhos reaproveitados]` |
+| RM-23 | Botões coloridos de formas geométricas diferentes; símbolos △ ○ × □ nas tampas reaproveitadas | `[M: §2.2]`, `[R: Tampas reaproveitadas do controle de PS3]` |
 | RM-24 | Logotipo, texto ou detalhe de marca de console real | `[M: §2.2]` |
 | RM-25 | Metal de verdade na frente e atrás do corpo (ver seção 7) | `[R: Carcaça 3D]` |
 | RM-26 | Slot de microSD exposto por fora | `[R: Carcaça 3D]` |
@@ -174,7 +174,7 @@ há leitura deste documento, isso está marcado.
 | RM-41 | A DevKitC não tem furos de fixação: os suportes prendem a placa pelas bordas | `[R: Carcaça v0]` (a ausência de furos é afirmação do README; conferir na peça) |
 | RM-42 | A v0 já tem a forma externa da variação 1; espessura, parafusos e encaixe interno podem mudar na v1 | `[R: Carcaça v0]` |
 | RM-43 | A v0 já tem todos os furos e fendas; os que ainda não têm peça ficam com tampa cega | `[R: Carcaça v0]` |
-| RM-44 | A v0 só é modelada depois da Fase 2 de compras, com tela, placa, bateria e analógicos em mãos | `[R: Compras em fases]` |
+| RM-44 | A v0 só é modelada depois da Fase 2 de compras, com tela, placa e bateria em mãos | `[R: Compras em fases]` |
 | RM-45 | Antes da v0, imprimir um corpo de prova com o encaixe dos standoffs e dos parafusos; contar com 2 ou 3 reimpressões | `[R: Carcaça v0]`, `[R: Carcaça 3D]` |
 | RM-46 | A v1 é modelada em volta da PCB definitiva (módulo ESP32-S3-WROOM-1-N16R8, riser do card edge) | `[R: Compras em fases]` |
 
@@ -190,8 +190,8 @@ número, porque quase todas as entradas ainda são `NOMINAL` ou `PENDENTE`.
 | EC-1 | Com a tela na horizontal (320 × 240), a largura interna tem de conter o lado maior da placa da tela | `display_msp3218.pcb_length` — NOMINAL |
 | EC-2 | A zona da tampa traseira tem de conter a face da bateria, em uma de duas orientações (ver decisão D-3) | `battery_4070115.width`, `battery_4070115.length` — NOMINAL |
 | EC-3 | O berço da bateria precisa de ~10% de folga na espessura `[R: Riscos da bateria, item 7]` | `battery_4070115.thickness` — NOMINAL e contraditório no anúncio |
-| EC-4 | A borda superior tem de acomodar, sem colisão, a entrada guiada e o envelope externo do cartucho (centro), a saída SMA, o furo do microfone e os gatilhos de ombro [R: Carcaça 3D], [R: Carcaça padrão dos cartuchos] | Envelope externo do cartucho e demais itens PENDENTE |
-| EC-5 | A espessura tem de conter o empilhamento mais alto entre as zonas (ver [ASSEMBLY_LAYOUT.md](ASSEMBLY_LAYOUT.md), seção 3) | Altura dos analógicos, espessura da tela, altura da DevKitC com pinos — todas PENDENTE |
+| EC-4 | A borda superior tem de acomodar, sem colisão, a entrada guiada e o envelope externo do cartucho (centro), a saída SMA e o furo do microfone [R: Carcaça 3D], [R: Carcaça padrão dos cartuchos] | Envelope externo do cartucho e demais itens PENDENTE |
+| EC-5 | A espessura tem de conter o empilhamento mais alto entre as zonas (ver [ASSEMBLY_LAYOUT.md](ASSEMBLY_LAYOUT.md), seção 3) | Altura dos botões com tampa, espessura da tela, altura da DevKitC com pinos — todas PENDENTE |
 | EC-6 | A região da antena do módulo ESP32-S3-WROOM-1 pede folga de pelo menos 15 mm em todas as direções dentro da carcaça `[F: ESPRESSIF_HDG_PCB_LAYOUT]` | Dimensões da região da antena — CONFIRMADO |
 | EC-7 | A saliência externa do cartucho é definida pelo corpo plástico, pelo ombro/batente e pela profundidade real de engate da língua no soquete | Envelope da carcaça, slot_depth e posição da riser — PENDENTE |
 
@@ -203,7 +203,6 @@ proporção 4:3 (64,8 / 48,6 = 1,333).
 
 - `BODY_W`, `BODY_H`, `BODY_D`, raios de canto, espessura de parede.
 - Espessura total da tela com o painel de toque e contorno do vidro `[R: Dimensões conhecidas]`.
-- Área e altura dos analógicos com a capa `[R: Analógicos e gatilhos reaproveitados]`.
 - Dimensões reais da bateria, incluindo PCM, abas e fios.
 - Comprimento, largura e altura da DevKitC com os pinos `[R: Dimensões conhecidas]`.
 - Dimensões de todos os módulos genéricos (CC1101, PN532, INMP441, MAX98357A, conjunto IR,
@@ -222,7 +221,7 @@ proporção 4:3 (64,8 / 48,6 = 1,333).
 | MP-2 | Carcaça em **PETG ou ASA, não PLA**: o PLA amolece a cerca de 55 °C | `[R: Riscos da bateria, item 7]` (ver inconsistência I-1) |
 | MP-3 | Acabamento prata **sem metal de verdade** na frente e atrás: filamento prata ou pintura | `[R: Carcaça 3D]` |
 | MP-4 | Corpo usinado em alumínio está descartado, salvo com janelas plásticas sobre as antenas | `[R: Carcaça 3D]` |
-| MP-5 | Folga de ~0,2 a 0,3 mm nos furos das tampas de botão, medida a partir do corpo e da aba de cada tampa | `[R: Analógicos e gatilhos reaproveitados]` |
+| MP-5 | Folga de ~0,2 a 0,3 mm nos furos das tampas de botão, medida a partir do corpo e da aba de cada tampa | `[R: Tampas reaproveitadas do controle de PS3]` |
 | MP-6 | Detalhes mecânicos precisos saem do CAD, não de gerador de imagem; renders são referência estética, não prova dimensional | `[R: Carcaça 3D]`, `[M: §6]` |
 | MP-7 | Validar malha, manifold, escala e tolerâncias no CAD antes de fabricar | `[M: §6]` |
 
@@ -289,15 +288,15 @@ Regra para a carcaça:
 Fatos:
 
 - A antena SMA é externa, sai pelo topo e serve só ao CC1101 `[R: Carcaça 3D]`, `[R: Lista de componentes]`.
-- Topo: cartucho no centro, antena SMA e furo do microfone distribuídos para não colidir com os
-  gatilhos de ombro `[R: Carcaça 3D]`.
+- Topo: cartucho no centro, antena SMA e furo do microfone `[R: Carcaça 3D]`. Sem gatilhos de ombro
+  desde 2026-11-25.
 - Corpo metálico atenua sub-GHz `[R: Carcaça 3D]`.
 
 Regra para a carcaça:
 
 - `KO-SMA`: o conector atravessa a parede do topo; a haste da antena fica livre, fora do corpo.
-- A posição em X depende da largura do cartucho, do curso dos gatilhos e da geometria da placa do
-  CC1101 (todos `PENDENTE`). Ver decisão D-7.
+- A posição em X depende da largura do cartucho e da geometria da placa do CC1101 (ambos
+  `PENDENTE`). Ver decisão D-7.
 - **(derivado)** Um cartucho de rádio (por exemplo o LoRa de 915 MHz com antena própria, citado em
   `[R: Cartuchos de expansão]`) fica a poucos centímetros da antena SMA. A convivência entre as duas
   antenas não foi avaliada em nenhuma fonte consultada.
@@ -371,17 +370,17 @@ Lista do que o README pede. A posição exata de cada abertura é parâmetro de
 | ID | Abertura | Face | Fonte | Situação |
 |---|---|---|---|---|
 | AB-01 | Janela da tela, com moldura preta | `FR` | `[R: Carcaça 3D]`, `[M: §2]` | Contorno do vidro `PENDENTE` |
-| AB-02 | Cruz direcional (peça única ou quatro tampas) | `FR` | `[R: Analógicos e gatilhos reaproveitados]` | Decisão D-10 |
+| AB-02 | Cruz direcional (peça única ou quatro tampas) | `FR` | `[R: Tampas reaproveitadas do controle de PS3]` | Decisão D-10 |
 | AB-03 | Quatro botões de ação em losango | `FR` | `[R: Carcaça 3D]` | Tampas `PENDENTE` |
 | AB-04 | Select e start | `FR` | `[R: Carcaça 3D]` | Botões `PENDENTE` |
-| AB-05 | Dois furos dos analógicos | `FR` | `[R: Carcaça 3D]` | Sticks `PENDENTE` |
+| AB-05 | Removido em 2026-11-25: v1 sem analógicos nem gatilhos. | — | — | — |
 | AB-06 | Grade do alto-falante | `FR` | `[R: Carcaça 3D]` | Ver inconsistência I-2 |
 | AB-07 | Janela do IR (LED emissor e receptor) | `FR` ou `TP` | `[R: Carcaça 3D]` | Ver inconsistência I-8 e decisão D-9 |
 | AB-08 | LED de estado entre a cruz e os botões de ação | `FR` | `[M: §8]` | Função ainda não definida na especificação do personagem |
 | AB-09 | Fenda do cartucho | `TP` | seção 9 | — |
 | AB-10 | Saída do conector SMA | `TP` | `[R: Carcaça 3D]` | Decisão D-7 |
 | AB-11 | Furo do microfone | `TP` | `[R: Carcaça 3D]` | Módulo `PENDENTE` |
-| AB-12 | Gatilhos de ombro L1/R1 (e L2/R2, se couberem) | `TP` | `[R: Analógicos e gatilhos reaproveitados]` | Decisão D-11 |
+| AB-12 | Removido em 2026-11-25: v1 sem analógicos nem gatilhos. | — | — | — |
 | AB-13 | Porta USB-C de dados | `LE` ou `LD` | `[R: Carcaça 3D]` | Decisão D-4 |
 | AB-14 | Porta USB-C só de carga, com moldura ou anel em volta, ícone de raio em relevo e LED de carga ao lado | `LE` ou `LD` | `[R: Conector de carga USB-C dedicado]` | Decisão D-4 |
 | AB-15 | Botão de energia momentâneo | `LE` ou `LD` | `[R: Lista de componentes]`, `[R: Carcaça 3D]` | Ver inconsistência I-3 |
@@ -400,7 +399,7 @@ final, num slot próprio dentro da zona da tampa traseira `[R: Lista de componen
 | FX-3 | Demais parafusos de fechamento também com heat-set ou standoff na traseira | `[R: Carcaça 3D]` |
 | FX-4 | Testar o encaixe hexagonal num corpo de prova antes de fechar o desenho | `[R: Carcaça 3D]` |
 | FX-5 | Na v0, a DevKitC é presa por suportes impressos | `[R: Carcaça v0]` |
-| FX-6 | Apoio do pivô impresso para as alavancas L2/R2, se forem usadas | `[R: Analógicos e gatilhos reaproveitados]` |
+| FX-6 | Removido em 2026-11-25: v1 sem analógicos nem gatilhos. | — |
 
 Pendências: rosca, distância entre faces e comprimento do standoff (medir a peça); escolha entre M2
 e M3; quantidade e posição dos parafusos. A rosca de standoffs de placa-mãe varia; não assumir M3
@@ -418,7 +417,7 @@ contornos discretos `[T: §4]`.
 |---|---|---|---|
 | Corpo (frente, traseira, laterais) | `color.silver.metallic` ou `color.silver.industrial` | `#D5D7D9` / `#AEB3B8` | `[T: §1]`, `[M: §5]`, `[R: Carcaça 3D]` |
 | Moldura da tela | `color.black` (o README admite grafite ou preto) | `#090A0C` | `[M: §2]` ("moldura preta"), `[R: Carcaça 3D]`, `[T: §1]` |
-| Controles (cruz, botões de ação, select/start, analógicos, gatilhos) | `color.graphite` (ou prata) | `#24272B` | `[M: §2.1]`, `[R: Carcaça 3D]` |
+| Controles (cruz, botões de ação, select/start) | `color.graphite` (ou prata) | `#24272B` | `[M: §2.1]`, `[R: Carcaça 3D]` |
 | Junções e detalhes | `color.graphite` ou `color.black` | `#24272B` / `#090A0C` | `[M: §5]`, `[R: Carcaça 3D]` |
 | Suporte inclinado | `color.graphite` | `#24272B` | `[M: §2]`, `[R: Carcaça 3D]` |
 | Acentos pequenos | `color.red.signal` | `#D92332` | `[T: §1]`, `[R: Carcaça 3D]` |
@@ -433,7 +432,7 @@ contornos discretos `[T: §4]`.
 - Botões monocromáticos, em grafite ou prata `[M: §2.1]`.
 - Nenhum símbolo, texto ou detalhe de console real `[M: §2.2]`. As tampas reaproveitadas do controle
   de PS3 são lixadas e pintadas de grafite, ou servem só de molde de medida
-  `[R: Analógicos e gatilhos reaproveitados]`.
+  `[R: Tampas reaproveitadas do controle de PS3]`.
 - Cores fora da paleta não entram como cores centrais `[T: §1]`.
 - O README não define a cor da moldura da porta de carga. Dentro da paleta, a opção coerente é o
   vermelho de sinalização como acento pequeno **(interpretação)**; decisão D-12.
@@ -456,11 +455,11 @@ v0 até haver definição (D-14).
 | D-4 | Uma porta USB-C (dados e carga) ou duas | Projeto elétrico | `[R: Riscos da bateria, item 5]` |
 | D-5 | Carcaça impressa pelo Tiago Efraim ou fabricada na JLCPCB | Mantenedor | `[R: Fabricação]`, `[R: Roadmap]` |
 | D-6 | Parede em que fica a antena do NFC e como evitar metal atrás dela | Teste de leitura com a peça | `[R: Carcaça 3D]` |
-| D-7 | Posição em X da saída SMA e do furo do microfone no topo; placa do CC1101 junto à parede do topo ou ligada por cabo | Medição do módulo CC1101 e dos gatilhos | `[R: Carcaça 3D]` |
+| D-7 | Posição em X da saída SMA e do furo do microfone no topo; placa do CC1101 junto à parede do topo ou ligada por cabo | Medição do módulo CC1101 | `[R: Carcaça 3D]` |
 | D-8 | Formato final da PCB-cartucho (referência 52 × 52 mm ou variante curta) e compatibilidade com a cavidade da carcaça comum | Resposta da JLCPCB sobre o chanfro, módulos reais e protótipo da carcaça | [R: Especificação do cartucho] |
 | D-9 | Face da janela do IR | Mantenedor | `[R: Carcaça 3D]` |
-| D-10 | Cruz direcional de peça única ou quatro tampas; tampas do controle de PS3 ou impressas | Medição das tampas | `[R: Analógicos e gatilhos reaproveitados]` |
-| D-11 | L2/R2 com as alavancas do controle, com tampas impressas, ou só L1/R1 na v0 | Medição das alavancas | `[R: Analógicos e gatilhos reaproveitados]` |
+| D-10 | Cruz direcional de peça única ou quatro tampas; tampas do controle de PS3 ou impressas | Medição das tampas | `[R: Tampas reaproveitadas do controle de PS3]` |
+| D-11 | Removido em 2026-11-25: v1 sem analógicos nem gatilhos. | — | — |
 | D-12 | Cor da moldura da porta de carga | Mantenedor | `[R: Conector de carga USB-C dedicado]` |
 | D-13 | Filamento ou tinta para cada token de cor; teste de RF se a tinta for metálica | Amostras físicas | seção 6 |
 | D-14 | Suporte inclinado: ângulo e interface | Mantenedor | `[M: §2]` |
@@ -479,7 +478,7 @@ Registradas para decisão do mantenedor. Este documento não as resolve, salvo o
 | ID | Inconsistência | Tratamento aqui |
 |---|---|---|
 | I-1 | `[R: Carcaça 3D]` admite "PLA/PETG prata ou pintura"; `[R: Riscos da bateria, item 7]` diz "PETG ou ASA, não PLA" | Adotada a regra mais restritiva (MP-2) |
-| I-2 | `[R: Carcaça 3D]` põe a grade do alto-falante "entre" os analógicos e, em outro item, "no canto inferior" | Adotada a posição entre os analógicos, que coincide com `[M: §2]` |
+| I-2 | `[R: Carcaça 3D]` põe a grade do alto-falante "entre" os analógicos e, em outro item, "no canto inferior" | Até 2026-11-25, adotada a posição entre os analógicos, que coincide com `[M: §2]`. Sem analógicos na v1, fica a parte inferior da frente, com a posição em X em aberto |
 | I-3 | `[R: Carcaça 3D]` cita "2× USB-C + chave numa lateral"; `[R: Lista de componentes]` determina botão momentâneo, não chave deslizante | Tratado como botão momentâneo (AB-15) |
 | I-4 | `[M: §3]` pede manter os "pontos de conexão dos braços e pernas", mas `[M: §2]` e `[M: §2.2]` definem o personagem sem membros | Nenhum ponto de conexão de membro é previsto. Corrigir na especificação do personagem |
 | I-5 | Espessura da bateria: 0,4 mm no anúncio e 4,0 mm pela designação 4070115 | Os dois valores ficam `NOMINAL`; medir |
@@ -487,6 +486,7 @@ Registradas para decisão do mantenedor. Este documento não as resolve, salvo o
 | I-7 | Placa da tela: 89,3 × 55,04 mm ("datasheet") e 88 × 54 mm (régua) `[R: Dimensões conhecidas]` | Os dois valores ficam `NOMINAL`; medir com paquímetro |
 | I-8 | `[R: Carcaça 3D]` põe "LED + receptor IR na frente"; o texto alternativo do render lista o LED de IR junto dos itens do topo | Decisão D-9 |
 | I-9 | A DevKitC oficial documentada pela Espressif tem duas portas **Micro-USB** `[F: ESPRESSIF_DEVKITC_GUIDE]`; o README fala em aberturas USB-C na v0 | Conferir o conector da placa em mãos. Se for USB-C, a placa não é a revisão documentada e o padrão de furos oficial precisa ser conferido na peça |
+| I-10 | `[M: §2, §2.1]` pede dois analógicos e gatilhos de ombro; a decisão de 2026-11-25 tira os dois da v1 (o Retro-Go fixado não lê eixo analógico nem L/R). O render `docs/img/dbmo-body-render-v1.jpg` é anterior à decisão e ainda os mostra | Vale a decisão de 2026-11-25 (RM-04 e RM-07 removidos). Corrigir na especificação do personagem |
 
 ## 16. Condições para iniciar a modelagem da carcaça v0
 
@@ -497,11 +497,11 @@ A modelagem começa quando, no registro de dimensões, as linhas abaixo deixarem
    posição da área ativa em relação à placa, posição do slot SD e dos pinos.
 2. DevKitC: comprimento, largura, altura com pinos, posição dos conectores USB e dos botões.
 3. Bateria: espessura, largura e comprimento reais, com PCM e saída dos fios.
-4. Analógicos: área da base, altura total com a capa, diâmetro da capa e curso.
+4. Removido em 2026-11-25: v1 sem analógicos nem gatilhos.
 5. Módulos: contorno, espessura e posição do componente funcional (antena, conector SMA, furo
    acústico do microfone, LED e receptor de IR) de cada módulo.
 6. Alto-falante: contorno, espessura e posição dos terminais.
-7. Botões tácteis: corpo e altura do atuador de cada modelo usado, inclusive os de ângulo reto.
+7. Botões tácteis: corpo e altura do atuador de cada modelo usado.
 8. Standoff: rosca, distância entre faces e comprimento.
 9. Regras de processo de quem imprime (D-15).
 10. Cartucho: medir o DK920A-20M real e fechar o contorno da língua, a guarda lateral, a

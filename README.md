@@ -1,7 +1,7 @@
 # d-BMO-body — hardware do d-BMO
 
 <p align="center">
-  <img src="docs/img/dbmo-body-render-v1.jpg" alt="Render do d-BMO-body: videogame portátil vertical prata com tela 4:3 e rosto em pixels vermelhos, D-pad e quatro botões de ação grafite lisos, dois analógicos, grade de alto-falante, cartucho encaixado no topo, antena SMA e LED de IR" width="360">
+  <img src="docs/img/dbmo-body-render-v1.jpg" alt="Render do d-BMO-body: videogame portátil vertical prata com tela 4:3 e rosto em pixels vermelhos, D-pad e quatro botões de ação grafite lisos, dois analógicos, grade de alto-falante, cartucho encaixado no topo, antena SMA e LED de IR (render anterior à retirada dos analógicos, em 25/11/2026)" width="360">
   <br>
   <sub>Render conceitual do corpo (gerado por IA, não é arte final nem desenho cotado). As medidas reais saem do CAD.</sub>
 </p>
@@ -24,8 +24,9 @@ projeto completo de hardware + firmware.
 
 O visual segue a identidade do d-BMO, definida em
 [`resende-g/d-BMO`](https://github.com/resende-g/d-BMO/blob/main/docs/brand/CHARACTER_SPECIFICATION.md):
-videogame portátil de emulação vertical, corpo prata, rosto em pixels vermelhos na tela,
-dois analógicos e nenhum membro (ver [Aviso legal](#aviso-legal)).
+videogame portátil de emulação vertical, corpo prata, rosto em pixels vermelhos na tela e
+nenhum membro (ver [Aviso legal](#aviso-legal)). A spec também pede dois analógicos; o v1 do
+corpo não tem (decisão de 25/11/2026, ver [d-BMO v1](#d-bmo-v1-este-repositório--esp32-s3-n16r8)).
 
 **Relação com o assistente d-BMO.** O d-BMO também é um assistente de IA pessoal, local-first,
 documentado em [`resende-g/d-BMO`](https://github.com/resende-g/d-BMO). Este aparelho é o **corpo
@@ -95,9 +96,13 @@ O projeto foi dividido em dois, cada um com o hardware certo para o seu propósi
 
 ### d-BMO v1 (este repositório) — ESP32-S3 N16R8
 Jogos retrô + testes de RF / NFC / IR. **Sem teclado QWERTY.** Entrada de videogame
-portátil: **D-pad, quatro botões de ação, select/start, gatilhos de ombro e dois
-analógicos** (sticks de controle de PS3 lidos pelo ADC). É o layout do personagem e
-simplifica a montagem em relação ao teclado.
+portátil: **D-pad, quatro botões de ação e select/start**, mais o botão de energia.
+
+**Sem analógicos nem gatilhos de ombro (decidido em 25/11/2026).** No commit fixado do
+Retro-Go, nenhum emulador lê eixo analógico nem as teclas L, R, X e Y; o teto jogável é o
+Mega Drive, de 3 botões (B e C nos botões A e B, e o A do Mega Drive no Select;
+`gwenesis/main/main.c:268` do Retro-Go). X e Y viram MENU e OPTION no Retro-Go e
+página anterior / próxima no Bruce. Os GPIO 2, 4, 5 e 6 do ADC1 ficaram livres.
 
 ### Projeto 2 (futuro) — Raspberry Pi + teclado Rii
 Kali Linux de verdade para pentest sério. O teclado QWERTY do Rii i8 vai para cá, onde
@@ -138,16 +143,14 @@ digitar comando faz sentido. Fora do escopo deste repositório por enquanto.
 | Mic INMP441 (I²S) | 1 | `INMP441 I2S microphone` | **Comprado em 02/11/2026** (aguardando entrega): R$ 12,14. Captação de voz |
 | Cartões microSD | 2 | já disponível | ADATA de 16 GB e um segundo de 8 GB, cada um já num adaptador microSD→SD; não comprar. Formatar em FAT32. Entram no **slot SD do módulo da tela**: o MSP3218 tem slot de **SD tamanho normal** no verso (confirmado em 02/11/2026), então o cartão vai com o **adaptador microSD→SD**. Conferir se há chip buffer perto do slot (se houver, testar o SPI compartilhado). Na carcaça v0, o cartão fica atrás da tela, com troca rara. Na PCB final, slot microSD próprio na tampa traseira |
 | Bateria LiPo 3,7V 1S 4000 mAh (anúncio) | 1 | `4070115 3.7V 4000mAh` | Selecionada; R$ 59,48; compra não confirmada. Dimensão informada: 0,4 × 70 × 115 mm (provavelmente 4,0 × 70 × 115 mm; confirmar medida real). **Requisitos:** PCM de proteção integrado, termistor NTC (3 fios) e vendedor com datasheet. **Conferir a polaridade do JST antes de ligar**: baterias do AliExpress vêm invertidas com frequência, e a inversão queima o carregador. Se a bateria não tiver o terceiro fio, um NTC avulso serve: 10 kΩ (marcado "103"), constante B compatível com o datasheet do carregador (3435 ou 3950), colado na célula com fita kapton, sem criar ponto de pressão. O usuário já tem um sensor de temperatura: confirmar se é NTC analógico (serve) ou digital tipo DS18B20/DHT11 (não serve para o pino TS do carregador). Ver [Riscos da bateria](#riscos-da-bateria-e-recomendações) |
-| Botões tácteis | — | estoque próprio | Usuário informa que já possui vários botões; não comprar. Confirmar dimensões e quantidade na montagem (D-pad, 4 ações, select/start, 2 gatilhos de ombro, energia) |
-| Analógicos (sticks de PS3) | 2 | reaproveitar | **Tirar do controle genérico de PS3 que o usuário já tem** (sem compra). Cada stick tem 2 potenciômetros (X/Y) e o clique L3/R3. Ver [Analógicos e gatilhos reaproveitados](#analógicos-e-gatilhos-reaproveitados) |
-| Gatilhos de ombro (L/R) | 2–4 | estoque próprio | Botões tácteis em **ângulo reto**, como nos portáteis de emulação. Conferir se há modelos de ângulo reto no estoque; se não, comprar. Tampas: as do L1/R1 do controle de PS3 ou impressas em grafite; alavancas do L2/R2 se couberem (ver [Analógicos e gatilhos reaproveitados](#analógicos-e-gatilhos-reaproveitados)) |
+| Botões tácteis | — | estoque próprio | Usuário informa que já possui vários botões; não comprar. Confirmar dimensões e quantidade na montagem (D-pad, 4 ações, select/start, energia) |
 | Power bank magnético 5000 mAh (compatível com MagSafe) | 1 | já disponível | Fonte externa pela USB da DevKitC, alternativa sem custo à bateria da Fase 2 na v0. Não abrir para aproveitar a célula. Ver [Alternativa sem custo](#alternativa-sem-custo-power-bank-externo-v0) |
 | Botão momentâneo de energia | 1 | `tactile momentary push button` | Usar botão, não chave deslizante. A PCB precisará de circuito de power-latch/gerenciamento de energia para ligar e desligar com pressão; definir CI/topologia e botão conforme esquema. Não comprar chave SPST |
 | Resistores 4,7k / 100k / 1k | kit | `resistor kit 4.7k 100k 1k` | **Comprado em 02/11/2026** (aguardando entrega): kit de filme metálico 1%, 30 valores (10 Ω–1 MΩ), 300 peças, R$ 19,96. Pull-ups do I²C, divisor da bateria e afins |
 | Capacitores 100nF (104) | ~5 | `100nF ceramic capacitor 104` | **Comprado em 02/11/2026** (aguardando entrega): pacote de 100 peças de 100 nF (104), R$ 12,24. Desacoplamento do MCP23017 e dos módulos |
 | Jumpers Dupont (F-F, M-M e M-F) | kit 40 peças | `Dupont jumper wire kit 40pcs female-female male-male male-female` | **Comprado em 02/11/2026** (aguardando entrega): variação "20cm 3kinds 120pin" (40 de cada tipo), R$ 22,10. Prioridade imediata: F-F para o CC1101 |
 | Protoboard MB-102 (830 pontos) | 1 | `MB-102 breadboard 830` | **Comprado em 02/11/2026** (aguardando entrega): variação "MB-102 white", R$ 13,26. A DevKitC-1 é larga e deixa só uma fileira livre de cada lado; se precisar, usar duas lado a lado |
-| Malha dessoldadora (2–3 mm) e fluxo no-clean | 1 cada | loja brasileira | Para tirar os analógicos do controle de PS3 e para a montagem. Fluxo no-clean em pasta ou caneta, nunca pasta ácida |
+| Malha dessoldadora (2–3 mm) e fluxo no-clean | 1 cada | loja brasileira | Para a montagem. Fluxo no-clean em pasta ou caneta, nunca pasta ácida |
 | Adaptador microSD→SD | 2 | já disponível | Um com cada cartão: o slot da tela é SD tamanho normal |
 | Fio fino 30 AWG | 1 rolo | `30 AWG silicone wire` | Comprar no Brasil (no AliExpress, o frete sai mais caro que o fio). Fiação fina e protótipos |
 | Conector/soquete card edge 2,54 mm, 20/34 pinos | 2 peças | `CE 225F 2.54mm 20 34 pin card edge slot connector` | Fase 4. Antes de comprar: confirmar se o anúncio "2*20P" (R$ 14,33) são **2 peças de 20P** (correto) ou **um soquete 2×20 = 40 contatos** (~55 mm, não cabe no cartucho de 52 mm); medir a peça real antes de fechar o footprint |
@@ -162,12 +165,12 @@ digitar comando faz sentido. Fora do escopo deste repositório por enquanto.
 
 Decidido em 02/11/2026: comprar aos poucos, cada fase destrava um teste. A carcaça **não é a
 primeira compra**: ela é desenhada em volta das peças que definem o volume (placa, tela,
-bateria, analógicos), então só é modelada depois da Fase 2.
+bateria), então só é modelada depois da Fase 2.
 
 | Fase | Comprar | Custo aproximado | O que destrava |
 |---|---|---:|---|
 | 1. Núcleo + periféricos (comprada em 02/11/2026) | Jumpers, protoboard, resistores, capacitores 100 nF, PN532, IR, MAX98357A, alto-falante, INMP441 | R$ 119,73 antes do cupom e do imposto | CC1101, NFC, IR e áudio na S3 com o Bruce. Sem compra: slot SD da tela com adaptador, rosto do d-BMO. O MCP23017 dos botões precisa ser comprado (corrigido em 21/11/2026). A Fase 3 original foi antecipada para cá |
-| 2. Volume + energia (próxima rodada) | Bateria com PCM + NTC **e** módulo de carga com power-path (BQ24074 ou MCP73871) na mesma compra; botões tácteis de ângulo reto se faltarem no estoque; tirar os analógicos do controle de PS3 (sem compra) | ~R$ 80–100, ou zero com o [power bank externo](#alternativa-sem-custo-power-bank-externo-v0) no lugar da bateria e do módulo | Peças que definem o corpo em mãos: **modelar e imprimir a carcaça v0**. Bateria sem carregador adequado não se compra: os dois vão juntos. O módulo também valida a energia na bancada (ver [Riscos da bateria](#riscos-da-bateria-e-recomendações)) |
+| 2. Volume + energia (próxima rodada) | Bateria com PCM + NTC **e** módulo de carga com power-path (BQ24074 ou MCP73871) na mesma compra | ~R$ 80–100, ou zero com o [power bank externo](#alternativa-sem-custo-power-bank-externo-v0) no lugar da bateria e do módulo | Peças que definem o corpo em mãos: **modelar e imprimir a carcaça v0**. Bateria sem carregador adequado não se compra: os dois vão juntos. O módulo também valida a energia na bancada (ver [Riscos da bateria](#riscos-da-bateria-e-recomendações)) |
 | 3. Periféricos | — | — | Antecipada para a Fase 1 (comprada em 02/11/2026) |
 | 4. Cartuchos | Soquete card edge | ~R$ 15 | Cartucho no topo; até lá, a fenda fica com tampa cega |
 | 5. Definitivo | PCB própria na JLCPCB (ESP32-S3-WROOM-1-N16R8, carga/BMS/regulador SMD, MCP23017, riser do card edge) | ~R$ 100 por 5 placas + montagem, frete e imposto | Carcaça v1 em volta da PCB definitiva |
@@ -197,7 +200,7 @@ Preços do carrinho de 02/11/2026; mudam e expiram.
 - **I²C** (SDA/SCL): PN532 (0x24), MCP23017 dos botões (0x20), EEPROM do cartucho.
 - **I²S**: MAX98357A (saída) + INMP441 (entrada), mesmo barramento.
 - **GPIO direto**: IR RX/TX, botão de energia, CS do cartucho, power-latch. Os botões ficam no MCP23017 (14 entradas utilizáveis), lidos por polling.
-- **ADC**: 2 analógicos (4 eixos) e leitura de bateria, **só no ADC1 (GPIO 1–10)**: o ADC2 é compartilhado com o WiFi e a leitura pode falhar.
+- **ADC**: leitura de bateria, **só no ADC1 (GPIO 1–10)**: o ADC2 é compartilhado com o WiFi e a leitura pode falhar.
 
 ---
 
@@ -210,8 +213,6 @@ serigrafia da placa.
 | Função | GPIO | Nota |
 |---|---:|---|
 | VBAT sense | 1 | ADC1; divisor 100k/100k, ×2 no firmware |
-| Analógico esquerdo X / Y | 2 / 4 | ADC1. Hoje o 2 é o botão OK e o 4 é o IR RX no `bmo.ini`: mudam quando os botões forem para o MCP23017 |
-| Analógico direito X / Y | 5 / 6 | ADC1. Hoje o 5 é o IR TX no `bmo.ini` |
 | I²S SD IN (mic) | 7 | mic em 3,3 V, L/R no GND |
 | I²C SDA / SCL | 8 / 9 | pull-up 4,7k; PN532 0x24, MCP23017 0x20, EEPROM do cartucho |
 | CS Display | 10 | |
@@ -230,12 +231,12 @@ serigrafia da placa.
 | UART do cartucho TX / RX | 43 / 44 | UART0. **Risco aberto:** mesmo com o console no USB, a ROM imprime o log de boot no GPIO 43 a cada partida (ver `docs/hardware/GPIO_MAP.md`, risco 2) |
 | Power-latch (HOLD) | 48 | segura a alimentação ligada depois do clique no botão |
 | IR TX | 47 | |
+| Livre | 2, 4, 5, 6 | ADC1; eram dos analógicos, retirados em 25/11/2026. Na bancada, o 2 é o botão OK e o 4 / 5 são o IR RX / TX no `bmo.ini` |
 | Livre | 45, 46 | strapping: o 45 define a tensão da flash no boot, **não usar** como saída que possa estar em alto no boot |
 
-**MCP23017 (0x20):** 14 botões (D-pad 4, ação 4, select/start 2, L1/R1/L2/R2 4), botão ao GND
-com pull-up interno do MCP. GPA7 e GPB7 são só saída na revisão D do datasheet do MCP23017,
-então os 2 cliques dos analógicos dependem do segundo expansor ou de outra solução (decisão em
-aberto). **Segundo MCP23017 (0x21), opcional:**
+**MCP23017 (0x20):** 10 botões (D-pad 4, ação 4, select/start 2), botão ao GND com pull-up
+interno do MCP. GPA7 e GPB7 são só saída na revisão D do datasheet do MCP23017; GPB3 a GPB6
+sobram. **Segundo MCP23017 (0x21), opcional:**
 vibração (liga/desliga via transistor) e os 2 GPIOs do cartucho.
 
 **Não usar:** GPIO 26–37 (flash/PSRAM octal). Cuidado com strapping: 0, 3, 45, 46.
@@ -379,34 +380,15 @@ Uma **porta USB-C só para carga**, separada da porta de dados, para o usuário 
 - **I²C**: pull-ups 4,7k em SDA/SCL. Scan deve achar `0x24` (PN532).
 - **microSD**: formatar em FAT32.
 
-### Analógicos e gatilhos reaproveitados
+### Tampas reaproveitadas do controle de PS3
 
-Decidido em 02/11/2026: os dois analógicos saem de um controle genérico de PS3 que o usuário já tem.
+Decidido em 02/11/2026: reaproveitar peças de um controle genérico de PS3 que o usuário já tem.
+Desde 25/11/2026 o v1 não tem analógicos nem gatilhos de ombro (ver
+[d-BMO v1](#d-bmo-v1-este-repositório--esp32-s3-n16r8)), então do controle ficam as tampas, o
+botão redondo e os motores.
 
 - **Ao abrir o controle:** se houver bateria interna, desconectar primeiro e não perfurar. Não
   reaproveitar essa bateria no d-BMO (estado desconhecido).
-- **Retirada:** cada stick tem ~10 pinos e abas de fixação grossas. Dessoldar com fluxo, solda
-  nova e bomba ou malha. Alternativa mais segura: cortar a placa do controle em volta do stick
-  com micro retífica e soldar fios no pedaço (fica um pouco maior).
-- **Teste antes de usar:** medir a resistência entre as pontas de cada potenciômetro (costuma
-  ser 10 kΩ; genérico pode ser 5 kΩ) e conferir se o pino do meio varia suave, sem saltos
-  (sticks gastos têm drift).
-- **Ligação:** pontas em **3,3 V e GND, nunca 5 V**; pino do meio no ADC. 4 canais de ADC (2 por
-  stick, GPIO 2/4/5/6 no ADC1). Os 2 cliques ainda não têm entrada definida (ver
-  [Pinagem](#pinagem-esp32-s3-n16r8)).
-- **Firmware:** calibrar o centro ao ligar, guardar mínimo/máximo e aplicar zona morta. Deixar
-  a calibração ajustável, porque potenciômetro barato muda com o tempo.
-- **Carcaça:** medir o stick já fora do controle (área e altura com a capa); essa medida entra
-  na espessura da v0.
-- **Gatilhos:** no controle genérico, o gatilho costuma ser uma alavanca que aperta borracha
-  condutiva sobre uma trilha da placa do controle, então a parte elétrica não serve. Se houver
-  um potenciômetro no pivô do L2/R2, ele é analógico e serve como os sticks (1 canal de ADC
-  cada, disputado). A parte plástica serve:
-  - **L1/R1:** a tampa plástica pode apertar um botão táctil de ângulo reto já na v0.
-  - **L2/R2:** a alavanca, a mola e o pino do pivô servem se a carcaça tiver o apoio do pivô
-    impresso e um botão táctil embaixo. Medir antes: elas foram desenhadas para um controle
-    horizontal e podem ser grandes demais para o topo do corpo vertical. Se não couberem na v0,
-    usar tampas impressas e guardar as alavancas para a v1.
 - **Tampas dos botões de ação e D-pad:** servem como tampa por cima de botões tácteis de
   6 × 6 mm. Imprimir um espaçador embaixo de cada uma (elas foram feitas para afundar membrana,
   não para apertar botão táctil). O furo da carcaça sai das medidas de paquímetro do corpo e
@@ -416,7 +398,7 @@ Decidido em 02/11/2026: os dois analógicos saem de um controle genérico de PS3
   pintar de grafite, ou usar as tampas só como molde de medida e imprimir as próprias.
 - **Botão redondo "P3":** pode virar o botão de energia, com o topo lixado e liso.
 - **Não servem:** a placa com as membranas, as borrachas condutivas, o mini-USB e a carcaça do
-  controle.
+  controle. Os analógicos e os gatilhos ficam fora do v1.
 - **Extra:** os motores de vibração do controle podem servir para vibração no futuro
   (precisam de transistor para acionar). Os botões de membrana do controle não servem.
 
@@ -438,7 +420,7 @@ Um firmware por vez (como "cartuchos de software"):
 volume é digital, no firmware, e o ajuste é por atalho: **segurar select + cima/baixo no D-pad**,
 como nos portáteis de emulação. Guardar o nível na NVS para sobreviver ao desligamento.
 
-No Bruce, o ambiente `bmo-v1` lê os 3 botões da bancada e o `bmo-v1-mcp` lê os 14 botões no
+No Bruce, o ambiente `bmo-v1` lê os 3 botões da bancada e o `bmo-v1-mcp` lê os 10 botões no
 MCP23017 (compila na CI; não testado no hardware).
 
 ```bash
@@ -508,8 +490,7 @@ Depois de aprovado na tela, o desenho vira a tela ociosa do Bruce.
   inclinado grafite** separado.
 - **Layout:** tela no **topo** com moldura preta; abaixo, D-pad à esquerda e quatro botões de
   ação em losango à direita (grafite ou prata, nunca coloridos); select/start no centro;
-  **dois analógicos** embaixo, um de cada lado; grade do speaker entre eles; gatilhos de
-  ombro no topo. **Sem teclado.**
+  grade do speaker embaixo. Sem analógicos nem gatilhos de ombro (25/11/2026). **Sem teclado.**
 - **Uma tela só** (ILI9341) no topo, grande, para rosto + menu + status.
 - **Acabamento prata sem metal de verdade** na frente e atrás: PLA/PETG prata ou pintura. Corpo
   metálico bloqueia o NFC e atenua sub-GHz/WiFi. Isso descarta a opção de usinar o corpo em
@@ -543,8 +524,7 @@ Depois de aprovado na tela, o desenho vira a tela ociosa do Bruce.
     Testar o encaixe hex num corpo de prova na impressão antes de fechar o design.
 - Demais parafusos de fechamento da carcaça também em **heat-set/standoff na traseira** (não na frente).
 - Ergonomia por chanfro/arredondamento das arestas inferiores, mantendo o corpo retangular.
-- Topo: cartucho (centro), antena SMA e furo do mic, distribuídos para não colidir com os
-  gatilhos de ombro. Antena do PN532 virada para fora sem metal atrás; LED + receptor IR na
+- Topo: cartucho (centro), antena SMA e furo do mic. Antena do PN532 virada para fora sem metal atrás; LED + receptor IR na
   frente; grade do speaker no canto inferior; furo do mic no topo; 2× USB-C + botão de energia
   numa lateral. (O microSD não fica na lateral: fica dentro da porta traseira, ver acima.)
 - Detalhes mecânicos precisos (recorte de botões, heat-sets, bosses) saem do **CAD**
@@ -704,8 +684,8 @@ ser conferidos antes de congelar a PCB ou o CAD.
   capacidades, conforme docs/cartridges/CARTRIDGE_SPECIFICATION.md.
 
 > **Dimensão em aberto:** a saliência do cartucho acima do topo sai depois de medir o soquete,
-> definir o ombro/batente e modelar a carcaça plástica. Também verificar colisões com antena SMA,
-> microfone e gatilhos de ombro.
+> definir o ombro/batente e modelar a carcaça plástica. Também verificar colisões com antena SMA
+> e microfone.
 
 ### Dimensões conhecidas
 | Peça | Medida |
@@ -726,8 +706,8 @@ ser conferidos antes de congelar a PCB ou o CAD.
 
 ## Montagem passo a passo
 
-1. Entrada do v1 definida: D-pad + botões + dois analógicos (sticks de PS3 no ADC).
-2. **Validação antes da PCB.** A simulação do EasyEDA não valida firmware nem periféricos como um protótipo real. Validar na S3 a tela, o CC1101, o PN532, o microSD, o MCP23017, os analógicos e o áudio antes de congelar a pinagem.
+1. Entrada do v1 definida: D-pad + quatro botões de ação + select/start; analógicos e gatilhos retirados em 25/11/2026.
+2. **Validação antes da PCB.** A simulação do EasyEDA não valida firmware nem periféricos como um protótipo real. Validar na S3 a tela, o CC1101, o PN532, o microSD, o MCP23017 e o áudio antes de congelar a pinagem.
    - **Bancada:** a S3 já roda o Bruce com a tela e 3 botões; falta o CC1101 (jumpers F-F) e o resto, um módulo por vez.
    - Teste do CC1101: ler o registrador de versão por SPI e testar captura/reenvio apenas em equipamento próprio/autorizado.
    - Usar os sketches existentes (`firmware/teste_tela`, `firmware/teste_cc1101`) como referência.
@@ -742,7 +722,7 @@ ser conferidos antes de congelar a PCB ou o CAD.
 
 ## Roadmap
 
-- [x] Fechar entrada: D-pad + botões + dois analógicos (sticks de PS3 no ADC)
+- [x] Fechar entrada: D-pad + quatro botões de ação + select/start (analógicos e gatilhos retirados em 25/11/2026)
 - [ ] Projetar a riser do card edge no topo
 - [x] Bancada: ESP32-S3 DevKitC confirmada (16 MB + 8 MB PSRAM), tela ILI9341 validada (ID 0x9341) e Bruce rodando com 3 botões
 - [x] Fase 1 + periféricos comprada no AliExpress em 02/11/2026 (R$ 119,73 antes do cupom e do imposto)
@@ -752,7 +732,7 @@ ser conferidos antes de congelar a PCB ou o CAD.
 - [ ] Ligar o slot SD da tela (cartão microSD com adaptador SD) no CS 21
 - [ ] Ligar 1 MCP23017 e testar o ambiente `bmo-v1-mcp` do Bruce
 - [ ] Validar a pinagem proposta da S3 e atualizar o `bmo.ini`
-- [ ] Fase 2: tirar e testar os analógicos do controle de PS3; comprar a bateria (PCM + NTC); modelar e imprimir a carcaça v0
+- [ ] Fase 2: comprar a bateria (PCM + NTC); modelar e imprimir a carcaça v0
 - [ ] Decidir carregador (power-path), USB-C único vs OR com diodo ideal, se o cartucho mantém a linha de 5 V e se a PCB final usa power bank externo
 - [ ] Validar o circuito de energia na bancada antes de fechar a PCB
 - [x] Alvo `dbmo-v1` do Retro-Go: launcher compila na CI

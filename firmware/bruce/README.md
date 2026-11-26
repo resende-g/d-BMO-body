@@ -62,7 +62,7 @@ BRUCE_ENV=bmo-v1-mcp firmware/bruce/build.sh "$RUNNER_TEMP/bruce"
 | Ambiente | Entrada | Estado |
 |---|---|---|
 | `bmo-v1` | 3 botões diretos (UP 39, OK 2, DOWN 47) | Tela e botões validados na bancada com a versão anterior destes arquivos; esta revisão ainda não foi regravada |
-| `bmo-v1-mcp` | 14 botões no MCP23017 (I2C 0x20) | **Não testado em hardware**; a peça ainda não foi ligada |
+| `bmo-v1-mcp` | 10 botões no MCP23017 (I2C 0x20) | **Não testado em hardware**; a peça ainda não foi ligada |
 
 ## Flags `DBMO_*`
 
@@ -159,8 +159,7 @@ software.
   pinos **somente saída** e manda programar o bit 7 de IODIR como saída
   (`docs/hardware/sources/PERIPHERALS.md`, MCP-03 a MCP-05). O código segue o fabricante: os
   bits 7 e 15 ficam como saída e fora da leitura, e o mapa de `pins.h` não põe botão neles
-  (14 botões no primeiro MCP23017). Os cliques dos analógicos ficam pendentes de decisão de
-  hardware (proposta: segundo MCP23017, `pins.h mcp_aux`) e não são lidos neste ambiente. Um
+  (10 botões; o v1 não tem analógicos nem gatilhos desde 2026-11-25). Um
   `static_assert` impede que um botão de navegação seja remapeado para esses bits.
 - **Mapa para as variáveis do Bruce** (as de `src/main.cpp:40-49`), no perfil `HAS_5_BUTTONS`,
   o mesmo da `smoochiee-board` (`boards/smoochiee-board/interface.cpp:95-125`):
@@ -172,8 +171,8 @@ software.
   | D-pad cima / baixo | `UpPress` / `DownPress` | Item anterior / próximo |
   | A | `SelPress` | Selecionar |
   | B | `EscPress` | Voltar |
-  | L1 / R1 | `PrevPagePress` / `NextPagePress` | Página anterior / próxima (lista de arquivos) |
-  | X, Select, Start, L2, R2, clique do analógico esquerdo | só `AnyKeyPress` | Acordam a tela, pulam a animação de boot |
+  | X / Y | `PrevPagePress` / `NextPagePress` | Página anterior / próxima (lista de arquivos) |
+  | Select, Start | só `AnyKeyPress` | Acordam a tela, pulam a animação de boot |
 
   No teclado de tela, o perfil de 5 botões move o cursor nas quatro direções
   (`src/core/mykeyboard.cpp:1056-1140`); o de 3 botões não.
@@ -227,13 +226,13 @@ de cada flag em `src/`, `include/` e `lib/` do Bruce 1.16.1.
 ## Migração dos pinos por etapas
 
 O `bmo.ini` descreve a **bancada de hoje** (perfil `bench` de `pins.h`). O perfil `target` usa
-alguns desses GPIOs para outra coisa:
+alguns desses GPIOs para outra coisa ou os deixa livres:
 
 | GPIO | `bmo.ini` hoje | Perfil target (`pins.h`) |
 |---:|---|---|
-| 2 | Botão OK e pino que acorda do deep sleep | Analógico esquerdo X |
-| 4 | IR RX | Analógico esquerdo Y |
-| 5 | IR TX | Analógico direito X |
+| 2 | Botão OK e pino que acorda do deep sleep | Livre |
+| 4 | IR RX | Livre |
+| 5 | IR TX | Livre |
 | 39 | Botão UP | IR RX |
 | 47 | Botão DOWN | IR TX |
 | 0 | (iButton padrão do Bruce) | Botão de energia |
@@ -246,7 +245,7 @@ hardware correspondente estiver ligado:
 | 0 | Hoje | Ambiente `bmo-v1`: tela, 3 botões diretos, IR em 4/5, CC1101 em 14/15, SD em 21 | Tela e botões validados; o resto ainda não ligado |
 | 1 | MCP23017 ligado | Ambiente `bmo-v1-mcp`. Libera 39, 47 e 2; quem acorda passa a ser o GPIO 0 | Escrito; não testado |
 | 2 | Módulo de IR ligado em 39/47 | `-DRXLED=39`, `-DTXLED=47`; trocar `ALLOW_ALL_GPIO_FOR_IR_RF` por `IR_TX_PINS`, `IR_RX_PINS`, `RF_TX_PINS` e `RF_RX_PINS` explícitos (as quatro juntas; formato em `boards/ESP-General/ESP-General.ini:44-52`), por causa do achado A8. Libera 4 e 5 | Pendente |
-| 3 | Analógicos ligados em 2/4/5/6 | Nada: o Bruce não lê analógicos. Basta as etapas 1 e 2 terem liberado os pinos | Pendente |
+| 3 | Removida em 2026-11-25 (era a dos analógicos, que saíram do v1) | — | — |
 | 4 | Divisor da bateria no GPIO 1 | `-DDBMO_VBAT_ADC_PIN=1` | Escrito; não testado |
 | 5 | Carregador e power-latch definidos | Flags `DBMO_CHG_STAT_*` e `DBMO_POWER_HOLD_*` | Só os ganchos |
 | 6 | MAX98357A e INMP441 ligados | Flags de áudio do achado A11 (BCLK 40, LRCLK 41, DOUT 42, microfone 7, shutdown 3). O valor de `MCLK` para um amplificador sem MCLK não foi definido | Pendente |

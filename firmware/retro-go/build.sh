@@ -72,7 +72,6 @@ Variáveis de ambiente:
 Opções do alvo (todas 0 por padrão; ver targets/dbmo-v1/config.h):
   DBMO_RG_BENCH=1              perfil de bancada: tela + 3 botões diretos, sem MCP23017
   DBMO_RG_ENABLE_BATTERY_ADC=1 leitura da bateria no GPIO 1 (o divisor ainda não existe)
-  DBMO_RG_ENABLE_STICK_DPAD=1  analógico esquerdo como D-pad (os analógicos ainda não existem)
   DBMO_RG_ENABLE_POWER_HOLD=1  aciona o power-latch no GPIO 48; exige DBMO_RG_POWER_HOLD_LEVEL
   DBMO_RG_POWER_HOLD_LEVEL     0 ou 1: nível que mantém a alimentação (circuito não decidido)
   DBMO_RG_LCD_MADCTL           registrador 0x36 do ILI9341, de 0x00 a 0xFF (padrão 0x28)
@@ -101,7 +100,7 @@ valida_01() {
 }
 
 for nome in DBMO_RG_NETWORKING DBMO_RG_PREPARE_ONLY DBMO_RG_BENCH DBMO_RG_ENABLE_BATTERY_ADC \
-  DBMO_RG_ENABLE_STICK_DPAD DBMO_RG_ENABLE_POWER_HOLD; do
+  DBMO_RG_ENABLE_POWER_HOLD; do
   valida_01 "$nome"
 done
 
@@ -110,9 +109,6 @@ if [ -n "${DBMO_RG_POWER_HOLD_LEVEL:-}" ]; then
 fi
 if [ "${DBMO_RG_ENABLE_POWER_HOLD:-0}" = 1 ] && [ -z "${DBMO_RG_POWER_HOLD_LEVEL:-}" ]; then
   erro "DBMO_RG_ENABLE_POWER_HOLD=1 exige DBMO_RG_POWER_HOLD_LEVEL (0 ou 1): o circuito do power-latch não está decidido"
-fi
-if [ "${DBMO_RG_BENCH:-0}" = 1 ] && [ "${DBMO_RG_ENABLE_STICK_DPAD:-0}" = 1 ]; then
-  erro "DBMO_RG_BENCH=1 usa o GPIO 2 como botão; não combina com DBMO_RG_ENABLE_STICK_DPAD=1"
 fi
 if [ -n "${DBMO_RG_LCD_MADCTL:-}" ]; then
   case "$DBMO_RG_LCD_MADCTL" in
@@ -267,7 +263,6 @@ gera_flags() {
     "// Não editar: é reescrito a cada execução. Os padrões ficam em config.h." \
     "#define DBMO_RG_BENCH ${DBMO_RG_BENCH:-0}" \
     "#define DBMO_RG_ENABLE_BATTERY_ADC ${DBMO_RG_ENABLE_BATTERY_ADC:-0}" \
-    "#define DBMO_RG_ENABLE_STICK_DPAD ${DBMO_RG_ENABLE_STICK_DPAD:-0}" \
     "#define DBMO_RG_ENABLE_POWER_HOLD ${DBMO_RG_ENABLE_POWER_HOLD:-0}"
   if [ -n "${DBMO_RG_POWER_HOLD_LEVEL:-}" ]; then
     printf '%s\n' "#define DBMO_RG_POWER_HOLD_LEVEL $DBMO_RG_POWER_HOLD_LEVEL"

@@ -82,7 +82,7 @@ static void test_read_pins_reflects_pullups_and_pressed_buttons() {
   TEST_ASSERT_EQUAL_HEX16(0x7F7F & ~(1u << 11), chip.readPins().value());
 }
 
-static void test_default_map_reads_each_of_the_14_buttons() {
+static void test_default_map_reads_each_of_the_10_buttons() {
   MockI2cBus bus;
   Mcp23017Sim sim;
   bus.attach(kAddress, &sim);
@@ -98,20 +98,11 @@ static void test_default_map_reads_each_of_the_14_buttons() {
     Button button;
   };
   const Wiring wiring[] = {
-      {pins::kDpadUp, Button::DpadUp},
-      {pins::kDpadDown, Button::DpadDown},
-      {pins::kDpadLeft, Button::DpadLeft},
-      {pins::kDpadRight, Button::DpadRight},
-      {pins::kActionA, Button::A},
-      {pins::kActionB, Button::B},
-      {pins::kActionX, Button::X},
-      {pins::kActionY, Button::Y},
-      {pins::kSelect, Button::Select},
-      {pins::kStart, Button::Start},
-      {pins::kL1, Button::L1},
-      {pins::kR1, Button::R1},
-      {pins::kL2, Button::L2},
-      {pins::kR2, Button::R2},
+      {pins::kDpadUp, Button::DpadUp},     {pins::kDpadDown, Button::DpadDown},
+      {pins::kDpadLeft, Button::DpadLeft}, {pins::kDpadRight, Button::DpadRight},
+      {pins::kActionA, Button::A},         {pins::kActionB, Button::B},
+      {pins::kActionX, Button::X},         {pins::kActionY, Button::Y},
+      {pins::kSelect, Button::Select},     {pins::kStart, Button::Start},
   };
   for (const Wiring &wire : wiring) {
     sim.press(wire.pin);
@@ -119,7 +110,8 @@ static void test_default_map_reads_each_of_the_14_buttons() {
                                     toString(wire.button));
     sim.release(wire.pin);
   }
-  // Os cliques dos analógicos não estão neste expansor.
+  // Bits sem botão: os somente saída (7 e 15) e os que sobraram (11 a 14).
+  for (uint8_t pin = 11; pin <= 14; ++pin) sim.press(pin);
   sim.press(7);
   sim.press(15);
   TEST_ASSERT_EQUAL_UINT32(0, source.read().value());
@@ -131,7 +123,7 @@ static void test_map_with_a_button_on_an_output_only_pin_is_rejected() {
   bus.attach(kAddress, &sim);
   Mcp23017 chip(bus, kAddress);
   Mcp23017ButtonSource::Map map = Mcp23017ButtonSource::defaultMap();
-  map.buttonOfPin[15] = static_cast<uint8_t>(Button::StickRight);  // GPB7
+  map.buttonOfPin[15] = static_cast<uint8_t>(Button::Start);  // GPB7
   Mcp23017ButtonSource source(chip, map);
   TEST_ASSERT_STATUS(Status::InvalidArgument, source.begin());
   TEST_ASSERT_FALSE(sim.outputOnlyViolated);
@@ -176,7 +168,7 @@ int main() {
   RUN_TEST(test_absent_chip_and_bus_errors);
   RUN_TEST(test_begin_detects_a_chip_that_does_not_keep_the_configuration);
   RUN_TEST(test_read_pins_reflects_pullups_and_pressed_buttons);
-  RUN_TEST(test_default_map_reads_each_of_the_14_buttons);
+  RUN_TEST(test_default_map_reads_each_of_the_10_buttons);
   RUN_TEST(test_map_with_a_button_on_an_output_only_pin_is_rejected);
   RUN_TEST(test_source_propagates_read_errors);
   RUN_TEST(test_gpio_source_reads_the_bench_buttons);

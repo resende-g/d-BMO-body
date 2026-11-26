@@ -37,9 +37,9 @@ da face frontal; interior em Z < 0.
 | Parâmetro | Significado |
 |---|---|
 | `Y_CTRL_TOP` | Altura Y do limite entre a zona da tela e a zona dos controles |
-| `Y_STICK_TOP` | Altura Y do limite entre a zona dos controles e a zona dos analógicos |
+| `Y_STICK_TOP` | Altura Y do limite entre a zona dos controles e a zona inferior (`ZF3`). O nome vem do layout com analógicos, que saíram da v1 em 2026-11-25 |
 | `Y_DOOR_TOP` | Altura Y da linha de divisão da traseira: tampa abaixo, zona fixa acima (decisão D-18) |
-| `TOP_BAND_H` | Altura da faixa do topo reservada ao soquete, à riser, ao conector SMA, ao microfone e aos gatilhos |
+| `TOP_BAND_H` | Altura da faixa do topo reservada ao soquete, à riser, ao conector SMA e ao microfone |
 | `Z_PART` | Plano Z de separação entre a casca frontal e a casca traseira |
 
 Relações de ordem conhecidas: `0 < Y_STICK_TOP < Y_CTRL_TOP < BODY_H − TOP_BAND_H < BODY_H` e
@@ -52,8 +52,8 @@ metade de `BODY_H`; o valor não está definido.
 |---|---|---|---|---|
 | `ZF1` Tela | `FR` | de `Y_CTRL_TOP` a `BODY_H − TOP_BAND_H` | Janela da tela com moldura preta | `[M: §2]`, `[R: Carcaça 3D]` |
 | `ZF2` Controles | `FR` | de `Y_STICK_TOP` a `Y_CTRL_TOP` | Cruz direcional em X < 0; quatro botões de ação em losango em X > 0; select e start no centro; LED de estado, se mantido (D-17) | `[M: §2]`, `[R: Carcaça 3D]` |
-| `ZF3` Analógicos e áudio | `FR` | de 0 a `Y_STICK_TOP` | Um analógico em X < 0 e outro em X > 0; grade do alto-falante entre eles | `[M: §2]`, `[R: Carcaça 3D]` |
-| `ZT` Topo | `TP` | de `BODY_H − TOP_BAND_H` a `BODY_H` | Fenda do cartucho no centro; saída SMA; furo do microfone; gatilhos de ombro | `[R: Carcaça 3D]` |
+| `ZF3` Áudio | `FR` | de 0 a `Y_STICK_TOP` | Grade do alto-falante. A v1 não tem analógicos (decisão de 2026-11-25): o resto da faixa fica livre | `[M: §2]`, `[R: Carcaça 3D]` |
+| `ZT` Topo | `TP` | de `BODY_H − TOP_BAND_H` a `BODY_H` | Fenda do cartucho no centro; saída SMA; furo do microfone. Sem gatilhos de ombro desde 2026-11-25 | `[R: Carcaça 3D]` |
 | `ZR1` Traseira fixa | `TR` | de `Y_DOOR_TOP` a `BODY_H` | Eletrônica; parafusada | `[R: Carcaça 3D]` |
 | `ZR2` Tampa traseira | `TR` | de 0 a `Y_DOOR_TOP` | Bateria; berços dos cartuchos reserva; slot do microSD da PCB definitiva | `[R: Carcaça 3D]` |
 | `ZL` Lateral | `LE` ou `LD` | a definir | Uma ou duas portas USB-C; botão de energia; LED de carga | `[R: Carcaça 3D]`, `[R: Conector de carga USB-C dedicado]` |
@@ -88,17 +88,17 @@ parâmetros ou linhas do registro.
 
 | Ordem | Camada | Espessura | Situação |
 |---|---|---|---|
-| B1 | Parede frontal, atravessada pelas tampas dos botões e pelos analógicos | `T_WALL_FR` | Parâmetro |
+| B1 | Parede frontal, atravessada pelas tampas dos botões | `T_WALL_FR` | Parâmetro |
 | B2 | Tampa do botão, espaçador impresso e botão táctil | `button_caps_ps3.total_height`, `tactile_switch.total_height` | `PENDENTE` |
-| B2' | Na região dos analógicos: altura do stick abaixo da face frontal | `analog_stick_ps3.height_with_cap − STK_PROTRUSION` | `PENDENTE` e parâmetro |
+| B2' | Removido em 2026-11-25: v1 sem analógicos nem gatilhos. | — | — |
 | B2'' | Na região do alto-falante: alto-falante e cavidade acústica | `speaker_2030.thickness` + `SPK_CAVITY` | `PENDENTE` e parâmetro |
-| B3 | Suporte dos botões e dos sticks (placa ou peça impressa) | `T_CTRL_CARRIER` | Parâmetro; a v0 liga os módulos por fio e não define esse suporte |
+| B3 | Suporte dos botões (placa ou peça impressa) | `T_CTRL_CARRIER` | Parâmetro; a v0 liga os módulos por fio e não define esse suporte |
 | B4 | Divisória entre os controles e o berço da bateria | `T_PARTITION` | Parâmetro |
 | B5 | Berço da bateria | `BAT_BAY_T` = (1 + `battery_bay_thickness_margin`) × espessura **medida** da célula | Regra de `[R: Riscos da bateria, item 7]`; espessura `NOMINAL` |
 | B6 | Tampa traseira | `T_DOOR` | Parâmetro |
 
 **(derivado)** A divisória B4 existe porque nenhuma aresta pode encostar na célula e a bateria não
-pode ser pressionada `[R: Riscos da bateria]`: pinos de solda dos botões e dos sticks não podem ficar
+pode ser pressionada `[R: Riscos da bateria]`: pinos de solda dos botões não podem ficar
 voltados para a célula sem uma parede lisa entre eles.
 
 ### 3.3 Coluna C — topo (região `ZT`), ao longo de Y
@@ -114,7 +114,7 @@ língua card edge sem a guarda entra na fenda elétrica. De cima para baixo:
 | C4 | Riser perpendicular à PCB principal, terminais e apoio estrutural | T_RISER + RISER_LINK_H | Parâmetros de projeto da PCB |
 
 TOP_BAND_H precisa acomodar a parcela do cartucho que entra no alojamento, a abertura/guia,
-o soquete, a riser e o apoio, sem colisão com SMA, microfone e gatilhos. O corpo principal do
+o soquete, a riser e o apoio, sem colisão com SMA e microfone. O corpo principal do
 cartucho permanece parcialmente externo; sua saliência será fechada pelo envelope padronizado
 e pela ergonomia de pega. O batente deve encostar na estrutura do d-BMO na posição de engate
 completo; o corpo do soquete recebe apoio no lado oposto à boca. A força não deve ficar
@@ -133,8 +133,8 @@ calculada hoje: cada uma tem pelo menos uma linha `PENDENTE`.
 | AD-02 | `KO-ESP`: 15 mm livres em volta da região da antena, em todas as direções | `[F: ESPRESSIF_HDG_PCB_LAYOUT]` |
 | AD-03 | A antena do PN532 fica virada para fora, sem metal atrás | `[R: Carcaça 3D]` |
 | AD-04 | A bateria fica longe do regulador, do amplificador e da S3 | `[R: Riscos da bateria, item 7]` |
-| AD-05 | O alto-falante fica entre os analógicos | `[M: §2]`, `[R: Carcaça 3D]` |
-| AD-06 | No topo, cartucho no centro; saída SMA e furo do microfone distribuídos para não colidir com os gatilhos | `[R: Carcaça 3D]` |
+| AD-05 | O alto-falante fica na parte inferior da frente (`ZF3`). Sem analógicos desde 2026-11-25, a posição em X fica em aberto (ver I-2 da especificação) | `[M: §2]`, `[R: Carcaça 3D]` |
+| AD-06 | No topo, cartucho no centro; saída SMA e furo do microfone distribuídos sem colidir com ele. Sem gatilhos desde 2026-11-25 | `[R: Carcaça 3D]` |
 | AD-07 | O corpo do soquete encosta num apoio da carcaça | `[R: Especificação do cartucho]` |
 | AD-08 | A fenda da carcaça tem o mesmo deslocamento da língua do cartucho (anti-inversão) | `[R: Especificação do cartucho]` |
 | AD-09 | Portas USB-C e botão de energia numa lateral; a porta de carga e a porta de dados em posições distintas | `[R: Carcaça 3D]`, `[R: Conector de carga USB-C dedicado]` |
@@ -143,8 +143,8 @@ calculada hoje: cada uma tem pelo menos uma linha `PENDENTE`.
 | AD-12 | Os berços dos cartuchos reserva ficam na zona da tampa e não tocam a célula | `[R: Carcaça 3D]`; (derivado de BT-3) |
 | AD-13 | Parafusos, standoffs e insertos ficam fora de `KO-ESP` e de `KO-NFC` e não alcançam a célula | (derivado; ver especificação, seções 7 e 8) |
 | AD-14 | A riser do soquete é perpendicular à PCB principal e fica no topo | `[R: Carcaça 3D]` |
-| AD-15 | Os gatilhos L1/R1 usam botão táctil de ângulo reto; as alavancas L2/R2 precisam de apoio do pivô impresso e de um botão táctil embaixo | `[R: Analógicos e gatilhos reaproveitados]` |
-| AD-16 | A cruz de peça única precisa de apoio do pino central e de quatro botões tácteis sob as pontas | `[R: Analógicos e gatilhos reaproveitados]` |
+| AD-15 | Removido em 2026-11-25: v1 sem analógicos nem gatilhos. | — |
+| AD-16 | A cruz de peça única precisa de apoio do pino central e de quatro botões tácteis sob as pontas | `[R: Tampas reaproveitadas do controle de PS3]` |
 
 Conflitos já visíveis **(derivado)**; nenhum deles está resolvido:
 
@@ -161,8 +161,8 @@ Conflitos já visíveis **(derivado)**; nenhum deles está resolvido:
    comprimento da bateria (`NOMINAL`) mais as folgas. Isso empurra `Y_DOOR_TOP` para cima e reduz a
    zona fixa da eletrônica, ou deixa parte da célula atrás da eletrônica, o que contraria AD-04.
    Depende de `BODY_H` e da decisão D-3.
-5. **Topo.** Cartucho de 52 mm de largura (parâmetro de projeto), conector SMA, microfone e dois ou
-   quatro gatilhos disputam a largura `BODY_W` (EC-4).
+5. **Topo.** Cartucho de 52 mm de largura (parâmetro de projeto), conector SMA e microfone disputam
+   a largura `BODY_W` (EC-4).
 
 ## 5. Posicionamento por componente
 
@@ -220,7 +220,7 @@ Cada tabela indica a zona, a referência de posição, os parâmetros a preenche
 | Zona | `ZT` ou `ZR1`, junto à parede do topo |
 | Parâmetros | `CC_X`, `CC_Y`, `CC_Z`, `CC_LINK` (conector direto na parede ou cabo), `SMA_X`, `SMA_Z` |
 | Medir | Contorno da placa, `sma_connector`, `total_thickness`, `antenna` |
-| Restrições | AD-06; a haste da antena não pode cruzar o curso dos gatilhos nem o cartucho |
+| Restrições | AD-06; a haste da antena não pode cruzar o cartucho |
 
 ### 5.6 Cartucho protegido, soquete e riser
 
@@ -240,18 +240,16 @@ Cada tabela indica a zona, a referência de posição, os parâmetros a preenche
 | Cruz direcional | `ZF2`, X < 0 | `DPAD_CX`, `DPAD_CY`, `DPAD_HOLE` | `button_caps_ps3.body_diameter`, `.flange`, `.total_height`, `.dpad_pivot` |
 | Botões de ação | `ZF2`, X > 0 | `ABXY_CX`, `ABXY_CY`, `ABXY_PITCH`, `ABXY_HOLE` | Idem, por tampa |
 | Select e start | Centro | `SEL_CX`, `START_CX`, `SEL_CY` | Botão e tampa escolhidos |
-| Analógicos | `ZF3`, um em X < 0 e outro em X > 0 | `STK_L_CX`, `STK_R_CX`, `STK_CY`, `STK_PROTRUSION`, `STK_HOLE` | Todas as linhas de `analog_stick_ps3` |
-| Alto-falante e grade | `ZF3`, entre os analógicos | `SPK_CX`, `SPK_CY`, `SPK_CAVITY`, `GRILLE_PATTERN` | Todas as linhas de `speaker_2030` |
+| Alto-falante e grade | `ZF3` | `SPK_CX`, `SPK_CY`, `SPK_CAVITY`, `GRILLE_PATTERN` | Todas as linhas de `speaker_2030` |
 | LED de estado | `ZF2`, entre a cruz e os botões | `LED_STATE_POS` | Só se a decisão D-17 mantiver o LED |
 
-Nenhuma fonte exige que `ABXY_CX` = −`DPAD_CX` nem que `STK_R_CX` = −`STK_L_CX`. A simetria é
-coerente com a silhueta, mas é escolha de projeto.
+Nenhuma fonte exige que `ABXY_CX` = −`DPAD_CX`. A simetria é coerente com a silhueta, mas é escolha
+de projeto.
 
 ### 5.8 Topo e laterais
 
 | Item | Zona | Parâmetros | Medir |
 |---|---|---|---|
-| Gatilhos L1/R1 (e L2/R2) | `ZT`, nos cantos | `TRIG_X`, `TRIG_Z`, `TRIG_TRAVEL`, `TRIG_PIVOT` | `tactile_switch_right_angle`, `button_caps_ps3.trigger_lever` |
 | Microfone | `ZT` | `MIC_X`, `MIC_Z`, `MIC_HOLE` | `inmp441_breakout.acoustic_port` e contorno |
 | Janela do IR | `FR` ou `TP` (D-9) | `IR_FACE`, `IR_TX_POS`, `IR_RX_POS`, `IR_WINDOW` | Todas as linhas de `ir_kit` |
 | Portas USB-C | `ZL` | `PORT_SIDE`, `USB_DATA_Y`, `USB_DATA_Z`, `USB_CHG_Y`, `USB_CHG_Z` | v0: conectores da DevKitC e do `charger_module`. v1: `usb_c_receptacle` |
@@ -327,7 +325,7 @@ da especificação) ou regra de processo.
 | `Z_PART` | Plano de separação das cascas | D-15; coluna A |
 | `Y_CTRL_TOP`, `Y_STICK_TOP`, `Y_DOOR_TOP`, `TOP_BAND_H` | Planos de divisão das zonas | Medições; D-18 |
 | `GAP_WIRING` | Folga para fios na v0 | Montagem de bancada |
-| `T_CTRL_CARRIER` | Espessura do suporte dos botões e sticks | Definição do suporte |
+| `T_CTRL_CARRIER` | Espessura do suporte dos botões | Definição do suporte |
 
 ### 7.2 Tela
 
@@ -400,12 +398,8 @@ da especificação) ou regra de processo.
 | `DPAD_CX`, `DPAD_CY`, `DPAD_HOLE` | Centro e contorno do furo da cruz | `button_caps_ps3`; D-10 |
 | `ABXY_CX`, `ABXY_CY`, `ABXY_PITCH`, `ABXY_HOLE` | Centro do losango, distância do centro a cada botão e furo | `button_caps_ps3`; D-10 |
 | `SEL_CX`, `START_CX`, `SEL_CY` | Posição de select e start | Botões escolhidos |
-| `STK_L_CX`, `STK_R_CX`, `STK_CY` | Centros dos analógicos | `analog_stick_ps3` |
-| `STK_PROTRUSION` | Quanto a capa sobressai do datum A | `height_with_cap`; ergonomia |
-| `STK_HOLE` | Diâmetro do furo, com a inclinação máxima | `cap_diameter`, `tilt_envelope` |
 | `SPK_CX`, `SPK_CY`, `SPK_CAVITY`, `GRILLE_PATTERN` | Posição do alto-falante, cavidade e desenho da grade | `speaker_2030`; D-15 |
 | `LED_STATE_POS` | Posição do LED de estado | D-17 |
-| `TRIG_X`, `TRIG_Z`, `TRIG_TRAVEL`, `TRIG_PIVOT` | Posição, curso e pivô dos gatilhos | D-11 |
 | `MIC_X`, `MIC_Z`, `MIC_HOLE` | Furo do microfone | `inmp441_breakout.acoustic_port`; D-7 |
 | `PORT_SIDE` | Lateral das portas (`LE` ou `LD`) | D-4 |
 | `USB_DATA_Y`, `USB_DATA_Z`, `USB_CHG_Y`, `USB_CHG_Z` | Centros das portas USB-C | Conectores; D-4 |

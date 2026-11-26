@@ -51,11 +51,8 @@ static void test_gpio_classification_helpers() {
   TEST_ASSERT_FALSE(isRtcGpio(38));
 }
 
-static void test_target_profile_never_drives_the_free_strapping_pins() {
-  for (int8_t gpio : target::kFreePins) {
-    TEST_ASSERT_TRUE(isStrappingGpio(gpio));
-    TEST_ASSERT_FALSE(usesGpio(target::kPins, gpio));
-  }
+static void test_target_profile_never_drives_the_free_pins() {
+  for (int8_t gpio : target::kFreePins) TEST_ASSERT_FALSE(usesGpio(target::kPins, gpio));
 }
 
 static void test_every_usable_gpio_is_assigned_or_listed_as_free() {
@@ -64,7 +61,7 @@ static void test_every_usable_gpio_is_assigned_or_listed_as_free() {
     if (isUsableGpio(gpio)) ++usable;
   const size_t assigned = sizeof(target::kPins) / sizeof(target::kPins[0]);
   const size_t free = sizeof(target::kFreePins) / sizeof(target::kFreePins[0]);
-  // 33 GPIOs utilizáveis no módulo: 31 atribuídos + 2 livres. Se a conta mudar, a
+  // 33 GPIOs utilizáveis no módulo: 27 atribuídos + 6 livres. Se a conta mudar, a
   // documentação (GPIO_MAP.md) precisa mudar junto.
   TEST_ASSERT_EQUAL_size_t(33, usable);
   TEST_ASSERT_EQUAL_size_t(usable, assigned + free);
@@ -95,9 +92,9 @@ static void test_bench_and_target_disagree_exactly_where_documented() {
   // A migração precisa mover os botões para o MCP23017 antes de ligar essas funções.
   TEST_ASSERT_EQUAL_INT8(target::kIrRx, bench::kButtonUp);
   TEST_ASSERT_EQUAL_INT8(target::kIrTx, bench::kButtonDown);
-  TEST_ASSERT_EQUAL_INT8(target::kStickLeftX, bench::kButtonOk);
-  TEST_ASSERT_EQUAL_INT8(target::kStickLeftY, bench::kIrRx);
-  TEST_ASSERT_EQUAL_INT8(target::kStickRightX, bench::kIrTx);
+  // OK e IR da bancada ficam em pinos livres do target (eram dos analógicos).
+  for (int8_t gpio : {bench::kButtonOk, bench::kIrRx, bench::kIrTx})
+    TEST_ASSERT_FALSE(usesGpio(target::kPins, gpio));
 }
 
 static void test_i2c_addresses_do_not_collide() {
@@ -113,25 +110,18 @@ static void test_mcp_button_bits_are_unique_and_avoid_output_only_pins() {
   const uint8_t bits[] = {mcp_buttons::kDpadUp,    mcp_buttons::kDpadDown, mcp_buttons::kDpadLeft,
                           mcp_buttons::kDpadRight, mcp_buttons::kActionA,  mcp_buttons::kActionB,
                           mcp_buttons::kActionX,   mcp_buttons::kActionY,  mcp_buttons::kSelect,
-                          mcp_buttons::kStart,     mcp_buttons::kL1,       mcp_buttons::kR1,
-                          mcp_buttons::kL2,        mcp_buttons::kR2};
+                          mcp_buttons::kStart};
   uint16_t seen = 0;
   for (uint8_t bit : bits) {
     TEST_ASSERT_TRUE(bit < 16);
     TEST_ASSERT_EQUAL_UINT16(0, seen & (1u << bit));
     seen = static_cast<uint16_t>(seen | (1u << bit));
   }
-  // GPA7 e GPB7 são somente saída no MCP23017 (datasheet rev. D): nenhum botão neles,
-  // e os 14 botões ocupam exatamente as 14 entradas restantes.
+  // GPA7 e GPB7 são somente saída no MCP23017 (datasheet rev. D): nenhum botão neles.
+  // Os 10 botões ficam em GPA0–6 e GPB0–2; GPB3–6 sobram.
   TEST_ASSERT_EQUAL_HEX16(0x8080, mcp_buttons::kOutputOnlyMask);
   TEST_ASSERT_EQUAL_HEX16(0, seen & mcp_buttons::kOutputOnlyMask);
-  TEST_ASSERT_EQUAL_HEX16(0x7F7F, seen);
-}
-
-static void test_stick_clicks_on_the_second_expander_avoid_output_only_pins() {
-  TEST_ASSERT_NOT_EQUAL(mcp_aux::kStickLeftClick, mcp_aux::kStickRightClick);
-  TEST_ASSERT_EQUAL_HEX16(0, (1u << mcp_aux::kStickLeftClick) & mcp_buttons::kOutputOnlyMask);
-  TEST_ASSERT_EQUAL_HEX16(0, (1u << mcp_aux::kStickRightClick) & mcp_buttons::kOutputOnlyMask);
+  TEST_ASSERT_EQUAL_HEX16(0x077F, seen);
 }
 
 static void test_claiming_the_whole_target_profile_at_runtime_has_no_conflict() {
@@ -149,14 +139,13 @@ static void test_claiming_the_whole_target_profile_at_runtime_has_no_conflict() 
 int main() {
   UNITY_BEGIN();
   RUN_TEST(test_gpio_classification_helpers);
-  RUN_TEST(test_target_profile_never_drives_the_free_strapping_pins);
+  RUN_TEST(test_target_profile_never_drives_the_free_pins);
   RUN_TEST(test_every_usable_gpio_is_assigned_or_listed_as_free);
   RUN_TEST(test_strapping_pins_in_use_are_flagged);
   RUN_TEST(test_shared_bus_pins_are_identical_in_both_profiles);
   RUN_TEST(test_bench_and_target_disagree_exactly_where_documented);
   RUN_TEST(test_i2c_addresses_do_not_collide);
   RUN_TEST(test_mcp_button_bits_are_unique_and_avoid_output_only_pins);
-  RUN_TEST(test_stick_clicks_on_the_second_expander_avoid_output_only_pins);
   RUN_TEST(test_claiming_the_whole_target_profile_at_runtime_has_no_conflict);
   return UNITY_END();
 }
