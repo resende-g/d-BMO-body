@@ -15,5 +15,6 @@ Documentação técnica de hardware (fora do README):
 - [Matriz de componentes](hardware/COMPONENT_MATRIX.md)
 - [Arquitetura de alimentação](hardware/POWER_ARCHITECTURE.md) e [orçamento de energia](hardware/POWER_BUDGET.md)
 - [Guia de montagem](hardware/ASSEMBLY_GUIDE.md)
+- [Placa principal de uma face (EasyEDA Pro)](../hardware/placa-principal/README.md)
 - [Notas regulatórias de RF](hardware/RF_REGULATORY_NOTES.md)
 - [Registros de evidência](hardware/sources/)
