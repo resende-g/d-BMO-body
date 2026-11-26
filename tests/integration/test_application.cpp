@@ -935,6 +935,32 @@ void test_mic_command_records_only_when_enabled_and_logs_the_peak() {
   dbmo::logger().clearSinks();
 }
 
+void test_boot_log_says_internal_memory_values_apply_when_the_card_has_no_config() {
+  // Bancada, 2026-11-25: com o cartão sem arquivo, o log dizia "usando os padroes" enquanto
+  // o microfone seguia habilitado pela memória interna.
+  dbmo::mock::RecordingLogSink sink;
+  TEST_ASSERT_OK(dbmo::logger().addSink(&sink));
+  rig->nvs.setText("audio.mic_enabled=1\n");
+  Application app(rig->fullHardware());
+  TEST_ASSERT_OK(app.begin());
+  rig->run(app, 50);
+  TEST_ASSERT_TRUE(app.config().getBool(dbmo::audio::config_key::kMicEnabled).value());
+  TEST_ASSERT_FALSE(sink.contains("usando os padroes"));
+  TEST_ASSERT_TRUE(
+      sink.contains("nenhuma configuracao no cartao: valem 1 chaves da memoria interna"));
+  dbmo::logger().clearSinks();
+}
+
+void test_boot_log_says_defaults_when_nothing_is_saved_anywhere() {
+  dbmo::mock::RecordingLogSink sink;
+  TEST_ASSERT_OK(dbmo::logger().addSink(&sink));
+  Application app(rig->fullHardware());
+  TEST_ASSERT_OK(app.begin());
+  rig->run(app, 50);
+  TEST_ASSERT_TRUE(sink.contains("nenhuma configuracao salva: usando os padroes"));
+  dbmo::logger().clearSinks();
+}
+
 void test_mic_command_uses_the_longer_buffer_the_platform_gives() {
   // Na placa, main.cpp entrega um buffer na PSRAM: o rosto "ouvindo" passa de 1 s para 10 s.
   dbmo::mock::RecordingLogSink sink;
@@ -1084,6 +1110,8 @@ int main() {
   RUN_TEST(test_peripheral_connected_after_boot_is_picked_up);
   RUN_TEST(test_mic_command_records_only_when_enabled_and_logs_the_peak);
   RUN_TEST(test_mic_command_uses_the_longer_buffer_the_platform_gives);
+  RUN_TEST(test_boot_log_says_internal_memory_values_apply_when_the_card_has_no_config);
+  RUN_TEST(test_boot_log_says_defaults_when_nothing_is_saved_anywhere);
   RUN_TEST(test_console_commands);
   RUN_TEST(test_long_run_is_stable);
   return UNITY_END();

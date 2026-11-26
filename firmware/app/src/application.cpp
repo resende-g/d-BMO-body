@@ -52,7 +52,14 @@ Status ConfigPersistence::init() {
   const Status status = config_.load(*source, &report);
   loadedFromCard_ = storage_.available() && (isOk(status) || status == Status::Corrupt);
   if (status == Status::NotFound) {
-    DBMO_LOGI(kTag, "nenhuma configuracao salva: usando os padroes");
+    // A guarda alternativa já foi aplicada em Application::begin: se ela tinha chaves, são elas
+    // que valem, e não os padrões.
+    if (source != fallback_ && fallbackKeys_ > 0) {
+      DBMO_LOGI(kTag, "nenhuma configuracao no cartao: valem %u chaves da memoria interna",
+                static_cast<unsigned>(fallbackKeys_));
+    } else {
+      DBMO_LOGI(kTag, "nenhuma configuracao salva: usando os padroes");
+    }
     return Status::Ok;
   }
   if (status == Status::Corrupt) {
@@ -213,7 +220,11 @@ Status Application::begin() {
   DBMO_TRY(registerConfig());
   // A energia sobe antes do cartão; por isso a configuração da guarda alternativa é lida
   // já aqui. A do cartão, se houver, é aplicada pelo subsistema "config".
-  if (hw_.fallbackConfig != nullptr) (void)config_.load(*hw_.fallbackConfig);
+  if (hw_.fallbackConfig != nullptr) {
+    ConfigLoadReport report;
+    const Status loaded = config_.load(*hw_.fallbackConfig, &report);
+    if (isOk(loaded) || loaded == Status::Corrupt) persistence_.noteFallbackLoaded(report.applied);
+  }
   DBMO_TRY(bindFace());
   DBMO_TRY(claimResources());
   DBMO_TRY(bus_.subscribeAll(&Application::onEvent, this));

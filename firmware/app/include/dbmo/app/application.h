@@ -84,6 +84,9 @@ class ConfigPersistence final : public ISubsystem {
   // Grava já, no cartão se houver, senão na guarda alternativa. NotFound se não há onde.
   Status saveNow();
   bool loadedFromCard() const { return loadedFromCard_; }
+  // Quantas chaves a guarda alternativa aplicou no começo do boot (Application::begin), para o
+  // log não dizer "padroes" quando os valores dela é que valem.
+  void noteFallbackLoaded(uint16_t keys) { fallbackKeys_ = keys; }
 
  private:
   IConfigBackend *backend();
@@ -92,6 +95,7 @@ class ConfigPersistence final : public ISubsystem {
   storage::StorageSubsystem &storage_;
   IConfigBackend *fallback_;
   bool loadedFromCard_ = false;
+  uint16_t fallbackKeys_ = 0;
   bool pending_ = false;
   uint32_t dirtySinceMs_ = 0;
   uint32_t retryAtMs_ = 0;
