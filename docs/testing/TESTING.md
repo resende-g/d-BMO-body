@@ -132,6 +132,8 @@ Feito depois do vídeo, sem hardware novo e sem a placa:
 | Log de boot nomeia as chaves da memoria interna quando o cartão não tem configuração | `4a1191c` | Teste novo falhou antes (`usando os padroes` aparecia) e passa depois |
 | Periférico ausente vai ao log uma vez, não a cada nova tentativa | `5ab03a8` | Teste novo: 5 avisos em 65 s antes, 1 depois; a ligação depois do boot continua coberta pelo teste existente |
 | Pinos e peças com evidência de bancada | `3bf353c` | `check_pinmap.py` (27 sinais no `target`, 23 no `bench`) |
+| Botão de energia do `target` do GPIO 0 para o GPIO 2 (RTC, fora do strapping); a bancada continua no BOOT (GPIO 0) | `8e988b7` | `test_power_button_is_an_rtc_gpio_outside_the_strapping_pins` falhou antes (a bancada nem tinha botão de energia próprio) e passa; `static_assert` novo em `pins.h`; `check_pinmap.py` (27 sinais no `target`, 24 no `bench`) |
+| Pull-up de RTC no pino que acorda do sono profundo | `ba8be0e` | Só compilado: o sono profundo não roda no computador e não foi testado na placa |
 
 Testes no computador: 47 executáveis aprovados (`-DDBMO_SANITIZE=OFF`); `clang-format` 18
 sem diferenças; `pio run -e dbmo-bench -e dbmo-target` compila; `host_check.sh` do Retro-Go
