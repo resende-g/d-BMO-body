@@ -50,7 +50,7 @@ digitada aparece duas vezes.
 
 | Perfil | Hardware assumido |
 |---|---|
-| `dbmo-bench` | Tela; 3 botões em GPIO 39, 2 e 47; IR em GPIO 4 e 5; microfone INMP441 em GPIO 40 (SCK), 41 (WS) e 7 (SD), sem amplificador; cartão, CC1101 e PN532 se estiverem ligados |
+| `dbmo-bench` | Tela; 3 botões em GPIO 39, 2 e 47; IR em GPIO 4 e 5; microfone INMP441 em GPIO 40 (SCK), 41 (WS) e 7 (SD); amplificador MAX98357A com DIN no GPIO 42 e SD_MODE na placa dele (ainda não ligado na bancada); botão de energia no BOOT (GPIO 0); cartão, CC1101 e PN532 se estiverem ligados |
 | `dbmo-target` | Pinagem de `pins.h` (namespace `target`): MCP23017, áudio I2S, trava de alimentação, backlight por PWM |
 
 Um periférico que não está ligado não impede o boot: aparece como `Absent` em `status`.

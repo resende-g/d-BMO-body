@@ -739,9 +739,10 @@ passou por verificação independente. Isso deve ser refeito antes de confiar no
 
 | Item | Situação |
 |---|---|
-| Qualquer teste em hardware (`tests/hardware/`, firmware próprio na placa) | Não executado: sem acesso à bancada. A CI só prova que compila |
-| Bruce e Retro-Go na placa | Compilados na CI; **nunca gravados nem executados** |
-| Emuladores do Retro-Go e imagem completa (`build-img`) | Compilados em 24/11/2026 no contêiner `espressif/idf:v4.4.8`, no perfil de bancada (imagem de 6,5 MB; ver `firmware/retro-go/README.md`); nunca gravados |
+| Firmware próprio na placa | **Executado** de 21 a 25/11/2026 (entradas acima): tela, botões, menu, IR (recepção), CC1101 (identificação e recepção), microfone e SD. Ainda não: transmissão de IR, alto-falante, sono profundo e despertar, F1 com o barramento sem chip, F4 com o monitor digitando à mão |
+| Testes de `tests/hardware/` | `test_display` e `test_cc1101` rodaram na placa em 21/11 (4/4 cada); os demais não |
+| Bruce e Retro-Go na placa | Retro-Go **gravado e executado** em 25/11/2026 (imagem de bancada: launcher, SD e um jogo de Game Boy Color). Bruce gravado e usado antes do firmware próprio (ver `README.md`), não nesta série |
+| Emuladores do Retro-Go e imagem completa (`build-img`) | Compilados na CI no perfil de bancada; na placa, só o launcher e o emulador de Game Boy Color foram usados (25/11/2026). Os outros emuladores nunca rodaram |
 | Testes com clang + sanitizers | Não executado no computador de desenvolvimento (falta a biblioteca de runtime); a CI roda clang sem sanitizers |
-| Medições elétricas, de consumo e de RF | Não executadas |
+| Medições elétricas, de consumo e de RF | Só tensões de bancada (trilho de 3,3 V e pinos do CC1101, 21/11/2026). Consumo e RF: não executados |
 | Cobertura de ramos | Não medida (só a de linhas, acima) |
