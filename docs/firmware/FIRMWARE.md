@@ -67,7 +67,7 @@ Um periférico que não está ligado não impede o boot: aparece como `Absent` e
 | `save` | Grava a configuração agora |
 | `face [nome\|número]` | Mostra uma expressão; sem argumento, lista |
 | `tone [hz] [ms]` | Toca um tom |
-| `mic [ms]` / `mic last` | Grava até 1000 ms em memória e registra no log `gravacao encerrada: N amostras, pico P`. Exige `config audio.mic_enabled 1`; nada vai para arquivo. `mic last` mostra média, extremos e RMS da última gravação e, por trecho de 100 ms, a média, o RMS e o pico em volta da média do trecho |
+| `mic [ms]` / `mic last` | Grava até 10000 ms em memória (buffer na PSRAM; sem PSRAM, até 1000 ms) e registra no log `gravacao encerrada: N amostras, pico P`. Exige `config audio.mic_enabled 1`; nada vai para arquivo. `mic last` mostra média, extremos e RMS da última gravação e, por trecho de 100 ms (1 s nas gravações acima de 1 s), a média, o RMS e o pico em volta da média do trecho |
 | `nfc [on\|off]` | Liga ou desliga a busca; sem argumento, mostra a etiqueta presente |
 | `ir learn` / `ir save <nome>` / `ir send <nome>` / `ir last` | Infravermelho |
 | `radio [rx on\|off]` | Recepção; sem argumento, mostra frequência e contadores |

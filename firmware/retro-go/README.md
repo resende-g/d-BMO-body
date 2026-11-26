@@ -13,7 +13,11 @@ Alvo de build do [Retro-Go](https://github.com/ducalex/retro-go) para o d-BMO v1
   essa imagem e a publicá-la como artefato, e também compila o launcher no perfil padrão
   (MCP23017), como fazia desde 12/11/2026. O que mais foi conferido está em
   [Declaração de verificação](#declaração-de-verificação).
-- **Nunca rodou no hardware.** Nada aqui afirma que o Retro-Go funciona no d-BMO.
+- **Rodou na placa em 25/11/2026**, no perfil de bancada (tela, 3 botões e o SD da tela): o
+  launcher abriu, montou o cartão e iniciou um jogo de Game Boy Color, que rodou por mais de
+  2 minutos sem travar (frameskip de 1 a 3, com o SPI da tela a 10 MHz). Sem som (o
+  MAX98357A não está ligado) e sem Start na bancada. Registro em
+  [`docs/testing/TESTING.md`](../../docs/testing/TESTING.md), entrada de 25/11/2026.
 - A pinagem é a do perfil `target` de
   [`firmware/config/include/dbmo/config/pins.h`](../config/include/dbmo/config/pins.h), que é uma
   **proposta**. Na bancada só existem hoje a tela e três botões diretos. MCP23017, MAX98357A,
@@ -82,7 +86,7 @@ Todos os itens, inclusive os confirmados, ainda precisam ser validados com o Ret
 | Bateria (ADC1 canal 0, divisor 100k/100k) | 1 | `RG_BATTERY_*`, atrás de `DBMO_RG_ENABLE_BATTERY_ADC` | `target::kVbatSense` | PROPOSTO, desligado |
 | Power-latch | 48 | `DBMO_GPIO_POWER_HOLD`, atrás de `DBMO_RG_ENABLE_POWER_HOLD` | `target::kPowerHold` | PROPOSTO, desligado |
 | USB D- / D+ (console e gravação) | 19 / 20 | `CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG` no `sdkconfig` | `target::kUsbDm`, `kUsbDp` | CONFIRMADO (função fixa do chip) |
-| Orientação da tela (MADCTL `0x28`) | - | `DBMO_RG_LCD_MADCTL` | - | PENDENTE DE VALIDAÇÃO FÍSICA |
+| Orientação da tela (MADCTL `0x28`, com `0xB6` = `0x0A, 0x82`) | - | `DBMO_RG_LCD_MADCTL`, `RG_SCREEN_INIT` | - | VALIDADO EM BANCADA em 25/11/2026 (com `0xB6` = `0x0A, 0xA2` a imagem saiu de cabeça para baixo e espelhada) |
 | Clock SPI da tela (40 MHz) | - | `DBMO_RG_SCREEN_SPEED_HZ` | `spi::kDisplayHz` é 10 MHz | PENDENTE DE VALIDAÇÃO FÍSICA |
 | Clock do SD (20 MHz) | - | `RG_STORAGE_SDSPI_SPEED` | - | PENDENTE DE VALIDAÇÃO FÍSICA |
 | Curva de carga da bateria | - | `RG_BATTERY_CALC_PERCENT` | - | PENDENTE DE VALIDAÇÃO FÍSICA |
@@ -371,9 +375,9 @@ recompactar em `.zip`. Os saves ficam em `/retro-go/saves/<sistema>` e a configu
 `/retro-go/config` (`rg_storage.h:8-15`). O launcher ignora arquivos que começam com ponto
 (`applications.c:33-35`), então os `._*` que o macOS cria no FAT32 não aparecem como jogos.
 
-O cartão de teste ainda não respondeu na bancada (24/11/2026: nenhuma resposta ao CMD0); até
-isso ser resolvido, o perfil de bancada deve recorrer à partição `vfs`, sem jogos (pela leitura
-do código; não testado).
+O cartão de teste funciona na bancada desde 25/11/2026 (em 24/11 faltavam fios do SPI): o
+Retro-Go o montou em `/sd` e criou sozinho as pastas `/roms/<sistema>`, vazias. O `.7z` que o
+Gabriel tinha foi descompactado no Mac e o `.gbc` copiado para `/roms/gbc`.
 
 ## sdkconfig: PSRAM octal, flash e console
 
@@ -461,14 +465,12 @@ dependem de que ela os ignore.
 
 ## Pendências bloqueantes
 
-1. **Rodar na placa.** A imagem completa compila (ver [Imagem de bancada](#imagem-de-bancada)),
-   mas nunca foi gravada nem executada. O primeiro teste é a imagem de bancada com a tela e os
-   três botões.
+1. **Rodar na placa: feito em 25/11/2026** no perfil de bancada (ver [Estado](#estado)). Falta
+   o perfil padrão, que depende do MCP23017.
 2. **MCP23017 ausente.** Sem ele o perfil padrão não tem botões. Bloqueia o uso, não o build.
-3. **SD no barramento compartilhado ainda não funciona.** O leitor da tela foi soldado em
-   24/11/2026, mas o cartão não respondeu ao CMD0 (diagnóstico da fiação pendente). O Retro-Go
-   precisa de armazenamento para ROMs e configuração; sem ele o launcher mostra erro de cartão
-   (`launcher/main/main.c:453-457`).
+3. **SD no barramento compartilhado: resolvido em 25/11/2026.** Em 24/11 o cartão não respondeu
+   porque faltavam os fios dos GPIO 10, 11 e 12; com eles, o firmware próprio e o Retro-Go
+   montaram o cartão.
 4. **Power-latch não decidido.** Com o latch montado e sem `DBMO_RG_ENABLE_POWER_HOLD`, nada
    segura a alimentação depois que o botão é solto. O desligamento por software exigiria alterar
    o Retro-Go (por exemplo com `#ifdef RG_TARGET_DBMO_V1`, mecanismo descrito em

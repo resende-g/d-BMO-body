@@ -121,6 +121,58 @@ Executado num macOS (Darwin 27), sem placa:
 Não executado: compilação do Bruce e do Retro-Go com o ESP-IDF (ficam para a CI) e qualquer
 teste na placa.
 
+### Vídeo de demonstração: rádio, microfone, IR e Retro-Go na placa (2026-11-25)
+
+Mesma montagem da entrada seguinte (fases A a E e o SD da tela, cartão `DBMO` inserido). Duas
+tomadas: a 1ª com o firmware próprio, a 2ª com o Retro-Go gravado por cima.
+
+**Microfone até 10 s (`a6a5739`).** O comando `mic` passou a usar um buffer de 160000 amostras
+(10 s a 16 kHz) reservado na PSRAM por `main.cpp`; sem PSRAM, continua com 1 s. No computador:
+47 executáveis de teste aprovados (`-DDBMO_SANITIZE=OFF`, ver a entrada "Retirada dos
+analógicos"); os perfis `dbmo-bench` e `dbmo-target` compilam. Na placa: `mic 10001` responde
+`uso: mic [ms], ate 10000; mic last`.
+
+**Tomada 1, firmware próprio (`a6a5739`).** Um roteiro mandou os comandos pelo console em tempos
+fixos; um ensaio e uma tomada, com o mesmo resultado:
+
+| Item | Comando | Saída | Leitura |
+|---|---|---|---|
+| Rádio | `radio rx on` e, 10 s depois, `radio rx off` | `recepcao: Ok` nos dois | Rosto "procurando" durante a recepção, relatado pelo Gabriel |
+| Microfone | `config audio.mic_enabled 1`; `mic 8000` | `gravacao encerrada: 126560 amostras, pico 32768` | Rosto "ouvindo" por 8 s, relatado pelo Gabriel |
+| Controle remoto | Menu Infravermelho, teclas do controle | **Nenhum código recebido**; 15 vezes `aprender infravermelho: Ok` sem resultado | **Falhou** |
+
+Com a recepção do rádio ligada, o GPIO 4 registrou de 14 a 33 `infravermelho: sinal
+desconhecido` por segundo, e nenhum fora desse intervalo. Em 22/11 isso não acontecia e o
+controle era lido (`nec:0004:...`). **Hipótese, não verificada:** o receptor de IR ficou sem
+alimentação ou com o OUT solto depois da religação de 24/11; com a linha solta, o GPIO 4 pega o
+ruído da fiação do rádio. Pendente: conferir C1 a C3 e a tensão nas pernas do receptor.
+
+**Tomada 2, Retro-Go.** Primeira vez na placa. Imagem de bancada da CI gravada com
+`esptool.py --chip esp32s3 write-flash --flash-size detect 0x0` (6.750.464 bytes, 35 s):
+
+| Etapa | Saída | Leitura |
+|---|---|---|
+| Imagem da execução 45712889400 (SHA-256 `a3858c90…632d`) | `Storage mounted at /sd`, `Input ready`, `Display ready`, `Retro-Go ready`, abas criadas | Launcher funciona; tela **de cabeça para baixo e espelhada** em relação ao firmware próprio |
+| Causa | Os dois enviam MADCTL `0x28`; o Retro-Go enviava `0xB6` = `0x0A, 0xA2` (SS=1), o Adafruit `0x08, 0x82` (SS=0) | Correção `c3aad60`: `0xB6` = `0x0A, 0x82` |
+| Imagem da execução 45724562378 (SHA-256 `9f1c6082…de2d`) | Mesmo boot | Orientação igual à do firmware próprio, relatado pelo Gabriel |
+| ROM | `/roms/gb`, `/roms/gbc`, `/roms/nes` e `/roms/pce` existiam vazias (criadas pelo Retro-Go). A ROM de Game Boy Color do Gabriel estava num `.7z`, que o Retro-Go não abre: descompactada no Mac e copiada para `/roms/gbc` (1.048.576 bytes, SHA-256 igual ao do original) | — |
+| Jogo | `Switching to app retro-core (gbc)`; `160x144@1.111 => 266x240`; frameskip entre 1 e 3; rodou de 31 s a pelo menos 183 s do log, sem reinício | Jogo de Game Boy Color rodando na placa; "rodou perfeito", relatado pelo Gabriel |
+
+Na troca do launcher para o jogo, o log registrou `spi_deinit: Failed to properly terminate SPI
+driver!`, sem efeito visível.
+
+Limites da evidência:
+
+- O vídeo não foi visto por mim: o rosto, a orientação da tela e o jogo vêm do relato do
+  Gabriel e do log.
+- O controle remoto não foi lido nesta sessão.
+- Na bancada não há Start, Select nem esquerda (3 botões); sem amplificador, sem som; o SPI da
+  tela a 10 MHz obriga o frameskip.
+- A placa ficou com o Retro-Go: o firmware próprio volta com
+  `pio run -e dbmo-bench -t upload`.
+- O `config audio.mic_enabled 1` da tomada 1 foi gravado sozinho no cartão: a configuração do
+  cartão está com o microfone habilitado até ser desfeita.
+
 ### Tela branca resolvida e SD da tela lendo e gravando (2026-11-25)
 
 **Montagem:** fases A a E do [mapa v0.3](../hardware/BREADBOARD_MAP.md), mais os 4 fios do SD
