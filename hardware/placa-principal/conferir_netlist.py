@@ -9,6 +9,8 @@ Confere:
   2. cada sinal de pins.h (perfil target) chega ao pino da DevKitC (U1) com o GPIO certo,
      pelo nome do pino no símbolo da LCSC ("GPIO11" etc.);
   3. os pinos do MCP23017 (U2) têm o nome que o datasheet dá ao número.
+As conferências 2 e 3 dependem do nome dos pinos, que só a netlist do esquemático traz; a do
+PCB passa só pela 1.
 
 Sai com 1 se houver divergência. Só a biblioteca padrão.
 """
@@ -68,15 +70,19 @@ def main(enet: str) -> int:
     for ref in actual.keys() - expected.keys():
         errors.append(f"{ref}: na netlist mas não em ligacoes.json")
 
+    # A netlist exportada do PCB não traz o nome dos pinos: nela só as nets são conferidas.
+    named = any(name for pins in actual.values() for name, _ in pins.values())
+    if not named:
+        print("netlist sem nomes de pino (exportada do PCB): conferidas só as nets")
     gpio = target_pins()
-    u1 = actual.get("U1", {})
-    for net, const in NET_TO_PIN.items():
+    u1 = actual.get("U1", {}) if named else {}
+    for net, const in NET_TO_PIN.items() if named else ():
         hits = [name for name, n in u1.values() if n == net]
         want = f"GPIO{gpio[const]}"
         if not any(re.search(rf"\b{want}\b", h) for h in hits):
             errors.append(f"{net}: pins.h {const} = {want}, mas U1 liga {hits or 'nada'}")
 
-    for num, want in MCP_NAMES.items():
+    for num, want in MCP_NAMES.items() if named else ():
         name = actual.get("U2", {}).get(num, ("?", ""))[0]
         if want not in name.upper():
             errors.append(f"U2.{num}: nome {name}, esperado {want}")
