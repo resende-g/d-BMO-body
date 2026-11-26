@@ -64,8 +64,9 @@ namespace target {
 inline constexpr int8_t kPowerButton = 2;  // também vai ao CN1, para a placa de energia
 inline constexpr int8_t kVbatSense = 1;    // ADC1; divisor 100k/100k na placa de energia
 inline constexpr int8_t kAmpShutdown = 3;  // MAX98357A SD_MODE; strapping (JTAG)
-// Estado do carregador (CHRG/STDBY, coletor aberto: pull-up interno), vindo do CN1.
-inline constexpr int8_t kChargerStatus = 4;
+// Estado do carregador (CHRG/STDBY, coletor aberto: pull-up interno), vindo do CN1. GPIO RTC:
+// ligar o carregador pode acordar o chip. Fora dos pinos de IR da bancada (4 e 5).
+inline constexpr int8_t kChargerStatus = 6;
 inline constexpr int8_t kI2sMicData = 7;  // INMP441 SD
 inline constexpr int8_t kI2cSda = 8;
 inline constexpr int8_t kI2cScl = 9;
@@ -117,13 +118,14 @@ inline constexpr PinAssignment kPins[] = {
 };
 
 // Livres no perfil target (decisões de 2026-11-25):
-//   5, 6      eram dos analógicos (o 2 virou o botão de energia e o 4, o estado do carregador);
+//   4, 5      eram dos analógicos (o 2 virou o botão de energia e o 6, o estado do carregador);
+//             na bancada, são o IR RX e o IR TX;
 //   38, 43, 44 eram do cartucho (CS e UART0). Na DevKitC, 38 ou 48 é o LED RGB (revisão) e
 //             43/44 ficam na ponte USB-UART;
 //   0, 45, 46 são de strapping: o 0 fica só como BOOT, e 45 e 46 não podem ser puxados no reset.
 // Os botões, menos o de energia, ficam no MCP23017 (i2c::kMcp23017Buttons), decisão de
-// 2026-11-25: sobram só 5, 6 e 38 sem ressalva para 10 botões.
-inline constexpr int8_t kFreePins[] = {0, 5, 6, 38, 43, 44, 45, 46};
+// 2026-11-25: sobram só 4, 5 e 38 sem ressalva para 10 botões.
+inline constexpr int8_t kFreePins[] = {0, 4, 5, 38, 43, 44, 45, 46};
 
 }  // namespace target
 

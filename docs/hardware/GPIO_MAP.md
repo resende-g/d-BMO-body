@@ -30,7 +30,7 @@ Nenhum pino é "definitivo": a pinagem só fecha depois dos ensaios de bancada d
 | 1 | `VBAT_SENSE` | PROPOSTO |
 | 2 | `POWER_BUTTON` | PROPOSTO |
 | 3 | `AMP_SHUTDOWN` | PROPOSTO |
-| 4 | `CHARGER_STATUS` | PROPOSTO |
+| 6 | `CHARGER_STATUS` | PROPOSTO |
 | 7 | `I2S_MIC_DATA` | VALIDADO EM BANCADA |
 | 8 | `I2C_SDA` | PROPOSTO |
 | 9 | `I2C_SCL` | PROPOSTO |
@@ -121,7 +121,7 @@ botão de energia em GPIO de RTC.
 | 4 | GPIO 38 | CS do cartucho (até 2026-11-25) | Na DevKitC v1.1 é o LED RGB (DKC-02). Com o USB-OTG Download Boot habilitado, a ROM leva o pino a nível baixo (S3-USB-10) | **Encerrado em 2026-11-25:** sem cartucho, o pino ficou livre |
 | 5 | GPIO 3 | Desligamento do amplificador | Flutuante no reset (S3-STRAP-14) e com glitch ao energizar (S3-GLT-01): o estado do amplificador durante o boot depende de resistor externo | Proposto; conferir se há estalo no alto-falante ao ligar |
 | 6 | GPIO 39–42 | IR RX e I2S | Pinos de JTAG; a ROM aciona 39 e 40 em um dos modos de download (S3-USB-10) | Proposto; conferir na bancada |
-| 7 | GPIO 5, 6, 38, 43, 44 | Livres | 5 e 6 eram dos analógicos (o 2 virou o botão de energia e o 4, o estado do carregador da placa de energia); 38, 43 e 44 eram do cartucho. Sem ressalva sobram 5, 6 e 38, pouco para 10 botões: os botões ficam no MCP23017 (decisão de 2026-11-25) | Removidos em 2026-11-25: v1 sem analógicos, gatilhos nem cartucho |
+| 7 | GPIO 4, 5, 38, 43, 44 | Livres | 4 e 5 eram dos analógicos (o 2 virou o botão de energia e o 6, o estado do carregador da placa de energia); na bancada são o IR RX e o IR TX. 38, 43 e 44 eram do cartucho. Sem ressalva sobram 4, 5 e 38, pouco para 10 botões: os botões ficam no MCP23017 (decisão de 2026-11-25) | Removidos em 2026-11-25: v1 sem analógicos, gatilhos nem cartucho |
 | 8 | GPIO 16 | Backlight por PWM | Na bancada o LED da tela está direto no 3V3; o controle por PWM nunca foi testado, e a corrente do backlight não é conhecida (`PERIPHERALS.md`, MSP-05) | Proposto; pode exigir transistor |
 | 9 | GPIO 47, 48 | IR TX e trava | Dividem o domínio de alimentação da flash/PSRAM (S3-GPIO-09, S3-GPIO-11). O estado de fábrica do eFuse que fixa essa tensão no N16R8 não foi verificado (S3-STRAP-11); o registro de bancada indica 3,3 V | Proposto |
 | 10 | GPIO 45, 46 | Livres | GPIO 45 em nível alto no reset leva a alimentação da flash a 1,8 V (S3-STRAP-09); GPIO 46 participa do modo de boot | **Manter livres**; nunca ligar a algo que os puxe no reset |

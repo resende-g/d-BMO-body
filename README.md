@@ -230,8 +230,8 @@ serigrafia da placa. É a pinagem da placa principal de uma face ([`hardware/pcb
 | I²S BCLK / LRC / DOUT | 40 / 41 / 42 | DOUT para o MAX98357A |
 | IR TX | 47 |
 | Power-latch (HOLD) | 48 | segura a alimentação ligada depois do clique no botão; circuito na placa de energia, pelo CN1 |
-| Estado do carregador | 4 | CHRG/STDBY do carregador da placa de energia, pelo CN1 (decisão de 2026-11-25) | |
-| Livre | 5, 6 | ADC1; eram dos analógicos, retirados em 25/11/2026. Na bancada, o 4 / 5 são o IR RX / TX no `bmo.ini` |
+| Estado do carregador | 6 | CHRG/STDBY do carregador da placa de energia, pelo CN1 (decisão de 2026-11-25); GPIO RTC, fora dos pinos de IR da bancada | |
+| Livre | 4, 5 | ADC1; eram dos analógicos, retirados em 25/11/2026. Na bancada, são o IR RX / TX no `bmo.ini` |
 | Livre | 38 | era o CS do cartucho (25/11/2026). Na DevKitC, 38 ou 48 é o LED RGB, conforme a revisão |
 | Livre | 43, 44 | UART0, era do cartucho (25/11/2026). A ROM imprime o log de boot no 43 e a ponte USB-UART da DevKitC aciona o 44 |
 | Livre | 45, 46 | strapping: o 45 define a tensão da flash no boot, **não usar** como saída que possa estar em alto no boot |
@@ -239,7 +239,7 @@ serigrafia da placa. É a pinagem da placa principal de uma face ([`hardware/pcb
 **MCP23017 (0x20):** 10 botões (D-pad 4, ação 4, select/start 2), botão ao GND com pull-up
 interno do MCP. GPA7 e GPB7 são só saída na revisão D do datasheet do MCP23017; GPB3 a GPB6
 sobram. Decisão de 2026-11-25: manter o MCP23017 na placa principal (sem ressalva sobram só os
-GPIOs 5, 6 e 38 para 10 botões).
+GPIOs 4, 5 e 38 para 10 botões).
 
 **Não usar:** GPIO 26–37 (flash/PSRAM octal). Cuidado com strapping: 0, 3, 45, 46.
 

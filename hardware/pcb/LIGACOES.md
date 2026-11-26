@@ -28,7 +28,7 @@ Gerado por `hardware/pcb/gerar_ligacoes.py` a partir de `pins.h` (perfil `target
 | `POWER_BUTTON` | 2 | U1.J3-5 = 2, SW11.3, CN1.6 = POWER_BUTTON |
 | `VBAT_SENSE` | 1 | U1.J3-4 = 1, CN1.4 = VBAT_SENSE |
 | `POWER_HOLD` | 48 | U1.J3-16 = 48, CN1.5 = POWER_HOLD |
-| `CHARGER_STATUS` | 4 | U1.J1-4 = 4, CN1.7 = CHARGER_STATUS |
+| `CHARGER_STATUS` | 6 | U1.J1-6 = 6, CN1.7 = CHARGER_STATUS |
 | `LCD_LED` |  | DS1.LED, JP2.2 = LED |
 | `AMP_VIN` |  | U5.VIN, JP1.2 = VIN |
 | `BTN_DPADUP` |  | SW1.2, U8.21 = GPA0 |
@@ -47,7 +47,7 @@ Gerado por `hardware/pcb/gerar_ligacoes.py` a partir de `pins.h` (perfil `target
 
 Pinos sem ligação (33): SW11.1, SW11.4, U2.8 (GDO2), SW9.2, SW9.3, SW10.1, SW10.4, U8.4 (GPB3), U8.5 (GPB4), U8.6 (GPB5), U8.7 (GPB6), U8.8 (GPB7), U8.11 (NC11), U8.14 (NC14), U8.19 (INTB), U8.20 (INTA), U8.28 (GPA7), SW1.1, SW1.4, SW2.1, SW2.4, SW3.1, SW3.4, SW4.1, SW4.4, SW5.2, SW5.3, SW6.2, SW6.3, SW7.2, SW7.3, SW8.2, SW8.3.
 
-Posições de barra fêmea **sem ligação, que não precisam de ilha** (tirar o contato da barra ou cortá-la em pedaços; numa placa de uma face, a trilha passa pelo vão): U1: J1-2, J1-3, J1-5, J1-6, J1-14, J3-1, J3-2, J3-3, J3-10, J3-11, J3-12, J3-13, J3-14, J3-15, J3-19, J3-20, J3-21; DS1: T_CLK, T_CS, T_DIN, T_DO, T_IRQ; U5: GAIN.
+Posições de barra fêmea **sem ligação, que não precisam de ilha** (tirar o contato da barra ou cortá-la em pedaços; numa placa de uma face, a trilha passa pelo vão): U1: J1-2, J1-3, J1-4, J1-5, J1-14, J3-1, J3-2, J3-3, J3-10, J3-11, J3-12, J3-13, J3-14, J3-15, J3-19, J3-20, J3-21; DS1: T_CLK, T_CS, T_DIN, T_DO, T_IRQ; U5: GAIN.
 
 ## Conector da placa de energia (CN1)
 
@@ -59,7 +59,7 @@ Posições de barra fêmea **sem ligação, que não precisam de ilha** (tirar o
 | 4 | `VBAT_SENSE` | 1 | solto: a leitura da bateria não vale nada |
 | 5 | `POWER_HOLD` | 48 | saída sem carga |
 | 6 | `POWER_BUTTON` | 2 | o botão SW11 continua no GPIO 2 |
-| 7 | `CHARGER_STATUS` | 4 | solto: com o pull-up interno, lê nível alto (sem carga) |
+| 7 | `CHARGER_STATUS` | 6 | solto: com o pull-up interno, lê nível alto (sem carga) |
 | 8 | `GND` |  | GND |
 
 ## Peças

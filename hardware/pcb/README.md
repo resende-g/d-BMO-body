@@ -19,9 +19,9 @@
   alto-falante vai no borne da própria placa dele), PN532 (I²C) e os botões.
 - **Sem** cartucho (os GPIOs 38, 43 e 44 ficaram livres), analógicos e gatilhos.
 - Os sinais de energia **continuam reservados** e vão ao CN1: `VBAT_SENSE` (GPIO 1, ADC1),
-  `POWER_HOLD` (GPIO 48) e, novo, `CHARGER_STATUS` (GPIO 4).
+  `POWER_HOLD` (GPIO 48) e, novo, `CHARGER_STATUS` (GPIO 6).
 - Botões: cruz, A, B, X, Y, start e select num **MCP23017 em 0x20** (sem ressalva sobram só os
-  GPIOs 5, 6 e 38, pouco para 10 botões; o driver existe no firmware próprio, no Retro-Go e no
+  GPIOs 4, 5 e 38, pouco para 10 botões; o driver existe no firmware próprio, no Retro-Go e no
   Bruce). O botão de energia fica **na principal**, no GPIO 2, e o mesmo nó vai ao CN1 para a
   placa de energia usar no power-latch.
 
@@ -53,7 +53,7 @@ pontas: um conector encaixado ao contrário não põe alimentação no lugar do 
 | 4 | VBAT_SENSE | GPIO 1 (ADC1). O divisor 100k/100k fica na placa de energia |
 | 5 | POWER_HOLD | GPIO 48. Segura o power-latch depois do clique no botão |
 | 6 | POWER_BUTTON | O nó do botão SW11 e do GPIO 2. A placa de energia o lê (com diodo do lado dela) para ligar o latch |
-| 7 | CHARGER_STATUS | GPIO 4. CHRG/STDBY do carregador, em coletor aberto (pull-up interno do ESP32-S3) |
+| 7 | CHARGER_STATUS | GPIO 6 (RTC: ligar o carregador pode acordar o chip). CHRG/STDBY do carregador, em coletor aberto (pull-up interno do ESP32-S3) |
 | 8 | GND | |
 
 **Sem a placa de energia** (CN1 em aberto), a principal funciona pelo USB da DevKitC: o 5 V do

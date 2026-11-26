@@ -118,11 +118,13 @@ static void test_bench_and_target_disagree_exactly_where_documented() {
   // é o BOOT da DevKitC (GPIO 0), livre no target.
   TEST_ASSERT_EQUAL_INT8(target::kPowerButton, bench::kButtonOk);
   TEST_ASSERT_EQUAL_INT8(0, bench::kPowerButton);
-  // O botão de energia (BOOT) e o IR TX da bancada ficam em pinos livres do target; o IR RX da
-  // bancada (GPIO 4) é o estado do carregador no target.
-  for (int8_t gpio : {bench::kPowerButton, bench::kIrTx})
+  // O botão de energia (BOOT) e o IR da bancada ficam em pinos livres do target; o estado do
+  // carregador (GPIO 6, decisão de 2026-11-25) fica fora deles.
+  for (int8_t gpio : {bench::kPowerButton, bench::kIrRx, bench::kIrTx}) {
     TEST_ASSERT_FALSE(usesGpio(target::kPins, gpio));
-  TEST_ASSERT_EQUAL_INT8(target::kChargerStatus, bench::kIrRx);
+    TEST_ASSERT_NOT_EQUAL(target::kChargerStatus, gpio);
+  }
+  TEST_ASSERT_TRUE(isRtcGpio(target::kChargerStatus));
 }
 
 static void test_i2c_addresses_do_not_collide() {

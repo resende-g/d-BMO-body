@@ -91,7 +91,7 @@ Todos os itens, inclusive os confirmados, ainda precisam ser validados com o Ret
 | Clock do SD (20 MHz) | - | `RG_STORAGE_SDSPI_SPEED` | - | PENDENTE DE VALIDAÇÃO FÍSICA |
 | Curva de carga da bateria | - | `RG_BATTERY_CALC_PERCENT` | - | PENDENTE DE VALIDAÇÃO FÍSICA |
 
-Pinos do perfil `target` que o Retro-Go não usa nem configura: botão de energia (2), microfone I2S (7), GDO0 do CC1101 (15), IR RX (39), IR TX (47), estado do carregador (4). O UART0
+Pinos do perfil `target` que o Retro-Go não usa nem configura: botão de energia (2), microfone I2S (7), GDO0 do CC1101 (15), IR RX (39), IR TX (47), estado do carregador (6). O UART0
 (43, 44), que era do cartucho, ficou livre em 2026-11-25 (ver a nota sobre o console em [sdkconfig](#sdkconfig-psram-octal-flash-e-console)).
 
 Cada linha do `config.h` que fixa um pino termina com o comentário
