@@ -11,6 +11,7 @@
 #include <SD.h>
 #include <SPI.h>
 
+#include "driver/rtc_io.h"
 #include "esp_sleep.h"
 
 #include "dbmo/audio/audio_types.h"
@@ -435,9 +436,19 @@ class DeepSleepControl final : public power::ISleepControl {
   Status deepSleep(const power::WakeSource &wake) override {
     // Sem pino de despertar o aparelho só voltaria com um reset: recusa.
     if (wake.pin < 0) return Status::InvalidArgument;
-    if (esp_sleep_enable_ext0_wakeup(static_cast<gpio_num_t>(wake.pin), wake.activeLow ? 0 : 1) !=
-        ESP_OK)
+    const gpio_num_t pin = static_cast<gpio_num_t>(wake.pin);
+    if (esp_sleep_enable_ext0_wakeup(pin, wake.activeLow ? 0 : 1) != ESP_OK)
       return Status::InvalidArgument;
+    // O pull-up digital (INPUT_PULLUP) não vale no sono profundo: sem o resistor do domínio RTC
+    // o pino fica solto e pode acordar sozinho ou nunca acordar. No target o botão está no GPIO 2,
+    // que não tem pull no reset (S3-GPIO-08).
+    if (wake.activeLow) {
+      rtc_gpio_pulldown_dis(pin);
+      rtc_gpio_pullup_en(pin);
+    } else {
+      rtc_gpio_pullup_dis(pin);
+      rtc_gpio_pulldown_en(pin);
+    }
     Serial.flush();
     esp_deep_sleep_start();  // não retorna: o despertar é um novo boot
     return Status::Ok;
