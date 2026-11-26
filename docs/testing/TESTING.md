@@ -121,6 +121,22 @@ Executado num macOS (Darwin 27), sem placa:
 Não executado: compilação do Bruce e do Retro-Go com o ESP-IDF (ficam para a CI) e qualquer
 teste na placa.
 
+### Sem placa: alto-falante no perfil bench e logs de boot (2026-11-25, no computador)
+
+Feito depois do vídeo, sem hardware novo e sem a placa:
+
+| Mudança | Commit | Verificação |
+|---|---|---|
+| Saída do MAX98357A no perfil `bench` (DIN no GPIO 42, sem pino de SD_MODE) | `efca1de` | Os dois perfis compilam; **nada foi ligado nem tocado** |
+| Mapa da protoboard v0.4: fase F (SD) e fase G (alto-falante, ainda não montada) | `c330fb4` | `check_links.py` e `check_repo.py` |
+| Log de boot nomeia as chaves da memoria interna quando o cartão não tem configuração | `4a1191c` | Teste novo falhou antes (`usando os padroes` aparecia) e passa depois |
+| Periférico ausente vai ao log uma vez, não a cada nova tentativa | `5ab03a8` | Teste novo: 5 avisos em 65 s antes, 1 depois; a ligação depois do boot continua coberta pelo teste existente |
+| Pinos e peças com evidência de bancada | `3bf353c` | `check_pinmap.py` (27 sinais no `target`, 23 no `bench`) |
+
+Testes no computador: 47 executáveis aprovados (`-DDBMO_SANITIZE=OFF`); `clang-format` 18
+sem diferenças; `pio run -e dbmo-bench -e dbmo-target` compila; `host_check.sh` do Retro-Go
+passa. Não executado: nada na placa.
+
 ### Vídeo de demonstração: rádio, microfone, IR e Retro-Go na placa (2026-11-25)
 
 Mesma montagem da entrada seguinte (fases A a E e o SD da tela, cartão `DBMO` inserido). Duas
