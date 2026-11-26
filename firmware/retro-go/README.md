@@ -320,6 +320,24 @@ compilador do computador com `-fsyntax-only`, em cada combinação de opções, 
 do Retro-Go e substitutos dos símbolos do ESP-IDF. Confere sintaxe e estrutura. Não compila o
 firmware.
 
+## Volta ao d-BMO (imagem combinada)
+
+O d-BMO usa o Retro-Go como um segundo firmware na mesma flash. O `tools/combine_retrogo.py`
+acrescenta à imagem a partição factory `dbmo`, com o firmware próprio, e o item Jogos do menu
+dele aponta o boot ao `launcher` (`docs/firmware/FIRMWARE.md`, "Imagem combinada com o
+Retro-Go"). Para voltar, o alvo `dbmo-v1` faz duas coisas no `config.h`:
+
+- `RG_CUSTOM_PLATFORM_INIT`, que roda em todo boot do Retro-Go (`rg_system.c:384`), aponta o
+  boot de novo para a partição `dbmo`, se ela existir e o boot não estiver nela. Um reset volta
+  ao d-BMO. As trocas entre o launcher e os jogos continuam funcionando porque
+  `rg_system_switch_app` grava o boot antes de reiniciar (`update_boot_config`,
+  `rg_system.c:127-155`).
+- `RG_APP_FACTORY "dbmo"`, que o menu de recuperação usa em "Reboot to factory"
+  (`rg_system.c:331-344`; o padrão do Retro-Go é `NULL`, `config.h:83-85`).
+
+Sem a partição `dbmo` (a imagem do Retro-Go gravada sozinha), nada muda. Nada disto foi testado
+na placa.
+
 ## Como gravar
 
 A gravação é pela imagem `.img` inteira, a partir do endereço 0, na porta USB nativa (USB

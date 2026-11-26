@@ -121,6 +121,30 @@ Executado num macOS (Darwin 27), sem placa:
 Não executado: compilação do Bruce e do Retro-Go com o ESP-IDF (ficam para a CI) e qualquer
 teste na placa.
 
+### Troca d-BMO ↔ Retro-Go numa imagem só (2026-11-25, no computador)
+
+Item **Jogos** no menu do firmware próprio, volta pelo reset no alvo do Retro-Go e o
+`tools/combine_retrogo.py`, que junta as duas imagens (`docs/firmware/FIRMWARE.md`, "Imagem
+combinada com o Retro-Go"). Sem a placa.
+
+| Mudança | Commit | Verificação |
+|---|---|---|
+| Item Jogos e `IAppSwitch` | `7018811` | 2 testes de menu e 2 de integração novos: o item fica escondido sem o Retro-Go na flash; OK na tela Jogos grava a configuração no cartão e só depois pede a troca; se a troca voltar, a tela mostra `falhou: NotFound`. Uma mutação (sem gravar a configuração antes) faz o teste de integração falhar |
+| Volta ao d-BMO no boot do Retro-Go e `RG_APP_FACTORY "dbmo"` | `7b2672c` | `host_check.sh` (sintaxe com substitutos do ESP-IDF; o `check_config.c` confere o nome da partição). Não compilado com o ESP-IDF fora da CI |
+| `tools/combine_retrogo.py` e o job de CI `combined` | `1907d35` | `tools/test_combine_retrogo.py`: 6 testes com uma imagem sintética. Com os artefatos reais (Retro-Go da execução 45724562378 e o `firmware.bin` de bancada desta compilação), a imagem saiu com 7.310.720 bytes, e o `gen_esp32part.py` do ESP-IDF leu a tabela com `dbmo,app,factory,0x670000,2M` |
+
+Testes no computador: 47 executáveis aprovados (`-DDBMO_SANITIZE=OFF`); `clang-format` 18 sem
+diferenças; `pio run -e dbmo-bench -e dbmo-target` compila; `check_*` passam.
+
+**Pendente de bancada** (nada disto foi executado):
+
+- o bootloader do Retro-Go (ESP-IDF 4.4.8) carregar o firmware próprio (Arduino-ESP32 3.3,
+  ESP-IDF 5): hipótese de compatibilidade, não verificada;
+- a placa ligar no d-BMO com a imagem combinada recém-gravada;
+- Jogos → launcher do Retro-Go; dentro dele, launcher ↔ jogo como antes;
+- reset dentro do Retro-Go → d-BMO; "Reboot to factory" no menu de recuperação → d-BMO;
+- a configuração do d-BMO na partição `nvs` de 16 KB do Retro-Go.
+
 ### Sem placa: alto-falante no perfil bench e logs de boot (2026-11-25, no computador)
 
 Feito depois do vídeo, sem hardware novo e sem a placa:

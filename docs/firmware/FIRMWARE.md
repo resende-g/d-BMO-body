@@ -55,6 +55,44 @@ digitada aparece duas vezes.
 
 Um periférico que não está ligado não impede o boot: aparece como `Absent` em `status`.
 
+### Imagem combinada com o Retro-Go
+
+O firmware próprio e o Retro-Go cabem juntos na flash de 16 MB. O `tools/combine_retrogo.py`
+pega a imagem do Retro-Go (`firmware/retro-go/README.md`), acrescenta a partição `dbmo` (app,
+subtipo factory, 2 MB depois da última partição do Retro-Go) e grava nela o `firmware.bin`. A
+CI publica o resultado de bancada como o artefato `dbmo-combinado-bancada`. Grava-se a imagem
+inteira em 0x0, o que **apaga o que houver na flash**:
+
+```bash
+~/.platformio/penv/bin/python ~/.platformio/packages/tool-esptoolpy/esptool.py --chip esp32s3 --port /dev/cu.usbmodem<N> write-flash --flash-size detect 0x0 dbmo-combinado-bancada.bin
+```
+
+Para montar no computador, com a `.img` do Retro-Go e o firmware compilado:
+
+```bash
+python3 tools/combine_retrogo.py --retrogo retro-go_4ced120-dbmo_dbmo-v1.img --dbmo .pio/build/dbmo-bench/firmware.bin -o dbmo-combinado-bancada.bin
+```
+
+Como funciona: com a `otadata` em branco, o bootloader liga a partição factory, então a placa
+começa no d-BMO. O item **Jogos** do menu aponta o boot ao `launcher` e reinicia. Em todo boot,
+o alvo `dbmo-v1` do Retro-Go devolve o boot ao `dbmo`: um reset (ou desligar e ligar) volta ao
+d-BMO, e as trocas do próprio Retro-Go entre o launcher e os jogos continuam funcionando. O
+menu de recuperação do Retro-Go também ganha "Reboot to factory", que volta ao d-BMO.
+
+Depois de gravar a imagem combinada, `pio run -t upload` **desfaz** a combinação: ele regrava o
+bootloader e a tabela de partições do PlatformIO. Para trocar só o firmware próprio dentro da
+imagem combinada, gravar o `firmware.bin` no offset da partição `dbmo`, que o script imprime
+(0x670000 com a imagem de bancada atual):
+
+```bash
+~/.platformio/penv/bin/python ~/.platformio/packages/tool-esptoolpy/esptool.py --chip esp32s3 --port /dev/cu.usbmodem<N> write-flash 0x670000 .pio/build/dbmo-bench/firmware.bin
+```
+
+Na imagem combinada, o bootloader é o do Retro-Go (ESP-IDF 4.4.8) e o firmware próprio é
+compilado com o Arduino-ESP32 3.3 (ESP-IDF 5). Que esse bootloader carregue o firmware próprio
+é **hipótese, não testada na placa**; a configuração do d-BMO na memória interna passa a usar a
+partição `nvs` do Retro-Go (16 KB).
+
 ## 3. Console serial
 
 | Comando | Efeito |
@@ -104,10 +142,12 @@ acesa).
 | Infravermelho | Último código recebido; resultado do aprendizado; envio sempre como desabilitado ou "só pelo console" | Aprende um código (10 s para apertar a tecla do controle). Não envia nada |
 | Radio | Estado, frequência, contadores de pacotes, erros de CRC e transmissões negadas; resultado do último OK | Liga ou desliga a recepção. Não transmite |
 | Botoes | Os últimos 4 botões e ações (apertou, soltou, clique, toque longo, repetição), para conferir a fiação | — (o OK curto também entra na lista) |
+| Jogos | Que a placa reinicia no Retro-Go e que um reset volta ao d-BMO; o motivo, se a troca falhar | Grava a configuração e reinicia no launcher do Retro-Go |
 | Sobre | Nome do hardware, versão do firmware e perfil (`bench` ou `target`) | — |
 | Voltar ao rosto | — | Fecha o menu |
 
-Infravermelho e Radio só aparecem na lista quando o subsistema está em operação; o
+Infravermelho e Radio só aparecem na lista quando o subsistema está em operação, e Jogos só
+quando o Retro-Go está na mesma flash (imagem combinada, abaixo); o
 cartão, o NFC e o áudio não têm item no menu e aparecem só em Estado (como `ausente` quando
 não estão ligados). O texto usa a fonte de bitmap 5x7 do próprio projeto, em ASCII, sem
 acentos. A tela é remontada a cada evento ou a cada 0,5 s, e só as linhas que mudaram são
