@@ -194,15 +194,19 @@ class I2sAudio {
     explicit Output(I2sAudio &owner) : owner_(owner) {}
 
     Status begin(uint32_t sampleRateHz) override {
-      pinMode(static_cast<uint8_t>(owner_.amplifierPin_), OUTPUT);
-      digitalWrite(static_cast<uint8_t>(owner_.amplifierPin_), LOW);
+      // Sem pino (-1): o SD_MODE fica por conta da placa do amplificador, que o mantém ligado.
+      if (owner_.amplifierPin_ >= 0) {
+        pinMode(static_cast<uint8_t>(owner_.amplifierPin_), OUTPUT);
+        digitalWrite(static_cast<uint8_t>(owner_.amplifierPin_), LOW);
+      }
       return owner_.start(sampleRateHz);
     }
 
     Status setAmplifier(bool on) override {
       // SD_MODE em nível alto liga o amplificador no canal esquerdo; em baixo, desliga
       // (AMP-06). Ver AMP-07 sobre acionar o pino direto com VDD abaixo de 3,3 V.
-      digitalWrite(static_cast<uint8_t>(owner_.amplifierPin_), on ? HIGH : LOW);
+      if (owner_.amplifierPin_ >= 0)
+        digitalWrite(static_cast<uint8_t>(owner_.amplifierPin_), on ? HIGH : LOW);
       return Status::Ok;
     }
 
@@ -230,7 +234,7 @@ class I2sAudio {
     }
 
     Status end() override {
-      digitalWrite(static_cast<uint8_t>(owner_.amplifierPin_), LOW);
+      if (owner_.amplifierPin_ >= 0) digitalWrite(static_cast<uint8_t>(owner_.amplifierPin_), LOW);
       owner_.stop();
       return Status::Ok;
     }

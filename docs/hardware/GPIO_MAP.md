@@ -84,6 +84,7 @@ Nenhum pino é "definitivo": a pinagem só fecha depois dos ensaios de bancada d
 | 39 | `BUTTON_UP` | VALIDADO EM BANCADA |
 | 40 | `I2S_BCLK` | PROPOSTO |
 | 41 | `I2S_LRCLK` | PROPOSTO |
+| 42 | `I2S_SPEAKER_DATA` | PROPOSTO |
 | 47 | `BUTTON_DOWN` | VALIDADO EM BANCADA |
 
 <!-- END pinmap:bench -->
