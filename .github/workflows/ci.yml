@@ -58,6 +58,8 @@ jobs:
           persist-credentials: false
       - name: Mapa de pinos (pins.h, Bruce, Retro-Go, documentação)
         run: python3 tools/check_pinmap.py
+      - name: Ligações da placa principal (hardware/pcb, a partir de pins.h)
+        run: python3 hardware/pcb/gerar_ligacoes.py --check
       - name: Links da documentação
         run: python3 tools/check_links.py
       - name: Estrutura, portabilidade, privacidade e scripts

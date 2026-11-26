@@ -85,7 +85,7 @@ infravermelho, armazenamento, energia e cartuchos). Está **implementado e testa
 | Pessoa | Papel |
 |---|---|
 | **Resende** (Gabriel) | Lead do projeto: arquitetura, firmware, compras, documentação |
-| **Tiago Batista** | Consultor de hardware: ensina EasyEDA e orienta o projeto da PCB para fabricar na JLCPCB (carga/BMS/card edge integrados) |
+| **Tiago Batista** | Consultor de hardware: ensina EasyEDA e fabrica a placa principal, de uma face ([`hardware/pcb/`](hardware/pcb/README.md), 2026-11-25); a placa de energia vem depois |
 | **Tiago Efraim** | Impressão 3D da carcaça e montagem; monta um d-BMO em par (candidato ao cartucho LoRa p/ comunicação entre os dois) |
 
 São dois Tiagos distintos: **Batista** cuida da PCB; **Efraim** imprime e monta junto.
@@ -199,8 +199,9 @@ Preços do carrinho de 02/11/2026; mudam e expiram.
 - **SPI** (SCK/MOSI/MISO compartilhados, cada um com seu CS): Display, CC1101, MicroSD.
 - **I²C** (SDA/SCL): PN532 (0x24), MCP23017 dos botões (0x20), EEPROM do cartucho.
 - **I²S**: MAX98357A (saída) + INMP441 (entrada), mesmo barramento.
-- **GPIO direto**: IR RX/TX, botão de energia, CS do cartucho, power-latch. Os botões ficam no MCP23017 (14 entradas utilizáveis), lidos por polling.
+- **GPIO direto**: IR RX/TX, botão de energia, power-latch e estado do carregador. Os outros 10 botões ficam no MCP23017 (14 entradas utilizáveis), lidos por polling.
 - **ADC**: leitura de bateria, **só no ADC1 (GPIO 1–10)**: o ADC2 é compartilhado com o WiFi e a leitura pode falhar.
+- Desde 2026-11-25 o v1 não tem cartucho e é feito de **duas placas**: a principal (de uma face, [`hardware/pcb/`](hardware/pcb/README.md)) e uma placa de energia futura (bateria, carga, regulador, power-latch), ligadas pelo conector CN1. Sem a placa de energia, a principal funciona pelo USB da DevKitC. A seção de cartuchos abaixo fica como registro do plano anterior.
 
 ---
 
@@ -208,15 +209,15 @@ Preços do carrinho de 02/11/2026; mudam e expiram.
 
 A tela, os 3 botões e o CC1101 já estão fixados no Bruce
 (`firmware/bruce/bmo.ini`); o resto é **proposta**, a validar na bancada. Conferir contra a
-serigrafia da placa.
+serigrafia da placa. É a pinagem da placa principal de uma face ([`hardware/pcb/`](hardware/pcb/README.md)).
 
 | Função | GPIO | Nota |
 |---|---:|---|
-| VBAT sense | 1 | ADC1; divisor 100k/100k, ×2 no firmware |
+| VBAT sense | 1 | ADC1; divisor 100k/100k na placa de energia, ×2 no firmware; chega pelo CN1 |
 | I²S SD IN (mic) | 7 | mic em 3,3 V, L/R no GND |
-| I²C SDA / SCL | 8 / 9 | pull-up 4,7k; PN532 0x24, MCP23017 0x20, EEPROM do cartucho |
+| I²C SDA / SCL | 8 / 9 | pull-up 4,7k; PN532 0x24, MCP23017 0x20 |
 | CS Display | 10 | |
-| SPI MOSI / SCK / MISO | 11 / 12 / 13 | compartilhado: tela, CC1101, microSD, cartucho |
+| SPI MOSI / SCK / MISO | 11 / 12 / 13 | compartilhado: tela, CC1101, microSD |
 | CS CC1101 | 14 | |
 | CC1101 GDO0 | 15 | interrupção RF |
 | Display BLK | 16 | backlight (3,3 V fixo ou PWM) |
@@ -225,19 +226,20 @@ serigrafia da placa.
 | CS microSD | 21 | slot do módulo da tela |
 | Botão de energia | 2 | GPIO RTC (acorda do deep sleep) fora dos pinos de strapping. Estava no GPIO 0 até 2026-11-25: segurar o botão ao ligar entraria no modo de download e o aparelho não ligaria. O GPIO 0 fica só como BOOT (ver [`docs/hardware/GPIO_MAP.md`](docs/hardware/GPIO_MAP.md), risco 1) |
 | Shutdown do MAX98357A (SD) | 3 | strapping (JTAG); seguro como saída depois do boot |
-| CS do cartucho | 38 | na DevKitC, 38 ou 48 é o LED RGB, conforme a revisão: na bancada, usar o que não for LED |
 | IR RX | 39 | |
 | I²S BCLK / LRC / DOUT | 40 / 41 / 42 | DOUT para o MAX98357A |
-| UART do cartucho TX / RX | 43 / 44 | UART0. **Risco aberto:** mesmo com o console no USB, a ROM imprime o log de boot no GPIO 43 a cada partida (ver `docs/hardware/GPIO_MAP.md`, risco 2) |
-| Power-latch (HOLD) | 48 | segura a alimentação ligada depois do clique no botão |
-| IR TX | 47 | |
-| Livre | 2, 4, 5, 6 | ADC1; eram dos analógicos, retirados em 25/11/2026. Na bancada, o 2 é o botão OK e o 4 / 5 são o IR RX / TX no `bmo.ini` |
+| IR TX | 47 |
+| Power-latch (HOLD) | 48 | segura a alimentação ligada depois do clique no botão; circuito na placa de energia, pelo CN1 |
+| Estado do carregador | 4 | CHRG/STDBY do carregador da placa de energia, pelo CN1 (decisão de 2026-11-25) | |
+| Livre | 5, 6 | ADC1; eram dos analógicos, retirados em 25/11/2026. Na bancada, o 4 / 5 são o IR RX / TX no `bmo.ini` |
+| Livre | 38 | era o CS do cartucho (25/11/2026). Na DevKitC, 38 ou 48 é o LED RGB, conforme a revisão |
+| Livre | 43, 44 | UART0, era do cartucho (25/11/2026). A ROM imprime o log de boot no 43 e a ponte USB-UART da DevKitC aciona o 44 |
 | Livre | 45, 46 | strapping: o 45 define a tensão da flash no boot, **não usar** como saída que possa estar em alto no boot |
 
 **MCP23017 (0x20):** 10 botões (D-pad 4, ação 4, select/start 2), botão ao GND com pull-up
 interno do MCP. GPA7 e GPB7 são só saída na revisão D do datasheet do MCP23017; GPB3 a GPB6
-sobram. **Segundo MCP23017 (0x21), opcional:**
-vibração (liga/desliga via transistor) e os 2 GPIOs do cartucho.
+sobram. Decisão de 2026-11-25: manter o MCP23017 na placa principal (sem ressalva sobram só os
+GPIOs 5, 6 e 38 para 10 botões).
 
 **Não usar:** GPIO 26–37 (flash/PSRAM octal). Cuidado com strapping: 0, 3, 45, 46.
 
@@ -547,6 +549,11 @@ Primeira carcaça, impressa depois da [Fase 2](#compras-em-fases), antes da PCB 
 
 ### Fabricação: EasyEDA + JLCPCB (decidido)
 
+**Atualização de 2026-11-25:** o v1 passa a ter duas placas. A **principal**, de uma face,
+fabricada em casa pelo Tiago Batista, sem cartucho e com o conector CN1 para a **placa de
+energia** (bateria, carga, regulador, power-latch), que fica para depois: ver
+[`hardware/pcb/`](hardware/pcb/README.md). O plano abaixo (JLCPCB) fica como registro.
+
 Após reunião com o Tiago Batista (23/10/2026), a decisão foi **não usar perfboard nem PCB
 caseira no laser**, e sim projetar a placa no **EasyEDA** e fabricar na **JLCPCB** (fábrica, China):
 
@@ -776,7 +783,7 @@ Alternativas avaliadas e **descartadas** (documentadas para não repetir):
 | Comprar todas as peças de uma vez | Dividido em fases por orçamento; a carcaça v0 só depois das peças que definem o volume |
 | Segunda tela (OLED de status) | Sem o teclado, a tela única ILI9341 faz rosto + menu + status |
 | Perfboard / fiação manual | Substituído por PCB projetada (EasyEDA → JLCPCB); montagem mais limpa |
-| PCB caseira no laser | Fábrica (JLCPCB) faz trilha mais fina e já solda os SMD de carga/BMS |
+| PCB caseira no laser | Fábrica (JLCPCB) faz trilha mais fina e já solda os SMD de carga/BMS. Revisto em 2026-11-25: a placa principal é de uma face, caseira; carga e BMS vão numa placa de energia separada ([`hardware/pcb/`](hardware/pcb/README.md)) |
 | Módulos avulsos TP4056 + MT3608 | Carga/BMS/regulador integrados como SMD na PCB |
 
 ---

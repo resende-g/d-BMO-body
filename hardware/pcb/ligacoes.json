@@ -1,0 +1,2153 @@
+{
+ "fonte": "hardware/pcb/gerar_ligacoes.py (pins.h, perfil target)",
+ "placa_mm": [
+  100.0,
+  176.0
+ ],
+ "ligacoes": {
+  "SPI_MOSI": [
+   [
+    "U1",
+    "J1-17"
+   ],
+   [
+    "DS1",
+    "SDI"
+   ],
+   [
+    "DS1",
+    "SD_MOSI"
+   ],
+   [
+    "U2",
+    "6"
+   ]
+  ],
+  "SPI_SCK": [
+   [
+    "U1",
+    "J1-18"
+   ],
+   [
+    "DS1",
+    "SCK"
+   ],
+   [
+    "DS1",
+    "SD_SCK"
+   ],
+   [
+    "U2",
+    "5"
+   ]
+  ],
+  "SPI_MISO": [
+   [
+    "U1",
+    "J1-19"
+   ],
+   [
+    "DS1",
+    "SDO"
+   ],
+   [
+    "DS1",
+    "SD_MISO"
+   ],
+   [
+    "U2",
+    "7"
+   ]
+  ],
+  "DISPLAY_CS": [
+   [
+    "U1",
+    "J1-16"
+   ],
+   [
+    "DS1",
+    "CS"
+   ]
+  ],
+  "DISPLAY_DC": [
+   [
+    "U1",
+    "J1-10"
+   ],
+   [
+    "DS1",
+    "DC"
+   ]
+  ],
+  "DISPLAY_RESET": [
+   [
+    "U1",
+    "J1-11"
+   ],
+   [
+    "DS1",
+    "RESET"
+   ]
+  ],
+  "DISPLAY_BACKLIGHT": [
+   [
+    "U1",
+    "J1-9"
+   ],
+   [
+    "JP2",
+    "3"
+   ]
+  ],
+  "SD_CS": [
+   [
+    "U1",
+    "J3-18"
+   ],
+   [
+    "DS1",
+    "SD_CS"
+   ]
+  ],
+  "CC1101_CS": [
+   [
+    "U1",
+    "J1-20"
+   ],
+   [
+    "U2",
+    "4"
+   ]
+  ],
+  "CC1101_GDO0": [
+   [
+    "U1",
+    "J1-8"
+   ],
+   [
+    "U2",
+    "3"
+   ]
+  ],
+  "I2C_SDA": [
+   [
+    "U1",
+    "J1-12"
+   ],
+   [
+    "U8",
+    "13"
+   ],
+   [
+    "U3",
+    "SDA"
+   ],
+   [
+    "R1",
+    "1"
+   ]
+  ],
+  "I2C_SCL": [
+   [
+    "U1",
+    "J1-15"
+   ],
+   [
+    "U8",
+    "12"
+   ],
+   [
+    "U3",
+    "SCL"
+   ],
+   [
+    "R2",
+    "1"
+   ]
+  ],
+  "I2S_BCLK": [
+   [
+    "U1",
+    "J3-8"
+   ],
+   [
+    "U4",
+    "SCK"
+   ],
+   [
+    "U5",
+    "BCLK"
+   ]
+  ],
+  "I2S_LRCLK": [
+   [
+    "U1",
+    "J3-7"
+   ],
+   [
+    "U4",
+    "WS"
+   ],
+   [
+    "U5",
+    "LRC"
+   ]
+  ],
+  "I2S_MIC_DATA": [
+   [
+    "U1",
+    "J1-7"
+   ],
+   [
+    "U4",
+    "SD"
+   ]
+  ],
+  "I2S_SPEAKER_DATA": [
+   [
+    "U1",
+    "J3-6"
+   ],
+   [
+    "U5",
+    "DIN"
+   ]
+  ],
+  "AMP_SHUTDOWN": [
+   [
+    "U1",
+    "J1-13"
+   ],
+   [
+    "U5",
+    "SD"
+   ]
+  ],
+  "IR_RX": [
+   [
+    "U1",
+    "J3-9"
+   ],
+   [
+    "U6",
+    "OUT"
+   ]
+  ],
+  "IR_TX": [
+   [
+    "U1",
+    "J3-17"
+   ],
+   [
+    "U7",
+    "DAT"
+   ]
+  ],
+  "POWER_BUTTON": [
+   [
+    "U1",
+    "J3-5"
+   ],
+   [
+    "SW11",
+    "3"
+   ],
+   [
+    "CN1",
+    "6"
+   ]
+  ],
+  "VBAT_SENSE": [
+   [
+    "U1",
+    "J3-4"
+   ],
+   [
+    "CN1",
+    "4"
+   ]
+  ],
+  "POWER_HOLD": [
+   [
+    "U1",
+    "J3-16"
+   ],
+   [
+    "CN1",
+    "5"
+   ]
+  ],
+  "CHARGER_STATUS": [
+   [
+    "U1",
+    "J1-4"
+   ],
+   [
+    "CN1",
+    "7"
+   ]
+  ],
+  "LCD_LED": [
+   [
+    "DS1",
+    "LED"
+   ],
+   [
+    "JP2",
+    "2"
+   ]
+  ],
+  "AMP_VIN": [
+   [
+    "U5",
+    "VIN"
+   ],
+   [
+    "JP1",
+    "2"
+   ]
+  ],
+  "BTN_DPADUP": [
+   [
+    "SW1",
+    "2"
+   ],
+   [
+    "U8",
+    "21"
+   ]
+  ],
+  "BTN_DPADDOWN": [
+   [
+    "SW2",
+    "2"
+   ],
+   [
+    "U8",
+    "22"
+   ]
+  ],
+  "BTN_DPADLEFT": [
+   [
+    "SW3",
+    "2"
+   ],
+   [
+    "U8",
+    "23"
+   ]
+  ],
+  "BTN_DPADRIGHT": [
+   [
+    "SW4",
+    "2"
+   ],
+   [
+    "U8",
+    "24"
+   ]
+  ],
+  "BTN_ACTIONA": [
+   [
+    "SW5",
+    "1"
+   ],
+   [
+    "U8",
+    "25"
+   ]
+  ],
+  "BTN_ACTIONB": [
+   [
+    "SW6",
+    "1"
+   ],
+   [
+    "U8",
+    "26"
+   ]
+  ],
+  "BTN_ACTIONX": [
+   [
+    "SW7",
+    "1"
+   ],
+   [
+    "U8",
+    "27"
+   ]
+  ],
+  "BTN_ACTIONY": [
+   [
+    "SW8",
+    "1"
+   ],
+   [
+    "U8",
+    "1"
+   ]
+  ],
+  "BTN_SELECT": [
+   [
+    "SW9",
+    "4"
+   ],
+   [
+    "U8",
+    "2"
+   ]
+  ],
+  "BTN_START": [
+   [
+    "SW10",
+    "3"
+   ],
+   [
+    "U8",
+    "3"
+   ]
+  ],
+  "GND": [
+   [
+    "U1",
+    "J1-22"
+   ],
+   [
+    "U1",
+    "J3-22"
+   ],
+   [
+    "DS1",
+    "GND"
+   ],
+   [
+    "U2",
+    "1"
+   ],
+   [
+    "U3",
+    "GND"
+   ],
+   [
+    "U4",
+    "GND"
+   ],
+   [
+    "U4",
+    "L/R"
+   ],
+   [
+    "U5",
+    "GND"
+   ],
+   [
+    "U6",
+    "GND"
+   ],
+   [
+    "U7",
+    "GND"
+   ],
+   [
+    "U8",
+    "10"
+   ],
+   [
+    "C1",
+    "2"
+   ],
+   [
+    "U8",
+    "15"
+   ],
+   [
+    "U8",
+    "16"
+   ],
+   [
+    "U8",
+    "17"
+   ],
+   [
+    "SW11",
+    "2"
+   ],
+   [
+    "SW1",
+    "3"
+   ],
+   [
+    "SW2",
+    "3"
+   ],
+   [
+    "SW3",
+    "3"
+   ],
+   [
+    "SW4",
+    "3"
+   ],
+   [
+    "SW5",
+    "4"
+   ],
+   [
+    "SW6",
+    "4"
+   ],
+   [
+    "SW7",
+    "4"
+   ],
+   [
+    "SW8",
+    "4"
+   ],
+   [
+    "SW9",
+    "1"
+   ],
+   [
+    "SW10",
+    "2"
+   ],
+   [
+    "CN1",
+    "1"
+   ],
+   [
+    "CN1",
+    "8"
+   ]
+  ],
+  "+3V3": [
+   [
+    "U1",
+    "J1-1"
+   ],
+   [
+    "DS1",
+    "VCC"
+   ],
+   [
+    "U2",
+    "2"
+   ],
+   [
+    "U3",
+    "VCC"
+   ],
+   [
+    "U4",
+    "VDD"
+   ],
+   [
+    "U6",
+    "VCC"
+   ],
+   [
+    "U7",
+    "VCC"
+   ],
+   [
+    "U8",
+    "9"
+   ],
+   [
+    "U8",
+    "18"
+   ],
+   [
+    "C1",
+    "1"
+   ],
+   [
+    "R1",
+    "2"
+   ],
+   [
+    "R2",
+    "2"
+   ],
+   [
+    "JP2",
+    "1"
+   ],
+   [
+    "JP1",
+    "3"
+   ],
+   [
+    "CN1",
+    "3"
+   ]
+  ],
+  "+5V": [
+   [
+    "U1",
+    "J1-21"
+   ],
+   [
+    "JP1",
+    "1"
+   ],
+   [
+    "CN1",
+    "2"
+   ]
+  ]
+ },
+ "pecas": [
+  {
+   "ref": "U6",
+   "valor": "receptor IR 38 kHz (V1222)",
+   "montagem": "barra fêmea 1x3",
+   "nota": "tem (testado)",
+   "corpo_mm": [
+    28.48,
+    -8.0,
+    37.58,
+    5.364
+   ],
+   "pinos": [
+    {
+     "name": "OUT",
+     "x": 30.48,
+     "y": 4.064,
+     "net": "IR_RX",
+     "label": "OUT"
+    },
+    {
+     "name": "VCC",
+     "x": 33.02,
+     "y": 4.064,
+     "net": "+3V3",
+     "label": "VCC"
+    },
+    {
+     "name": "GND",
+     "x": 35.56,
+     "y": 4.064,
+     "net": "GND",
+     "label": "GND"
+    }
+   ],
+   "pinos_sem_ilha": []
+  },
+  {
+   "ref": "U7",
+   "valor": "transmissor IR (V1221)",
+   "montagem": "barra fêmea 1x3",
+   "nota": "tem (nunca transmitiu)",
+   "corpo_mm": [
+    38.64,
+    -8.0,
+    47.74,
+    5.364
+   ],
+   "pinos": [
+    {
+     "name": "DAT",
+     "x": 40.64,
+     "y": 4.064,
+     "net": "IR_TX",
+     "label": "DAT"
+    },
+    {
+     "name": "VCC",
+     "x": 43.18,
+     "y": 4.064,
+     "net": "+3V3",
+     "label": "VCC"
+    },
+    {
+     "name": "GND",
+     "x": 45.72,
+     "y": 4.064,
+     "net": "GND",
+     "label": "GND"
+    }
+   ],
+   "pinos_sem_ilha": []
+  },
+  {
+   "ref": "SW11",
+   "valor": "energia (GPIO 2)",
+   "montagem": "botão táctil 6x6 mm PTH",
+   "nota": "comprar",
+   "corpo_mm": [
+    51.663999999999994,
+    3.912,
+    58.064,
+    10.312000000000001
+   ],
+   "pinos": [
+    {
+     "name": "1",
+     "x": 51.614,
+     "y": 4.862,
+     "net": "",
+     "label": ""
+    },
+    {
+     "name": "2",
+     "x": 58.114,
+     "y": 4.862,
+     "net": "GND",
+     "label": ""
+    },
+    {
+     "name": "3",
+     "x": 51.614,
+     "y": 9.362,
+     "net": "POWER_BUTTON",
+     "label": ""
+    },
+    {
+     "name": "4",
+     "x": 58.114,
+     "y": 9.362,
+     "net": "",
+     "label": ""
+    }
+   ],
+   "pinos_sem_ilha": []
+  },
+  {
+   "ref": "U4",
+   "valor": "INMP441",
+   "montagem": "2 x barra fêmea 1x3",
+   "nota": "tem (testado)",
+   "corpo_mm": [
+    61.507999999999996,
+    1.0,
+    71.60799999999999,
+    15.208
+   ],
+   "pinos": [
+    {
+     "name": "L/R",
+     "x": 64.008,
+     "y": 3.048,
+     "net": "GND",
+     "label": "L/R"
+    },
+    {
+     "name": "WS",
+     "x": 66.548,
+     "y": 3.048,
+     "net": "I2S_LRCLK",
+     "label": "WS"
+    },
+    {
+     "name": "SCK",
+     "x": 69.088,
+     "y": 3.048,
+     "net": "I2S_BCLK",
+     "label": "SCK"
+    },
+    {
+     "name": "GND",
+     "x": 64.008,
+     "y": 13.208,
+     "net": "GND",
+     "label": "GND"
+    },
+    {
+     "name": "VDD",
+     "x": 66.548,
+     "y": 13.208,
+     "net": "+3V3",
+     "label": "VDD"
+    },
+    {
+     "name": "SD",
+     "x": 69.088,
+     "y": 13.208,
+     "net": "I2S_MIC_DATA",
+     "label": "SD"
+    }
+   ],
+   "pinos_sem_ilha": []
+  },
+  {
+   "ref": "U2",
+   "valor": "CC1101 E07-M1101D 433 MHz",
+   "montagem": "barra fêmea 2x4",
+   "nota": "tem (testado em recepção)",
+   "corpo_mm": [
+    77.28,
+    -8.0,
+    92.88,
+    15.176
+   ],
+   "pinos": [
+    {
+     "name": "1",
+     "x": 81.28,
+     "y": 11.176,
+     "net": "GND",
+     "label": "GND"
+    },
+    {
+     "name": "2",
+     "x": 81.28,
+     "y": 13.716,
+     "net": "+3V3",
+     "label": "VCC"
+    },
+    {
+     "name": "3",
+     "x": 83.82,
+     "y": 11.176,
+     "net": "CC1101_GDO0",
+     "label": "GDO0"
+    },
+    {
+     "name": "4",
+     "x": 83.82,
+     "y": 13.716,
+     "net": "CC1101_CS",
+     "label": "CSN"
+    },
+    {
+     "name": "5",
+     "x": 86.36,
+     "y": 11.176,
+     "net": "SPI_SCK",
+     "label": "SCK"
+    },
+    {
+     "name": "6",
+     "x": 86.36,
+     "y": 13.716,
+     "net": "SPI_MOSI",
+     "label": "MOSI"
+    },
+    {
+     "name": "7",
+     "x": 88.9,
+     "y": 11.176,
+     "net": "SPI_MISO",
+     "label": "MISO"
+    },
+    {
+     "name": "8",
+     "x": 88.9,
+     "y": 13.716,
+     "net": "",
+     "label": "GDO2"
+    }
+   ],
+   "pinos_sem_ilha": []
+  },
+  {
+   "ref": "U1",
+   "valor": "ESP32-S3-DevKitC-1 N16R8",
+   "montagem": "2 x barra fêmea 1x22, 2,54 mm",
+   "nota": "tem (testado)",
+   "corpo_mm": [
+    0.54,
+    20.066,
+    63.54,
+    45.466
+   ],
+   "pinos": [
+    {
+     "name": "J1-1",
+     "x": 2.54,
+     "y": 44.196,
+     "net": "+3V3",
+     "label": "3V3"
+    },
+    {
+     "name": "J1-4",
+     "x": 10.16,
+     "y": 44.196,
+     "net": "CHARGER_STATUS",
+     "label": "4"
+    },
+    {
+     "name": "J1-7",
+     "x": 17.78,
+     "y": 44.196,
+     "net": "I2S_MIC_DATA",
+     "label": "7"
+    },
+    {
+     "name": "J1-8",
+     "x": 20.32,
+     "y": 44.196,
+     "net": "CC1101_GDO0",
+     "label": "15"
+    },
+    {
+     "name": "J1-9",
+     "x": 22.86,
+     "y": 44.196,
+     "net": "DISPLAY_BACKLIGHT",
+     "label": "16"
+    },
+    {
+     "name": "J1-10",
+     "x": 25.4,
+     "y": 44.196,
+     "net": "DISPLAY_DC",
+     "label": "17"
+    },
+    {
+     "name": "J1-11",
+     "x": 27.94,
+     "y": 44.196,
+     "net": "DISPLAY_RESET",
+     "label": "18"
+    },
+    {
+     "name": "J1-12",
+     "x": 30.48,
+     "y": 44.196,
+     "net": "I2C_SDA",
+     "label": "8"
+    },
+    {
+     "name": "J1-13",
+     "x": 33.02,
+     "y": 44.196,
+     "net": "AMP_SHUTDOWN",
+     "label": "3"
+    },
+    {
+     "name": "J1-15",
+     "x": 38.1,
+     "y": 44.196,
+     "net": "I2C_SCL",
+     "label": "9"
+    },
+    {
+     "name": "J1-16",
+     "x": 40.64,
+     "y": 44.196,
+     "net": "DISPLAY_CS",
+     "label": "10"
+    },
+    {
+     "name": "J1-17",
+     "x": 43.18,
+     "y": 44.196,
+     "net": "SPI_MOSI",
+     "label": "11"
+    },
+    {
+     "name": "J1-18",
+     "x": 45.72,
+     "y": 44.196,
+     "net": "SPI_SCK",
+     "label": "12"
+    },
+    {
+     "name": "J1-19",
+     "x": 48.26,
+     "y": 44.196,
+     "net": "SPI_MISO",
+     "label": "13"
+    },
+    {
+     "name": "J1-20",
+     "x": 50.8,
+     "y": 44.196,
+     "net": "CC1101_CS",
+     "label": "14"
+    },
+    {
+     "name": "J1-21",
+     "x": 53.34,
+     "y": 44.196,
+     "net": "+5V",
+     "label": "5V"
+    },
+    {
+     "name": "J1-22",
+     "x": 55.88,
+     "y": 44.196,
+     "net": "GND",
+     "label": "G"
+    },
+    {
+     "name": "J3-4",
+     "x": 10.16,
+     "y": 21.336,
+     "net": "VBAT_SENSE",
+     "label": "1"
+    },
+    {
+     "name": "J3-5",
+     "x": 12.7,
+     "y": 21.336,
+     "net": "POWER_BUTTON",
+     "label": "2"
+    },
+    {
+     "name": "J3-6",
+     "x": 15.24,
+     "y": 21.336,
+     "net": "I2S_SPEAKER_DATA",
+     "label": "42"
+    },
+    {
+     "name": "J3-7",
+     "x": 17.78,
+     "y": 21.336,
+     "net": "I2S_LRCLK",
+     "label": "41"
+    },
+    {
+     "name": "J3-8",
+     "x": 20.32,
+     "y": 21.336,
+     "net": "I2S_BCLK",
+     "label": "40"
+    },
+    {
+     "name": "J3-9",
+     "x": 22.86,
+     "y": 21.336,
+     "net": "IR_RX",
+     "label": "39"
+    },
+    {
+     "name": "J3-16",
+     "x": 40.64,
+     "y": 21.336,
+     "net": "POWER_HOLD",
+     "label": "48"
+    },
+    {
+     "name": "J3-17",
+     "x": 43.18,
+     "y": 21.336,
+     "net": "IR_TX",
+     "label": "47"
+    },
+    {
+     "name": "J3-18",
+     "x": 45.72,
+     "y": 21.336,
+     "net": "SD_CS",
+     "label": "21"
+    },
+    {
+     "name": "J3-22",
+     "x": 55.88,
+     "y": 21.336,
+     "net": "GND",
+     "label": "G"
+    }
+   ],
+   "pinos_sem_ilha": [
+    "J1-2",
+    "J1-3",
+    "J1-5",
+    "J1-6",
+    "J1-14",
+    "J3-1",
+    "J3-2",
+    "J3-3",
+    "J3-10",
+    "J3-11",
+    "J3-12",
+    "J3-13",
+    "J3-14",
+    "J3-15",
+    "J3-19",
+    "J3-20",
+    "J3-21"
+   ]
+  },
+  {
+   "ref": "DS1",
+   "valor": "MSP3218 (ILI9341 + SD)",
+   "montagem": "barra fêmea 1x14 + 1x4, 2,54 mm",
+   "nota": "tem (testado, com o SD)",
+   "corpo_mm": [
+    3.0,
+    46.5,
+    97.0,
+    101.5
+   ],
+   "pinos": [
+    {
+     "name": "VCC",
+     "x": 94.488,
+     "y": 57.912,
+     "net": "+3V3",
+     "label": "VCC"
+    },
+    {
+     "name": "GND",
+     "x": 94.488,
+     "y": 60.452,
+     "net": "GND",
+     "label": "GND"
+    },
+    {
+     "name": "CS",
+     "x": 94.488,
+     "y": 62.992,
+     "net": "DISPLAY_CS",
+     "label": "CS"
+    },
+    {
+     "name": "RESET",
+     "x": 94.488,
+     "y": 65.532,
+     "net": "DISPLAY_RESET",
+     "label": "RESET"
+    },
+    {
+     "name": "DC",
+     "x": 94.488,
+     "y": 68.072,
+     "net": "DISPLAY_DC",
+     "label": "DC"
+    },
+    {
+     "name": "SDI",
+     "x": 94.488,
+     "y": 70.612,
+     "net": "SPI_MOSI",
+     "label": "SDI"
+    },
+    {
+     "name": "SCK",
+     "x": 94.488,
+     "y": 73.152,
+     "net": "SPI_SCK",
+     "label": "SCK"
+    },
+    {
+     "name": "LED",
+     "x": 94.488,
+     "y": 75.692,
+     "net": "LCD_LED",
+     "label": "LED"
+    },
+    {
+     "name": "SDO",
+     "x": 94.488,
+     "y": 78.232,
+     "net": "SPI_MISO",
+     "label": "SDO"
+    },
+    {
+     "name": "SD_CS",
+     "x": 5.588,
+     "y": 71.12,
+     "net": "SD_CS",
+     "label": "SD_CS"
+    },
+    {
+     "name": "SD_MOSI",
+     "x": 5.588,
+     "y": 73.66,
+     "net": "SPI_MOSI",
+     "label": "SD_MOSI"
+    },
+    {
+     "name": "SD_MISO",
+     "x": 5.588,
+     "y": 76.2,
+     "net": "SPI_MISO",
+     "label": "SD_MISO"
+    },
+    {
+     "name": "SD_SCK",
+     "x": 5.588,
+     "y": 78.74,
+     "net": "SPI_SCK",
+     "label": "SD_SCK"
+    }
+   ],
+   "pinos_sem_ilha": [
+    "T_CLK",
+    "T_CS",
+    "T_DIN",
+    "T_DO",
+    "T_IRQ"
+   ]
+  },
+  {
+   "ref": "JP2",
+   "valor": "luz de fundo",
+   "montagem": "barra macho 1x3 + jumper",
+   "nota": "comprar barra macho e jumper",
+   "corpo_mm": [
+    86.584,
+    89.12400000000001,
+    94.284,
+    91.724
+   ],
+   "pinos": [
+    {
+     "name": "1",
+     "x": 87.884,
+     "y": 90.424,
+     "net": "+3V3",
+     "label": "3V3"
+    },
+    {
+     "name": "2",
+     "x": 90.424,
+     "y": 90.424,
+     "net": "LCD_LED",
+     "label": "LED"
+    },
+    {
+     "name": "3",
+     "x": 92.964,
+     "y": 90.424,
+     "net": "DISPLAY_BACKLIGHT",
+     "label": "BL"
+    }
+   ],
+   "pinos_sem_ilha": []
+  },
+  {
+   "ref": "SW9",
+   "valor": "select",
+   "montagem": "botão táctil 6x6 mm PTH",
+   "nota": "comprar",
+   "corpo_mm": [
+    51.663999999999994,
+    102.464,
+    58.064,
+    108.864
+   ],
+   "pinos": [
+    {
+     "name": "1",
+     "x": 51.614,
+     "y": 103.414,
+     "net": "GND",
+     "label": ""
+    },
+    {
+     "name": "2",
+     "x": 58.114,
+     "y": 103.414,
+     "net": "",
+     "label": ""
+    },
+    {
+     "name": "3",
+     "x": 51.614,
+     "y": 107.914,
+     "net": "",
+     "label": ""
+    },
+    {
+     "name": "4",
+     "x": 58.114,
+     "y": 107.914,
+     "net": "BTN_SELECT",
+     "label": ""
+    }
+   ],
+   "pinos_sem_ilha": []
+  },
+  {
+   "ref": "SW10",
+   "valor": "start",
+   "montagem": "botão táctil 6x6 mm PTH",
+   "nota": "comprar",
+   "corpo_mm": [
+    61.824,
+    102.464,
+    68.224,
+    108.864
+   ],
+   "pinos": [
+    {
+     "name": "1",
+     "x": 61.774,
+     "y": 103.414,
+     "net": "",
+     "label": ""
+    },
+    {
+     "name": "2",
+     "x": 68.274,
+     "y": 103.414,
+     "net": "GND",
+     "label": ""
+    },
+    {
+     "name": "3",
+     "x": 61.774,
+     "y": 107.914,
+     "net": "BTN_START",
+     "label": ""
+    },
+    {
+     "name": "4",
+     "x": 68.274,
+     "y": 107.914,
+     "net": "",
+     "label": ""
+    }
+   ],
+   "pinos_sem_ilha": []
+  },
+  {
+   "ref": "U8",
+   "valor": "MCP23017-E/SP",
+   "montagem": "DIP-28 300 mil (soquete)",
+   "nota": "comprar (não possui) + soquete DIP-28",
+   "corpo_mm": [
+    32.535999999999994,
+    113.308,
+    68.556,
+    123.92800000000001
+   ],
+   "pinos": [
+    {
+     "name": "1",
+     "x": 67.056,
+     "y": 114.808,
+     "net": "BTN_ACTIONY",
+     "label": "GPB0"
+    },
+    {
+     "name": "2",
+     "x": 64.516,
+     "y": 114.808,
+     "net": "BTN_SELECT",
+     "label": "GPB1"
+    },
+    {
+     "name": "3",
+     "x": 61.976,
+     "y": 114.808,
+     "net": "BTN_START",
+     "label": "GPB2"
+    },
+    {
+     "name": "4",
+     "x": 59.436,
+     "y": 114.808,
+     "net": "",
+     "label": "GPB3"
+    },
+    {
+     "name": "5",
+     "x": 56.896,
+     "y": 114.808,
+     "net": "",
+     "label": "GPB4"
+    },
+    {
+     "name": "6",
+     "x": 54.356,
+     "y": 114.808,
+     "net": "",
+     "label": "GPB5"
+    },
+    {
+     "name": "7",
+     "x": 51.816,
+     "y": 114.808,
+     "net": "",
+     "label": "GPB6"
+    },
+    {
+     "name": "8",
+     "x": 49.276,
+     "y": 114.808,
+     "net": "",
+     "label": "GPB7"
+    },
+    {
+     "name": "9",
+     "x": 46.736,
+     "y": 114.808,
+     "net": "+3V3",
+     "label": "VDD"
+    },
+    {
+     "name": "10",
+     "x": 44.196,
+     "y": 114.808,
+     "net": "GND",
+     "label": "VSS"
+    },
+    {
+     "name": "11",
+     "x": 41.656,
+     "y": 114.808,
+     "net": "",
+     "label": "NC11"
+    },
+    {
+     "name": "12",
+     "x": 39.116,
+     "y": 114.808,
+     "net": "I2C_SCL",
+     "label": "SCL"
+    },
+    {
+     "name": "13",
+     "x": 36.576,
+     "y": 114.808,
+     "net": "I2C_SDA",
+     "label": "SDA"
+    },
+    {
+     "name": "14",
+     "x": 34.036,
+     "y": 114.808,
+     "net": "",
+     "label": "NC14"
+    },
+    {
+     "name": "15",
+     "x": 34.036,
+     "y": 122.428,
+     "net": "GND",
+     "label": "A0"
+    },
+    {
+     "name": "16",
+     "x": 36.576,
+     "y": 122.428,
+     "net": "GND",
+     "label": "A1"
+    },
+    {
+     "name": "17",
+     "x": 39.116,
+     "y": 122.428,
+     "net": "GND",
+     "label": "A2"
+    },
+    {
+     "name": "18",
+     "x": 41.656,
+     "y": 122.428,
+     "net": "+3V3",
+     "label": "RESET"
+    },
+    {
+     "name": "19",
+     "x": 44.196,
+     "y": 122.428,
+     "net": "",
+     "label": "INTB"
+    },
+    {
+     "name": "20",
+     "x": 46.736,
+     "y": 122.428,
+     "net": "",
+     "label": "INTA"
+    },
+    {
+     "name": "21",
+     "x": 49.276,
+     "y": 122.428,
+     "net": "BTN_DPADUP",
+     "label": "GPA0"
+    },
+    {
+     "name": "22",
+     "x": 51.816,
+     "y": 122.428,
+     "net": "BTN_DPADDOWN",
+     "label": "GPA1"
+    },
+    {
+     "name": "23",
+     "x": 54.356,
+     "y": 122.428,
+     "net": "BTN_DPADLEFT",
+     "label": "GPA2"
+    },
+    {
+     "name": "24",
+     "x": 56.896,
+     "y": 122.428,
+     "net": "BTN_DPADRIGHT",
+     "label": "GPA3"
+    },
+    {
+     "name": "25",
+     "x": 59.436,
+     "y": 122.428,
+     "net": "BTN_ACTIONA",
+     "label": "GPA4"
+    },
+    {
+     "name": "26",
+     "x": 61.976,
+     "y": 122.428,
+     "net": "BTN_ACTIONB",
+     "label": "GPA5"
+    },
+    {
+     "name": "27",
+     "x": 64.516,
+     "y": 122.428,
+     "net": "BTN_ACTIONX",
+     "label": "GPA6"
+    },
+    {
+     "name": "28",
+     "x": 67.056,
+     "y": 122.428,
+     "net": "",
+     "label": "GPA7"
+    }
+   ],
+   "pinos_sem_ilha": []
+  },
+  {
+   "ref": "C1",
+   "valor": "100 nF",
+   "montagem": "capacitor cerâmico, passo 5,08 mm",
+   "nota": "kit \"104\" (esperado)",
+   "corpo_mm": [
+    41.172,
+    108.228,
+    49.272,
+    111.228
+   ],
+   "pinos": [
+    {
+     "name": "1",
+     "x": 42.672,
+     "y": 109.728,
+     "net": "+3V3",
+     "label": ""
+    },
+    {
+     "name": "2",
+     "x": 47.752,
+     "y": 109.728,
+     "net": "GND",
+     "label": ""
+    }
+   ],
+   "pinos_sem_ilha": []
+  },
+  {
+   "ref": "R1",
+   "valor": "4,7 kΩ",
+   "montagem": "resistor 1/4 W axial, passo 10,16 mm",
+   "nota": "kit 1 % (esperado)",
+   "corpo_mm": [
+    19.32,
+    106.496,
+    31.52,
+    108.896
+   ],
+   "pinos": [
+    {
+     "name": "1",
+     "x": 20.32,
+     "y": 107.696,
+     "net": "I2C_SDA",
+     "label": ""
+    },
+    {
+     "name": "2",
+     "x": 30.48,
+     "y": 107.696,
+     "net": "+3V3",
+     "label": ""
+    }
+   ],
+   "pinos_sem_ilha": []
+  },
+  {
+   "ref": "R2",
+   "valor": "4,7 kΩ",
+   "montagem": "resistor 1/4 W axial, passo 10,16 mm",
+   "nota": "kit 1 % (esperado)",
+   "corpo_mm": [
+    19.32,
+    109.036,
+    31.52,
+    111.436
+   ],
+   "pinos": [
+    {
+     "name": "1",
+     "x": 20.32,
+     "y": 110.236,
+     "net": "I2C_SCL",
+     "label": ""
+    },
+    {
+     "name": "2",
+     "x": 30.48,
+     "y": 110.236,
+     "net": "+3V3",
+     "label": ""
+    }
+   ],
+   "pinos_sem_ilha": []
+  },
+  {
+   "ref": "SW1",
+   "valor": "cima",
+   "montagem": "botão táctil 6x6 mm PTH",
+   "nota": "comprar",
+   "corpo_mm": [
+    13.056000000000001,
+    120.752,
+    19.456,
+    127.152
+   ],
+   "pinos": [
+    {
+     "name": "1",
+     "x": 13.006,
+     "y": 121.702,
+     "net": "",
+     "label": ""
+    },
+    {
+     "name": "2",
+     "x": 19.506,
+     "y": 121.702,
+     "net": "BTN_DPADUP",
+     "label": ""
+    },
+    {
+     "name": "3",
+     "x": 13.006,
+     "y": 126.202,
+     "net": "GND",
+     "label": ""
+    },
+    {
+     "name": "4",
+     "x": 19.506,
+     "y": 126.202,
+     "net": "",
+     "label": ""
+    }
+   ],
+   "pinos_sem_ilha": []
+  },
+  {
+   "ref": "SW2",
+   "valor": "baixo",
+   "montagem": "botão táctil 6x6 mm PTH",
+   "nota": "comprar",
+   "corpo_mm": [
+    13.056000000000001,
+    139.04000000000002,
+    19.456,
+    145.44
+   ],
+   "pinos": [
+    {
+     "name": "1",
+     "x": 13.006,
+     "y": 139.99,
+     "net": "",
+     "label": ""
+    },
+    {
+     "name": "2",
+     "x": 19.506,
+     "y": 139.99,
+     "net": "BTN_DPADDOWN",
+     "label": ""
+    },
+    {
+     "name": "3",
+     "x": 13.006,
+     "y": 144.49,
+     "net": "GND",
+     "label": ""
+    },
+    {
+     "name": "4",
+     "x": 19.506,
+     "y": 144.49,
+     "net": "",
+     "label": ""
+    }
+   ],
+   "pinos_sem_ilha": []
+  },
+  {
+   "ref": "SW3",
+   "valor": "esquerda",
+   "montagem": "botão táctil 6x6 mm PTH",
+   "nota": "comprar",
+   "corpo_mm": [
+    3.912,
+    129.89600000000002,
+    10.312000000000001,
+    136.296
+   ],
+   "pinos": [
+    {
+     "name": "1",
+     "x": 3.862,
+     "y": 130.846,
+     "net": "",
+     "label": ""
+    },
+    {
+     "name": "2",
+     "x": 10.362,
+     "y": 130.846,
+     "net": "BTN_DPADLEFT",
+     "label": ""
+    },
+    {
+     "name": "3",
+     "x": 3.862,
+     "y": 135.346,
+     "net": "GND",
+     "label": ""
+    },
+    {
+     "name": "4",
+     "x": 10.362,
+     "y": 135.346,
+     "net": "",
+     "label": ""
+    }
+   ],
+   "pinos_sem_ilha": []
+  },
+  {
+   "ref": "SW4",
+   "valor": "direita",
+   "montagem": "botão táctil 6x6 mm PTH",
+   "nota": "comprar",
+   "corpo_mm": [
+    22.2,
+    129.89600000000002,
+    28.599999999999998,
+    136.296
+   ],
+   "pinos": [
+    {
+     "name": "1",
+     "x": 22.15,
+     "y": 130.846,
+     "net": "",
+     "label": ""
+    },
+    {
+     "name": "2",
+     "x": 28.65,
+     "y": 130.846,
+     "net": "BTN_DPADRIGHT",
+     "label": ""
+    },
+    {
+     "name": "3",
+     "x": 22.15,
+     "y": 135.346,
+     "net": "GND",
+     "label": ""
+    },
+    {
+     "name": "4",
+     "x": 28.65,
+     "y": 135.346,
+     "net": "",
+     "label": ""
+    }
+   ],
+   "pinos_sem_ilha": []
+  },
+  {
+   "ref": "SW5",
+   "valor": "A",
+   "montagem": "botão táctil 6x6 mm PTH",
+   "nota": "comprar",
+   "corpo_mm": [
+    89.764,
+    129.89600000000002,
+    96.164,
+    136.296
+   ],
+   "pinos": [
+    {
+     "name": "1",
+     "x": 89.714,
+     "y": 130.846,
+     "net": "BTN_ACTIONA",
+     "label": ""
+    },
+    {
+     "name": "2",
+     "x": 96.214,
+     "y": 130.846,
+     "net": "",
+     "label": ""
+    },
+    {
+     "name": "3",
+     "x": 89.714,
+     "y": 135.346,
+     "net": "",
+     "label": ""
+    },
+    {
+     "name": "4",
+     "x": 96.214,
+     "y": 135.346,
+     "net": "GND",
+     "label": ""
+    }
+   ],
+   "pinos_sem_ilha": []
+  },
+  {
+   "ref": "SW6",
+   "valor": "B",
+   "montagem": "botão táctil 6x6 mm PTH",
+   "nota": "comprar",
+   "corpo_mm": [
+    80.61999999999999,
+    139.04000000000002,
+    87.02,
+    145.44
+   ],
+   "pinos": [
+    {
+     "name": "1",
+     "x": 80.57,
+     "y": 139.99,
+     "net": "BTN_ACTIONB",
+     "label": ""
+    },
+    {
+     "name": "2",
+     "x": 87.07,
+     "y": 139.99,
+     "net": "",
+     "label": ""
+    },
+    {
+     "name": "3",
+     "x": 80.57,
+     "y": 144.49,
+     "net": "",
+     "label": ""
+    },
+    {
+     "name": "4",
+     "x": 87.07,
+     "y": 144.49,
+     "net": "GND",
+     "label": ""
+    }
+   ],
+   "pinos_sem_ilha": []
+  },
+  {
+   "ref": "SW7",
+   "valor": "X",
+   "montagem": "botão táctil 6x6 mm PTH",
+   "nota": "comprar",
+   "corpo_mm": [
+    80.61999999999999,
+    120.752,
+    87.02,
+    127.152
+   ],
+   "pinos": [
+    {
+     "name": "1",
+     "x": 80.57,
+     "y": 121.702,
+     "net": "BTN_ACTIONX",
+     "label": ""
+    },
+    {
+     "name": "2",
+     "x": 87.07,
+     "y": 121.702,
+     "net": "",
+     "label": ""
+    },
+    {
+     "name": "3",
+     "x": 80.57,
+     "y": 126.202,
+     "net": "",
+     "label": ""
+    },
+    {
+     "name": "4",
+     "x": 87.07,
+     "y": 126.202,
+     "net": "GND",
+     "label": ""
+    }
+   ],
+   "pinos_sem_ilha": []
+  },
+  {
+   "ref": "SW8",
+   "valor": "Y",
+   "montagem": "botão táctil 6x6 mm PTH",
+   "nota": "comprar",
+   "corpo_mm": [
+    71.47599999999998,
+    129.89600000000002,
+    77.87599999999999,
+    136.296
+   ],
+   "pinos": [
+    {
+     "name": "1",
+     "x": 71.426,
+     "y": 130.846,
+     "net": "BTN_ACTIONY",
+     "label": ""
+    },
+    {
+     "name": "2",
+     "x": 77.926,
+     "y": 130.846,
+     "net": "",
+     "label": ""
+    },
+    {
+     "name": "3",
+     "x": 71.426,
+     "y": 135.346,
+     "net": "",
+     "label": ""
+    },
+    {
+     "name": "4",
+     "x": 77.926,
+     "y": 135.346,
+     "net": "GND",
+     "label": ""
+    }
+   ],
+   "pinos_sem_ilha": []
+  },
+  {
+   "ref": "U3",
+   "valor": "PN532 NFC V3 (modo I2C)",
+   "montagem": "barra fêmea 1x4",
+   "nota": "tem (barra não soldada)",
+   "corpo_mm": [
+    29.8,
+    132.104,
+    70.2,
+    174.80400000000003
+   ],
+   "pinos": [
+    {
+     "name": "GND",
+     "x": 46.228,
+     "y": 133.604,
+     "net": "GND",
+     "label": "GND"
+    },
+    {
+     "name": "VCC",
+     "x": 48.768,
+     "y": 133.604,
+     "net": "+3V3",
+     "label": "VCC"
+    },
+    {
+     "name": "SDA",
+     "x": 51.308,
+     "y": 133.604,
+     "net": "I2C_SDA",
+     "label": "SDA"
+    },
+    {
+     "name": "SCL",
+     "x": 53.848,
+     "y": 133.604,
+     "net": "I2C_SCL",
+     "label": "SCL"
+    }
+   ],
+   "pinos_sem_ilha": []
+  },
+  {
+   "ref": "U5",
+   "valor": "MAX98357A (borne do alto-falante na placa dele)",
+   "montagem": "barra fêmea 1x7",
+   "nota": "tem (nunca ligado)",
+   "corpo_mm": [
+    0.54,
+    148.868,
+    19.84,
+    168.368
+   ],
+   "pinos": [
+    {
+     "name": "LRC",
+     "x": 2.54,
+     "y": 150.368,
+     "net": "I2S_LRCLK",
+     "label": "LRC"
+    },
+    {
+     "name": "BCLK",
+     "x": 5.08,
+     "y": 150.368,
+     "net": "I2S_BCLK",
+     "label": "BCLK"
+    },
+    {
+     "name": "DIN",
+     "x": 7.62,
+     "y": 150.368,
+     "net": "I2S_SPEAKER_DATA",
+     "label": "DIN"
+    },
+    {
+     "name": "SD",
+     "x": 12.7,
+     "y": 150.368,
+     "net": "AMP_SHUTDOWN",
+     "label": "SD"
+    },
+    {
+     "name": "GND",
+     "x": 15.24,
+     "y": 150.368,
+     "net": "GND",
+     "label": "GND"
+    },
+    {
+     "name": "VIN",
+     "x": 17.78,
+     "y": 150.368,
+     "net": "AMP_VIN",
+     "label": "VIN"
+    }
+   ],
+   "pinos_sem_ilha": [
+    "GAIN"
+   ]
+  },
+  {
+   "ref": "JP1",
+   "valor": "alimentação do amplificador",
+   "montagem": "barra macho 1x3 + jumper",
+   "nota": "comprar barra macho e jumper",
+   "corpo_mm": [
+    23.084,
+    151.1,
+    30.784,
+    153.70000000000002
+   ],
+   "pinos": [
+    {
+     "name": "1",
+     "x": 24.384,
+     "y": 152.4,
+     "net": "+5V",
+     "label": "5V"
+    },
+    {
+     "name": "2",
+     "x": 26.924,
+     "y": 152.4,
+     "net": "AMP_VIN",
+     "label": "VIN"
+    },
+    {
+     "name": "3",
+     "x": 29.464,
+     "y": 152.4,
+     "net": "+3V3",
+     "label": "3V3"
+    }
+   ],
+   "pinos_sem_ilha": []
+  },
+  {
+   "ref": "CN1",
+   "valor": "conector da placa de energia",
+   "montagem": "barra macho 1x8, 2,54 mm",
+   "nota": "comprar barra macho; o par fêmea fica na placa de energia",
+   "corpo_mm": [
+    72.86800000000001,
+    171.42,
+    93.268,
+    174.02
+   ],
+   "pinos": [
+    {
+     "name": "1",
+     "x": 74.168,
+     "y": 172.72,
+     "net": "GND",
+     "label": "GND"
+    },
+    {
+     "name": "2",
+     "x": 76.708,
+     "y": 172.72,
+     "net": "+5V",
+     "label": "+5V"
+    },
+    {
+     "name": "3",
+     "x": 79.248,
+     "y": 172.72,
+     "net": "+3V3",
+     "label": "+3V3"
+    },
+    {
+     "name": "4",
+     "x": 81.788,
+     "y": 172.72,
+     "net": "VBAT_SENSE",
+     "label": "VBAT_SENSE"
+    },
+    {
+     "name": "5",
+     "x": 84.328,
+     "y": 172.72,
+     "net": "POWER_HOLD",
+     "label": "POWER_HOLD"
+    },
+    {
+     "name": "6",
+     "x": 86.868,
+     "y": 172.72,
+     "net": "POWER_BUTTON",
+     "label": "POWER_BUTTON"
+    },
+    {
+     "name": "7",
+     "x": 89.408,
+     "y": 172.72,
+     "net": "CHARGER_STATUS",
+     "label": "CHARGER_STATUS"
+    },
+    {
+     "name": "8",
+     "x": 91.948,
+     "y": 172.72,
+     "net": "GND",
+     "label": "GND"
+    }
+   ],
+   "pinos_sem_ilha": []
+  }
+ ]
+}
