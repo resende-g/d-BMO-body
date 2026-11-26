@@ -216,6 +216,33 @@ void test_unknown_protocol_is_reported_as_raw() {
   TEST_ASSERT_EQUAL_UINT16(26, last.raw.count);
 }
 
+// Bancada, 2026-11-25: com o CC1101 recebendo, o GPIO 4 registrou de 14 a 33 "sinais
+// desconhecidos" por segundo, de 1 a 7 durações. Nenhum protocolo de controle tem quadro tão
+// curto (o menor, a repetição do NEC, tem 3 e é tratado antes).
+void test_frames_too_short_for_any_protocol_are_ignored_as_noise() {
+  Fixture f;
+  TEST_ASSERT_OK(f.ir.init());
+  TEST_ASSERT_OK(f.ir.startLearning());
+  for (uint16_t count : {1, 2, 5, 7}) {
+    RawTiming noise;
+    for (uint16_t i = 0; i < count; ++i) noise.durationsUs[i] = 300;
+    noise.count = count;
+    f.receive(noise);
+  }
+  TEST_ASSERT_EQUAL_INT(0, f.count);  // nem código, nem bruto, nem aprendido
+  TEST_ASSERT_TRUE(f.ir.learning());  // o aprendizado espera um sinal de verdade
+  StoredCode last;
+  TEST_ASSERT_FALSE(f.ir.lastReceived(&last));
+
+  RawTiming shortest;
+  for (uint16_t i = 0; i < InfraredSubsystem::kMinFrameDurations; ++i)
+    shortest.durationsUs[i] = 889;
+  shortest.count = InfraredSubsystem::kMinFrameDurations;
+  f.receive(shortest);
+  TEST_ASSERT_EQUAL_INT(1, f.countOf(infrared_event::kRawReceived));
+  TEST_ASSERT_EQUAL_INT(1, f.countOf(infrared_event::kLearned));
+}
+
 void test_corrupted_nec_frame_is_dropped() {
   Fixture f;
   TEST_ASSERT_OK(f.ir.init());
@@ -473,6 +500,7 @@ int main() {
   RUN_TEST(test_nec_repeat_codes_follow_the_last_frame);
   RUN_TEST(test_sony_repeated_frames_count_as_one_press);
   RUN_TEST(test_unknown_protocol_is_reported_as_raw);
+  RUN_TEST(test_frames_too_short_for_any_protocol_are_ignored_as_noise);
   RUN_TEST(test_corrupted_nec_frame_is_dropped);
   RUN_TEST(test_reception_can_be_disabled);
   RUN_TEST(test_learning_captures_the_next_signal);

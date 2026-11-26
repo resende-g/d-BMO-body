@@ -109,6 +109,7 @@ void InfraredSubsystem::handleReceived(const RawTiming &timing, uint32_t nowMs) 
     }
     return;
   }
+  if (timing.count < kMinFrameDurations) return;  // ruído: nem log, nem aprendizado
 
   StoredCode received;
   const Status status = decode(timing, &received.code);

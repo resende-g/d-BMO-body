@@ -59,6 +59,9 @@ class InfraredSubsystem final : public ISubsystem {
   static constexpr uint32_t kMaxSendUs = 500000;
   // Janela em que o mesmo código recebido de novo conta como repetição.
   static constexpr uint32_t kRepeatWindowMs = 200;
+  // Menos durações que isso não é quadro de controle nenhum (a repetição do NEC, com 3, é tratada
+  // antes): é ruído na linha do receptor e é descartado.
+  static constexpr uint16_t kMinFrameDurations = 8;
   static constexpr uint32_t kBudgetWindowMs = 60000;
   // Janela deslizante em intervalos de 10 s, com um a mais que a janela (ver TxPolicy).
   static constexpr uint32_t kBudgetBucketMs = 10000;
