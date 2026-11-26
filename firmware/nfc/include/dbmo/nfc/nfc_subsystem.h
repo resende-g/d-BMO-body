@@ -81,6 +81,7 @@ class NfcSubsystem final : public ISubsystem {
   IClock &clock_;
   NfcState state_ = NfcState::Off;
   bool initialized_ = false;
+  Status lastInitFailure_ = Status::Ok;
   bool wantScan_ = false;
   FirmwareVersion firmware_{};
   Step step_ = Step::None;

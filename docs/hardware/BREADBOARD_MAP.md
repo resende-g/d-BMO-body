@@ -2,11 +2,11 @@
 
 | Campo | Valor |
 |---|---|
-| Versão | 0.3 (2026-11-22) |
-| Escopo | Tela ligada direto na DevKitC; trilho da protoboard grande para o LED da tela, o receptor e o transmissor de IR, o CC1101 (só recepção) e o microfone INMP441; 3 botões numa protoboard pequena separada |
-| Fora do escopo | SD da tela e PN532 (pinos não soldados), amplificador MAX98357A e alto-falante (sem pinos de saída no perfil `dbmo-bench`), MCP23017 (não possui) |
+| Versão | 0.4 (2026-11-25) |
+| Escopo | Tela ligada direto na DevKitC; trilho da protoboard grande para o LED da tela, o receptor e o transmissor de IR, o CC1101 (só recepção), o microfone INMP441 e o amplificador MAX98357A; SD da tela no SPI dividido; 3 botões numa protoboard pequena separada |
+| Fora do escopo | PN532 (pinos não soldados), MCP23017 (não possui) |
 | Pinagem | `firmware/config/include/dbmo/config/pins.h`, perfil `bench` ([`GPIO_MAP.md`](GPIO_MAP.md)) |
-| Estado | Fases A a D montadas e testadas em 21 e 22/11/2026, com a tela e o CC1101 dividindo o SPI (ver [`../testing/TESTING.md`](../testing/TESTING.md)). Fase E (microfone) ainda não montada. A v0.1 (tela inteira alimentada pelo trilho grande) deixou a tela apagada, com 2,65 V medidos no 3,3 V |
+| Estado | Fases A a F montadas e testadas de 21 a 25/11/2026: tela, CC1101 e SD dividindo o SPI, microfone funcionando (ver [`../testing/TESTING.md`](../testing/TESTING.md)). Em 25/11 o receptor de IR deixou de ler o controle (fiação a conferir). **Fase G (alto-falante) ainda não montada.** A v0.1 (tela inteira alimentada pelo trilho grande) deixou a tela apagada, com 2,65 V medidos no 3,3 V |
 
 ## 1. Princípio da montagem
 
@@ -32,11 +32,12 @@ Protoboard grande (MB-102, só o par de trilhos de cima):
 
 | Onde | O quê |
 |---|---|
-| Coluna 8, linhas a–d | Nó MOSI, só na fase D (DevKitC 11, tela SDI, CC1101 pino 6) |
-| Coluna 11, linhas a–d | Nó SCK, só na fase D (DevKitC 12, tela SCK, CC1101 pino 5) |
-| Coluna 14, linhas a–d | Nó MISO, só na fase D (DevKitC 13, tela SDO, CC1101 pino 7) |
+| Coluna 8, linhas a–d | Nó MOSI: tela SDI (a), CC1101 pino 6 (b), SD_MOSI (c), DevKitC 11 (d) |
+| Coluna 11, linhas a–d | Nó SCK: tela SCK (a), CC1101 pino 5 (b), SD_SCK (c), DevKitC 12 (d) |
+| Coluna 14, linhas a–d | Nó MISO: tela SDO (a), CC1101 pino 7 (b), SD_MISO (c), DevKitC 13 (d) |
 | Colunas 40, 41, 42, linha e | Transmissor de IR: DAT, VCC, GND |
 | Colunas 50, 51, 52, linha e | Receptor de IR: OUT, VCC, GND |
+| Colunas 30 a 36, linha j (metade de baixo) | MAX98357A, fase G: LRC (30), BCLK (31), DIN (32), GAIN (33), SD (34), GND (35), Vin (36). A coluna 30 é o nó do LRCLK e a 31 o do BCLK, divididos com o microfone |
 
 Protoboard pequena (desenhada com 30 colunas e trilhos, 400 pontos; só o trilho (−) de baixo é usado), botões atravessando o canal central: BAIXO nas colunas 6–8, CIMA 18–20, OK 24–26. Fio do GPIO na linha a (coluna da direita), fio do GND na linha j (coluna da esquerda): pernas em diagonal. Se a pequena for de 170 pontos, sem trilhos, cada perna de GND vai direto a um dos pinos GND livres do J3 com jumper fêmea-macho, no lugar de B1 e B5–B7.
 
@@ -65,10 +66,12 @@ fonte apenas para alguns pinos (DKC-07, DKC-10, DKC-01, DKC-02, DKC-18 em
 | J1 | 22 | G / GND | Tela GND |
 | J3 | 1 | G / GND | Trilho (−) da protoboard grande |
 | J3 | 5 | 2 | Botão OK |
-| J3 | 7 | 41 | INMP441 WS (fase E) |
-| J3 | 8 | 40 | INMP441 SCK (fase E); fica ao lado do 39 (CIMA) |
+| J3 | 6 | 42 | MAX98357A DIN (fase G); fica ao lado do 2 (OK) |
+| J3 | 7 | 41 | INMP441 WS (fase E); nó do LRCLK na fase G |
+| J3 | 8 | 40 | INMP441 SCK (fase E); nó do BCLK na fase G; fica ao lado do 39 (CIMA) |
 | J3 | 9 | 39 | Botão CIMA |
 | J3 | 17 | 47 | Botão BAIXO |
+| J3 | 18 | 21 | SD_CS da tela (fase F); fica entre o 47 e o 20 (USB D+) |
 | J3 | 22 | G / GND | Trilho (−) da protoboard pequena |
 
 ## 4. Lista de ligações
@@ -117,15 +120,30 @@ Tipos: **FF** fêmea-fêmea, **FM** fêmea-macho, **MM** macho-macho.
 | E1 | E | INMP441 VDD | Trilho (+), col. 45 | FM |
 | E2 | E | INMP441 GND | Trilho (−), col. 49 | FM |
 | E3 | E | INMP441 L/R | Trilho (−), col. 50 | FM |
-| E4 | E | INMP441 SCK | DevKitC 40 (J3, pino 8) | FF |
-| E5 | E | INMP441 WS | DevKitC 41 (J3, pino 7) | FF |
+| E4 | E | INMP441 SCK | DevKitC 40 (J3, pino 8; sai na fase G) | FF |
+| E5 | E | INMP441 WS | DevKitC 41 (J3, pino 7; sai na fase G) | FF |
 | E6 | E | INMP441 SD | DevKitC 7 (J1, pino 7) | FF |
+| F1 | F | Tela SD_MOSI | Col. 8, linha c | FM |
+| F2 | F | Tela SD_SCK | Col. 11, linha c | FM |
+| F3 | F | Tela SD_MISO | Col. 14, linha c | FM |
+| F4 | F | Tela SD_CS | DevKitC 21 (J3, pino 18) | FF |
+| G1 | G | DevKitC 41 (J3, pino 7) | Col. 30, linha f (nó do LRCLK) | FM |
+| G2 | G | DevKitC 40 (J3, pino 8) | Col. 31, linha f (nó do BCLK) | FM |
+| G3 | G | INMP441 WS | Col. 30, linha g (substitui E5) | FM |
+| G4 | G | INMP441 SCK | Col. 31, linha g (substitui E4) | FM |
+| G5 | G | DevKitC 42 (J3, pino 6) | Col. 32, linha f (DIN) | FM |
+| G6 | G | Col. 35, linha f (GND do MAX98357A) | Trilho (−), col. 37 | MM |
+| G7 | G | Col. 36, linha f (Vin do MAX98357A) | Trilho (+), col. 38 | MM |
 
 CC1101 pino 8 (GDO2) e pinos T_* da tela: sem ligação. Pinos 1 a 4 do CC1101 conforme o manual da Ebyte; 5 a 8 só por fonte secundária (ficha da LCSC do E07-M1101D-TH). Transmissor de IR ligado, mas o envio continua bloqueado no firmware (`infrared.tx_enabled` = 0) até o circuito da plaquinha ser identificado.
 
 INMP441 (fase E) fora da protoboard, como o CC1101: seus pinos ficam em duas fileiras de 3, e uma fileira encaixada caberia num mesmo grupo de 5 furos, pondo os 3 pinos em curto. Pinagem pela serigrafia da placa (foto de 22/11): L/R, WS e SCK de um lado; GND, VDD e SD do outro, com o furo do som no meio, do lado da serigrafia. L/R vai ao GND: o microfone usa o canal esquerdo, que é o que o firmware lê (MIC-06 em `sources/PERIPHERALS.md`). A placa não expõe o CHIPEN.
 
-Montagem completa (fases A a E, já sem A6–A8): 10 FF, 23 FM e 7 MM, mais 1 MM por trilho dividido.
+SD da tela (fase F, soldado em 24/11): os 4 pinos ficam na borda oposta ao conector principal; ordem SD_CS, SD_MOSI, SD_MISO, SD_SCK, a típica do módulo, sem confirmação no esquema (MSP-06). O cartão é alimentado pela própria placa da tela (VCC no J1 pino 1); só os 4 sinais saem. Cada nó do SPI recebe 4 fios: tela (a), CC1101 (b), SD (c), DevKitC (d).
+
+MAX98357A (fase G): placa com barra de 7 pinos já soldada e borne de parafuso para o alto-falante. Pinagem pela serigrafia (fotos de 22/11): LRC, BCLK, DIN, GAIN, SD, GND, Vin; no verso, "vin: 2.5-5.5V" e "Default 9db Gain & (L+R)/2 out". GAIN e SD ficam soltos: 9 dB (AMP-11) e a placa mantém o amplificador ligado na mistura (L+R)/2 (AMP-06; valores dos resistores da placa não conferidos). Os pinos de dado aceitam até 6 V (AMP-02). Como cada pino da DevKitC aceita um só jumper fêmea, o BCLK e o LRCLK passam a nós na metade de baixo (colunas 31 e 30), e o microfone vai para esses nós (G3 e G4 no lugar de E4 e E5). Alimentação pelo trilho de 3,3 V (AMP-01: 2,5 V a 5,5 V), nada no 5V. Alto-falante no borne: os dois fios dele, sem polaridade a respeitar com um alto-falante só; o conector branco do cabo não entra no borne (encaixar dois jumpers macho nele ou, só com decisão do Gabriel, cortar o conector).
+
+Montagem completa (fases A a G, já sem A6–A8, E4 e E5): 9 FF, 31 FM e 9 MM, mais 1 MM por trilho dividido.
 
 ## 5. Conferências com o multímetro
 
@@ -145,6 +163,9 @@ tensão na faixa 20 V.
 | IR | USB ligado, fase C (receptor) | Tensão entre VCC e GND do receptor, nas pernas dele | Cerca de 3,3 V |
 | MIC | Fase E, antes de ligar o USB | Continuidade entre o furo com o nome (lado da serigrafia) e a outra ponta de cada fio (E1–E6); L/R contra GND do módulo, antes do E3 | Perto de 0 Ω nos 6 fios. L/R contra GND: anotar o valor |
 | MV | USB ligado, fase E | Tensão entre VDD e GND do INMP441, nas pernas dele | Cerca de 3,3 V |
+| SOLDA | Fase F, antes de ligar | Os 4 pinos do SD entre si e cada um contra o GND do conector principal da tela | Aberto ("1") em todos |
+| AF | Fase G, antes de ligar | Resistência do alto-falante, nos dois fios | Pouco abaixo da impedância nominal (um de 8 Ω mede cerca de 6 a 7 Ω). Perto de 0 Ω: não ligar |
+| AV | USB ligado, fase G, durante `tone` | Trilho (+) contra trilho (−) | Cerca de 3,3 V, sem cair. Se cair, desligar o USB: o trilho não está dando conta do amplificador |
 
 ## 6. Ordem
 
@@ -161,5 +182,10 @@ montada e testada (TESTING.md, 21/11/2026).
    CC, D7–D13, NÓ, M2, USB e `pio test -e dbmo-bench -f test_cc1101`.
 6. Fase E, microfone (E1–E6): MIC; M2; USB; MV; no console, `config audio.mic_enabled 1` e
    `mic 1000` em silêncio e com som perto. Sem o microfone ligado, o firmware registra `pico 0`.
+7. Fase F, SD da tela (F1–F4): SOLDA; tela e CC1101 primeiro, sem o SD; depois F1–F4, NÓ, M2, USB
+   e, no boot, `cartao: Ok`. Cartão em FAT32, colocado e tirado com o USB desligado.
+8. Fase G, alto-falante (G1–G7): AF; tirar E4 e E5 e ligar G1 a G7; NÓ nas colunas 30 e 31; M2;
+   USB; no console, `config audio.volume 20` e `tone 440 500`, com AV durante o tom. Só então
+   subir o volume. Depois, `mic 1000` para conferir que o microfone continua lendo pelos nós.
 
 Um módulo em Failed, ou tensão caindo: desligar o USB e conferir só os fios daquele módulo.

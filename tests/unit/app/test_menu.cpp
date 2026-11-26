@@ -54,6 +54,37 @@ static void test_up_and_down_walk_the_items_and_wrap() {
   TEST_ASSERT_TRUE(menu.cursor() == MenuItem::About);
 }
 
+static void test_games_item_is_hidden_until_the_other_firmware_exists() {
+  // Jogos só aparece quando há o Retro-Go gravado na mesma flash (imagem combinada).
+  Menu menu;
+  TEST_ASSERT_FALSE(menu.available(MenuItem::Games));
+  (void)click(menu, Button::A);
+  for (int i = 0; i < 3; ++i) (void)click(menu, Button::DpadDown);
+  TEST_ASSERT_TRUE(menu.cursor() == MenuItem::Buttons);
+  (void)click(menu, Button::DpadDown);
+  TEST_ASSERT_TRUE(menu.cursor() == MenuItem::About);  // pulou Jogos
+
+  menu.setAvailable(MenuItem::Games, true);
+  (void)click(menu, Button::DpadUp);
+  TEST_ASSERT_TRUE(menu.cursor() == MenuItem::Games);
+  TEST_ASSERT_EQUAL_STRING("Jogos", dbmo::app::label(MenuItem::Games));
+}
+
+static void test_games_asks_before_rebooting() {
+  // A troca reinicia a placa: entrar no item só mostra a tela; o OK de lá é que pede a troca.
+  Menu menu;
+  menu.setAvailable(MenuItem::Games, true);
+  (void)click(menu, Button::A);
+  for (int i = 0; i < 4; ++i) (void)click(menu, Button::DpadDown);
+  TEST_ASSERT_TRUE(menu.cursor() == MenuItem::Games);
+  TEST_ASSERT_TRUE(click(menu, Button::A) == MenuAction::Redraw);
+  TEST_ASSERT_TRUE(menu.screen() == MenuScreen::Games);
+  TEST_ASSERT_TRUE(click(menu, Button::DpadDown) == MenuAction::None);
+  TEST_ASSERT_TRUE(click(menu, Button::A) == MenuAction::BootGames);
+  TEST_ASSERT_TRUE(back(menu) == MenuAction::Redraw);
+  TEST_ASSERT_TRUE(menu.screen() == MenuScreen::Main);
+}
+
 static void test_release_after_auto_repeat_does_not_move_again() {
   // O ButtonProcessor manda Click ao soltar mesmo depois de repetições (ver
   // test_button_processor). Segurar BAIXO e soltar não pode passar um item além do que a
@@ -103,12 +134,14 @@ static void test_ok_enters_each_screen_and_long_press_goes_back() {
   struct Case {
     int steps;
     MenuScreen screen;
+    MenuItem item;
   };
-  const Case cases[] = {{0, MenuScreen::Status},
-                        {1, MenuScreen::Infrared},
-                        {2, MenuScreen::Radio},
-                        {3, MenuScreen::Buttons},
-                        {4, MenuScreen::About}};
+  // Jogos fica escondido por padrão: quatro passos chegam a Sobre.
+  const Case cases[] = {{0, MenuScreen::Status, MenuItem::Status},
+                        {1, MenuScreen::Infrared, MenuItem::Infrared},
+                        {2, MenuScreen::Radio, MenuItem::Radio},
+                        {3, MenuScreen::Buttons, MenuItem::Buttons},
+                        {4, MenuScreen::About, MenuItem::About}};
   for (const Case &c : cases) {
     Menu menu;
     (void)click(menu, Button::A);
@@ -117,7 +150,7 @@ static void test_ok_enters_each_screen_and_long_press_goes_back() {
     TEST_ASSERT_TRUE(menu.screen() == c.screen);
     TEST_ASSERT_TRUE(back(menu) == MenuAction::Redraw);
     TEST_ASSERT_TRUE(menu.screen() == MenuScreen::Main);
-    TEST_ASSERT_EQUAL_INT(c.steps, static_cast<int>(menu.cursor()));  // cursor mantido
+    TEST_ASSERT_TRUE(menu.cursor() == c.item);  // cursor mantido
   }
 }
 
@@ -228,5 +261,7 @@ int main() {
   RUN_TEST(test_buttons_screen_keeps_the_latest_presses);
   RUN_TEST(test_idle_menu_returns_to_the_face);
   RUN_TEST(test_labels);
+  RUN_TEST(test_games_item_is_hidden_until_the_other_firmware_exists);
+  RUN_TEST(test_games_asks_before_rebooting);
   return UNITY_END();
 }

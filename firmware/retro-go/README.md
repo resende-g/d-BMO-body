@@ -75,7 +75,6 @@ Todos os itens, inclusive os confirmados, ainda precisam ser validados com o Ret
 | Backlight (PWM) | 16 | `RG_GPIO_LCD_BCKL` | `target::kDisplayBacklight` | PROPOSTO |
 | CS do SD | 21 | `RG_GPIO_SDSPI_CS` | `target::kSdCs` | PROPOSTO |
 | CS do CC1101 (só mantido em alto) | 14 | `DBMO_GPIO_CC1101_CS` | `target::kCc1101Cs` | PROPOSTO |
-| CS do cartucho (só mantido em alto) | 38 | `DBMO_GPIO_CARTRIDGE_CS` | `target::kCartridgeCs` | PROPOSTO |
 | I2S BCLK | 40 | `RG_GPIO_SND_I2S_BCK` | `target::kI2sBclk` | PROPOSTO |
 | I2S LRCLK | 41 | `RG_GPIO_SND_I2S_WS` | `target::kI2sLrclk` | PROPOSTO |
 | I2S DATA (DIN do MAX98357A) | 42 | `RG_GPIO_SND_I2S_DATA` | `target::kI2sSpeakerData` | PROPOSTO |
@@ -91,8 +90,7 @@ Todos os itens, inclusive os confirmados, ainda precisam ser validados com o Ret
 | Clock do SD (20 MHz) | - | `RG_STORAGE_SDSPI_SPEED` | - | PENDENTE DE VALIDAÇÃO FÍSICA |
 | Curva de carga da bateria | - | `RG_BATTERY_CALC_PERCENT` | - | PENDENTE DE VALIDAÇÃO FÍSICA |
 
-Pinos do perfil `target` que o Retro-Go não usa nem configura: botão de energia (0), microfone I2S (7), GDO0 do CC1101 (15), IR RX (39), IR TX (47) e o UART0 do
-cartucho (43, 44; ver a nota sobre o console em [sdkconfig](#sdkconfig-psram-octal-flash-e-console)).
+Pinos do perfil `target` que o Retro-Go não usa nem configura: botão de energia (2), microfone I2S (7), GDO0 do CC1101 (15), IR RX (39), IR TX (47) e o status do carregador (6).
 
 Cada linha do `config.h` que fixa um pino termina com o comentário
 `pins.h <namespace>::<constante>`, para a conferência automática contra o mapa canônico.
@@ -168,8 +166,8 @@ em alto, cartão montado primeiro, os demais depois (ESP-IDF v5.3.6,
 usam `SPI2_HOST` para os dois: `fri3d-2024` (`config.h:14,25,94-105`) e `t-deck-plus`
 (`config.h:6,37,100-111`).
 
-O que o d-BMO acrescenta: o barramento também tem o CC1101 (CS 14) e o cartucho (CS 38), que o
-Retro-Go não conhece. `RG_CUSTOM_PLATFORM_INIT()` mantém esses dois CS em nível alto, do mesmo
+O que o d-BMO acrescenta: o barramento também tem o CC1101 (CS 14), que o Retro-Go não
+conhece. `RG_CUSTOM_PLATFORM_INIT()` mantém esse CS em nível alto, do mesmo
 jeito que o alvo `t-deck-plus` faz com o rádio dele (`t-deck-plus/config.h:23-33`).
 `RG_STORAGE_SDSPI_HOLD_CS` não é definido: ele só serve para barramento não compartilhado
 (`rg_storage.c:96-102`).
@@ -319,6 +317,24 @@ Prepara a árvore do Retro-Go (clone, cópia e registro do alvo) e passa o `conf
 compilador do computador com `-fsyntax-only`, em cada combinação de opções, contra o `rg_input.h`
 do Retro-Go e substitutos dos símbolos do ESP-IDF. Confere sintaxe e estrutura. Não compila o
 firmware.
+
+## Volta ao d-BMO (imagem combinada)
+
+O d-BMO usa o Retro-Go como um segundo firmware na mesma flash. O `tools/combine_retrogo.py`
+acrescenta à imagem a partição factory `dbmo`, com o firmware próprio, e o item Jogos do menu
+dele aponta o boot ao `launcher` (`docs/firmware/FIRMWARE.md`, "Imagem combinada com o
+Retro-Go"). Para voltar, o alvo `dbmo-v1` faz duas coisas no `config.h`:
+
+- `RG_CUSTOM_PLATFORM_INIT`, que roda em todo boot do Retro-Go (`rg_system.c:384`), aponta o
+  boot de novo para a partição `dbmo`, se ela existir e o boot não estiver nela. Um reset volta
+  ao d-BMO. As trocas entre o launcher e os jogos continuam funcionando porque
+  `rg_system_switch_app` grava o boot antes de reiniciar (`update_boot_config`,
+  `rg_system.c:127-155`).
+- `RG_APP_FACTORY "dbmo"`, que o menu de recuperação usa em "Reboot to factory"
+  (`rg_system.c:331-344`; o padrão do Retro-Go é `NULL`, `config.h:83-85`).
+
+Sem a partição `dbmo` (a imagem do Retro-Go gravada sozinha), nada muda. Nada disto foi testado
+na placa.
 
 ## Como gravar
 

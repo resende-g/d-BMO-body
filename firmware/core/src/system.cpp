@@ -126,12 +126,14 @@ Status System::initEntry(size_t index) {
   }
 
   if (entry.initAttempts < UINT8_MAX) ++entry.initAttempts;
+  const bool wasAbsent = entry.state == SubsystemState::Absent;
   const Status status = entry.subsystem->init();
   entry.lastStatus = status;
   if (isOk(status)) {
     setSubsystemState(index, SubsystemState::Ready);
   } else if (status == Status::HardwareAbsent) {
-    DBMO_LOGW(kTag, "%s: hardware ausente", entry.subsystem->name());
+    // Nas novas tentativas (periférico ligado depois do boot), a ausência não é novidade.
+    if (!wasAbsent) DBMO_LOGW(kTag, "%s: hardware ausente", entry.subsystem->name());
     setSubsystemState(index, SubsystemState::Absent);
   } else {
     recordFault(index, status);

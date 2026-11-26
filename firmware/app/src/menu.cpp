@@ -13,6 +13,7 @@ const char *label(MenuItem item) {
     case MenuItem::Infrared: return "Infravermelho";
     case MenuItem::Radio: return "Radio";
     case MenuItem::Buttons: return "Botoes";
+    case MenuItem::Games: return "Jogos";
     case MenuItem::About: return "Sobre";
     case MenuItem::Face: return "Voltar ao rosto";
   }
@@ -45,6 +46,7 @@ MenuAction Menu::enter() {
       screen_ = MenuScreen::Buttons;
       historyCount_ = 0;
       break;
+    case MenuItem::Games: screen_ = MenuScreen::Games; break;
     case MenuItem::About: screen_ = MenuScreen::About; break;
     case MenuItem::Face: screen_ = MenuScreen::Closed; return MenuAction::Closed;
   }
@@ -114,6 +116,7 @@ MenuAction Menu::handle(Button button, ButtonAction action, uint32_t nowMs) {
       return MenuAction::None;
     case MenuScreen::Infrared: return ok ? MenuAction::LearnIr : MenuAction::None;
     case MenuScreen::Radio: return ok ? MenuAction::ToggleRadio : MenuAction::None;
+    case MenuScreen::Games: return ok ? MenuAction::BootGames : MenuAction::None;
     case MenuScreen::Buttons: return MenuAction::Redraw;
     case MenuScreen::Status:
     case MenuScreen::About:

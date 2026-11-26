@@ -245,7 +245,6 @@
 // Pinos do d-BMO que o Retro-Go não conhece, tratados em RG_CUSTOM_PLATFORM_INIT().
 // ---------------------------------------------------------------------------
 #define DBMO_GPIO_CC1101_CS         GPIO_NUM_14 // pins.h target::kCc1101Cs
-#define DBMO_GPIO_CARTRIDGE_CS      GPIO_NUM_38 // pins.h target::kCartridgeCs
 #define DBMO_GPIO_POWER_HOLD        GPIO_NUM_48 // pins.h target::kPowerHold
 
 #if DBMO_RG_ENABLE_POWER_HOLD
@@ -257,17 +256,32 @@
 #define DBMO_RG_POWER_HOLD_INIT()
 #endif
 
+// Volta ao d-BMO. Na imagem combinada (tools/combine_retrogo.py do d-BMO-body), o firmware
+// próprio fica na partição factory "dbmo" e o item Jogos dele aponta o boot ao "launcher". Aqui,
+// em todo boot do Retro-Go, o boot volta a apontar para "dbmo": um reset sai dos jogos. As
+// trocas do próprio Retro-Go (launcher <-> jogo) gravam o boot de novo antes de reiniciar
+// (update_boot_config em rg_system.c), por isso continuam funcionando. RG_APP_FACTORY também
+// liga a opção "Reboot to factory" do menu de recuperação. Sem a partição (imagem só do
+// Retro-Go), nada muda.
+#define RG_APP_FACTORY "dbmo"
+#define DBMO_RG_RETURN_TO_DBMO()                                                             \
+    {                                                                                        \
+        const esp_partition_t *dbmo_part = esp_partition_find_first(                         \
+            ESP_PARTITION_TYPE_APP, ESP_PARTITION_SUBTYPE_APP_FACTORY, RG_APP_FACTORY);       \
+        const esp_partition_t *boot_part = esp_ota_get_boot_partition();                     \
+        if (dbmo_part && (!boot_part || boot_part->address != dbmo_part->address))           \
+            esp_ota_set_boot_partition(dbmo_part);                                           \
+    }
+
 // Executado pelo Retro-Go dentro de platform_init(), antes do SD e da tela (rg_system.c).
-// O barramento SPI do d-BMO também tem o CC1101 e o cartucho: os CS deles ficam em nível alto
-// para não responderem durante a inicialização do SD. O próprio Retro-Go já faz isso com os CS
+// O barramento SPI do d-BMO também tem o CC1101: o CS dele fica em nível alto para não
+// responder durante a inicialização do SD. O próprio Retro-Go já faz isso com os CS
 // da tela e do SD. O pull-up interno no MISO repete o que o alvo t-deck-plus faz; ele não
 // substitui o resistor externo que o cartão SD pede.
 #define RG_CUSTOM_PLATFORM_INIT()                                 \
     DBMO_RG_POWER_HOLD_INIT()                                     \
+    DBMO_RG_RETURN_TO_DBMO()                                      \
     gpio_reset_pin(DBMO_GPIO_CC1101_CS);                          \
     gpio_set_level(DBMO_GPIO_CC1101_CS, 1);                       \
     gpio_set_direction(DBMO_GPIO_CC1101_CS, GPIO_MODE_OUTPUT);    \
-    gpio_reset_pin(DBMO_GPIO_CARTRIDGE_CS);                       \
-    gpio_set_level(DBMO_GPIO_CARTRIDGE_CS, 1);                    \
-    gpio_set_direction(DBMO_GPIO_CARTRIDGE_CS, GPIO_MODE_OUTPUT); \
     gpio_set_pull_mode(RG_GPIO_SDSPI_MISO, GPIO_PULLUP_ONLY);

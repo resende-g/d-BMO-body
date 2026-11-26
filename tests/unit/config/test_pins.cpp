@@ -61,18 +61,37 @@ static void test_every_usable_gpio_is_assigned_or_listed_as_free() {
     if (isUsableGpio(gpio)) ++usable;
   const size_t assigned = sizeof(target::kPins) / sizeof(target::kPins[0]);
   const size_t free = sizeof(target::kFreePins) / sizeof(target::kFreePins[0]);
-  // 33 GPIOs utilizáveis no módulo: 27 atribuídos + 6 livres. Se a conta mudar, a
+  // 33 GPIOs utilizáveis no módulo: 25 atribuídos + 8 livres. Se a conta mudar, a
   // documentação (GPIO_MAP.md) precisa mudar junto.
   TEST_ASSERT_EQUAL_size_t(33, usable);
   TEST_ASSERT_EQUAL_size_t(usable, assigned + free);
 }
 
-static void test_strapping_pins_in_use_are_flagged() {
-  // GPIO0 (botão de energia) é strapping de boot: o risco precisa estar marcado.
+static void test_power_button_is_an_rtc_gpio_outside_the_strapping_pins() {
+  // Decisão de 2026-11-25 (alternativa A de docs/hardware/sources/ESP32-S3.md, seção 6): com o
+  // botão no GPIO 0, segurá-lo ao ligar entraria no modo de download e o aparelho não ligaria.
+  // O botão precisa acordar do deep sleep (GPIO RTC) sem ser lido como strap no reset.
   const PinAssignment *power = findSignal(target::kPins, "POWER_BUTTON");
   TEST_ASSERT_NOT_NULL(power);
-  TEST_ASSERT_TRUE(isStrappingGpio(power->gpio));
-  TEST_ASSERT_TRUE(power->status == PinStatus::ProposedAtRisk);
+  TEST_ASSERT_TRUE(isRtcGpio(power->gpio));
+  TEST_ASSERT_FALSE(isStrappingGpio(power->gpio));
+  TEST_ASSERT_TRUE(power->status == PinStatus::Proposed);
+  // O GPIO 0 fica só como BOOT: livre no target.
+  TEST_ASSERT_FALSE(usesGpio(target::kPins, 0));
+}
+
+static void test_power_board_signals_wake_and_cartridge_is_gone() {
+  // Decisão de 2026-11-25: a placa principal leva um conector para a placa de energia com
+  // VBAT_SENSE (ADC1), POWER_HOLD, POWER_BUTTON e CHARGER_STATUS; o cartucho saiu do v1.
+  const PinAssignment *charger = findSignal(target::kPins, "CHARGER_STATUS");
+  TEST_ASSERT_NOT_NULL(charger);
+  TEST_ASSERT_TRUE(isRtcGpio(charger->gpio));
+  TEST_ASSERT_FALSE(isStrappingGpio(charger->gpio));
+  TEST_ASSERT_TRUE(isAdc1Gpio(target::kVbatSense));
+  TEST_ASSERT_NOT_NULL(findSignal(target::kPins, "POWER_HOLD"));
+  for (const char *gone : {"CARTRIDGE_CS", "CARTRIDGE_UART_TX", "CARTRIDGE_UART_RX"})
+    TEST_ASSERT_NULL_MESSAGE(findSignal(target::kPins, gone), gone);
+  for (int8_t gpio : {38, 43, 44}) TEST_ASSERT_FALSE(usesGpio(target::kPins, gpio));
 }
 
 static void test_shared_bus_pins_are_identical_in_both_profiles() {
@@ -92,8 +111,12 @@ static void test_bench_and_target_disagree_exactly_where_documented() {
   // A migração precisa mover os botões para o MCP23017 antes de ligar essas funções.
   TEST_ASSERT_EQUAL_INT8(target::kIrRx, bench::kButtonUp);
   TEST_ASSERT_EQUAL_INT8(target::kIrTx, bench::kButtonDown);
-  // OK e IR da bancada ficam em pinos livres do target (eram dos analógicos).
-  for (int8_t gpio : {bench::kButtonOk, bench::kIrRx, bench::kIrTx})
+  // O OK da bancada fica no pino do botão de energia do target; na bancada, o botão de energia
+  // é o BOOT da DevKitC (GPIO 0), livre no target.
+  TEST_ASSERT_EQUAL_INT8(target::kPowerButton, bench::kButtonOk);
+  TEST_ASSERT_EQUAL_INT8(0, bench::kPowerButton);
+  // IR da bancada fica em pinos livres do target (eram dos analógicos).
+  for (int8_t gpio : {bench::kPowerButton, bench::kIrRx, bench::kIrTx})
     TEST_ASSERT_FALSE(usesGpio(target::kPins, gpio));
 }
 
@@ -141,7 +164,8 @@ int main() {
   RUN_TEST(test_gpio_classification_helpers);
   RUN_TEST(test_target_profile_never_drives_the_free_pins);
   RUN_TEST(test_every_usable_gpio_is_assigned_or_listed_as_free);
-  RUN_TEST(test_strapping_pins_in_use_are_flagged);
+  RUN_TEST(test_power_button_is_an_rtc_gpio_outside_the_strapping_pins);
+  RUN_TEST(test_power_board_signals_wake_and_cartridge_is_gone);
   RUN_TEST(test_shared_bus_pins_are_identical_in_both_profiles);
   RUN_TEST(test_bench_and_target_disagree_exactly_where_documented);
   RUN_TEST(test_i2c_addresses_do_not_collide);

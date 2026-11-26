@@ -121,6 +121,48 @@ Executado num macOS (Darwin 27), sem placa:
 Não executado: compilação do Bruce e do Retro-Go com o ESP-IDF (ficam para a CI) e qualquer
 teste na placa.
 
+### Troca d-BMO ↔ Retro-Go numa imagem só (2026-11-25, no computador)
+
+Item **Jogos** no menu do firmware próprio, volta pelo reset no alvo do Retro-Go e o
+`tools/combine_retrogo.py`, que junta as duas imagens (`docs/firmware/FIRMWARE.md`, "Imagem
+combinada com o Retro-Go"). Sem a placa.
+
+| Mudança | Commit | Verificação |
+|---|---|---|
+| Item Jogos e `IAppSwitch` | `7018811` | 2 testes de menu e 2 de integração novos: o item fica escondido sem o Retro-Go na flash; OK na tela Jogos grava a configuração no cartão e só depois pede a troca; se a troca voltar, a tela mostra `falhou: NotFound`. Uma mutação (sem gravar a configuração antes) faz o teste de integração falhar |
+| Volta ao d-BMO no boot do Retro-Go e `RG_APP_FACTORY "dbmo"` | `7b2672c` | `host_check.sh` (sintaxe com substitutos do ESP-IDF; o `check_config.c` confere o nome da partição). Não compilado com o ESP-IDF fora da CI |
+| `tools/combine_retrogo.py` e o job de CI `combined` | `1907d35` | `tools/test_combine_retrogo.py`: 6 testes com uma imagem sintética. Com os artefatos reais (Retro-Go da execução 45724562378 e o `firmware.bin` de bancada desta compilação), a imagem saiu com 7.310.720 bytes, e o `gen_esp32part.py` do ESP-IDF leu a tabela com `dbmo,app,factory,0x670000,2M` |
+
+Testes no computador: 47 executáveis aprovados (`-DDBMO_SANITIZE=OFF`); `clang-format` 18 sem
+diferenças; `pio run -e dbmo-bench -e dbmo-target` compila; `check_*` passam.
+
+**Pendente de bancada** (nada disto foi executado):
+
+- o bootloader do Retro-Go (ESP-IDF 4.4.8) carregar o firmware próprio (Arduino-ESP32 3.3,
+  ESP-IDF 5): hipótese de compatibilidade, não verificada;
+- a placa ligar no d-BMO com a imagem combinada recém-gravada;
+- Jogos → launcher do Retro-Go; dentro dele, launcher ↔ jogo como antes;
+- reset dentro do Retro-Go → d-BMO; "Reboot to factory" no menu de recuperação → d-BMO;
+- a configuração do d-BMO na partição `nvs` de 16 KB do Retro-Go.
+
+### Sem placa: alto-falante no perfil bench e logs de boot (2026-11-25, no computador)
+
+Feito depois do vídeo, sem hardware novo e sem a placa:
+
+| Mudança | Commit | Verificação |
+|---|---|---|
+| Saída do MAX98357A no perfil `bench` (DIN no GPIO 42, sem pino de SD_MODE) | `efca1de` | Os dois perfis compilam; **nada foi ligado nem tocado** |
+| Mapa da protoboard v0.4: fase F (SD) e fase G (alto-falante, ainda não montada) | `c330fb4` | `check_links.py` e `check_repo.py` |
+| Log de boot nomeia as chaves da memoria interna quando o cartão não tem configuração | `4a1191c` | Teste novo falhou antes (`usando os padroes` aparecia) e passa depois |
+| Periférico ausente vai ao log uma vez, não a cada nova tentativa | `5ab03a8` | Teste novo: 5 avisos em 65 s antes, 1 depois; a ligação depois do boot continua coberta pelo teste existente |
+| Pinos e peças com evidência de bancada | `3bf353c` | `check_pinmap.py` (27 sinais no `target`, 23 no `bench`) |
+| Botão de energia do `target` do GPIO 0 para o GPIO 2 (RTC, fora do strapping); a bancada continua no BOOT (GPIO 0) | `8e988b7` | `test_power_button_is_an_rtc_gpio_outside_the_strapping_pins` falhou antes (a bancada nem tinha botão de energia próprio) e passa; `static_assert` novo em `pins.h`; `check_pinmap.py` (27 sinais no `target`, 24 no `bench`) |
+| Pull-up de RTC no pino que acorda do sono profundo | `ba8be0e` | Só compilado: o sono profundo não roda no computador e não foi testado na placa |
+
+Testes no computador: 47 executáveis aprovados (`-DDBMO_SANITIZE=OFF`); `clang-format` 18
+sem diferenças; `pio run -e dbmo-bench -e dbmo-target` compila; `host_check.sh` do Retro-Go
+passa. Não executado: nada na placa.
+
 ### Vídeo de demonstração: rádio, microfone, IR e Retro-Go na placa (2026-11-25)
 
 Mesma montagem da entrada seguinte (fases A a E e o SD da tela, cartão `DBMO` inserido). Duas
@@ -721,9 +763,10 @@ passou por verificação independente. Isso deve ser refeito antes de confiar no
 
 | Item | Situação |
 |---|---|
-| Qualquer teste em hardware (`tests/hardware/`, firmware próprio na placa) | Não executado: sem acesso à bancada. A CI só prova que compila |
-| Bruce e Retro-Go na placa | Compilados na CI; **nunca gravados nem executados** |
-| Emuladores do Retro-Go e imagem completa (`build-img`) | Compilados em 24/11/2026 no contêiner `espressif/idf:v4.4.8`, no perfil de bancada (imagem de 6,5 MB; ver `firmware/retro-go/README.md`); nunca gravados |
+| Firmware próprio na placa | **Executado** de 21 a 25/11/2026 (entradas acima): tela, botões, menu, IR (recepção), CC1101 (identificação e recepção), microfone e SD. Ainda não: transmissão de IR, alto-falante, sono profundo e despertar, F1 com o barramento sem chip, F4 com o monitor digitando à mão |
+| Testes de `tests/hardware/` | `test_display` e `test_cc1101` rodaram na placa em 21/11 (4/4 cada); os demais não |
+| Bruce e Retro-Go na placa | Retro-Go **gravado e executado** em 25/11/2026 (imagem de bancada: launcher, SD e um jogo de Game Boy Color). Bruce gravado e usado antes do firmware próprio (ver `README.md`), não nesta série |
+| Emuladores do Retro-Go e imagem completa (`build-img`) | Compilados na CI no perfil de bancada; na placa, só o launcher e o emulador de Game Boy Color foram usados (25/11/2026). Os outros emuladores nunca rodaram |
 | Testes com clang + sanitizers | Não executado no computador de desenvolvimento (falta a biblioteca de runtime); a CI roda clang sem sanitizers |
-| Medições elétricas, de consumo e de RF | Não executadas |
+| Medições elétricas, de consumo e de RF | Só tensões de bancada (trilho de 3,3 V e pinos do CC1101, 21/11/2026). Consumo e RF: não executados |
 | Cobertura de ramos | Não medida (só a de linhas, acima) |

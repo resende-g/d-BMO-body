@@ -55,8 +55,13 @@ constexpr bool isRtcGpio(int gpio) { return gpio >= 0 && gpio <= 21; }
 // ---------------------------------------------------------------------------
 namespace target {
 
-inline constexpr int8_t kPowerButton = 0;  // strapping de boot: ver risco em GPIO_MAP.md
-inline constexpr int8_t kVbatSense = 1;    // ADC1; divisor 100k/100k
+// GPIO RTC fora dos pinos de strapping: acorda do deep sleep e não é lido como strap no reset.
+// Estava no GPIO 0 até 2026-11-25 (risco 1 do GPIO_MAP.md); o GPIO 0 ficou só como BOOT.
+inline constexpr int8_t kPowerButton = 2;
+inline constexpr int8_t kVbatSense = 1;  // ADC1; divisor 100k/100k, na placa de energia
+// Status do carregador, da placa de energia. GPIO RTC (acorda ao ligar o carregador) fora dos
+// pinos que a bancada usa (o IR da bancada está no 4 e no 5).
+inline constexpr int8_t kChargerStatus = 6;
 inline constexpr int8_t kAmpShutdown = 3;  // MAX98357A SD_MODE; strapping (JTAG)
 inline constexpr int8_t kI2sMicData = 7;   // INMP441 SD
 inline constexpr int8_t kI2cSda = 8;
@@ -73,49 +78,47 @@ inline constexpr int8_t kDisplayReset = 18;
 inline constexpr int8_t kUsbDm = 19;
 inline constexpr int8_t kUsbDp = 20;
 inline constexpr int8_t kSdCs = 21;
-inline constexpr int8_t kCartridgeCs = 38;  // na DevKitC, 38 ou 48 é o LED RGB (revisão)
 inline constexpr int8_t kIrRx = 39;
 inline constexpr int8_t kI2sBclk = 40;
 inline constexpr int8_t kI2sLrclk = 41;
-inline constexpr int8_t kI2sSpeakerData = 42;   // MAX98357A DIN
-inline constexpr int8_t kCartridgeUartTx = 43;  // UART0 TX
-inline constexpr int8_t kCartridgeUartRx = 44;  // UART0 RX
+inline constexpr int8_t kI2sSpeakerData = 42;  // MAX98357A DIN
 inline constexpr int8_t kIrTx = 47;
-inline constexpr int8_t kPowerHold = 48;  // power-latch
+inline constexpr int8_t kPowerHold = 48;  // power-latch, na placa de energia
 
 inline constexpr PinAssignment kPins[] = {
-    {"POWER_BUTTON", kPowerButton, PinStatus::ProposedAtRisk},
+    {"POWER_BUTTON", kPowerButton, PinStatus::Proposed},
     {"VBAT_SENSE", kVbatSense, PinStatus::Proposed},
+    {"CHARGER_STATUS", kChargerStatus, PinStatus::Proposed},
     {"AMP_SHUTDOWN", kAmpShutdown, PinStatus::Proposed},
-    {"I2S_MIC_DATA", kI2sMicData, PinStatus::Proposed},
+    {"I2S_MIC_DATA", kI2sMicData, PinStatus::BenchValidated},
     {"I2C_SDA", kI2cSda, PinStatus::Proposed},
     {"I2C_SCL", kI2cScl, PinStatus::Proposed},
     {"DISPLAY_CS", kDisplayCs, PinStatus::BenchValidated},
     {"SPI_MOSI", kSpiMosi, PinStatus::BenchValidated},
     {"SPI_SCK", kSpiSck, PinStatus::BenchValidated},
     {"SPI_MISO", kSpiMiso, PinStatus::BenchValidated},
-    {"CC1101_CS", kCc1101Cs, PinStatus::Proposed},
+    {"CC1101_CS", kCc1101Cs, PinStatus::BenchValidated},
     {"CC1101_GDO0", kCc1101Gdo0, PinStatus::Proposed},
     {"DISPLAY_BACKLIGHT", kDisplayBacklight, PinStatus::Proposed},
     {"DISPLAY_DC", kDisplayDc, PinStatus::BenchValidated},
     {"DISPLAY_RESET", kDisplayReset, PinStatus::BenchValidated},
     {"USB_DM", kUsbDm, PinStatus::ChipFixed},
     {"USB_DP", kUsbDp, PinStatus::ChipFixed},
-    {"SD_CS", kSdCs, PinStatus::Proposed},
-    {"CARTRIDGE_CS", kCartridgeCs, PinStatus::Proposed},
+    {"SD_CS", kSdCs, PinStatus::BenchValidated},
     {"IR_RX", kIrRx, PinStatus::Proposed},
-    {"I2S_BCLK", kI2sBclk, PinStatus::Proposed},
-    {"I2S_LRCLK", kI2sLrclk, PinStatus::Proposed},
+    {"I2S_BCLK", kI2sBclk, PinStatus::BenchValidated},
+    {"I2S_LRCLK", kI2sLrclk, PinStatus::BenchValidated},
     {"I2S_SPEAKER_DATA", kI2sSpeakerData, PinStatus::Proposed},
-    {"CARTRIDGE_UART_TX", kCartridgeUartTx, PinStatus::ProposedAtRisk},
-    {"CARTRIDGE_UART_RX", kCartridgeUartRx, PinStatus::ProposedAtRisk},
     {"IR_TX", kIrTx, PinStatus::Proposed},
     {"POWER_HOLD", kPowerHold, PinStatus::Proposed},
 };
 
-// Livres no perfil target. 2, 4, 5 e 6 (ADC1) eram dos analógicos, retirados do v1 em
-// 2026-11-25; 45 e 46 são de strapping.
-inline constexpr int8_t kFreePins[] = {2, 4, 5, 6, 45, 46};
+// Livres no perfil target. 4 e 5 (ADC1) eram dos analógicos, retirados do v1 em 2026-11-25 (o 2
+// virou o botão de energia e o 6 o status do carregador). 38, 43 e 44 eram do cartucho, também
+// retirado em 2026-11-25; 43 e 44 são a UART0, ligada ao conversor USB-serial da DevKitC. 0, 45 e
+// 46 são de strapping: o 0 fica só como BOOT (pad de teste ou botão interno), e 45 e 46 não podem
+// ser puxados no reset.
+inline constexpr int8_t kFreePins[] = {0, 4, 5, 38, 43, 44, 45, 46};
 
 }  // namespace target
 
@@ -128,13 +131,16 @@ namespace bench {
 inline constexpr int8_t kButtonUp = 39;
 inline constexpr int8_t kButtonOk = 2;  // GPIO RTC: acorda do deep sleep
 inline constexpr int8_t kButtonDown = 47;
+// Botão de energia da bancada: o BOOT da DevKitC. O GPIO 2, que é o do target, aqui é o OK.
+inline constexpr int8_t kPowerButton = 0;
 // IR no Bruce de bancada (ainda sem o módulo ligado).
 inline constexpr int8_t kIrRx = 4;
 inline constexpr int8_t kIrTx = 5;
 
 inline constexpr PinAssignment kPins[] = {
     {"BUTTON_OK", kButtonOk, PinStatus::BenchValidated},
-    {"IR_RX", kIrRx, PinStatus::Proposed},
+    {"POWER_BUTTON", kPowerButton, PinStatus::Proposed},
+    {"IR_RX", kIrRx, PinStatus::BenchValidated},
     {"IR_TX", kIrTx, PinStatus::Proposed},
     {"I2C_SDA", target::kI2cSda, PinStatus::Proposed},
     {"I2C_SCL", target::kI2cScl, PinStatus::Proposed},
@@ -142,20 +148,22 @@ inline constexpr PinAssignment kPins[] = {
     {"SPI_MOSI", target::kSpiMosi, PinStatus::BenchValidated},
     {"SPI_SCK", target::kSpiSck, PinStatus::BenchValidated},
     {"SPI_MISO", target::kSpiMiso, PinStatus::BenchValidated},
-    {"CC1101_CS", target::kCc1101Cs, PinStatus::Proposed},
+    {"CC1101_CS", target::kCc1101Cs, PinStatus::BenchValidated},
     {"CC1101_GDO0", target::kCc1101Gdo0, PinStatus::Proposed},
     {"DISPLAY_BACKLIGHT", target::kDisplayBacklight, PinStatus::Proposed},
     {"DISPLAY_DC", target::kDisplayDc, PinStatus::BenchValidated},
     {"DISPLAY_RESET", target::kDisplayReset, PinStatus::BenchValidated},
     {"USB_DM", target::kUsbDm, PinStatus::ChipFixed},
     {"USB_DP", target::kUsbDp, PinStatus::ChipFixed},
-    {"SD_CS", target::kSdCs, PinStatus::Proposed},
+    {"SD_CS", target::kSdCs, PinStatus::BenchValidated},
     {"BUTTON_UP", kButtonUp, PinStatus::BenchValidated},
     {"BUTTON_DOWN", kButtonDown, PinStatus::BenchValidated},
-    // Microfone INMP441 nos mesmos pinos I2S do target; sem amplificador na bancada.
-    {"I2S_BCLK", target::kI2sBclk, PinStatus::Proposed},
-    {"I2S_LRCLK", target::kI2sLrclk, PinStatus::Proposed},
-    {"I2S_MIC_DATA", target::kI2sMicData, PinStatus::Proposed},
+    // Microfone INMP441 e amplificador MAX98357A nos mesmos pinos I2S do target. O SD_MODE do
+    // amplificador não vai a um GPIO na bancada: a placa dele o mantém ligado.
+    {"I2S_BCLK", target::kI2sBclk, PinStatus::BenchValidated},
+    {"I2S_LRCLK", target::kI2sLrclk, PinStatus::BenchValidated},
+    {"I2S_MIC_DATA", target::kI2sMicData, PinStatus::BenchValidated},
+    {"I2S_SPEAKER_DATA", target::kI2sSpeakerData, PinStatus::Proposed},
 };
 
 }  // namespace bench
@@ -229,7 +237,10 @@ static_assert(detail::allUsable(bench::kPins), "perfil bench usa GPIO indisponí
 static_assert(detail::noDuplicates(bench::kPins), "perfil bench tem GPIO duplicado");
 static_assert(isAdc1Gpio(target::kVbatSense),
               "a leitura da bateria precisa estar no ADC1 (GPIO 1-10)");
-static_assert(isRtcGpio(target::kPowerButton) && isRtcGpio(bench::kButtonOk),
+static_assert(!isStrappingGpio(target::kPowerButton),
+              "botao de energia no target fora dos pinos de strapping (GPIO_MAP.md, risco 1)");
+static_assert(isRtcGpio(target::kPowerButton) && isRtcGpio(target::kChargerStatus) &&
+                  isRtcGpio(bench::kPowerButton) && isRtcGpio(bench::kButtonOk),
               "o pino que acorda do deep sleep precisa ser GPIO RTC (0-21)");
 
 }  // namespace dbmo::config

@@ -12,6 +12,8 @@
 #include <SPI.h>
 #include <Wire.h>
 #include <esp_heap_caps.h>
+#include <esp_ota_ops.h>
+#include <esp_partition.h>
 
 #include "dbmo/app/application.h"
 #include "dbmo/app/console.h"
@@ -43,6 +45,28 @@ class SerialConsoleOutput final : public dbmo::app::IConsoleOutput {
   void write(const char *text) override { Serial.print(text); }
 };
 
+// Troca para o Retro-Go na imagem combinada (tools/combine_retrogo.py): o boot passa à partição
+// "launcher" e a placa reinicia. O alvo dbmo-v1 do Retro-Go devolve o boot à partição "dbmo",
+// então qualquer reset volta para cá. Gravado sozinho (pio upload), não há "launcher" e o item
+// Jogos não aparece.
+class RetroGoSwitch final : public dbmo::app::IAppSwitch {
+ public:
+  bool gamesAvailable() const override { return launcher() != nullptr; }
+  dbmo::Status bootGames() override {
+    const esp_partition_t *target = launcher();
+    if (target == nullptr) return dbmo::Status::NotFound;
+    if (esp_ota_set_boot_partition(target) != ESP_OK) return dbmo::Status::IoError;
+    Serial.flush();
+    esp_restart();
+    return dbmo::Status::Ok;  // não chega aqui
+  }
+
+ private:
+  static const esp_partition_t *launcher() {
+    return esp_partition_find_first(ESP_PARTITION_TYPE_APP, ESP_PARTITION_SUBTYPE_ANY, "launcher");
+  }
+};
+
 // ---- Comum aos dois perfis ----
 esp32::ArduinoClock gClock;
 esp32::ArduinoGpio gGpio;
@@ -55,6 +79,7 @@ esp32::SdFileSystem gCard(SPI, static_cast<uint8_t>(pins::kSdCs), kSdHz);
 esp32::ArduinoSpiDevice gRadioSpi(SPI, pins::kCc1101Cs, pins::kSpiMiso,
                                   dbmo::config::spi::kCc1101Hz);
 esp32::DeepSleepControl gSleep;
+RetroGoSwitch gGames;
 Adafruit_ILI9341 gTft(&SPI, pins::kDisplayDc, pins::kDisplayCs, pins::kDisplayReset);
 
 #if defined(DBMO_PROFILE_TARGET)
@@ -68,7 +93,6 @@ esp32::ArduinoAdcChannel gBatteryAdc(static_cast<uint8_t>(pins::kVbatSense));
 dbmo::power::GpioPowerLatch gPowerLatch(gGpio, pins::kPowerHold);
 esp32::I2sAudio gAudio(pins::kI2sBclk, pins::kI2sLrclk, pins::kI2sSpeakerData, pins::kI2sMicData,
                        pins::kAmpShutdown);
-esp32::ArduinoSpiDevice gCartridgeSpi(SPI, pins::kCartridgeCs, pins::kSpiMiso, 1000000);
 esp32::RmtIrReceiver gIrReceiver(pins::kIrRx);
 esp32::RmtIrTransmitter gIrTransmitter(pins::kIrTx);
 #else
@@ -85,8 +109,10 @@ dbmo::input::GpioButtonSource gButtons(gGpio, kBenchButtons,
                                        sizeof(kBenchButtons) / sizeof(kBenchButtons[0]));
 esp32::RmtIrReceiver gIrReceiver(bench::kIrRx);
 esp32::RmtIrTransmitter gIrTransmitter(bench::kIrTx);
-// Só o microfone INMP441: sem saída de alto-falante nem pino do amplificador (-1).
-esp32::I2sAudio gAudio(pins::kI2sBclk, pins::kI2sLrclk, -1, pins::kI2sMicData, -1);
+// Microfone INMP441 e amplificador MAX98357A. O SD_MODE do amplificador fica com a placa dele
+// (sempre ligado), por isso não há pino de controle (-1).
+esp32::I2sAudio gAudio(pins::kI2sBclk, pins::kI2sLrclk, pins::kI2sSpeakerData, pins::kI2sMicData,
+                       -1);
 #endif
 
 dbmo::app::Hardware makeHardware() {
@@ -102,19 +128,19 @@ dbmo::app::Hardware makeHardware() {
   hw.irReceiver = &gIrReceiver;
   hw.irTransmitter = &gIrTransmitter;
   hw.sleep = &gSleep;
-  // Botão de energia no GPIO 0 (na DevKitC, o botão BOOT). Pino de strap: risco aberto
-  // registrado em docs/hardware/GPIO_MAP.md.
+  hw.appSwitch = &gGames;
   hw.powerButtonGpio = &gGpio;
-  hw.powerButtonPin = pins::kPowerButton;
 #if defined(DBMO_PROFILE_TARGET)
   hw.profile = "target";
+  hw.powerButtonPin = pins::kPowerButton;  // GPIO 2: RTC, fora dos pinos de strapping
   hw.batteryAdc = &gBatteryAdc;
   hw.powerSwitch = &gPowerLatch;
   hw.audioOutput = &gAudio.output();
   hw.audioInput = &gAudio.input();
-  hw.cartridgeSpi = &gCartridgeSpi;
 #else
   hw.profile = "bench";
+  hw.powerButtonPin = bench::kPowerButton;  // BOOT da DevKitC; o GPIO 2 é o OK
+  hw.audioOutput = &gAudio.output();
   hw.audioInput = &gAudio.input();
 #endif
   return hw;
@@ -144,9 +170,6 @@ void parkChipSelects() {
       pins::kDisplayCs,
       pins::kCc1101Cs,
       pins::kSdCs,
-#if defined(DBMO_PROFILE_TARGET)
-      pins::kCartridgeCs,
-#endif
   };
   for (int8_t cs : chipSelects) {
     pinMode(static_cast<uint8_t>(cs), OUTPUT);

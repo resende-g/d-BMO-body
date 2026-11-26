@@ -95,6 +95,7 @@ void use_everything(void)
 /* O que cada perfil tem que conter */
 _Static_assert(sizeof(RG_TARGET_NAME) == sizeof("DBMO-V1"), "a cadeia de alvos nao escolheu o dbmo-v1");
 _Static_assert(RG_UPDATER_ENABLE == 0, "o atualizador deve ficar desligado");
+_Static_assert(sizeof(RG_APP_FACTORY) == sizeof("dbmo"), "a volta ao d-BMO usa a particao \"dbmo\"");
 _Static_assert(RG_SCREEN_WIDTH == 320 && RG_SCREEN_HEIGHT == 240, "tela 320x240");
 
 #if DBMO_RG_BENCH

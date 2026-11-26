@@ -32,6 +32,18 @@
 
 namespace dbmo::app {
 
+// Troca para outro firmware gravado na mesma flash: o Retro-Go, na imagem combinada
+// (tools/combine_retrogo.py). Na placa, o boot passa ao launcher e a placa reinicia; o Retro-Go
+// devolve o boot ao d-BMO, então qualquer reset volta para cá.
+class IAppSwitch {
+ public:
+  virtual ~IAppSwitch() = default;
+  // true se o outro firmware está gravado (na placa, a partição "launcher").
+  virtual bool gamesAvailable() const = 0;
+  // Marca o boot no outro firmware e reinicia. Só retorna se falhar.
+  virtual Status bootGames() = 0;
+};
+
 // O hardware que existe nesta montagem. Só o relógio e a tela são obrigatórios; todo o
 // resto pode faltar (na bancada de hoje falta quase tudo).
 struct Hardware {
@@ -61,6 +73,8 @@ struct Hardware {
   ISpiDevice *cartridgeSpi = nullptr;
   cartridges::ISerialPort *cartridgeUart = nullptr;
 
+  IAppSwitch *appSwitch = nullptr;
+
   // Nome do perfil de compilação ("bench" ou "target"), mostrado na tela Sobre.
   const char *profile = nullptr;
 };
@@ -84,6 +98,9 @@ class ConfigPersistence final : public ISubsystem {
   // Grava já, no cartão se houver, senão na guarda alternativa. NotFound se não há onde.
   Status saveNow();
   bool loadedFromCard() const { return loadedFromCard_; }
+  // Quantas chaves a guarda alternativa aplicou no começo do boot (Application::begin), para o
+  // log não dizer "padroes" quando os valores dela é que valem.
+  void noteFallbackLoaded(uint16_t keys) { fallbackKeys_ = keys; }
 
  private:
   IConfigBackend *backend();
@@ -92,6 +109,7 @@ class ConfigPersistence final : public ISubsystem {
   storage::StorageSubsystem &storage_;
   IConfigBackend *fallback_;
   bool loadedFromCard_ = false;
+  uint16_t fallbackKeys_ = 0;
   bool pending_ = false;
   uint32_t dirtySinceMs_ = 0;
   uint32_t retryAtMs_ = 0;
@@ -200,6 +218,7 @@ class Application {
   void composeInfrared();
   void composeRadio();
   void composeButtons();
+  void composeGames();
   void composeAbout();
 
   Hardware hw_;
@@ -249,6 +268,8 @@ class Application {
   Status irLearnStatus_ = Status::Ok;
   bool radioToggled_ = false;
   Status radioToggleStatus_ = Status::Ok;
+  bool gamesTried_ = false;  // a troca foi pedida e voltou: falhou
+  Status gamesStatus_ = Status::Ok;
 };
 
 }  // namespace dbmo::app

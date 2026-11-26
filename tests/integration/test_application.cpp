@@ -63,6 +63,26 @@ class FakeAudioInput final : public dbmo::audio::IAudioInput {
   bool running = false;
 };
 
+// Troca para o Retro-Go: registra se a configuração já estava no cartão quando a troca foi
+// pedida, porque depois dela a placa reinicia.
+class FakeAppSwitch final : public dbmo::app::IAppSwitch {
+ public:
+  explicit FakeAppSwitch(dbmo::sim::MemoryFileSystem &card) : card_(card) {}
+  bool gamesAvailable() const override { return installed; }
+  Status bootGames() override {
+    ++boots;
+    configOnCardAtBoot = card_.exists(dbmo::storage::kConfigFile);
+    return result;
+  }
+  bool installed = true;
+  int boots = 0;
+  bool configOnCardAtBoot = false;
+  Status result = Status::Ok;
+
+ private:
+  dbmo::sim::MemoryFileSystem &card_;
+};
+
 class FakeIrReceiver final : public dbmo::infrared::IIrReceiver {
  public:
   Status begin() override { return Status::Ok; }
@@ -429,6 +449,55 @@ void test_menu_radio_screen_only_toggles_reception() {
   TEST_ASSERT_EQUAL_UINT(0, rig->radioChip.transmitCount);
 }
 
+void test_menu_games_item_is_hidden_without_an_app_switch() {
+  Application app(rig->fullHardware());  // sem troca de firmware
+  TEST_ASSERT_OK(app.begin());
+  rig->run(app, 100);
+  TEST_ASSERT_FALSE(app.menu().available(dbmo::app::MenuItem::Games));
+}
+
+// Uma aplicação por teste: ela registra a saída de log dela no logger global.
+void test_menu_games_item_needs_the_other_firmware() {
+  FakeAppSwitch games(rig->card);
+  games.installed = false;  // firmware do d-BMO gravado sozinho, sem o Retro-Go
+  Hardware hw = rig->fullHardware();
+  hw.appSwitch = &games;
+  Application app(hw);
+  TEST_ASSERT_OK(app.begin());
+  rig->run(app, 100);
+  TEST_ASSERT_FALSE(app.menu().available(dbmo::app::MenuItem::Games));
+}
+
+void test_menu_games_saves_the_config_and_switches_firmware() {
+  FakeAppSwitch games(rig->card);
+  Hardware hw = rig->fullHardware();
+  hw.appSwitch = &games;
+  Application app(hw);
+  TEST_ASSERT_OK(app.begin());
+  rig->run(app, 100);
+  TEST_ASSERT_TRUE(app.menu().available(dbmo::app::MenuItem::Games));
+  TEST_ASSERT_FALSE(rig->card.exists(dbmo::storage::kConfigFile));
+
+  rig->click(app, mcp::kActionA);
+  for (int i = 0; i < 4; ++i) rig->click(app, mcp::kDpadDown);
+  rig->click(app, mcp::kActionA);
+  TEST_ASSERT_EQUAL_STRING("Jogos", app.menuScreen().line(0));
+  TEST_ASSERT_TRUE(screenHas(app, "OK: abrir o Retro-Go"));
+  TEST_ASSERT_EQUAL_INT(0, games.boots);  // entrar no item não troca nada
+
+  rig->click(app, mcp::kActionA);
+  TEST_ASSERT_EQUAL_INT(1, games.boots);
+  TEST_ASSERT_TRUE(games.configOnCardAtBoot);  // gravada antes de reiniciar
+
+  // Se a troca falhar, o d-BMO segue e mostra o motivo.
+  games.result = Status::NotFound;
+  rig->click(app, mcp::kActionA);
+  TEST_ASSERT_EQUAL_INT(2, games.boots);
+  TEST_ASSERT_TRUE(screenHas(app, "falhou: NotFound"));
+  TEST_ASSERT_TRUE(app.system().state() == SystemState::Running ||
+                   app.system().state() == SystemState::Degraded);
+}
+
 void test_menu_buttons_and_about_screens() {
   Hardware hw = rig->fullHardware();
   hw.profile = "bench";
@@ -778,22 +847,25 @@ void test_received_infrared_code_is_written_to_the_log_once() {
   // segurada o quadro volta a cada ~110 ms (RC5, por exemplo): só o primeiro vai ao log.
   rig->run(app, 500);
   sink.clear();
-  rig->irReceiver.next.count = 5;
+  // 25 durações, tamanho de um quadro RC5; quadros com menos de 8 são ruído e nem chegam aqui.
+  rig->irReceiver.next.count = 25;
   for (int frame = 0; frame < 9; ++frame) {
     rig->irReceiver.pending = true;
     rig->run(app, 114);
   }
-  TEST_ASSERT_EQUAL_UINT(1, sink.countContaining("infravermelho: sinal desconhecido (5 duracoes)"));
+  TEST_ASSERT_EQUAL_UINT(1,
+                         sink.countContaining("infravermelho: sinal desconhecido (25 duracoes)"));
   rig->run(app, 500);  // soltou e apertou de novo
   rig->irReceiver.pending = true;
   rig->run(app, 10);
   TEST_ASSERT_EQUAL_UINT(2, sink.countContaining("infravermelho: sinal desconhecido"));
   // Outra tecla logo em seguida, com outro tamanho: é um sinal novo.
   rig->run(app, 150);
-  rig->irReceiver.next.count = 7;
+  rig->irReceiver.next.count = 27;
   rig->irReceiver.pending = true;
   rig->run(app, 10);
-  TEST_ASSERT_EQUAL_UINT(1, sink.countContaining("infravermelho: sinal desconhecido (7 duracoes)"));
+  TEST_ASSERT_EQUAL_UINT(1,
+                         sink.countContaining("infravermelho: sinal desconhecido (27 duracoes)"));
   dbmo::logger().clearSinks();
 }
 
@@ -935,6 +1007,51 @@ void test_mic_command_records_only_when_enabled_and_logs_the_peak() {
   dbmo::logger().clearSinks();
 }
 
+void test_boot_log_says_internal_memory_values_apply_when_the_card_has_no_config() {
+  // Bancada, 2026-11-25: com o cartão sem arquivo, o log dizia "usando os padroes" enquanto
+  // o microfone seguia habilitado pela memória interna.
+  dbmo::mock::RecordingLogSink sink;
+  TEST_ASSERT_OK(dbmo::logger().addSink(&sink));
+  rig->nvs.setText("audio.mic_enabled=1\n");
+  Application app(rig->fullHardware());
+  TEST_ASSERT_OK(app.begin());
+  rig->run(app, 50);
+  TEST_ASSERT_TRUE(app.config().getBool(dbmo::audio::config_key::kMicEnabled).value());
+  TEST_ASSERT_FALSE(sink.contains("usando os padroes"));
+  TEST_ASSERT_TRUE(
+      sink.contains("nenhuma configuracao no cartao: valem 1 chaves da memoria interna"));
+  dbmo::logger().clearSinks();
+}
+
+void test_absent_peripheral_is_reported_once_not_at_every_retry() {
+  // Bancada, 2026-11-22: sem PN532, o log repetia "PN532 nao respondeu" e "nfc: hardware
+  // ausente" a cada nova tentativa, a cada 15 s.
+  dbmo::mock::RecordingLogSink sink;
+  TEST_ASSERT_OK(dbmo::logger().addSink(&sink));
+  Hardware hw;
+  hw.clock = &rig->clock;
+  hw.display = &rig->display;
+  Application app(hw);
+  TEST_ASSERT_OK(app.begin());
+  rig->run(app, 65000);
+  TEST_ASSERT_EQUAL(SubsystemState::Absent, stateOf(app, "nfc"));
+  TEST_ASSERT_EQUAL_UINT(1, sink.countContaining("PN532 nao respondeu"));
+  TEST_ASSERT_EQUAL_UINT(1, sink.countContaining("nfc: hardware ausente"));
+  TEST_ASSERT_TRUE(sink.countContaining("CC1101 nao respondeu") <= 1);
+  TEST_ASSERT_EQUAL_UINT(1, sink.countContaining("radio: hardware ausente"));
+  dbmo::logger().clearSinks();
+}
+
+void test_boot_log_says_defaults_when_nothing_is_saved_anywhere() {
+  dbmo::mock::RecordingLogSink sink;
+  TEST_ASSERT_OK(dbmo::logger().addSink(&sink));
+  Application app(rig->fullHardware());
+  TEST_ASSERT_OK(app.begin());
+  rig->run(app, 50);
+  TEST_ASSERT_TRUE(sink.contains("nenhuma configuracao salva: usando os padroes"));
+  dbmo::logger().clearSinks();
+}
+
 void test_mic_command_uses_the_longer_buffer_the_platform_gives() {
   // Na placa, main.cpp entrega um buffer na PSRAM: o rosto "ouvindo" passa de 1 s para 10 s.
   dbmo::mock::RecordingLogSink sink;
@@ -1062,6 +1179,9 @@ int main() {
   RUN_TEST(test_menu_status_shows_absent_subsystems_and_hides_their_items);
   RUN_TEST(test_menu_radio_screen_only_toggles_reception);
   RUN_TEST(test_menu_buttons_and_about_screens);
+  RUN_TEST(test_menu_games_item_is_hidden_without_an_app_switch);
+  RUN_TEST(test_menu_games_item_needs_the_other_firmware);
+  RUN_TEST(test_menu_games_saves_the_config_and_switches_firmware);
   RUN_TEST(test_idle_menu_redraws_nothing_and_returns_to_the_face);
   RUN_TEST(test_missing_required_hardware_is_refused);
   RUN_TEST(test_button_press_reaches_the_event_bus);
@@ -1084,6 +1204,9 @@ int main() {
   RUN_TEST(test_peripheral_connected_after_boot_is_picked_up);
   RUN_TEST(test_mic_command_records_only_when_enabled_and_logs_the_peak);
   RUN_TEST(test_mic_command_uses_the_longer_buffer_the_platform_gives);
+  RUN_TEST(test_boot_log_says_internal_memory_values_apply_when_the_card_has_no_config);
+  RUN_TEST(test_boot_log_says_defaults_when_nothing_is_saved_anywhere);
+  RUN_TEST(test_absent_peripheral_is_reported_once_not_at_every_retry);
   RUN_TEST(test_console_commands);
   RUN_TEST(test_long_run_is_stable);
   return UNITY_END();

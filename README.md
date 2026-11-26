@@ -70,7 +70,7 @@ soldar, entender barramentos e escrever firmware.
 
 ## Status
 
-**Bancada:** ESP32-S3 DevKitC-1 N16R8, tela ILI9341 e 3 botões testados, com o Bruce rodando; CC1101 recebido, ainda sem teste por falta de jumpers fêmea. **Plataforma confirmada em 02/11/2026: ESP32-S3 N16R8** (ver [Pinagem](#pinagem-esp32-s3-n16r8)).
+**Bancada (25/11/2026):** ESP32-S3 DevKitC-1 N16R8 com o firmware próprio: tela ILI9341, 3 botões, menu, receptor de IR, CC1101 (identificação e recepção), microfone INMP441 e o SD da tela, com tela, CC1101 e SD dividindo o SPI. O Retro-Go rodou um jogo de Game Boy Color na mesma montagem. Registro em [`docs/testing/TESTING.md`](docs/testing/TESTING.md). **Plataforma confirmada em 02/11/2026: ESP32-S3 N16R8** (ver [Pinagem](#pinagem-esp32-s3-n16r8)).
 
 **Firmware próprio (12/11/2026):** além do Bruce e do Retro-Go, o repositório passou a ter um
 firmware próprio modular em `firmware/` (núcleo, rosto, controles, áudio, rádio, NFC,
@@ -135,11 +135,11 @@ digitar comando faz sentido. Fora do escopo deste repositório por enquanto.
 | ESP32-S3 DevKitC-1 N16R8 | 1 | já disponível | **Placa principal** (16 MB flash, 8 MB PSRAM octal, WiFi + BLE no chip, antena de trilha). Já validada com tela, 3 botões e Bruce. Na PCB final, usar o módulo ESP32-S3-WROOM-1-N16R8 (conferir estoque na JLCPCB) |
 | MCP23017 (expansor de I/O I²C) | 1–2 | `MCP23017 DIP-28` | **A comprar.** Corrigido em 21/11/2026: o usuário não tem o chip; a afirmação anterior ("o usuário tem 2") não tinha origem confirmada. Sem ele, a bancada usa botões direto nos GPIO (perfil `dbmo-bench`). Um lê os botões por I²C (0x20): **14 entradas**, porque GPA7 e GPB7 são só saída na revisão D do datasheet (ver [`docs/hardware/COMPONENT_MATRIX.md`](docs/hardware/COMPONENT_MATRIX.md)); o segundo (0x21) é opcional, para vibração e GPIOs do cartucho |
 | TFT 3,2" ILI9341 320×240 SPI | 1 | `3.2 ILI9341 320x240 SPI no touch` | Já comprada e validada (MSP3218 touch); pinos T_* sem ligação no v1. Tela única: rosto + menu + status |
-| CC1101 433 MHz + antena SMA | 1 | `CC1101 433MHz module SMA antenna` | Já chegou; falta testar na bancada (jumpers fêmea-fêmea) |
-| PN532 V3 NFC | 1 | `PN532 NFC module V3` | **Comprado em 02/11/2026** (aguardando entrega): "PN532 Set", R$ 17,20. DIP switch em I²C; endereço e compatibilidade a validar |
-| Conjunto IR transmissor + receptor 38 kHz | 1 | `IR transmitter receiver 38kHz kit` | **Comprado em 02/11/2026** (aguardando entrega): "1set", R$ 7,03. Conferir que o conjunto traz TX e RX |
-| MAX98357A (amp I²S) | 1 | `MAX98357A I2S amplifier` | **Comprado em 02/11/2026** (aguardando entrega): variação "Small Chip Welding" (chip BGA, pinos soldados), R$ 8,36. Alimentado direto da bateria (2,5–5,5 V); pino SD no GPIO 3 |
-| Alto-falante 2030, 8 Ω 2 W | 1 | `2030 8 ohm 2W speaker` | **Comprado em 02/11/2026** (aguardando entrega): R$ 7,44. Conferir dimensões e cavidade acústica |
+| CC1101 433 MHz + antena SMA | 1 | `CC1101 433MHz module SMA antenna` | Testado na bancada (21 a 25/11/2026): identificação e recepção; transmissão nunca habilitada |
+| PN532 V3 NFC | 1 | `PN532 NFC module V3` | Recebido ("PN532 Set", R$ 17,20). Barra de pinos não soldada: fica para depois da solda. DIP switch em I²C; endereço e compatibilidade a validar |
+| Conjunto IR transmissor + receptor 38 kHz | 1 | `IR transmitter receiver 38kHz kit` | Recebido ("1set", R$ 7,03): traz TX e RX. Receptor testado na bancada (NEC); transmissor nunca enviou |
+| MAX98357A (amp I²S) | 1 | `MAX98357A I2S amplifier` | Recebido: variação "Small Chip Welding" (pinos soldados, borne de parafuso para o alto-falante), R$ 8,36. Alimentado direto da bateria (2,5–5,5 V); pino SD no GPIO 3 no v1. Ainda não ligado |
+| Alto-falante 2030, 8 Ω 2 W | 1 | `2030 8 ohm 2W speaker` | Recebido, R$ 7,44. Conferir dimensões, resistência e cavidade acústica |
 | Mic INMP441 (I²S) | 1 | `INMP441 I2S microphone` | **Comprado em 02/11/2026** (aguardando entrega): R$ 12,14. Captação de voz |
 | Cartões microSD | 2 | já disponível | ADATA de 16 GB e um segundo de 8 GB, cada um já num adaptador microSD→SD; não comprar. Formatar em FAT32. Entram no **slot SD do módulo da tela**: o MSP3218 tem slot de **SD tamanho normal** no verso (confirmado em 02/11/2026), então o cartão vai com o **adaptador microSD→SD**. Conferir se há chip buffer perto do slot (se houver, testar o SPI compartilhado). Na carcaça v0, o cartão fica atrás da tela, com troca rara. Na PCB final, slot microSD próprio na tampa traseira |
 | Bateria LiPo 3,7V 1S 4000 mAh (anúncio) | 1 | `4070115 3.7V 4000mAh` | Selecionada; R$ 59,48; compra não confirmada. Dimensão informada: 0,4 × 70 × 115 mm (provavelmente 4,0 × 70 × 115 mm; confirmar medida real). **Requisitos:** PCM de proteção integrado, termistor NTC (3 fios) e vendedor com datasheet. **Conferir a polaridade do JST antes de ligar**: baterias do AliExpress vêm invertidas com frequência, e a inversão queima o carregador. Se a bateria não tiver o terceiro fio, um NTC avulso serve: 10 kΩ (marcado "103"), constante B compatível com o datasheet do carregador (3435 ou 3950), colado na célula com fita kapton, sem criar ponto de pressão. O usuário já tem um sensor de temperatura: confirmar se é NTC analógico (serve) ou digital tipo DS18B20/DHT11 (não serve para o pino TS do carregador). Ver [Riscos da bateria](#riscos-da-bateria-e-recomendações) |
@@ -212,26 +212,26 @@ serigrafia da placa.
 
 | Função | GPIO | Nota |
 |---|---:|---|
-| VBAT sense | 1 | ADC1; divisor 100k/100k, ×2 no firmware |
+| VBAT sense | 1 | ADC1; divisor 100k/100k, ×2 no firmware. Vem da placa de energia pelo conector placa a placa |
 | I²S SD IN (mic) | 7 | mic em 3,3 V, L/R no GND |
 | I²C SDA / SCL | 8 / 9 | pull-up 4,7k; PN532 0x24, MCP23017 0x20, EEPROM do cartucho |
 | CS Display | 10 | |
-| SPI MOSI / SCK / MISO | 11 / 12 / 13 | compartilhado: tela, CC1101, microSD, cartucho |
+| SPI MOSI / SCK / MISO | 11 / 12 / 13 | compartilhado: tela, CC1101, microSD |
 | CS CC1101 | 14 | |
 | CC1101 GDO0 | 15 | interrupção RF |
 | Display BLK | 16 | backlight (3,3 V fixo ou PWM) |
 | Display DC / RES | 17 / 18 | |
 | USB D− / D+ | 19 / 20 | USB nativo (gravação, serial CDC, BadUSB) |
 | CS microSD | 21 | slot do módulo da tela |
-| Botão de energia | 0 | strapping; GPIO RTC, acorda do deep sleep. **Risco aberto:** GPIO 0 em nível baixo na saída do reset entra em modo de download; se o mesmo botão liga a alimentação, o aparelho pode não ligar (ver [`docs/hardware/GPIO_MAP.md`](docs/hardware/GPIO_MAP.md), risco 1) |
+| Botão de energia | 2 | GPIO RTC (acorda do deep sleep) fora dos pinos de strapping. Estava no GPIO 0 até 2026-11-25: segurar o botão ao ligar entraria no modo de download e o aparelho não ligaria. O GPIO 0 fica só como BOOT (ver [`docs/hardware/GPIO_MAP.md`](docs/hardware/GPIO_MAP.md), risco 1) |
 | Shutdown do MAX98357A (SD) | 3 | strapping (JTAG); seguro como saída depois do boot |
-| CS do cartucho | 38 | na DevKitC, 38 ou 48 é o LED RGB, conforme a revisão: na bancada, usar o que não for LED |
 | IR RX | 39 | |
 | I²S BCLK / LRC / DOUT | 40 / 41 / 42 | DOUT para o MAX98357A |
-| UART do cartucho TX / RX | 43 / 44 | UART0. **Risco aberto:** mesmo com o console no USB, a ROM imprime o log de boot no GPIO 43 a cada partida (ver `docs/hardware/GPIO_MAP.md`, risco 2) |
-| Power-latch (HOLD) | 48 | segura a alimentação ligada depois do clique no botão |
+| Power-latch (HOLD) | 48 | segura a alimentação ligada depois do clique no botão; vai à placa de energia |
+| Status do carregador | 6 | GPIO RTC: acorda o chip ao ligar o carregador; vem da placa de energia |
 | IR TX | 47 | |
-| Livre | 2, 4, 5, 6 | ADC1; eram dos analógicos, retirados em 25/11/2026. Na bancada, o 2 é o botão OK e o 4 / 5 são o IR RX / TX no `bmo.ini` |
+| Livre | 4, 5 | ADC1; eram dos analógicos, retirados em 25/11/2026. Na bancada, o 4 / 5 são o IR RX / TX no `bmo.ini` |
+| Livre | 38, 43, 44 | eram do cartucho, retirado em 25/11/2026. 38: LED RGB na DevKitC v1.1. 43 / 44: UART0, com o log de boot da ROM e a ponte USB-serial da DevKitC |
 | Livre | 45, 46 | strapping: o 45 define a tensão da flash no boot, **não usar** como saída que possa estar em alto no boot |
 
 **MCP23017 (0x20):** 10 botões (D-pad 4, ação 4, select/start 2), botão ao GND com pull-up

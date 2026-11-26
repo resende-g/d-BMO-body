@@ -324,6 +324,13 @@ Alternativas (nenhuma decidida aqui):
   módulo em deep sleep, medido pela Espressif, é de 6,8 a 8,14 µA (S3-PWR-14, S3-PWR-15), o que
   sozinho ocupa quase toda a meta de "corrente desligado ≤ ~10 µA" do README.
 
+**Decisão (2026-11-25): alternativa A.** Com os analógicos fora do v1, o GPIO 2 ficou livre: é
+RTC_GPIO2 (S3-RTC-01) e não está entre os pinos de strapping (S3-STRAP-01). O botão de energia
+foi para ele em `pins.h`, e o GPIO 0 fica só como BOOT. No reset, o GPIO 2 é entrada sem pull
+(S3-GPIO-08): o botão ativo em nível baixo precisa do pull-up interno (o firmware o liga) ou de
+um resistor externo, e o pull-up RTC para o despertar do deep sleep. Nada disso foi medido; a
+bancada continua usando o BOOT (GPIO 0) como botão de energia, porque o GPIO 2 é o OK dela.
+
 Evidência que falta:
 
 - Leitura do capítulo "Boot Configurations" do datasheet (DS-SOC).
@@ -340,7 +347,7 @@ Leitura da pinagem do README e de `pins.h` à luz das evidências acima. Nada aq
 | SPI em GPIO10/11/12/13 (tela, CC1101, SD, cartucho) | Coincide com os pinos IO_MUX do SPI2 (S3-SPI-01). Até 40 MHz, matriz e IO_MUX se comportam igual (S3-SPI-03). O README registra a tela funcionando nesses pinos a 10 MHz | Mapa IO_MUX: CONFIRMADO (fabricante). Tela a 10 MHz: VALIDADO EM BANCADA. Barramento com CC1101, SD e cartucho: PENDENTE DE VALIDAÇÃO FÍSICA |
 | VBAT em GPIO1 | É o ADC1_CH0 (S3-ADC-01). Os analógicos em GPIO2/4/5/6 (ADC1_CH1, CH3, CH4 e CH5) saíram do v1 em 2026-11-25 | Canal: CONFIRMADO (fabricante). Uso: PROPOSTO |
 | VBAT com divisor 100k/100k | 4,2 V viram 2,1 V, dentro da faixa efetiva de 0–2900 mV em ATTEN3, com erro total de ±50 mV no pino (S3-ADC-09), ou seja, cerca de ±100 mV na bateria depois do ×2. O fabricante pede 0,1 µF no pino (S3-ADC-10) | PROPOSTO; PENDENTE DE VALIDAÇÃO FÍSICA |
-| Botão de energia em GPIO0 | Ver seção 6 | PROPOSTO com risco aberto; PENDENTE DE VALIDAÇÃO FÍSICA |
+| Botão de energia em GPIO2 (era GPIO0 até 2026-11-25) | Ver seção 6, decisão | PROPOSTO; PENDENTE DE VALIDAÇÃO FÍSICA |
 | Shutdown do MAX98357A em GPIO3 | Strap de JTAG só atua com o eFuse `STRAP_JTAG_SEL` queimado (S3-STRAP-13). No reset o pino fica flutuante (S3-STRAP-14) e tem glitch de nível baixo de cerca de 60 µs (S3-GLT-01). Ocupa o canal ADC1_CH2 | PROPOSTO; estado do amplificador durante o boot: PENDENTE DE VALIDAÇÃO FÍSICA |
 | UART do cartucho em GPIO43/44 | É o UART0: a ROM imprime o log de boot em U0TXD por padrão (S3-STRAP-16, S3-UART-04), U0RXD é entrada de download em Joint Download Boot, e o fabricante recomenda outro UART para a aplicação (S3-UART-03). Na DevKitC esses pinos também estão na ponte USB-UART (DKC-06, DKC-07) | PROPOSTO com risco aberto |
 | POWER_HOLD em GPIO48 | Não é GPIO RTC: domínio VDD_SPI / VDD3P3_CPU (S3-GPIO-09); em deep sleep só se mantém com `gpio_deep_sleep_hold_en` (S3-RTC-08). No reset fica como entrada sem pull (S3-GPIO-08): o latch precisa de estado padrão definido por resistor externo. Na DevKitC v1.0 é o LED RGB (DKC-01) | PROPOSTO; PENDENTE DE VALIDAÇÃO FÍSICA |

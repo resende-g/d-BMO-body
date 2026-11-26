@@ -82,11 +82,15 @@ Status NfcSubsystem::init() {
 
   const Status status = bringUp();
   if (!isOk(status)) {
-    DBMO_LOGW(kTag, "PN532 nao respondeu: %s", toString(status));
+    // Só a primeira falha (ou uma falha diferente) vai ao log: o System tenta de novo de tempos
+    // em tempos, à espera de o módulo ser ligado.
+    if (status != lastInitFailure_) DBMO_LOGW(kTag, "PN532 nao respondeu: %s", toString(status));
+    lastInitFailure_ = status;
     // Para o System, qualquer falha de identificação é ausência do periférico.
     return status == Status::IoError ? status : Status::HardwareAbsent;
   }
   initialized_ = true;
+  lastInitFailure_ = Status::Ok;
   lastScanMs_ = clock_.nowMs();
   DBMO_LOGI(kTag, "PN532 firmware %u.%u; busca %s", static_cast<unsigned>(firmware_.version),
             static_cast<unsigned>(firmware_.revision), wantScan_ ? "ligada" : "desligada");

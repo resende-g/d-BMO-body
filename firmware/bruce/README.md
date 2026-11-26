@@ -192,9 +192,12 @@ software.
   trava **não foi conferida por leitura** (o core não está disponível aqui).
 - **Sem resposta do MCP23017:** nenhum botão é reportado e a configuração é refeita na
   tentativa seguinte (5 por segundo). O aparelho fica sem entrada, mas não trava.
-- **Acordar do deep sleep:** os botões do MCP não acordam o chip. O ambiente usa o GPIO 0
-  (botão BOOT da DevKitC; botão de energia do perfil target), como várias placas S3 do Bruce
-  (`boards/ES3C28P/pins_arduino.h:219`, `boards/lilygo-t-deck/pins_arduino.h:74`).
+- **Acordar do deep sleep:** os botões do MCP não acordam o chip. O ambiente usa o GPIO 2, o
+  botão de energia do perfil target desde 2026-11-25 (na bancada, o OK). Até então usava o
+  GPIO 0, o botão BOOT da DevKitC, como várias placas S3 do Bruce
+  (`boards/ES3C28P/pins_arduino.h:219`, `boards/lilygo-t-deck/pins_arduino.h:74`); o GPIO 0
+  saiu porque segurá-lo ao ligar entra no modo de download (`docs/hardware/GPIO_MAP.md`,
+  risco 1).
 - **Troca de flags por herança:** `build_unflags` com o texto exato da flag herdada é o padrão
   do Bruce (`boards/m5stack-cplus1_1/m5stack-cplus1_1.ini:152-153`,
   `boards/elecrow/elecrow.ini:246-251`). Se a retirada de `HAS_3_BUTTONS` falhar, o
@@ -218,7 +221,7 @@ de cada flag em `src/`, `include/` e `lib/` do Bruce 1.16.1.
 | A9 | A serial e o GPS do Bruce usam por padrão os pinos do I2C (8/9) | `include/precompiler_flags.h:139-153` | Mantido; não usar GPS/serial externa pelo menu até a etapa da UART |
 | A10 | `SPI_SS_PIN=14` é o mesmo CS do CC1101. O leitor RC522 por SPI usaria esse CS. O upstream faz igual (`SPI_SS_PIN` = `CC1101_SS_PIN` = 10) | `src/modules/rfid/RFID2.h:43`; `boards/ESP-General/ESP-General.ini:99,116` | Mantido; no perfil target o CS de expansão é o do cartucho (38) |
 | A11 | Áudio I2S não configurado. O Bruce espera `HAS_NS4168_SPKR` com `BCLK`, `WCLK`, `DOUT`, `MCLK` para o alto-falante e `MIC_INMP441` com `PIN_CLK`, `PIN_WS`, `PIN_DATA` para o microfone; o pino de shutdown do amplificador entraria pelo gancho `_setup_codec_speaker()` | `src/modules/others/audio.cpp:8,18-19,132`; `src/modules/others/mic.cpp:2,141-156`; `boards/smoochiee-board/smoochiee-board.ini:27` | Não acrescentado: MAX98357A e INMP441 ainda não ligados |
-| A12 | O pino padrão do iButton é o GPIO 0, o botão de energia do perfil target | `src/core/configPins.h:236` | Mantido; anotado |
+| A12 | O pino padrão do iButton é o GPIO 0, só BOOT no perfil target desde 2026-11-25 | `src/core/configPins.h:236` | Mantido; anotado |
 | A13 | A placa `ESP-General` declara 8 MB de flash; o `bmo.ini` troca para 16 MB e para a tabela `custom_16Mb.csv` (aplicativo de 0x470000 bytes), sem trocar `maximum_size` | `boards/_boards_json/ESP-General.json:45-47`; `custom_16Mb.csv:3` | Mantido (é a configuração que rodou na bancada); o limite de tamanho efetivo fica para a CI mostrar |
 | A14 | `lib_ignore = FastLED` é coerente: o Bruce só inclui a FastLED com `HAS_RGB_LED` | `src/core/led_control.cpp:6-10` | Nenhuma |
 | A15 | `powerOff()` vazio escondia o aviso "Not available" do Bruce; o deep sleep padrão não apagava a tela nem ligava o pull-up RTC | `src/core/mykeyboard.cpp:1378-1391` | **Implementados** (ver Energia) |
@@ -230,12 +233,12 @@ alguns desses GPIOs para outra coisa ou os deixa livres:
 
 | GPIO | `bmo.ini` hoje | Perfil target (`pins.h`) |
 |---:|---|---|
-| 2 | Botão OK e pino que acorda do deep sleep | Livre |
+| 2 | Botão OK e pino que acorda do deep sleep | Botão de energia (desde 2026-11-25) |
 | 4 | IR RX | Livre |
 | 5 | IR TX | Livre |
 | 39 | Botão UP | IR RX |
 | 47 | Botão DOWN | IR TX |
-| 0 | (iButton padrão do Bruce) | Botão de energia |
+| 0 | (iButton padrão do Bruce) | Só BOOT (livre) |
 
 Os pinos validados na bancada não foram alterados. A troca é por etapas, cada uma só quando o
 hardware correspondente estiver ligado:

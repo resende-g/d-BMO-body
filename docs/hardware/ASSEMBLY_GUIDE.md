@@ -45,7 +45,7 @@ um defeito.
 | Conferir | Como | Por quê |
 |---|---|---|
 | Revisão da DevKitC | Serigrafia ao lado do LED RGB: "RGB@IO38" indica v1.1; sem ela, v1.0 (LED no GPIO 48) | O LED disputa o GPIO 38 ou o 48 (DKC-01 a DKC-04) |
-| GPIO 0 no power-up | Segurar BOOT, conectar o USB, observar o UART0 (porta "UART" da placa) | Fecha o risco 1 de [`GPIO_MAP.md`](GPIO_MAP.md): se aparecer a espera de download, o botão de energia não pode ficar no GPIO 0 como proposto |
+| GPIO 0 no power-up | Segurar BOOT, conectar o USB, observar o UART0 (porta "UART" da placa) | Confirma na peça o modo de download com o GPIO 0 em nível baixo. Não decide mais o botão de energia, que saiu do GPIO 0 em 2026-11-25 (risco 1 de [`GPIO_MAP.md`](GPIO_MAP.md)) |
 | Log de boot no GPIO 43 | Analisador lógico ou a própria porta "UART" a cada reset | Fecha o risco 2 (UART do cartucho) |
 
 ## Etapa 1: tela (já validada com outro firmware)
