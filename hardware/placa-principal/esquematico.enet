@@ -3,26 +3,26 @@
     "components": {
         "gge1": {
             "props": {
-                "Unique ID": "gge1",
                 "Add into BOM": "yes",
                 "Convert to PCB": "yes",
                 "Symbol": "e5113a98da272431",
                 "Designator": "U1",
                 "Device": "e6f311000c825e6f",
-                "LCSC Part Name": "不带固件",
-                "Supplier Part": "C20541519",
-                "Manufacturer": "ESPRESSIF(乐鑫)",
-                "Manufacturer Part": "ESP32-S3-DEVKITC-1-N8R8",
-                "Supplier Footprint": "-",
-                "JLCPCB Part Class": "Extended Part",
-                "Datasheet": "",
-                "Supplier": "LCSC",
+                "Unique ID": "gge1",
                 "Footprint": "5c08bfe100b9880b",
                 "Name": "={Manufacturer Part}",
-                "Description": "",
                 "Reuse Block": "",
                 "Group ID": "",
                 "Channel ID": "$1I2",
+                "Manufacturer": "ESPRESSIF(乐鑫)",
+                "Manufacturer Part": "ESP32-S3-DEVKITC-1-N8R8",
+                "Supplier": "LCSC",
+                "Supplier Part": "C20541519",
+                "LCSC Part Name": "不带固件",
+                "Supplier Footprint": "-",
+                "JLCPCB Part Class": "Extended Part",
+                "Datasheet": "",
+                "Description": "",
                 "DeviceName": "ESP32-S3-DEVKITC-1-N8R8",
                 "FootprintName": "CONN-TH_ESP32-S3-DEVKITC-1U-N8"
             },
@@ -54,7 +54,7 @@
                 "4": {
                     "name": "RTC_GPIO4, GPIO4, TOUCH4, ADC1_CH3",
                     "number": "4",
-                    "net": "",
+                    "net": "IR_RX",
                     "props": {
                         "Pin Number": "4"
                     }
@@ -62,7 +62,7 @@
                 "5": {
                     "name": "RTC_GPIO5, GPIO5, TOUCH5, ADC1_CH4",
                     "number": "5",
-                    "net": "",
+                    "net": "IR_TX",
                     "props": {
                         "Pin Number": "5"
                     }
@@ -70,7 +70,7 @@
                 "6": {
                     "name": "RTC_GPIO6, GPIO6, TOUCH6, ADC1_CH5",
                     "number": "6",
-                    "net": "CHG_STAT",
+                    "net": "I2C_SDA",
                     "props": {
                         "Pin Number": "6"
                     }
@@ -86,7 +86,7 @@
                 "8": {
                     "name": "RTC_GPIO15, GPIO15, U0RTS, ADC2_CH4, XTAL_32K_P",
                     "number": "8",
-                    "net": "CC1101_GDO0",
+                    "net": "AMP_SHUTDOWN",
                     "props": {
                         "Pin Number": "8"
                     }
@@ -94,7 +94,7 @@
                 "9": {
                     "name": "RTC_GPIO16, GPIO16, U0CTS, ADC2_CH5, XTAL_32K_N",
                     "number": "9",
-                    "net": "DISPLAY_BACKLIGHT",
+                    "net": "I2S_SPK_DATA",
                     "props": {
                         "Pin Number": "9"
                     }
@@ -102,7 +102,7 @@
                 "10": {
                     "name": "RTC_GPIO17, GPIO17, U1TXD, ADC2_CH6",
                     "number": "10",
-                    "net": "DISPLAY_DC",
+                    "net": "I2S_BCLK",
                     "props": {
                         "Pin Number": "10"
                     }
@@ -110,7 +110,7 @@
                 "11": {
                     "name": "RTC_GPIO18, GPIO18, U1RXD, ADC2_CH7, CLK_OUT3",
                     "number": "11",
-                    "net": "DISPLAY_RESET",
+                    "net": "I2S_LRCLK",
                     "props": {
                         "Pin Number": "11"
                     }
@@ -118,7 +118,7 @@
                 "12": {
                     "name": "RTC_GPIO8, GPIO8, TOUCH8, ADC1_CH7, SUBSPICS1",
                     "number": "12",
-                    "net": "I2C_SDA",
+                    "net": "CHG_STAT",
                     "props": {
                         "Pin Number": "12"
                     }
@@ -126,7 +126,7 @@
                 "13": {
                     "name": "RTC_GPIO3, GPIO3, TOUCH3, ADC1_CH2",
                     "number": "13",
-                    "net": "AMP_SHUTDOWN",
+                    "net": "",
                     "props": {
                         "Pin Number": "13"
                     }
@@ -142,7 +142,7 @@
                 "15": {
                     "name": "RTC_GPIO9, GPIO9, TOUCH9, ADC1_CH8, FSPIHD, SUBSPIHD",
                     "number": "15",
-                    "net": "I2C_SCL",
+                    "net": "VBAT_SENSE",
                     "props": {
                         "Pin Number": "15"
                     }
@@ -150,7 +150,7 @@
                 "16": {
                     "name": "RTC_GPIO10, GPIO10, TOUCH10, ADC1_CH9, FSPICS0, FSPIIO4, SUBSPICS0",
                     "number": "16",
-                    "net": "DISPLAY_CS",
+                    "net": "POWER_BTN",
                     "props": {
                         "Pin Number": "16"
                     }
@@ -182,7 +182,7 @@
                 "20": {
                     "name": "RTC_GPIO14, GPIO14, TOUCH14, ADC2_CH3, FSPIWP, FSPIDQS, SUBSPIWP",
                     "number": "20",
-                    "net": "CC1101_CS",
+                    "net": "DISPLAY_BACKLIGHT",
                     "props": {
                         "Pin Number": "20"
                     }
@@ -238,7 +238,7 @@
                 "27": {
                     "name": "RTC_GPIO21, GPIO21",
                     "number": "27",
-                    "net": "SD_CS",
+                    "net": "CC1101_GDO0",
                     "props": {
                         "Pin Number": "27"
                     }
@@ -246,7 +246,7 @@
                 "28": {
                     "name": "GPIO47, SPICLK_P, SUBSPICLK_P_DIFF",
                     "number": "28",
-                    "net": "IR_TX",
+                    "net": "SD_CS",
                     "props": {
                         "Pin Number": "28"
                     }
@@ -254,7 +254,7 @@
                 "29": {
                     "name": "GPIO48, SPICLK_N, SUBSPICLK_N_DIFF",
                     "number": "29",
-                    "net": "POWER_HOLD",
+                    "net": "CC1101_CS",
                     "props": {
                         "Pin Number": "29"
                     }
@@ -310,7 +310,7 @@
                 "36": {
                     "name": "MTCK, GPIO39, CLK_OUT3, SUBSPICS1",
                     "number": "36",
-                    "net": "IR_RX",
+                    "net": "DISPLAY_DC",
                     "props": {
                         "Pin Number": "36"
                     }
@@ -318,7 +318,7 @@
                 "37": {
                     "name": "MTDO, GPIO40, CLK_OUT2",
                     "number": "37",
-                    "net": "I2S_BCLK",
+                    "net": "DISPLAY_RESET",
                     "props": {
                         "Pin Number": "37"
                     }
@@ -326,7 +326,7 @@
                 "38": {
                     "name": "MTDI, GPIO41, CLK_OUT1",
                     "number": "38",
-                    "net": "I2S_LRCLK",
+                    "net": "DISPLAY_CS",
                     "props": {
                         "Pin Number": "38"
                     }
@@ -334,7 +334,7 @@
                 "39": {
                     "name": "MTMS, GPIO42",
                     "number": "39",
-                    "net": "I2S_SPK_DATA",
+                    "net": "",
                     "props": {
                         "Pin Number": "39"
                     }
@@ -342,7 +342,7 @@
                 "40": {
                     "name": "RTC_GPIO2, GPIO2, TOUCH2, ADC1_CH1",
                     "number": "40",
-                    "net": "POWER_BTN",
+                    "net": "POWER_HOLD",
                     "props": {
                         "Pin Number": "40"
                     }
@@ -350,7 +350,7 @@
                 "41": {
                     "name": "RTC_GPIO1, GPIO1, TOUCH1, ADC1_CH0",
                     "number": "41",
-                    "net": "VBAT_SENSE",
+                    "net": "I2C_SCL",
                     "props": {
                         "Pin Number": "41"
                     }
@@ -383,24 +383,25 @@
         },
         "gge2": {
             "props": {
-                "Unique ID": "gge2",
                 "Add into BOM": "yes",
                 "Convert to PCB": "yes",
                 "Symbol": "ccecdb7ee8b13e3a",
                 "Designator": "J3",
                 "Device": "36047e1d53dacd9d",
-                "LCSC Part Name": "1x14P 间距:2.54mm 方针 直插",
-                "Supplier Part": "C22465874",
+                "Unique ID": "gge2",
+                "Footprint": "51a7f78370956f4a",
+                "Name": "={Manufacturer Part}",
+                "Reuse Block": "",
+                "Group ID": "",
+                "Channel ID": "$1I3",
                 "Manufacturer": "XFCN(兴飞)",
                 "Manufacturer Part": "PZ254V-11-14P",
+                "Supplier": "LCSC",
+                "Supplier Part": "C22465874",
+                "LCSC Part Name": "1x14P 间距:2.54mm 方针 直插",
                 "Supplier Footprint": "插件,P=2.54mm",
                 "JLCPCB Part Class": "Extended Part",
                 "Datasheet": "https://item.szlcsc.com/datasheet/PZ254V-11-14P/24163066.html",
-                "Supplier": "LCSC",
-                "Footprint": "51a7f78370956f4a",
-                "3D Model": "52045c9273624c85ae866b62a422c485|0819f05c4eef4c71ace90d822a990e87",
-                "3D Model Title": "CONN-TH_PZ254V-11-14P",
-                "3D Model Transform": "1400.391,98.425,0,0,0,0,0,0,-118.11",
                 "Pin Structure": "1x14P",
                 "Pitch": "2.54mm",
                 "Circluar Pins/Square Pins": "Square pin",
@@ -414,11 +415,10 @@
                 "Contact Material": "Brass",
                 "Operating Temperature": "-40℃~+105℃",
                 "Color": "Black",
-                "Name": "={Manufacturer Part}",
                 "Description": "Pin Structure:1x14P Pitch:2.54mm Circluar Pins/Square Pins:Square pin Mounting Type:Through Hole Number of Rows:1 Number of Pins:14P Current Rating:3A Length of Mating Pin:6.1mm Insulation Height:2.5mm Length of End Connection Pin:3mm Contact Material:Bra",
-                "Reuse Block": "",
-                "Group ID": "",
-                "Channel ID": "$1I3",
+                "3D Model": "52045c9273624c85ae866b62a422c485|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "CONN-TH_PZ254V-11-14P",
+                "3D Model Transform": "1400.391,98.425,0,0,0,0,0,0,-118.11",
                 "DeviceName": "PZ254V-11-14P",
                 "FootprintName": "CONN-TH_PZ254V-11-14P"
             },
@@ -539,24 +539,25 @@
         },
         "gge3": {
             "props": {
-                "Unique ID": "gge3",
                 "Add into BOM": "yes",
                 "Convert to PCB": "yes",
                 "Symbol": "3b040606a94bd9c8",
                 "Designator": "J4",
                 "Device": "0c8f8b242ffa5980",
-                "LCSC Part Name": "1x4P 间距:2.54mm 方针 直插",
-                "Supplier Part": "C53200687",
+                "Unique ID": "gge3",
+                "Footprint": "4db276639b9c0686",
+                "Name": "={Manufacturer Part}",
+                "Reuse Block": "",
+                "Group ID": "",
+                "Channel ID": "$1I4",
                 "Manufacturer": "XYECONN(辛译)",
                 "Manufacturer Part": "XY-PZ254V-11-04P",
+                "Supplier": "LCSC",
+                "Supplier Part": "C53200687",
+                "LCSC Part Name": "1x4P 间距:2.54mm 方针 直插",
                 "Supplier Footprint": "插件,P=2.54mm",
                 "JLCPCB Part Class": "Extended Part",
                 "Datasheet": "https://item.szlcsc.com/datasheet/XY-PZ254V-11-04P/56228067.html",
-                "Supplier": "LCSC",
-                "Footprint": "4db276639b9c0686",
-                "3D Model": "4081fc5f1ff54020acd328e0a552e2b3|0819f05c4eef4c71ace90d822a990e87",
-                "3D Model Title": "HDR-TH_XY-PZ254V-11-04P",
-                "3D Model Transform": "392.519,98.425,0,0,0,0,0,0,-118.11",
                 "Pin Structure": "1x4P",
                 "Pitch": "2.54mm",
                 "Circluar Pins/Square Pins": "Pin Header",
@@ -571,11 +572,10 @@
                 "Contact Plating": "Gold",
                 "Operating Temperature": "-40℃~+105℃",
                 "Color": "Black",
-                "Name": "={Manufacturer Part}",
                 "Description": "Pin Structure:1x4P Pitch:2.54mm Circluar Pins/Square Pins:Pin Header Mounting Type:Through Hole Number of Rows:1 Number of Pins:4P Current Rating:3A Length of Mating Pin:6mm Insulation Height:2.5mm Length of End Connection Pin:3mm Contact Material:Brass C",
-                "Reuse Block": "",
-                "Group ID": "",
-                "Channel ID": "$1I4",
+                "3D Model": "4081fc5f1ff54020acd328e0a552e2b3|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "HDR-TH_XY-PZ254V-11-04P",
+                "3D Model Transform": "392.519,98.425,0,0,0,0,0,0,-118.11",
                 "DeviceName": "XY-PZ254V-11-04P",
                 "FootprintName": "HDR-TH_XY-PZ254V-11-04P"
             },
@@ -616,24 +616,25 @@
         },
         "gge4": {
             "props": {
-                "Unique ID": "gge4",
                 "Add into BOM": "yes",
                 "Convert to PCB": "yes",
                 "Symbol": "b79cefdaed04da0a",
                 "Designator": "J5",
                 "Device": "9b551f6bf64ec868",
-                "LCSC Part Name": "2x4P 间距:2.54mm 方针 直插",
-                "Supplier Part": "C492421",
+                "Unique ID": "gge4",
+                "Footprint": "2cc1e22a3e9daaaa",
+                "Name": "={Manufacturer Part}",
+                "Reuse Block": "",
+                "Group ID": "",
+                "Channel ID": "$1I5",
                 "Manufacturer": "XFCN(兴飞)",
                 "Manufacturer Part": "PZ254V-12-8P",
+                "Supplier": "LCSC",
+                "Supplier Part": "C492421",
+                "LCSC Part Name": "2x4P 间距:2.54mm 方针 直插",
                 "Supplier Footprint": "插件,P=2.54mm",
                 "JLCPCB Part Class": "Extended Part",
                 "Datasheet": "https://item.szlcsc.com/datasheet/PZ254V-12-8P/502977.html",
-                "Supplier": "LCSC",
-                "Footprint": "2cc1e22a3e9daaaa",
-                "3D Model": "47b5ce995b664298ab05f1b74b77106f|0819f05c4eef4c71ace90d822a990e87",
-                "3D Model Title": "HDR-TH_8P-P2.54-M-LI-2X4P",
-                "3D Model Transform": "399.999,200,0,0,0,0,0,0,-118.11",
                 "Pin Structure": "2x4P",
                 "Pitch": "2.54mm",
                 "Row Spacing": "2.54mm",
@@ -650,11 +651,10 @@
                 "Contact Plating": "Gold",
                 "Operating Temperature": "-40℃~+105℃",
                 "Color": "Black",
-                "Name": "={Manufacturer Part}",
                 "Description": "Pin Structure:2x4P Pitch:2.54mm Row Spacing:2.54mm Circluar Pins/Square Pins:Square pin Mounting Type:Through Hole Number of Rows:2 Number of Pins:8P Current Rating:3A Voltage Rating (Max):- Length of Mating Pin:6mm Insulation Height:2.5mm Length of End C",
-                "Reuse Block": "",
-                "Group ID": "",
-                "Channel ID": "$1I5",
+                "3D Model": "47b5ce995b664298ab05f1b74b77106f|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "HDR-TH_8P-P2.54-M-LI-2X4P",
+                "3D Model Transform": "399.999,200,0,0,0,0,0,0,-118.11",
                 "DeviceName": "PZ254V-12-8P",
                 "FootprintName": "HDR-TH_8P-P2.54-V-M-R2-C4-S2.54"
             },
@@ -727,24 +727,25 @@
         },
         "gge5": {
             "props": {
-                "Unique ID": "gge5",
                 "Add into BOM": "yes",
                 "Convert to PCB": "yes",
                 "Symbol": "3b040606a94bd9c8",
                 "Designator": "J6",
                 "Device": "0c8f8b242ffa5980",
-                "LCSC Part Name": "1x4P 间距:2.54mm 方针 直插",
-                "Supplier Part": "C53200687",
+                "Unique ID": "gge5",
+                "Footprint": "4db276639b9c0686",
+                "Name": "={Manufacturer Part}",
+                "Reuse Block": "",
+                "Group ID": "",
+                "Channel ID": "$1I6",
                 "Manufacturer": "XYECONN(辛译)",
                 "Manufacturer Part": "XY-PZ254V-11-04P",
+                "Supplier": "LCSC",
+                "Supplier Part": "C53200687",
+                "LCSC Part Name": "1x4P 间距:2.54mm 方针 直插",
                 "Supplier Footprint": "插件,P=2.54mm",
                 "JLCPCB Part Class": "Extended Part",
                 "Datasheet": "https://item.szlcsc.com/datasheet/XY-PZ254V-11-04P/56228067.html",
-                "Supplier": "LCSC",
-                "Footprint": "4db276639b9c0686",
-                "3D Model": "4081fc5f1ff54020acd328e0a552e2b3|0819f05c4eef4c71ace90d822a990e87",
-                "3D Model Title": "HDR-TH_XY-PZ254V-11-04P",
-                "3D Model Transform": "392.519,98.425,0,0,0,0,0,0,-118.11",
                 "Pin Structure": "1x4P",
                 "Pitch": "2.54mm",
                 "Circluar Pins/Square Pins": "Pin Header",
@@ -759,11 +760,10 @@
                 "Contact Plating": "Gold",
                 "Operating Temperature": "-40℃~+105℃",
                 "Color": "Black",
-                "Name": "={Manufacturer Part}",
                 "Description": "Pin Structure:1x4P Pitch:2.54mm Circluar Pins/Square Pins:Pin Header Mounting Type:Through Hole Number of Rows:1 Number of Pins:4P Current Rating:3A Length of Mating Pin:6mm Insulation Height:2.5mm Length of End Connection Pin:3mm Contact Material:Brass C",
-                "Reuse Block": "",
-                "Group ID": "",
-                "Channel ID": "$1I6",
+                "3D Model": "4081fc5f1ff54020acd328e0a552e2b3|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "HDR-TH_XY-PZ254V-11-04P",
+                "3D Model Transform": "392.519,98.425,0,0,0,0,0,0,-118.11",
                 "DeviceName": "XY-PZ254V-11-04P",
                 "FootprintName": "HDR-TH_XY-PZ254V-11-04P"
             },
@@ -804,24 +804,25 @@
         },
         "gge6": {
             "props": {
-                "Unique ID": "gge6",
                 "Add into BOM": "yes",
                 "Convert to PCB": "yes",
                 "Symbol": "e26cf29265390188",
                 "Designator": "J7",
                 "Device": "7c263f22a8bec2d6",
-                "LCSC Part Name": "1x3P 间距:2.54mm 方针 直插",
-                "Supplier Part": "C2937625",
+                "Unique ID": "gge6",
+                "Footprint": "7a4b52d22387e461",
+                "Name": "={Manufacturer Part}",
+                "Reuse Block": "",
+                "Group ID": "",
+                "Channel ID": "$1I7",
                 "Manufacturer": "XFCN(兴飞)",
                 "Manufacturer Part": "PZ254V-11-03P",
+                "Supplier": "LCSC",
+                "Supplier Part": "C2937625",
+                "LCSC Part Name": "1x3P 间距:2.54mm 方针 直插",
                 "Supplier Footprint": "插件,P=2.54mm",
                 "JLCPCB Part Class": "Extended Part",
                 "Datasheet": "https://item.szlcsc.com/datasheet/PZ254V-11-03P/3293280.html",
-                "Supplier": "LCSC",
-                "Footprint": "7a4b52d22387e461",
-                "3D Model": "bd28a638fbd247be9398fd5d39c366ec|0819f05c4eef4c71ace90d822a990e87",
-                "3D Model Title": "HDR-TH_3P-P2.54-V-M_PZ254V-11-03P",
-                "3D Model Transform": "300.3931,100,0,0,0,0,0,0,-118.11",
                 "Pin Structure": "1x3P",
                 "Pitch": "2.54mm",
                 "Row Spacing": "-",
@@ -839,11 +840,10 @@
                 "Operating Temperature": "-40℃~+105℃",
                 "Color": "Black",
                 "Supplementary Features": "-",
-                "Name": "={Manufacturer Part}",
                 "Description": "Pin Structure:1x3P Pitch:2.54mm Row Spacing:- Circluar Pins/Square Pins:Square pin Mounting Type:Through Hole Number of Rows:1 Number of Pins:3P Current Rating:3A Voltage Rating (Max):250V Length of Mating Pin:6.1mm Insulation Height:2.5mm Length of End C",
-                "Reuse Block": "",
-                "Group ID": "",
-                "Channel ID": "$1I7",
+                "3D Model": "bd28a638fbd247be9398fd5d39c366ec|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "HDR-TH_3P-P2.54-V-M_PZ254V-11-03P",
+                "3D Model Transform": "300.3931,100,0,0,0,0,0,0,-118.11",
                 "DeviceName": "PZ254V-11-03P",
                 "FootprintName": "HDR-TH_3P-P2.54-V-M_PZ254V-11-03P"
             },
@@ -876,24 +876,25 @@
         },
         "gge7": {
             "props": {
-                "Unique ID": "gge7",
                 "Add into BOM": "yes",
                 "Convert to PCB": "yes",
                 "Symbol": "e26cf29265390188",
                 "Designator": "J8",
                 "Device": "7c263f22a8bec2d6",
-                "LCSC Part Name": "1x3P 间距:2.54mm 方针 直插",
-                "Supplier Part": "C2937625",
+                "Unique ID": "gge7",
+                "Footprint": "7a4b52d22387e461",
+                "Name": "={Manufacturer Part}",
+                "Reuse Block": "",
+                "Group ID": "",
+                "Channel ID": "$1I8",
                 "Manufacturer": "XFCN(兴飞)",
                 "Manufacturer Part": "PZ254V-11-03P",
+                "Supplier": "LCSC",
+                "Supplier Part": "C2937625",
+                "LCSC Part Name": "1x3P 间距:2.54mm 方针 直插",
                 "Supplier Footprint": "插件,P=2.54mm",
                 "JLCPCB Part Class": "Extended Part",
                 "Datasheet": "https://item.szlcsc.com/datasheet/PZ254V-11-03P/3293280.html",
-                "Supplier": "LCSC",
-                "Footprint": "7a4b52d22387e461",
-                "3D Model": "bd28a638fbd247be9398fd5d39c366ec|0819f05c4eef4c71ace90d822a990e87",
-                "3D Model Title": "HDR-TH_3P-P2.54-V-M_PZ254V-11-03P",
-                "3D Model Transform": "300.3931,100,0,0,0,0,0,0,-118.11",
                 "Pin Structure": "1x3P",
                 "Pitch": "2.54mm",
                 "Row Spacing": "-",
@@ -911,11 +912,10 @@
                 "Operating Temperature": "-40℃~+105℃",
                 "Color": "Black",
                 "Supplementary Features": "-",
-                "Name": "={Manufacturer Part}",
                 "Description": "Pin Structure:1x3P Pitch:2.54mm Row Spacing:- Circluar Pins/Square Pins:Square pin Mounting Type:Through Hole Number of Rows:1 Number of Pins:3P Current Rating:3A Voltage Rating (Max):250V Length of Mating Pin:6.1mm Insulation Height:2.5mm Length of End C",
-                "Reuse Block": "",
-                "Group ID": "",
-                "Channel ID": "$1I8",
+                "3D Model": "bd28a638fbd247be9398fd5d39c366ec|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "HDR-TH_3P-P2.54-V-M_PZ254V-11-03P",
+                "3D Model Transform": "300.3931,100,0,0,0,0,0,0,-118.11",
                 "DeviceName": "PZ254V-11-03P",
                 "FootprintName": "HDR-TH_3P-P2.54-V-M_PZ254V-11-03P"
             },
@@ -948,24 +948,25 @@
         },
         "gge8": {
             "props": {
-                "Unique ID": "gge8",
                 "Add into BOM": "yes",
                 "Convert to PCB": "yes",
                 "Symbol": "742b5d2cba1ac1bc",
                 "Designator": "J9",
                 "Device": "52c66446c8ea9fdc",
-                "LCSC Part Name": "1x7P 间距:2.54mm 方针 直插",
-                "Supplier Part": "C492406",
+                "Unique ID": "gge8",
+                "Footprint": "0809512ee39c18ee",
+                "Name": "={Manufacturer Part}",
+                "Reuse Block": "",
+                "Group ID": "",
+                "Channel ID": "$1I9",
                 "Manufacturer": "XFCN(兴飞)",
                 "Manufacturer Part": "PZ254V-11-07P",
+                "Supplier": "LCSC",
+                "Supplier Part": "C492406",
+                "LCSC Part Name": "1x7P 间距:2.54mm 方针 直插",
                 "Supplier Footprint": "插件,P=2.54mm",
                 "JLCPCB Part Class": "Extended Part",
                 "Datasheet": "https://item.szlcsc.com/datasheet/PZ254V-11-07P/502962.html",
-                "Supplier": "LCSC",
-                "Footprint": "0809512ee39c18ee",
-                "3D Model": "ce62eac80ffd4cbe92d29651b85d1296|0819f05c4eef4c71ace90d822a990e87",
-                "3D Model Title": "HDR-TH_7P-P2.54-M-LI-1X7P",
-                "3D Model Transform": "690.1561,98.425,0,0,0,0,0,0,-118.11",
                 "Pin Structure": "1x7P",
                 "Pitch": "2.54mm",
                 "Row Spacing": "-",
@@ -982,11 +983,10 @@
                 "Contact Plating": "-",
                 "Operating Temperature": "-40℃~+105℃",
                 "Color": "Black",
-                "Name": "={Manufacturer Part}",
                 "Description": "Pin Structure:1x7P Pitch:2.54mm Row Spacing:- Circluar Pins/Square Pins:Pin Header Mounting Type:Through Hole Number of Rows:1 Number of Pins:7P Current Rating:3A Voltage Rating (Max):250V Length of Mating Pin:6mm Insulation Height:2.5mm Length of End Con",
-                "Reuse Block": "",
-                "Group ID": "",
-                "Channel ID": "$1I9",
+                "3D Model": "ce62eac80ffd4cbe92d29651b85d1296|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "HDR-TH_7P-P2.54-M-LI-1X7P",
+                "3D Model Transform": "690.1561,98.425,0,0,0,0,0,0,-118.11",
                 "DeviceName": "PZ254V-11-07P",
                 "FootprintName": "HDR-TH_7P-P2.54-V-M"
             },
@@ -1042,7 +1042,7 @@
                 "7": {
                     "name": "7",
                     "number": "7",
-                    "net": "AMP_VIN",
+                    "net": "+3V3",
                     "props": {
                         "Pin Number": "7"
                     }
@@ -1051,24 +1051,25 @@
         },
         "gge9": {
             "props": {
-                "Unique ID": "gge9",
                 "Add into BOM": "yes",
                 "Convert to PCB": "yes",
                 "Symbol": "e26cf29265390188",
                 "Designator": "J10",
                 "Device": "7c263f22a8bec2d6",
-                "LCSC Part Name": "1x3P 间距:2.54mm 方针 直插",
-                "Supplier Part": "C2937625",
+                "Unique ID": "gge9",
+                "Footprint": "7a4b52d22387e461",
+                "Name": "={Manufacturer Part}",
+                "Reuse Block": "",
+                "Group ID": "",
+                "Channel ID": "$1I10",
                 "Manufacturer": "XFCN(兴飞)",
                 "Manufacturer Part": "PZ254V-11-03P",
+                "Supplier": "LCSC",
+                "Supplier Part": "C2937625",
+                "LCSC Part Name": "1x3P 间距:2.54mm 方针 直插",
                 "Supplier Footprint": "插件,P=2.54mm",
                 "JLCPCB Part Class": "Extended Part",
                 "Datasheet": "https://item.szlcsc.com/datasheet/PZ254V-11-03P/3293280.html",
-                "Supplier": "LCSC",
-                "Footprint": "7a4b52d22387e461",
-                "3D Model": "bd28a638fbd247be9398fd5d39c366ec|0819f05c4eef4c71ace90d822a990e87",
-                "3D Model Title": "HDR-TH_3P-P2.54-V-M_PZ254V-11-03P",
-                "3D Model Transform": "300.3931,100,0,0,0,0,0,0,-118.11",
                 "Pin Structure": "1x3P",
                 "Pitch": "2.54mm",
                 "Row Spacing": "-",
@@ -1086,11 +1087,10 @@
                 "Operating Temperature": "-40℃~+105℃",
                 "Color": "Black",
                 "Supplementary Features": "-",
-                "Name": "={Manufacturer Part}",
                 "Description": "Pin Structure:1x3P Pitch:2.54mm Row Spacing:- Circluar Pins/Square Pins:Square pin Mounting Type:Through Hole Number of Rows:1 Number of Pins:3P Current Rating:3A Voltage Rating (Max):250V Length of Mating Pin:6.1mm Insulation Height:2.5mm Length of End C",
-                "Reuse Block": "",
-                "Group ID": "",
-                "Channel ID": "$1I10",
+                "3D Model": "bd28a638fbd247be9398fd5d39c366ec|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "HDR-TH_3P-P2.54-V-M_PZ254V-11-03P",
+                "3D Model Transform": "300.3931,100,0,0,0,0,0,0,-118.11",
                 "DeviceName": "PZ254V-11-03P",
                 "FootprintName": "HDR-TH_3P-P2.54-V-M_PZ254V-11-03P"
             },
@@ -1123,29 +1123,29 @@
         },
         "gge10": {
             "props": {
-                "Unique ID": "gge10",
                 "Add into BOM": "yes",
                 "Convert to PCB": "yes",
                 "Symbol": "379044aa53c7c976",
                 "Designator": "SW1",
                 "Device": "78d9b23261b0db0b",
-                "LCSC Part Name": "6*6*5mm 直插 轻触开关",
-                "Supplier Part": "C53447028",
-                "Manufacturer": "LXWCONN(连兴旺电子)",
-                "Manufacturer Part": "LXW-TS-6X6X5-DIP",
-                "Supplier Footprint": "插件-4P,6x6mm",
-                "JLCPCB Part Class": "Extended Part",
-                "Datasheet": "https://item.szlcsc.com/datasheet/LXW-TS-6X6X5-DIP/56599287.html",
-                "Supplier": "LCSC",
+                "Unique ID": "gge10",
                 "Footprint": "530c74113c03e9d7",
-                "3D Model": "1b2aa19db9484d8f9f922c3504714525|0819f05c4eef4c71ace90d822a990e87",
-                "3D Model Title": "SW-TH_4P-L6.0-W6.0-H5.0-LS6.5-P4.50",
-                "3D Model Transform": "236.22,323.03,0,90,0,0,0,0,-137.795",
                 "Name": "={Manufacturer Part}",
-                "Description": "",
                 "Reuse Block": "",
                 "Group ID": "",
                 "Channel ID": "$1I11",
+                "Manufacturer": "LXWCONN(连兴旺电子)",
+                "Manufacturer Part": "LXW-TS-6X6X5-DIP",
+                "Supplier": "LCSC",
+                "Supplier Part": "C53447028",
+                "LCSC Part Name": "6*6*5mm 直插 轻触开关",
+                "Supplier Footprint": "插件-4P,6x6mm",
+                "JLCPCB Part Class": "Extended Part",
+                "Datasheet": "https://item.szlcsc.com/datasheet/LXW-TS-6X6X5-DIP/56599287.html",
+                "Description": "",
+                "3D Model": "1b2aa19db9484d8f9f922c3504714525|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "SW-TH_4P-L6.0-W6.0-H5.0-LS6.5-P4.50",
+                "3D Model Transform": "236.22,323.03,0,90,0,0,0,0,-137.795",
                 "DeviceName": "LXW-TS-6X6X5-DIP",
                 "FootprintName": "SW-TH_4P-L6.0-W6.0-P4.50-LS6.5"
             },
@@ -1186,24 +1186,25 @@
         },
         "gge11": {
             "props": {
-                "Unique ID": "gge11",
                 "Add into BOM": "yes",
                 "Convert to PCB": "yes",
                 "Symbol": "6fca48165bd2b19d",
                 "Designator": "U2",
                 "Device": "bba51e0577c19820",
-                "LCSC Part Name": "16位带串行接口的I/O扩展器",
-                "Supplier Part": "C647352",
+                "Unique ID": "gge11",
+                "Footprint": "c6cd3559f9e90b0a",
+                "Name": "={Manufacturer Part}",
+                "Reuse Block": "",
+                "Group ID": "",
+                "Channel ID": "$1I12",
                 "Manufacturer": "MICROCHIP(美国微芯)",
                 "Manufacturer Part": "MCP23017-E/SP",
+                "Supplier": "LCSC",
+                "Supplier Part": "C647352",
+                "LCSC Part Name": "16位带串行接口的I/O扩展器",
                 "Supplier Footprint": "SPDIP-28",
                 "JLCPCB Part Class": "Extended Part",
                 "Datasheet": "https://item.szlcsc.com/datasheet/MCP23017-E%252FSP/676855.html",
-                "Supplier": "LCSC",
-                "Footprint": "c6cd3559f9e90b0a",
-                "3D Model": "fd777b850de34dcdba876a0bddd2905e|0819f05c4eef4c71ace90d822a990e87",
-                "3D Model Title": "DIP-28_L34.6-W7.3-H4.6-P2.54-LS10.2-BL",
-                "3D Model Transform": "1369.99726,328.93635,0,0,0,0,0,0,-118.11",
                 "Interface": "I2C",
                 "Number of I/O": "16",
                 "Interrupt Output": "Interrupt Output",
@@ -1217,11 +1218,10 @@
                 "Features": "Reset function；Cascade and address expansion",
                 "Voltage - Supply": "1.8V~5.5V",
                 "Operating Temperature": "-40℃~+125℃",
-                "Name": "={Manufacturer Part}",
                 "Description": "Interface:I2C Number of I/O:16 Interrupt Output:Interrupt Output Output Type:- Current - Output Low(IOL):8mA Current - Output High(IOH):- Clock Frequency:1.7MHz Number of Supporting Devices:8 Quiescent Supply Current:3uA Output Logic Level - Low:600mV Fea",
-                "Reuse Block": "",
-                "Group ID": "",
-                "Channel ID": "$1I12",
+                "3D Model": "fd777b850de34dcdba876a0bddd2905e|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "DIP-28_L34.6-W7.3-H4.6-P2.54-LS10.2-BL",
+                "3D Model Transform": "1369.99726,328.93635,0,0,0,0,0,0,-118.11",
                 "DeviceName": "MCP23017-E/SP",
                 "FootprintName": "DIP-28_L34.6-W7.3-P2.54-LS10.2-BL"
             },
@@ -1229,7 +1229,7 @@
                 "1": {
                     "name": "GPB0",
                     "number": "1",
-                    "net": "BTN_Y",
+                    "net": "",
                     "props": {
                         "Pin Number": "1"
                     }
@@ -1237,7 +1237,7 @@
                 "2": {
                     "name": "GPB1",
                     "number": "2",
-                    "net": "BTN_SELECT",
+                    "net": "BTN_B",
                     "props": {
                         "Pin Number": "2"
                     }
@@ -1245,7 +1245,7 @@
                 "3": {
                     "name": "GPB2",
                     "number": "3",
-                    "net": "BTN_START",
+                    "net": "BTN_A",
                     "props": {
                         "Pin Number": "3"
                     }
@@ -1261,7 +1261,7 @@
                 "5": {
                     "name": "GPB4",
                     "number": "5",
-                    "net": "",
+                    "net": "BTN_Y",
                     "props": {
                         "Pin Number": "5"
                     }
@@ -1269,7 +1269,7 @@
                 "6": {
                     "name": "GPB5",
                     "number": "6",
-                    "net": "",
+                    "net": "BTN_X",
                     "props": {
                         "Pin Number": "6"
                     }
@@ -1277,7 +1277,7 @@
                 "7": {
                     "name": "GPB6",
                     "number": "7",
-                    "net": "",
+                    "net": "BTN_START",
                     "props": {
                         "Pin Number": "7"
                     }
@@ -1389,7 +1389,7 @@
                 "21": {
                     "name": "GPA0",
                     "number": "21",
-                    "net": "BTN_UP",
+                    "net": "",
                     "props": {
                         "Pin Number": "21"
                     }
@@ -1397,7 +1397,7 @@
                 "22": {
                     "name": "GPA1",
                     "number": "22",
-                    "net": "BTN_DOWN",
+                    "net": "",
                     "props": {
                         "Pin Number": "22"
                     }
@@ -1405,7 +1405,7 @@
                 "23": {
                     "name": "GPA2",
                     "number": "23",
-                    "net": "BTN_LEFT",
+                    "net": "BTN_SELECT",
                     "props": {
                         "Pin Number": "23"
                     }
@@ -1413,7 +1413,7 @@
                 "24": {
                     "name": "GPA3",
                     "number": "24",
-                    "net": "BTN_RIGHT",
+                    "net": "BTN_UP",
                     "props": {
                         "Pin Number": "24"
                     }
@@ -1421,7 +1421,7 @@
                 "25": {
                     "name": "GPA4",
                     "number": "25",
-                    "net": "BTN_A",
+                    "net": "BTN_RIGHT",
                     "props": {
                         "Pin Number": "25"
                     }
@@ -1429,7 +1429,7 @@
                 "26": {
                     "name": "GPA5",
                     "number": "26",
-                    "net": "BTN_B",
+                    "net": "BTN_LEFT",
                     "props": {
                         "Pin Number": "26"
                     }
@@ -1437,7 +1437,7 @@
                 "27": {
                     "name": "GPA6",
                     "number": "27",
-                    "net": "BTN_X",
+                    "net": "BTN_DOWN",
                     "props": {
                         "Pin Number": "27"
                     }
@@ -1454,24 +1454,25 @@
         },
         "gge12": {
             "props": {
-                "Unique ID": "gge12",
                 "Add into BOM": "yes",
                 "Convert to PCB": "yes",
                 "Symbol": "8f08470bf4e0b72a",
                 "Designator": "J2",
                 "Device": "921df65592644c35",
-                "LCSC Part Name": "1x8P 间距:2.54mm 方针 直插",
-                "Supplier Part": "C492407",
+                "Unique ID": "gge12",
+                "Footprint": "acd6aa946b82b6b7",
+                "Name": "={Manufacturer Part}",
+                "Reuse Block": "",
+                "Group ID": "",
+                "Channel ID": "$1I13",
                 "Manufacturer": "XFCN(兴飞)",
                 "Manufacturer Part": "PZ254V-11-08P",
+                "Supplier": "LCSC",
+                "Supplier Part": "C492407",
+                "LCSC Part Name": "1x8P 间距:2.54mm 方针 直插",
                 "Supplier Footprint": "插件,P=2.54mm",
                 "JLCPCB Part Class": "Extended Part",
                 "Datasheet": "https://item.szlcsc.com/datasheet/PZ254V-11-08P/502963.html",
-                "Supplier": "LCSC",
-                "Footprint": "acd6aa946b82b6b7",
-                "3D Model": "926dcf5c05be473f8295f20cc8ccf72f|0819f05c4eef4c71ace90d822a990e87",
-                "3D Model Title": "HDR-TH_8P-P2.54-V-M",
-                "3D Model Transform": "807.87244,98.425,0,0,0,0,0,0,-118.11",
                 "Pin Structure": "1x8P",
                 "Pitch": "2.54mm",
                 "Row Spacing": "-",
@@ -1488,11 +1489,10 @@
                 "Contact Plating": "Gold",
                 "Operating Temperature": "-40℃~+105℃",
                 "Color": "Black",
-                "Name": "={Manufacturer Part}",
                 "Description": "Pin Structure:1x8P Pitch:2.54mm Row Spacing:- Circluar Pins/Square Pins:Square pin Mounting Type:Through Hole Number of Rows:1 Number of Pins:8P Current Rating:3A Voltage Rating (Max):250V Length of Mating Pin:6.1mm Insulation Height:2.5mm Length of End C",
-                "Reuse Block": "",
-                "Group ID": "",
-                "Channel ID": "$1I13",
+                "3D Model": "926dcf5c05be473f8295f20cc8ccf72f|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "HDR-TH_8P-P2.54-V-M",
+                "3D Model Transform": "807.87244,98.425,0,0,0,0,0,0,-118.11",
                 "DeviceName": "PZ254V-11-08P",
                 "FootprintName": "HDR-TH_8P-P2.54-V-M"
             },
@@ -1565,24 +1565,25 @@
         },
         "gge13": {
             "props": {
-                "Unique ID": "gge13",
                 "Add into BOM": "yes",
                 "Convert to PCB": "yes",
                 "Symbol": "e26cf29265390188",
                 "Designator": "J11",
                 "Device": "7c263f22a8bec2d6",
-                "LCSC Part Name": "1x3P 间距:2.54mm 方针 直插",
-                "Supplier Part": "C2937625",
+                "Unique ID": "gge13",
+                "Footprint": "7a4b52d22387e461",
+                "Name": "={Manufacturer Part}",
+                "Reuse Block": "",
+                "Group ID": "",
+                "Channel ID": "$1I14",
                 "Manufacturer": "XFCN(兴飞)",
                 "Manufacturer Part": "PZ254V-11-03P",
+                "Supplier": "LCSC",
+                "Supplier Part": "C2937625",
+                "LCSC Part Name": "1x3P 间距:2.54mm 方针 直插",
                 "Supplier Footprint": "插件,P=2.54mm",
                 "JLCPCB Part Class": "Extended Part",
                 "Datasheet": "https://item.szlcsc.com/datasheet/PZ254V-11-03P/3293280.html",
-                "Supplier": "LCSC",
-                "Footprint": "7a4b52d22387e461",
-                "3D Model": "bd28a638fbd247be9398fd5d39c366ec|0819f05c4eef4c71ace90d822a990e87",
-                "3D Model Title": "HDR-TH_3P-P2.54-V-M_PZ254V-11-03P",
-                "3D Model Transform": "300.3931,100,0,0,0,0,0,0,-118.11",
                 "Pin Structure": "1x3P",
                 "Pitch": "2.54mm",
                 "Row Spacing": "-",
@@ -1600,11 +1601,10 @@
                 "Operating Temperature": "-40℃~+105℃",
                 "Color": "Black",
                 "Supplementary Features": "-",
-                "Name": "={Manufacturer Part}",
                 "Description": "Pin Structure:1x3P Pitch:2.54mm Row Spacing:- Circluar Pins/Square Pins:Square pin Mounting Type:Through Hole Number of Rows:1 Number of Pins:3P Current Rating:3A Voltage Rating (Max):250V Length of Mating Pin:6.1mm Insulation Height:2.5mm Length of End C",
-                "Reuse Block": "",
-                "Group ID": "",
-                "Channel ID": "$1I14",
+                "3D Model": "bd28a638fbd247be9398fd5d39c366ec|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "HDR-TH_3P-P2.54-V-M_PZ254V-11-03P",
+                "3D Model Transform": "300.3931,100,0,0,0,0,0,0,-118.11",
                 "DeviceName": "PZ254V-11-03P",
                 "FootprintName": "HDR-TH_3P-P2.54-V-M_PZ254V-11-03P"
             },
@@ -1635,98 +1635,27 @@
                 }
             }
         },
-        "gge14": {
-            "props": {
-                "Unique ID": "gge14",
-                "Add into BOM": "yes",
-                "Convert to PCB": "yes",
-                "Symbol": "e26cf29265390188",
-                "Designator": "JP1",
-                "Device": "7c263f22a8bec2d6",
-                "LCSC Part Name": "1x3P 间距:2.54mm 方针 直插",
-                "Supplier Part": "C2937625",
-                "Manufacturer": "XFCN(兴飞)",
-                "Manufacturer Part": "PZ254V-11-03P",
-                "Supplier Footprint": "插件,P=2.54mm",
-                "JLCPCB Part Class": "Extended Part",
-                "Datasheet": "https://item.szlcsc.com/datasheet/PZ254V-11-03P/3293280.html",
-                "Supplier": "LCSC",
-                "Footprint": "7a4b52d22387e461",
-                "3D Model": "bd28a638fbd247be9398fd5d39c366ec|0819f05c4eef4c71ace90d822a990e87",
-                "3D Model Title": "HDR-TH_3P-P2.54-V-M_PZ254V-11-03P",
-                "3D Model Transform": "300.3931,100,0,0,0,0,0,0,-118.11",
-                "Pin Structure": "1x3P",
-                "Pitch": "2.54mm",
-                "Row Spacing": "-",
-                "Circluar Pins/Square Pins": "Square pin",
-                "Mounting Type": "Through Hole",
-                "Number of Rows": "1",
-                "Number of Pins": "3P",
-                "Current Rating": "3A",
-                "Voltage Rating (Max)": "250V",
-                "Length of Mating Pin": "6.1mm",
-                "Insulation Height": "2.5mm",
-                "Length of End Connection Pin": "3mm",
-                "Contact Material": "Brass",
-                "Contact Plating": "Gold",
-                "Operating Temperature": "-40℃~+105℃",
-                "Color": "Black",
-                "Supplementary Features": "-",
-                "Name": "={Manufacturer Part}",
-                "Description": "Pin Structure:1x3P Pitch:2.54mm Row Spacing:- Circluar Pins/Square Pins:Square pin Mounting Type:Through Hole Number of Rows:1 Number of Pins:3P Current Rating:3A Voltage Rating (Max):250V Length of Mating Pin:6.1mm Insulation Height:2.5mm Length of End C",
-                "Reuse Block": "",
-                "Group ID": "",
-                "Channel ID": "$1I15",
-                "DeviceName": "PZ254V-11-03P",
-                "FootprintName": "HDR-TH_3P-P2.54-V-M_PZ254V-11-03P"
-            },
-            "pinInfoMap": {
-                "1": {
-                    "name": "1",
-                    "number": "1",
-                    "net": "+5V",
-                    "props": {
-                        "Pin Number": "1"
-                    }
-                },
-                "2": {
-                    "name": "2",
-                    "number": "2",
-                    "net": "AMP_VIN",
-                    "props": {
-                        "Pin Number": "2"
-                    }
-                },
-                "3": {
-                    "name": "3",
-                    "number": "3",
-                    "net": "+3V3",
-                    "props": {
-                        "Pin Number": "3"
-                    }
-                }
-            }
-        },
         "gge15": {
             "props": {
-                "Unique ID": "gge15",
                 "Add into BOM": "yes",
                 "Convert to PCB": "yes",
                 "Symbol": "e26cf29265390188",
                 "Designator": "JP2",
                 "Device": "7c263f22a8bec2d6",
-                "LCSC Part Name": "1x3P 间距:2.54mm 方针 直插",
-                "Supplier Part": "C2937625",
+                "Unique ID": "gge15",
+                "Footprint": "7a4b52d22387e461",
+                "Name": "={Manufacturer Part}",
+                "Reuse Block": "",
+                "Group ID": "",
+                "Channel ID": "$1I16",
                 "Manufacturer": "XFCN(兴飞)",
                 "Manufacturer Part": "PZ254V-11-03P",
+                "Supplier": "LCSC",
+                "Supplier Part": "C2937625",
+                "LCSC Part Name": "1x3P 间距:2.54mm 方针 直插",
                 "Supplier Footprint": "插件,P=2.54mm",
                 "JLCPCB Part Class": "Extended Part",
                 "Datasheet": "https://item.szlcsc.com/datasheet/PZ254V-11-03P/3293280.html",
-                "Supplier": "LCSC",
-                "Footprint": "7a4b52d22387e461",
-                "3D Model": "bd28a638fbd247be9398fd5d39c366ec|0819f05c4eef4c71ace90d822a990e87",
-                "3D Model Title": "HDR-TH_3P-P2.54-V-M_PZ254V-11-03P",
-                "3D Model Transform": "300.3931,100,0,0,0,0,0,0,-118.11",
                 "Pin Structure": "1x3P",
                 "Pitch": "2.54mm",
                 "Row Spacing": "-",
@@ -1744,11 +1673,10 @@
                 "Operating Temperature": "-40℃~+105℃",
                 "Color": "Black",
                 "Supplementary Features": "-",
-                "Name": "={Manufacturer Part}",
                 "Description": "Pin Structure:1x3P Pitch:2.54mm Row Spacing:- Circluar Pins/Square Pins:Square pin Mounting Type:Through Hole Number of Rows:1 Number of Pins:3P Current Rating:3A Voltage Rating (Max):250V Length of Mating Pin:6.1mm Insulation Height:2.5mm Length of End C",
-                "Reuse Block": "",
-                "Group ID": "",
-                "Channel ID": "$1I16",
+                "3D Model": "bd28a638fbd247be9398fd5d39c366ec|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "HDR-TH_3P-P2.54-V-M_PZ254V-11-03P",
+                "3D Model Transform": "300.3931,100,0,0,0,0,0,0,-118.11",
                 "DeviceName": "PZ254V-11-03P",
                 "FootprintName": "HDR-TH_3P-P2.54-V-M_PZ254V-11-03P"
             },
@@ -1781,35 +1709,35 @@
         },
         "gge16": {
             "props": {
-                "Unique ID": "gge16",
                 "Add into BOM": "yes",
                 "Convert to PCB": "yes",
                 "Symbol": "76ba9ff82f92cdc9",
                 "Designator": "R1",
                 "Device": "4a98bf90582b503d",
-                "LCSC Part Name": "金属膜电阻 4.7kΩ ±1% 250mW",
-                "Supplier Part": "C1371435",
+                "Unique ID": "gge16",
+                "Footprint": "29f915da377bc730",
+                "Name": "={Value}",
+                "Reuse Block": "",
+                "Group ID": "",
+                "Channel ID": "$1I17",
                 "Manufacturer": "YAGEO(国巨)",
                 "Manufacturer Part": "MFR-25FBF52-4K7",
+                "Supplier": "LCSC",
+                "Supplier Part": "C1371435",
+                "LCSC Part Name": "金属膜电阻 4.7kΩ ±1% 250mW",
                 "Supplier Footprint": "插件,D2.4xL6.3mm",
                 "JLCPCB Part Class": "Extended Part",
                 "Datasheet": "https://item.szlcsc.com/datasheet/MFR-25FBF52-4K7/1461724.html",
-                "Supplier": "LCSC",
-                "Footprint": "29f915da377bc730",
-                "3D Model": "1723974b41284f5c8da509f1f508e955|0819f05c4eef4c71ace90d822a990e87",
-                "3D Model Title": "RES-TH_BD2.4-L6.3-P10.30-D0.6",
-                "3D Model Transform": "427.165,94.32816,0,0,0,0,0,0,-196.85",
                 "Type": "Metal Film Resistor",
                 "Value": "4.7kΩ",
                 "Tolerance": "±1%",
                 "Power(Watts)": "250mW",
                 "Temperature Coefficient": "±100ppm/℃",
                 "Operating Temperature": "-55℃~+155℃",
-                "Name": "={Value}",
                 "Description": "Type:Metal Film Resistor Resistance:4.7kΩ Tolerance:±1% Tolerance:±1% Power(Watts):250mW Temperature Coefficient:±100ppm/℃ Temperature Coefficient:±100ppm/℃ Operating Temperature:-55℃~+155℃ Operating Temperature:-55℃~+155℃",
-                "Reuse Block": "",
-                "Group ID": "",
-                "Channel ID": "$1I17",
+                "3D Model": "1723974b41284f5c8da509f1f508e955|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "RES-TH_BD2.4-L6.3-P10.30-D0.6",
+                "3D Model Transform": "427.165,94.32816,0,0,0,0,0,0,-196.85",
                 "DeviceName": "MFR-25FBF52-4K7",
                 "FootprintName": "RES-TH_BD2.4-L6.3-P10.30-D0.6"
             },
@@ -1834,35 +1762,35 @@
         },
         "gge17": {
             "props": {
-                "Unique ID": "gge17",
                 "Add into BOM": "yes",
                 "Convert to PCB": "yes",
                 "Symbol": "76ba9ff82f92cdc9",
                 "Designator": "R2",
                 "Device": "4a98bf90582b503d",
-                "LCSC Part Name": "金属膜电阻 4.7kΩ ±1% 250mW",
-                "Supplier Part": "C1371435",
+                "Unique ID": "gge17",
+                "Footprint": "29f915da377bc730",
+                "Name": "={Value}",
+                "Reuse Block": "",
+                "Group ID": "",
+                "Channel ID": "$1I18",
                 "Manufacturer": "YAGEO(国巨)",
                 "Manufacturer Part": "MFR-25FBF52-4K7",
+                "Supplier": "LCSC",
+                "Supplier Part": "C1371435",
+                "LCSC Part Name": "金属膜电阻 4.7kΩ ±1% 250mW",
                 "Supplier Footprint": "插件,D2.4xL6.3mm",
                 "JLCPCB Part Class": "Extended Part",
                 "Datasheet": "https://item.szlcsc.com/datasheet/MFR-25FBF52-4K7/1461724.html",
-                "Supplier": "LCSC",
-                "Footprint": "29f915da377bc730",
-                "3D Model": "1723974b41284f5c8da509f1f508e955|0819f05c4eef4c71ace90d822a990e87",
-                "3D Model Title": "RES-TH_BD2.4-L6.3-P10.30-D0.6",
-                "3D Model Transform": "427.165,94.32816,0,0,0,0,0,0,-196.85",
                 "Type": "Metal Film Resistor",
                 "Value": "4.7kΩ",
                 "Tolerance": "±1%",
                 "Power(Watts)": "250mW",
                 "Temperature Coefficient": "±100ppm/℃",
                 "Operating Temperature": "-55℃~+155℃",
-                "Name": "={Value}",
                 "Description": "Type:Metal Film Resistor Resistance:4.7kΩ Tolerance:±1% Tolerance:±1% Power(Watts):250mW Temperature Coefficient:±100ppm/℃ Temperature Coefficient:±100ppm/℃ Operating Temperature:-55℃~+155℃ Operating Temperature:-55℃~+155℃",
-                "Reuse Block": "",
-                "Group ID": "",
-                "Channel ID": "$1I18",
+                "3D Model": "1723974b41284f5c8da509f1f508e955|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "RES-TH_BD2.4-L6.3-P10.30-D0.6",
+                "3D Model Transform": "427.165,94.32816,0,0,0,0,0,0,-196.85",
                 "DeviceName": "MFR-25FBF52-4K7",
                 "FootprintName": "RES-TH_BD2.4-L6.3-P10.30-D0.6"
             },
@@ -1887,34 +1815,34 @@
         },
         "gge18": {
             "props": {
-                "Unique ID": "gge18",
                 "Add into BOM": "yes",
                 "Convert to PCB": "yes",
                 "Symbol": "8befe5e15643520d",
                 "Designator": "C1",
                 "Device": "e73faac601595c0b",
-                "LCSC Part Name": "100nF ±10% 50V",
-                "Supplier Part": "C162685",
+                "Unique ID": "gge18",
+                "Footprint": "a6871df419cd52e3",
+                "Name": "={Value}",
+                "Reuse Block": "",
+                "Group ID": "",
+                "Channel ID": "$1I19",
                 "Manufacturer": "muRata(村田)",
                 "Manufacturer Part": "RDER71H104K0K1H03B",
+                "Supplier": "LCSC",
+                "Supplier Part": "C162685",
+                "LCSC Part Name": "100nF ±10% 50V",
                 "Supplier Footprint": "插件,P=5mm",
                 "JLCPCB Part Class": "Extended Part",
                 "Datasheet": "https://item.szlcsc.com/datasheet/RDER71H104K0K1H03B/174066.html",
-                "Supplier": "LCSC",
-                "Footprint": "a6871df419cd52e3",
-                "3D Model": "2b0a8f1f83cb40dd8505e9775caa01b7|0819f05c4eef4c71ace90d822a990e87",
-                "3D Model Title": "CAP-TH_L5.0-W2.5-P5.08",
-                "3D Model Transform": "222.8342,98.419,0,0,0,0,0,0,-118.11",
                 "Value": "100nF",
                 "Tolerance": "±10%",
                 "Voltage Rating": "50V",
                 "Temperature Coefficient": "X7R",
                 "Pin Spacing": "5mm",
-                "Name": "={Value}",
                 "Description": "Capacitance:100nF Tolerance:±10% Tolerance:±10% Voltage Rating:50V Temperature Coefficient:X7R Pin Spacing:5mm",
-                "Reuse Block": "",
-                "Group ID": "",
-                "Channel ID": "$1I19",
+                "3D Model": "2b0a8f1f83cb40dd8505e9775caa01b7|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "CAP-TH_L5.0-W2.5-P5.08",
+                "3D Model Transform": "222.8342,98.419,0,0,0,0,0,0,-118.11",
                 "DeviceName": "RDER71H104K0K1H03B",
                 "FootprintName": "CAP-TH_L5.0-W2.5-P5.08-D0.7"
             },
@@ -1939,29 +1867,29 @@
         },
         "gge19": {
             "props": {
-                "Unique ID": "gge19",
                 "Add into BOM": "yes",
                 "Convert to PCB": "yes",
                 "Symbol": "379044aa53c7c976",
                 "Designator": "SW2",
                 "Device": "78d9b23261b0db0b",
-                "LCSC Part Name": "6*6*5mm 直插 轻触开关",
-                "Supplier Part": "C53447028",
-                "Manufacturer": "LXWCONN(连兴旺电子)",
-                "Manufacturer Part": "LXW-TS-6X6X5-DIP",
-                "Supplier Footprint": "插件-4P,6x6mm",
-                "JLCPCB Part Class": "Extended Part",
-                "Datasheet": "https://item.szlcsc.com/datasheet/LXW-TS-6X6X5-DIP/56599287.html",
-                "Supplier": "LCSC",
+                "Unique ID": "gge19",
                 "Footprint": "530c74113c03e9d7",
-                "3D Model": "1b2aa19db9484d8f9f922c3504714525|0819f05c4eef4c71ace90d822a990e87",
-                "3D Model Title": "SW-TH_4P-L6.0-W6.0-H5.0-LS6.5-P4.50",
-                "3D Model Transform": "236.22,323.03,0,90,0,0,0,0,-137.795",
                 "Name": "={Manufacturer Part}",
-                "Description": "",
                 "Reuse Block": "",
                 "Group ID": "",
                 "Channel ID": "$1I20",
+                "Manufacturer": "LXWCONN(连兴旺电子)",
+                "Manufacturer Part": "LXW-TS-6X6X5-DIP",
+                "Supplier": "LCSC",
+                "Supplier Part": "C53447028",
+                "LCSC Part Name": "6*6*5mm 直插 轻触开关",
+                "Supplier Footprint": "插件-4P,6x6mm",
+                "JLCPCB Part Class": "Extended Part",
+                "Datasheet": "https://item.szlcsc.com/datasheet/LXW-TS-6X6X5-DIP/56599287.html",
+                "Description": "",
+                "3D Model": "1b2aa19db9484d8f9f922c3504714525|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "SW-TH_4P-L6.0-W6.0-H5.0-LS6.5-P4.50",
+                "3D Model Transform": "236.22,323.03,0,90,0,0,0,0,-137.795",
                 "DeviceName": "LXW-TS-6X6X5-DIP",
                 "FootprintName": "SW-TH_4P-L6.0-W6.0-P4.50-LS6.5"
             },
@@ -2002,29 +1930,29 @@
         },
         "gge20": {
             "props": {
-                "Unique ID": "gge20",
                 "Add into BOM": "yes",
                 "Convert to PCB": "yes",
                 "Symbol": "379044aa53c7c976",
                 "Designator": "SW3",
                 "Device": "78d9b23261b0db0b",
-                "LCSC Part Name": "6*6*5mm 直插 轻触开关",
-                "Supplier Part": "C53447028",
-                "Manufacturer": "LXWCONN(连兴旺电子)",
-                "Manufacturer Part": "LXW-TS-6X6X5-DIP",
-                "Supplier Footprint": "插件-4P,6x6mm",
-                "JLCPCB Part Class": "Extended Part",
-                "Datasheet": "https://item.szlcsc.com/datasheet/LXW-TS-6X6X5-DIP/56599287.html",
-                "Supplier": "LCSC",
+                "Unique ID": "gge20",
                 "Footprint": "530c74113c03e9d7",
-                "3D Model": "1b2aa19db9484d8f9f922c3504714525|0819f05c4eef4c71ace90d822a990e87",
-                "3D Model Title": "SW-TH_4P-L6.0-W6.0-H5.0-LS6.5-P4.50",
-                "3D Model Transform": "236.22,323.03,0,90,0,0,0,0,-137.795",
                 "Name": "={Manufacturer Part}",
-                "Description": "",
                 "Reuse Block": "",
                 "Group ID": "",
                 "Channel ID": "$1I21",
+                "Manufacturer": "LXWCONN(连兴旺电子)",
+                "Manufacturer Part": "LXW-TS-6X6X5-DIP",
+                "Supplier": "LCSC",
+                "Supplier Part": "C53447028",
+                "LCSC Part Name": "6*6*5mm 直插 轻触开关",
+                "Supplier Footprint": "插件-4P,6x6mm",
+                "JLCPCB Part Class": "Extended Part",
+                "Datasheet": "https://item.szlcsc.com/datasheet/LXW-TS-6X6X5-DIP/56599287.html",
+                "Description": "",
+                "3D Model": "1b2aa19db9484d8f9f922c3504714525|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "SW-TH_4P-L6.0-W6.0-H5.0-LS6.5-P4.50",
+                "3D Model Transform": "236.22,323.03,0,90,0,0,0,0,-137.795",
                 "DeviceName": "LXW-TS-6X6X5-DIP",
                 "FootprintName": "SW-TH_4P-L6.0-W6.0-P4.50-LS6.5"
             },
@@ -2065,29 +1993,29 @@
         },
         "gge21": {
             "props": {
-                "Unique ID": "gge21",
                 "Add into BOM": "yes",
                 "Convert to PCB": "yes",
                 "Symbol": "379044aa53c7c976",
                 "Designator": "SW4",
                 "Device": "78d9b23261b0db0b",
-                "LCSC Part Name": "6*6*5mm 直插 轻触开关",
-                "Supplier Part": "C53447028",
-                "Manufacturer": "LXWCONN(连兴旺电子)",
-                "Manufacturer Part": "LXW-TS-6X6X5-DIP",
-                "Supplier Footprint": "插件-4P,6x6mm",
-                "JLCPCB Part Class": "Extended Part",
-                "Datasheet": "https://item.szlcsc.com/datasheet/LXW-TS-6X6X5-DIP/56599287.html",
-                "Supplier": "LCSC",
+                "Unique ID": "gge21",
                 "Footprint": "530c74113c03e9d7",
-                "3D Model": "1b2aa19db9484d8f9f922c3504714525|0819f05c4eef4c71ace90d822a990e87",
-                "3D Model Title": "SW-TH_4P-L6.0-W6.0-H5.0-LS6.5-P4.50",
-                "3D Model Transform": "236.22,323.03,0,90,0,0,0,0,-137.795",
                 "Name": "={Manufacturer Part}",
-                "Description": "",
                 "Reuse Block": "",
                 "Group ID": "",
                 "Channel ID": "$1I22",
+                "Manufacturer": "LXWCONN(连兴旺电子)",
+                "Manufacturer Part": "LXW-TS-6X6X5-DIP",
+                "Supplier": "LCSC",
+                "Supplier Part": "C53447028",
+                "LCSC Part Name": "6*6*5mm 直插 轻触开关",
+                "Supplier Footprint": "插件-4P,6x6mm",
+                "JLCPCB Part Class": "Extended Part",
+                "Datasheet": "https://item.szlcsc.com/datasheet/LXW-TS-6X6X5-DIP/56599287.html",
+                "Description": "",
+                "3D Model": "1b2aa19db9484d8f9f922c3504714525|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "SW-TH_4P-L6.0-W6.0-H5.0-LS6.5-P4.50",
+                "3D Model Transform": "236.22,323.03,0,90,0,0,0,0,-137.795",
                 "DeviceName": "LXW-TS-6X6X5-DIP",
                 "FootprintName": "SW-TH_4P-L6.0-W6.0-P4.50-LS6.5"
             },
@@ -2128,29 +2056,29 @@
         },
         "gge22": {
             "props": {
-                "Unique ID": "gge22",
                 "Add into BOM": "yes",
                 "Convert to PCB": "yes",
                 "Symbol": "379044aa53c7c976",
                 "Designator": "SW5",
                 "Device": "78d9b23261b0db0b",
-                "LCSC Part Name": "6*6*5mm 直插 轻触开关",
-                "Supplier Part": "C53447028",
-                "Manufacturer": "LXWCONN(连兴旺电子)",
-                "Manufacturer Part": "LXW-TS-6X6X5-DIP",
-                "Supplier Footprint": "插件-4P,6x6mm",
-                "JLCPCB Part Class": "Extended Part",
-                "Datasheet": "https://item.szlcsc.com/datasheet/LXW-TS-6X6X5-DIP/56599287.html",
-                "Supplier": "LCSC",
+                "Unique ID": "gge22",
                 "Footprint": "530c74113c03e9d7",
-                "3D Model": "1b2aa19db9484d8f9f922c3504714525|0819f05c4eef4c71ace90d822a990e87",
-                "3D Model Title": "SW-TH_4P-L6.0-W6.0-H5.0-LS6.5-P4.50",
-                "3D Model Transform": "236.22,323.03,0,90,0,0,0,0,-137.795",
                 "Name": "={Manufacturer Part}",
-                "Description": "",
                 "Reuse Block": "",
                 "Group ID": "",
                 "Channel ID": "$1I23",
+                "Manufacturer": "LXWCONN(连兴旺电子)",
+                "Manufacturer Part": "LXW-TS-6X6X5-DIP",
+                "Supplier": "LCSC",
+                "Supplier Part": "C53447028",
+                "LCSC Part Name": "6*6*5mm 直插 轻触开关",
+                "Supplier Footprint": "插件-4P,6x6mm",
+                "JLCPCB Part Class": "Extended Part",
+                "Datasheet": "https://item.szlcsc.com/datasheet/LXW-TS-6X6X5-DIP/56599287.html",
+                "Description": "",
+                "3D Model": "1b2aa19db9484d8f9f922c3504714525|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "SW-TH_4P-L6.0-W6.0-H5.0-LS6.5-P4.50",
+                "3D Model Transform": "236.22,323.03,0,90,0,0,0,0,-137.795",
                 "DeviceName": "LXW-TS-6X6X5-DIP",
                 "FootprintName": "SW-TH_4P-L6.0-W6.0-P4.50-LS6.5"
             },
@@ -2191,29 +2119,29 @@
         },
         "gge23": {
             "props": {
-                "Unique ID": "gge23",
                 "Add into BOM": "yes",
                 "Convert to PCB": "yes",
                 "Symbol": "379044aa53c7c976",
                 "Designator": "SW6",
                 "Device": "78d9b23261b0db0b",
-                "LCSC Part Name": "6*6*5mm 直插 轻触开关",
-                "Supplier Part": "C53447028",
-                "Manufacturer": "LXWCONN(连兴旺电子)",
-                "Manufacturer Part": "LXW-TS-6X6X5-DIP",
-                "Supplier Footprint": "插件-4P,6x6mm",
-                "JLCPCB Part Class": "Extended Part",
-                "Datasheet": "https://item.szlcsc.com/datasheet/LXW-TS-6X6X5-DIP/56599287.html",
-                "Supplier": "LCSC",
+                "Unique ID": "gge23",
                 "Footprint": "530c74113c03e9d7",
-                "3D Model": "1b2aa19db9484d8f9f922c3504714525|0819f05c4eef4c71ace90d822a990e87",
-                "3D Model Title": "SW-TH_4P-L6.0-W6.0-H5.0-LS6.5-P4.50",
-                "3D Model Transform": "236.22,323.03,0,90,0,0,0,0,-137.795",
                 "Name": "={Manufacturer Part}",
-                "Description": "",
                 "Reuse Block": "",
                 "Group ID": "",
                 "Channel ID": "$1I24",
+                "Manufacturer": "LXWCONN(连兴旺电子)",
+                "Manufacturer Part": "LXW-TS-6X6X5-DIP",
+                "Supplier": "LCSC",
+                "Supplier Part": "C53447028",
+                "LCSC Part Name": "6*6*5mm 直插 轻触开关",
+                "Supplier Footprint": "插件-4P,6x6mm",
+                "JLCPCB Part Class": "Extended Part",
+                "Datasheet": "https://item.szlcsc.com/datasheet/LXW-TS-6X6X5-DIP/56599287.html",
+                "Description": "",
+                "3D Model": "1b2aa19db9484d8f9f922c3504714525|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "SW-TH_4P-L6.0-W6.0-H5.0-LS6.5-P4.50",
+                "3D Model Transform": "236.22,323.03,0,90,0,0,0,0,-137.795",
                 "DeviceName": "LXW-TS-6X6X5-DIP",
                 "FootprintName": "SW-TH_4P-L6.0-W6.0-P4.50-LS6.5"
             },
@@ -2254,29 +2182,29 @@
         },
         "gge24": {
             "props": {
-                "Unique ID": "gge24",
                 "Add into BOM": "yes",
                 "Convert to PCB": "yes",
                 "Symbol": "379044aa53c7c976",
                 "Designator": "SW7",
                 "Device": "78d9b23261b0db0b",
-                "LCSC Part Name": "6*6*5mm 直插 轻触开关",
-                "Supplier Part": "C53447028",
-                "Manufacturer": "LXWCONN(连兴旺电子)",
-                "Manufacturer Part": "LXW-TS-6X6X5-DIP",
-                "Supplier Footprint": "插件-4P,6x6mm",
-                "JLCPCB Part Class": "Extended Part",
-                "Datasheet": "https://item.szlcsc.com/datasheet/LXW-TS-6X6X5-DIP/56599287.html",
-                "Supplier": "LCSC",
+                "Unique ID": "gge24",
                 "Footprint": "530c74113c03e9d7",
-                "3D Model": "1b2aa19db9484d8f9f922c3504714525|0819f05c4eef4c71ace90d822a990e87",
-                "3D Model Title": "SW-TH_4P-L6.0-W6.0-H5.0-LS6.5-P4.50",
-                "3D Model Transform": "236.22,323.03,0,90,0,0,0,0,-137.795",
                 "Name": "={Manufacturer Part}",
-                "Description": "",
                 "Reuse Block": "",
                 "Group ID": "",
                 "Channel ID": "$1I25",
+                "Manufacturer": "LXWCONN(连兴旺电子)",
+                "Manufacturer Part": "LXW-TS-6X6X5-DIP",
+                "Supplier": "LCSC",
+                "Supplier Part": "C53447028",
+                "LCSC Part Name": "6*6*5mm 直插 轻触开关",
+                "Supplier Footprint": "插件-4P,6x6mm",
+                "JLCPCB Part Class": "Extended Part",
+                "Datasheet": "https://item.szlcsc.com/datasheet/LXW-TS-6X6X5-DIP/56599287.html",
+                "Description": "",
+                "3D Model": "1b2aa19db9484d8f9f922c3504714525|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "SW-TH_4P-L6.0-W6.0-H5.0-LS6.5-P4.50",
+                "3D Model Transform": "236.22,323.03,0,90,0,0,0,0,-137.795",
                 "DeviceName": "LXW-TS-6X6X5-DIP",
                 "FootprintName": "SW-TH_4P-L6.0-W6.0-P4.50-LS6.5"
             },
@@ -2317,29 +2245,29 @@
         },
         "gge25": {
             "props": {
-                "Unique ID": "gge25",
                 "Add into BOM": "yes",
                 "Convert to PCB": "yes",
                 "Symbol": "379044aa53c7c976",
                 "Designator": "SW8",
                 "Device": "78d9b23261b0db0b",
-                "LCSC Part Name": "6*6*5mm 直插 轻触开关",
-                "Supplier Part": "C53447028",
-                "Manufacturer": "LXWCONN(连兴旺电子)",
-                "Manufacturer Part": "LXW-TS-6X6X5-DIP",
-                "Supplier Footprint": "插件-4P,6x6mm",
-                "JLCPCB Part Class": "Extended Part",
-                "Datasheet": "https://item.szlcsc.com/datasheet/LXW-TS-6X6X5-DIP/56599287.html",
-                "Supplier": "LCSC",
+                "Unique ID": "gge25",
                 "Footprint": "530c74113c03e9d7",
-                "3D Model": "1b2aa19db9484d8f9f922c3504714525|0819f05c4eef4c71ace90d822a990e87",
-                "3D Model Title": "SW-TH_4P-L6.0-W6.0-H5.0-LS6.5-P4.50",
-                "3D Model Transform": "236.22,323.03,0,90,0,0,0,0,-137.795",
                 "Name": "={Manufacturer Part}",
-                "Description": "",
                 "Reuse Block": "",
                 "Group ID": "",
                 "Channel ID": "$1I26",
+                "Manufacturer": "LXWCONN(连兴旺电子)",
+                "Manufacturer Part": "LXW-TS-6X6X5-DIP",
+                "Supplier": "LCSC",
+                "Supplier Part": "C53447028",
+                "LCSC Part Name": "6*6*5mm 直插 轻触开关",
+                "Supplier Footprint": "插件-4P,6x6mm",
+                "JLCPCB Part Class": "Extended Part",
+                "Datasheet": "https://item.szlcsc.com/datasheet/LXW-TS-6X6X5-DIP/56599287.html",
+                "Description": "",
+                "3D Model": "1b2aa19db9484d8f9f922c3504714525|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "SW-TH_4P-L6.0-W6.0-H5.0-LS6.5-P4.50",
+                "3D Model Transform": "236.22,323.03,0,90,0,0,0,0,-137.795",
                 "DeviceName": "LXW-TS-6X6X5-DIP",
                 "FootprintName": "SW-TH_4P-L6.0-W6.0-P4.50-LS6.5"
             },
@@ -2380,29 +2308,29 @@
         },
         "gge26": {
             "props": {
-                "Unique ID": "gge26",
                 "Add into BOM": "yes",
                 "Convert to PCB": "yes",
                 "Symbol": "379044aa53c7c976",
                 "Designator": "SW9",
                 "Device": "78d9b23261b0db0b",
-                "LCSC Part Name": "6*6*5mm 直插 轻触开关",
-                "Supplier Part": "C53447028",
-                "Manufacturer": "LXWCONN(连兴旺电子)",
-                "Manufacturer Part": "LXW-TS-6X6X5-DIP",
-                "Supplier Footprint": "插件-4P,6x6mm",
-                "JLCPCB Part Class": "Extended Part",
-                "Datasheet": "https://item.szlcsc.com/datasheet/LXW-TS-6X6X5-DIP/56599287.html",
-                "Supplier": "LCSC",
+                "Unique ID": "gge26",
                 "Footprint": "530c74113c03e9d7",
-                "3D Model": "1b2aa19db9484d8f9f922c3504714525|0819f05c4eef4c71ace90d822a990e87",
-                "3D Model Title": "SW-TH_4P-L6.0-W6.0-H5.0-LS6.5-P4.50",
-                "3D Model Transform": "236.22,323.03,0,90,0,0,0,0,-137.795",
                 "Name": "={Manufacturer Part}",
-                "Description": "",
                 "Reuse Block": "",
                 "Group ID": "",
                 "Channel ID": "$1I27",
+                "Manufacturer": "LXWCONN(连兴旺电子)",
+                "Manufacturer Part": "LXW-TS-6X6X5-DIP",
+                "Supplier": "LCSC",
+                "Supplier Part": "C53447028",
+                "LCSC Part Name": "6*6*5mm 直插 轻触开关",
+                "Supplier Footprint": "插件-4P,6x6mm",
+                "JLCPCB Part Class": "Extended Part",
+                "Datasheet": "https://item.szlcsc.com/datasheet/LXW-TS-6X6X5-DIP/56599287.html",
+                "Description": "",
+                "3D Model": "1b2aa19db9484d8f9f922c3504714525|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "SW-TH_4P-L6.0-W6.0-H5.0-LS6.5-P4.50",
+                "3D Model Transform": "236.22,323.03,0,90,0,0,0,0,-137.795",
                 "DeviceName": "LXW-TS-6X6X5-DIP",
                 "FootprintName": "SW-TH_4P-L6.0-W6.0-P4.50-LS6.5"
             },
@@ -2443,29 +2371,29 @@
         },
         "gge27": {
             "props": {
-                "Unique ID": "gge27",
                 "Add into BOM": "yes",
                 "Convert to PCB": "yes",
                 "Symbol": "379044aa53c7c976",
                 "Designator": "SW10",
                 "Device": "78d9b23261b0db0b",
-                "LCSC Part Name": "6*6*5mm 直插 轻触开关",
-                "Supplier Part": "C53447028",
-                "Manufacturer": "LXWCONN(连兴旺电子)",
-                "Manufacturer Part": "LXW-TS-6X6X5-DIP",
-                "Supplier Footprint": "插件-4P,6x6mm",
-                "JLCPCB Part Class": "Extended Part",
-                "Datasheet": "https://item.szlcsc.com/datasheet/LXW-TS-6X6X5-DIP/56599287.html",
-                "Supplier": "LCSC",
+                "Unique ID": "gge27",
                 "Footprint": "530c74113c03e9d7",
-                "3D Model": "1b2aa19db9484d8f9f922c3504714525|0819f05c4eef4c71ace90d822a990e87",
-                "3D Model Title": "SW-TH_4P-L6.0-W6.0-H5.0-LS6.5-P4.50",
-                "3D Model Transform": "236.22,323.03,0,90,0,0,0,0,-137.795",
                 "Name": "={Manufacturer Part}",
-                "Description": "",
                 "Reuse Block": "",
                 "Group ID": "",
                 "Channel ID": "$1I28",
+                "Manufacturer": "LXWCONN(连兴旺电子)",
+                "Manufacturer Part": "LXW-TS-6X6X5-DIP",
+                "Supplier": "LCSC",
+                "Supplier Part": "C53447028",
+                "LCSC Part Name": "6*6*5mm 直插 轻触开关",
+                "Supplier Footprint": "插件-4P,6x6mm",
+                "JLCPCB Part Class": "Extended Part",
+                "Datasheet": "https://item.szlcsc.com/datasheet/LXW-TS-6X6X5-DIP/56599287.html",
+                "Description": "",
+                "3D Model": "1b2aa19db9484d8f9f922c3504714525|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "SW-TH_4P-L6.0-W6.0-H5.0-LS6.5-P4.50",
+                "3D Model Transform": "236.22,323.03,0,90,0,0,0,0,-137.795",
                 "DeviceName": "LXW-TS-6X6X5-DIP",
                 "FootprintName": "SW-TH_4P-L6.0-W6.0-P4.50-LS6.5"
             },
@@ -2506,29 +2434,29 @@
         },
         "gge28": {
             "props": {
-                "Unique ID": "gge28",
                 "Add into BOM": "yes",
                 "Convert to PCB": "yes",
                 "Symbol": "379044aa53c7c976",
                 "Designator": "SW11",
                 "Device": "78d9b23261b0db0b",
-                "LCSC Part Name": "6*6*5mm 直插 轻触开关",
-                "Supplier Part": "C53447028",
-                "Manufacturer": "LXWCONN(连兴旺电子)",
-                "Manufacturer Part": "LXW-TS-6X6X5-DIP",
-                "Supplier Footprint": "插件-4P,6x6mm",
-                "JLCPCB Part Class": "Extended Part",
-                "Datasheet": "https://item.szlcsc.com/datasheet/LXW-TS-6X6X5-DIP/56599287.html",
-                "Supplier": "LCSC",
+                "Unique ID": "gge28",
                 "Footprint": "530c74113c03e9d7",
-                "3D Model": "1b2aa19db9484d8f9f922c3504714525|0819f05c4eef4c71ace90d822a990e87",
-                "3D Model Title": "SW-TH_4P-L6.0-W6.0-H5.0-LS6.5-P4.50",
-                "3D Model Transform": "236.22,323.03,0,90,0,0,0,0,-137.795",
                 "Name": "={Manufacturer Part}",
-                "Description": "",
                 "Reuse Block": "",
                 "Group ID": "",
                 "Channel ID": "$1I29",
+                "Manufacturer": "LXWCONN(连兴旺电子)",
+                "Manufacturer Part": "LXW-TS-6X6X5-DIP",
+                "Supplier": "LCSC",
+                "Supplier Part": "C53447028",
+                "LCSC Part Name": "6*6*5mm 直插 轻触开关",
+                "Supplier Footprint": "插件-4P,6x6mm",
+                "JLCPCB Part Class": "Extended Part",
+                "Datasheet": "https://item.szlcsc.com/datasheet/LXW-TS-6X6X5-DIP/56599287.html",
+                "Description": "",
+                "3D Model": "1b2aa19db9484d8f9f922c3504714525|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "SW-TH_4P-L6.0-W6.0-H5.0-LS6.5-P4.50",
+                "3D Model Transform": "236.22,323.03,0,90,0,0,0,0,-137.795",
                 "DeviceName": "LXW-TS-6X6X5-DIP",
                 "FootprintName": "SW-TH_4P-L6.0-W6.0-P4.50-LS6.5"
             },
@@ -2602,8 +2530,8 @@
                     "TrackPhysics": ""
                 }
             },
-            "CHG_STAT": {
-                "net": "CHG_STAT",
+            "I2C_SDA": {
+                "net": "I2C_SDA",
                 "ruleMap": {
                     "TrackPhysics": ""
                 }
@@ -2614,50 +2542,44 @@
                     "TrackPhysics": ""
                 }
             },
-            "CC1101_GDO0": {
-                "net": "CC1101_GDO0",
-                "ruleMap": {
-                    "TrackPhysics": ""
-                }
-            },
-            "DISPLAY_BACKLIGHT": {
-                "net": "DISPLAY_BACKLIGHT",
-                "ruleMap": {
-                    "TrackPhysics": ""
-                }
-            },
-            "DISPLAY_DC": {
-                "net": "DISPLAY_DC",
-                "ruleMap": {
-                    "TrackPhysics": ""
-                }
-            },
-            "DISPLAY_RESET": {
-                "net": "DISPLAY_RESET",
-                "ruleMap": {
-                    "TrackPhysics": ""
-                }
-            },
-            "I2C_SDA": {
-                "net": "I2C_SDA",
-                "ruleMap": {
-                    "TrackPhysics": ""
-                }
-            },
             "AMP_SHUTDOWN": {
                 "net": "AMP_SHUTDOWN",
                 "ruleMap": {
                     "TrackPhysics": ""
                 }
             },
-            "I2C_SCL": {
-                "net": "I2C_SCL",
+            "I2S_SPK_DATA": {
+                "net": "I2S_SPK_DATA",
                 "ruleMap": {
                     "TrackPhysics": ""
                 }
             },
-            "DISPLAY_CS": {
-                "net": "DISPLAY_CS",
+            "I2S_BCLK": {
+                "net": "I2S_BCLK",
+                "ruleMap": {
+                    "TrackPhysics": ""
+                }
+            },
+            "I2S_LRCLK": {
+                "net": "I2S_LRCLK",
+                "ruleMap": {
+                    "TrackPhysics": ""
+                }
+            },
+            "CHG_STAT": {
+                "net": "CHG_STAT",
+                "ruleMap": {
+                    "TrackPhysics": ""
+                }
+            },
+            "VBAT_SENSE": {
+                "net": "VBAT_SENSE",
+                "ruleMap": {
+                    "TrackPhysics": ""
+                }
+            },
+            "POWER_BTN": {
+                "net": "POWER_BTN",
                 "ruleMap": {
                     "TrackPhysics": ""
                 }
@@ -2680,8 +2602,8 @@
                     "TrackPhysics": ""
                 }
             },
-            "CC1101_CS": {
-                "net": "CC1101_CS",
+            "DISPLAY_BACKLIGHT": {
+                "net": "DISPLAY_BACKLIGHT",
                 "ruleMap": {
                     "TrackPhysics": ""
                 }
@@ -2698,14 +2620,32 @@
                     "TrackPhysics": ""
                 }
             },
+            "CC1101_GDO0": {
+                "net": "CC1101_GDO0",
+                "ruleMap": {
+                    "TrackPhysics": ""
+                }
+            },
             "SD_CS": {
                 "net": "SD_CS",
                 "ruleMap": {
                     "TrackPhysics": ""
                 }
             },
-            "IR_TX": {
-                "net": "IR_TX",
+            "DISPLAY_DC": {
+                "net": "DISPLAY_DC",
+                "ruleMap": {
+                    "TrackPhysics": ""
+                }
+            },
+            "DISPLAY_RESET": {
+                "net": "DISPLAY_RESET",
+                "ruleMap": {
+                    "TrackPhysics": ""
+                }
+            },
+            "DISPLAY_CS": {
+                "net": "DISPLAY_CS",
                 "ruleMap": {
                     "TrackPhysics": ""
                 }
@@ -2716,38 +2656,8 @@
                     "TrackPhysics": ""
                 }
             },
-            "IR_RX": {
-                "net": "IR_RX",
-                "ruleMap": {
-                    "TrackPhysics": ""
-                }
-            },
-            "I2S_BCLK": {
-                "net": "I2S_BCLK",
-                "ruleMap": {
-                    "TrackPhysics": ""
-                }
-            },
-            "I2S_LRCLK": {
-                "net": "I2S_LRCLK",
-                "ruleMap": {
-                    "TrackPhysics": ""
-                }
-            },
-            "I2S_SPK_DATA": {
-                "net": "I2S_SPK_DATA",
-                "ruleMap": {
-                    "TrackPhysics": ""
-                }
-            },
-            "POWER_BTN": {
-                "net": "POWER_BTN",
-                "ruleMap": {
-                    "TrackPhysics": ""
-                }
-            },
-            "VBAT_SENSE": {
-                "net": "VBAT_SENSE",
+            "I2C_SCL": {
+                "net": "I2C_SCL",
                 "ruleMap": {
                     "TrackPhysics": ""
                 }
@@ -2758,14 +2668,26 @@
                     "TrackPhysics": ""
                 }
             },
-            "AMP_VIN": {
-                "net": "AMP_VIN",
+            "CC1101_CS": {
+                "net": "CC1101_CS",
                 "ruleMap": {
                     "TrackPhysics": ""
                 }
             },
-            "BTN_Y": {
-                "net": "BTN_Y",
+            "IR_RX": {
+                "net": "IR_RX",
+                "ruleMap": {
+                    "TrackPhysics": ""
+                }
+            },
+            "IR_TX": {
+                "net": "IR_TX",
+                "ruleMap": {
+                    "TrackPhysics": ""
+                }
+            },
+            "BTN_B": {
+                "net": "BTN_B",
                 "ruleMap": {
                     "TrackPhysics": ""
                 }
@@ -2776,8 +2698,14 @@
                     "TrackPhysics": ""
                 }
             },
-            "BTN_START": {
-                "net": "BTN_START",
+            "BTN_RIGHT": {
+                "net": "BTN_RIGHT",
+                "ruleMap": {
+                    "TrackPhysics": ""
+                }
+            },
+            "BTN_LEFT": {
+                "net": "BTN_LEFT",
                 "ruleMap": {
                     "TrackPhysics": ""
                 }
@@ -2794,32 +2722,26 @@
                     "TrackPhysics": ""
                 }
             },
-            "BTN_LEFT": {
-                "net": "BTN_LEFT",
-                "ruleMap": {
-                    "TrackPhysics": ""
-                }
-            },
-            "BTN_RIGHT": {
-                "net": "BTN_RIGHT",
-                "ruleMap": {
-                    "TrackPhysics": ""
-                }
-            },
             "BTN_A": {
                 "net": "BTN_A",
                 "ruleMap": {
                     "TrackPhysics": ""
                 }
             },
-            "BTN_B": {
-                "net": "BTN_B",
+            "BTN_X": {
+                "net": "BTN_X",
                 "ruleMap": {
                     "TrackPhysics": ""
                 }
             },
-            "BTN_X": {
-                "net": "BTN_X",
+            "BTN_Y": {
+                "net": "BTN_Y",
+                "ruleMap": {
+                    "TrackPhysics": ""
+                }
+            },
+            "BTN_START": {
+                "net": "BTN_START",
                 "ruleMap": {
                     "TrackPhysics": ""
                 }

@@ -27,31 +27,31 @@ Nenhum pino é "definitivo": a pinagem só fecha depois dos ensaios de bancada d
 
 | GPIO | Sinal | Classificação |
 |---:|---|---|
-| 1 | `VBAT_SENSE` | PROPOSTO |
-| 2 | `POWER_BUTTON` | PROPOSTO |
-| 3 | `AMP_SHUTDOWN` | PROPOSTO |
-| 6 | `CHARGER_STATUS` | PROPOSTO |
+| 1 | `I2C_SCL` | PROPOSTO |
+| 2 | `POWER_HOLD` | PROPOSTO |
+| 4 | `IR_RX` | VALIDADO EM BANCADA |
+| 5 | `IR_TX` | PROPOSTO |
+| 6 | `I2C_SDA` | PROPOSTO |
 | 7 | `I2S_MIC_DATA` | VALIDADO EM BANCADA |
-| 8 | `I2C_SDA` | PROPOSTO |
-| 9 | `I2C_SCL` | PROPOSTO |
-| 10 | `DISPLAY_CS` | VALIDADO EM BANCADA |
+| 8 | `CHARGER_STATUS` | PROPOSTO |
+| 9 | `VBAT_SENSE` | PROPOSTO |
+| 10 | `POWER_BUTTON` | PROPOSTO |
 | 11 | `SPI_MOSI` | VALIDADO EM BANCADA |
 | 12 | `SPI_SCK` | VALIDADO EM BANCADA |
 | 13 | `SPI_MISO` | VALIDADO EM BANCADA |
-| 14 | `CC1101_CS` | VALIDADO EM BANCADA |
-| 15 | `CC1101_GDO0` | PROPOSTO |
-| 16 | `DISPLAY_BACKLIGHT` | PROPOSTO |
-| 17 | `DISPLAY_DC` | VALIDADO EM BANCADA |
-| 18 | `DISPLAY_RESET` | VALIDADO EM BANCADA |
+| 14 | `DISPLAY_BACKLIGHT` | PROPOSTO |
+| 15 | `AMP_SHUTDOWN` | PROPOSTO |
+| 16 | `I2S_SPEAKER_DATA` | PROPOSTO |
+| 17 | `I2S_BCLK` | PROPOSTO |
+| 18 | `I2S_LRCLK` | PROPOSTO |
 | 19 | `USB_DM` | CONFIRMADO (fabricante) |
 | 20 | `USB_DP` | CONFIRMADO (fabricante) |
-| 21 | `SD_CS` | VALIDADO EM BANCADA |
-| 39 | `IR_RX` | PROPOSTO |
-| 40 | `I2S_BCLK` | VALIDADO EM BANCADA |
-| 41 | `I2S_LRCLK` | VALIDADO EM BANCADA |
-| 42 | `I2S_SPEAKER_DATA` | PROPOSTO |
-| 47 | `IR_TX` | PROPOSTO |
-| 48 | `POWER_HOLD` | PROPOSTO |
+| 21 | `CC1101_GDO0` | PROPOSTO |
+| 39 | `DISPLAY_DC` | PROPOSTO |
+| 40 | `DISPLAY_RESET` | PROPOSTO |
+| 41 | `DISPLAY_CS` | PROPOSTO |
+| 47 | `SD_CS` | PROPOSTO |
+| 48 | `CC1101_CS` | PROPOSTO |
 
 <!-- END pinmap:target -->
 
@@ -115,15 +115,15 @@ botão de energia em GPIO de RTC.
 
 | # | Pino | Uso proposto | Problema | Estado |
 |---:|---|---|---|---|
-| 1 | GPIO 0 | Botão de energia (até 2026-11-25) | GPIO 0 em nível baixo na saída do reset entra em modo de download (S3-STRAP-05). Se o mesmo botão liga a alimentação e puxa o GPIO 0 ao terra, **o aparelho não liga**: o firmware não roda e a trava nunca é segura. Análise completa em `sources/ESP32-S3.md`, seção 6 | **Resolvido por projeto em 2026-11-25** (alternativa A): o botão foi para o GPIO 2, RTC e fora dos pinos de strapping (S3-RTC-01, S3-STRAP-01); o GPIO 0 fica só como BOOT. Um `static_assert` em `pins.h` impede a volta a um pino de strapping. Na bancada, o botão de energia continua sendo o BOOT (GPIO 0), porque o 2 é o OK |
+| 1 | GPIO 0 | Botão de energia (até 2026-11-25) | GPIO 0 em nível baixo na saída do reset entra em modo de download (S3-STRAP-05). Se o mesmo botão liga a alimentação e puxa o GPIO 0 ao terra, **o aparelho não liga**: o firmware não roda e a trava nunca é segura. Análise completa em `sources/ESP32-S3.md`, seção 6 | **Resolvido por projeto em 2026-11-25** (alternativa A): o botão foi para um GPIO RTC fora dos pinos de strapping (S3-RTC-01, S3-STRAP-01), o 2 e, desde 2026-11-26, o 10; o GPIO 0 fica só como BOOT. Um `static_assert` em `pins.h` impede a volta a um pino de strapping. Na bancada, o botão de energia continua sendo o BOOT (GPIO 0), porque o 2 é o OK |
 | 2 | GPIO 43/44 | UART do cartucho | É o UART0: a ROM imprime o log de boot em GPIO 43 a cada partida, e mudar isso é gravação permanente de eFuse (S3-STRAP-16). O fabricante recomenda outro UART para a aplicação (S3-UART-03). Na DevKitC os pinos estão na ponte USB-UART (DKC-07) | Fechado em 2026-11-25: o cartucho saiu do v1 e 43/44 ficaram livres. Quem usar esses pinos recebe o log de boot da ROM |
-| 3 | GPIO 48 | Trava de alimentação (HOLD) | Não é GPIO de RTC: não mantém o nível em deep sleep sem configuração extra (S3-RTC-08). No reset é entrada sem pull (S3-GPIO-08): a trava precisa de resistor externo que defina o estado. Na DevKitC v1.0 é o LED RGB (DKC-01) | Proposto; depende do circuito da trava, que não existe |
+| 3 | GPIO 2 (era 48) | Trava de alimentação (HOLD) | O 48 não é GPIO de RTC e não mantinha o nível em deep sleep (S3-RTC-08). Desde 2026-11-26 a trava está no 2, que é RTC. No reset continua entrada sem pull (S3-GPIO-08): a trava precisa de resistor externo que defina o estado | Proposto; depende do circuito da trava, que não existe |
 | 4 | GPIO 38 | CS do cartucho | Na DevKitC v1.1 é o LED RGB (DKC-02). Com o USB-OTG Download Boot habilitado, a ROM leva o pino a nível baixo (S3-USB-10), o que selecionaria o cartucho | Fechado em 2026-11-25: o cartucho saiu do v1 e o 38 ficou livre |
-| 5 | GPIO 3 | Desligamento do amplificador | Flutuante no reset (S3-STRAP-14) e com glitch ao energizar (S3-GLT-01): o estado do amplificador durante o boot depende de resistor externo | Proposto; conferir se há estalo no alto-falante ao ligar |
-| 6 | GPIO 39–42 | IR RX e I2S | Pinos de JTAG; a ROM aciona 39 e 40 em um dos modos de download (S3-USB-10) | Proposto; conferir na bancada |
-| 7 | GPIO 4, 5, 6 | Livres (4, 5) e status do carregador (6) | Eram os analógicos, retirados do v1 em 2026-11-25; o GPIO 2 virou o botão de energia. O 6 recebe o status do carregador da placa de energia (decisão de 2026-11-25): GPIO RTC, acorda o chip quando o carregador é ligado. O 4 e o 5 ficam livres porque o IR da bancada usa os dois | Removido em 2026-11-25: v1 sem analógicos nem gatilhos |
-| 8 | GPIO 16 | Backlight por PWM | Na bancada o LED da tela está direto no 3V3; o controle por PWM nunca foi testado, e a corrente do backlight não é conhecida (`PERIPHERALS.md`, MSP-05) | Proposto; pode exigir transistor |
-| 9 | GPIO 47, 48 | IR TX e trava | Dividem o domínio de alimentação da flash/PSRAM (S3-GPIO-09, S3-GPIO-11). O estado de fábrica do eFuse que fixa essa tensão no N16R8 não foi verificado (S3-STRAP-11); o registro de bancada indica 3,3 V | Proposto |
+| 5 | GPIO 15 (era 3) | Desligamento do amplificador | O 3 é strapping, flutuante no reset (S3-STRAP-14) e com glitch ao energizar (S3-GLT-01). Desde 2026-11-26 o SD_MODE está no 15, que não é strapping; no reset ele também fica sem nível definido até o firmware configurar | Proposto; conferir se há estalo no alto-falante ao ligar |
+| 6 | GPIO 39–42 | DC (39), RESET (40) e CS (41) da tela; 42 livre | Pinos de JTAG; a ROM aciona 39 e 40 em um dos modos de download (S3-USB-10). Nesse modo o DC e o RESET da tela podem mudar de nível; fora dele, nada | Proposto; conferir na bancada |
+| 7 | GPIO 4, 5, 6 | IR RX (4), IR TX (5) e I2C SDA (6) | Eram os analógicos, retirados do v1 em 2026-11-25. Na troca de 2026-11-26 para a placa de uma face viraram o IR (os mesmos pinos do IR da bancada) e o SDA; a bateria foi para o 9 (ADC1) e o status do carregador para o 8 (RTC) | Proposto |
+| 8 | GPIO 14 (era 16) | Backlight por PWM | Na bancada o LED da tela está direto no 3V3; o controle por PWM nunca foi testado, e a corrente do backlight não é conhecida (`PERIPHERALS.md`, MSP-05). Na placa, o JP2 escolhe entre o GPIO e o 3V3 fixo | Proposto; pode exigir transistor |
+| 9 | GPIO 47, 48 | CS do SD (47) e CS do CC1101 (48) | Dividem o domínio de alimentação da flash/PSRAM (S3-GPIO-09, S3-GPIO-11). O estado de fábrica do eFuse que fixa essa tensão no N16R8 não foi verificado (S3-STRAP-11); o registro de bancada indica 3,3 V | Proposto |
 | 10 | GPIO 45, 46 | Livres | GPIO 45 em nível alto no reset leva a alimentação da flash a 1,8 V (S3-STRAP-09); GPIO 46 participa do modo de boot | **Manter livres**; nunca ligar a algo que os puxe no reset |
 
 ## 6. Ensaios de bancada que fecham o mapa

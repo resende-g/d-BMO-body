@@ -31,12 +31,12 @@
 #ifndef DBMO_RG_BENCH
 #define DBMO_RG_BENCH 0
 #endif
-// 1 = leitura da bateria no ADC1 canal 0 (GPIO 1, divisor 100k/100k). O divisor ainda não existe:
+// 1 = leitura da bateria no ADC1 canal 8 (GPIO 9, divisor 100k/100k). O divisor ainda não existe:
 // com o pino solto o ADC leria ruído e o Retro-Go mostraria um nível de bateria falso.
 #ifndef DBMO_RG_ENABLE_BATTERY_ADC
 #define DBMO_RG_ENABLE_BATTERY_ADC 0
 #endif
-// 1 = aciona o power-latch (GPIO 48) no início do boot. O circuito não está decidido: a
+// 1 = aciona o power-latch (GPIO 2) no início do boot. O circuito não está decidido: a
 // polaridade tem que ser informada em DBMO_RG_POWER_HOLD_LEVEL (0 ou 1), sem valor padrão.
 #ifndef DBMO_RG_ENABLE_POWER_HOLD
 #define DBMO_RG_ENABLE_POWER_HOLD 0
@@ -172,22 +172,22 @@
 // baixo (.level = 0). .num é o bit: 0-7 = GPA0-7, 8-15 = GPB0-7. Os bits 7 e 15 (GPA7 e GPB7)
 // ficam sem botão: o datasheet do MCP23017 (DS20001952, rev. D) os declara somente saída.
 #define RG_GAMEPAD_I2C_MAP {\
-    {RG_KEY_UP,     .num = 0,  .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kDpadUp */ \
-    {RG_KEY_DOWN,   .num = 1,  .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kDpadDown */ \
-    {RG_KEY_LEFT,   .num = 2,  .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kDpadLeft */ \
-    {RG_KEY_RIGHT,  .num = 3,  .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kDpadRight */ \
-    {RG_KEY_A,      .num = 4,  .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kActionA */ \
-    {RG_KEY_B,      .num = 5,  .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kActionB */ \
-    {RG_KEY_MENU,   .num = 6,  .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kActionX */ \
-    {RG_KEY_OPTION, .num = 8,  .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kActionY */ \
-    {RG_KEY_SELECT, .num = 9,  .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kSelect */ \
-    {RG_KEY_START,  .num = 10, .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kStart */ \
+    {RG_KEY_UP,     .num = 3,  .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kDpadUp */ \
+    {RG_KEY_DOWN,   .num = 6,  .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kDpadDown */ \
+    {RG_KEY_LEFT,   .num = 5,  .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kDpadLeft */ \
+    {RG_KEY_RIGHT,  .num = 4,  .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kDpadRight */ \
+    {RG_KEY_A,      .num = 10, .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kActionA */ \
+    {RG_KEY_B,      .num = 9,  .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kActionB */ \
+    {RG_KEY_MENU,   .num = 13, .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kActionX */ \
+    {RG_KEY_OPTION, .num = 12, .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kActionY */ \
+    {RG_KEY_SELECT, .num = 2,  .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kSelect */ \
+    {RG_KEY_START,  .num = 14, .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kStart */ \
 }
 
 #endif
 
 // ---------------------------------------------------------------------------
-// Bateria: ADC1 canal 0 = GPIO 1, divisor 100k/100k (por isso o "* 2").
+// Bateria: ADC1 canal 8 = GPIO 9, divisor 100k/100k (por isso o "* 2").
 // PROPOSTA: o divisor não existe ainda (hardware ausente), por isso fica atrás de uma opção.
 // A faixa 3,5 V = 0 % a 4,2 V = 100 % é a aproximação linear do alvo esp32-s3-devkit; não é uma
 // curva medida da célula do d-BMO.
@@ -195,7 +195,7 @@
 #if DBMO_RG_ENABLE_BATTERY_ADC
 #define RG_BATTERY_DRIVER           1
 #define RG_BATTERY_ADC_UNIT         ADC_UNIT_1
-#define RG_BATTERY_ADC_CHANNEL      ADC_CHANNEL_0 // GPIO 1: pins.h target::kVbatSense
+#define RG_BATTERY_ADC_CHANNEL      ADC_CHANNEL_8 // GPIO 9: pins.h target::kVbatSense
 #define RG_BATTERY_CALC_PERCENT(raw) (((raw) * 2.f - 3500.f) / (4200.f - 3500.f) * 100.f)
 #define RG_BATTERY_CALC_VOLTAGE(raw) ((raw) * 2.f * 0.001f)
 #else
@@ -206,46 +206,48 @@
 // LED de status: o d-BMO não tem (RG_GPIO_LED fica indefinido).
 
 // ---------------------------------------------------------------------------
-// Barramento I2C (MCP23017)
+// Pinos. Desde 2026-11-26 o perfil target (a placa de uma face, hardware/placa-principal) e a
+// bancada (a protoboard de hoje) só têm em comum o SPI (11, 12, 13). DBMO_RG_BENCH escolhe a
+// fiação da protoboard; sem ele, vale a da placa. tools/check_pinmap.py confere os dois blocos.
 // ---------------------------------------------------------------------------
-#if !DBMO_RG_BENCH
-#define RG_GPIO_I2C_SDA             GPIO_NUM_8  // pins.h target::kI2cSda
-#define RG_GPIO_I2C_SCL             GPIO_NUM_9  // pins.h target::kI2cScl
-#endif
-
-// ---------------------------------------------------------------------------
-// Tela SPI
-// ---------------------------------------------------------------------------
-#define RG_GPIO_LCD_MISO            GPIO_NUM_13 // pins.h target::kSpiMiso
-#define RG_GPIO_LCD_MOSI            GPIO_NUM_11 // pins.h target::kSpiMosi
-#define RG_GPIO_LCD_CLK             GPIO_NUM_12 // pins.h target::kSpiSck
-#define RG_GPIO_LCD_CS              GPIO_NUM_10 // pins.h target::kDisplayCs
-#define RG_GPIO_LCD_DC              GPIO_NUM_17 // pins.h target::kDisplayDc
-#define RG_GPIO_LCD_BCKL            GPIO_NUM_16 // pins.h target::kDisplayBacklight
-#define RG_GPIO_LCD_RST             GPIO_NUM_18 // pins.h target::kDisplayReset
-
-// ---------------------------------------------------------------------------
+#define RG_GPIO_LCD_MISO            GPIO_NUM_13  // pins.h target::kSpiMiso (igual na bancada)
+#define RG_GPIO_LCD_MOSI            GPIO_NUM_11  // pins.h target::kSpiMosi (igual na bancada)
+#define RG_GPIO_LCD_CLK             GPIO_NUM_12  // pins.h target::kSpiSck (igual na bancada)
 // Cartão SD em modo SPI: mesmos MOSI/MISO/SCK da tela, CS próprio.
-// ---------------------------------------------------------------------------
 #define RG_GPIO_SDSPI_MISO          RG_GPIO_LCD_MISO
 #define RG_GPIO_SDSPI_MOSI          RG_GPIO_LCD_MOSI
 #define RG_GPIO_SDSPI_CLK           RG_GPIO_LCD_CLK
-#define RG_GPIO_SDSPI_CS            GPIO_NUM_21 // pins.h target::kSdCs
-
-// ---------------------------------------------------------------------------
 // DAC I2S externo (MAX98357A). SD_MODE em nível alto liga o amplificador, então não se define
 // RG_GPIO_SND_AMP_ENABLE_INVERT.
-// ---------------------------------------------------------------------------
-#define RG_GPIO_SND_I2S_BCK         GPIO_NUM_40 // pins.h target::kI2sBclk
-#define RG_GPIO_SND_I2S_WS          GPIO_NUM_41 // pins.h target::kI2sLrclk
-#define RG_GPIO_SND_I2S_DATA        GPIO_NUM_42 // pins.h target::kI2sSpeakerData
-#define RG_GPIO_SND_AMP_ENABLE      GPIO_NUM_3  // pins.h target::kAmpShutdown
 
-// ---------------------------------------------------------------------------
-// Pinos do d-BMO que o Retro-Go não conhece, tratados em RG_CUSTOM_PLATFORM_INIT().
-// ---------------------------------------------------------------------------
-#define DBMO_GPIO_CC1101_CS         GPIO_NUM_14 // pins.h target::kCc1101Cs
-#define DBMO_GPIO_POWER_HOLD        GPIO_NUM_48 // pins.h target::kPowerHold
+#if DBMO_RG_BENCH  // pinos da bancada (pins.h bench)
+#define RG_GPIO_LCD_CS              GPIO_NUM_10  // pins.h bench::kDisplayCs
+#define RG_GPIO_LCD_DC              GPIO_NUM_17  // pins.h bench::kDisplayDc
+#define RG_GPIO_LCD_BCKL            GPIO_NUM_16  // pins.h bench::kDisplayBacklight
+#define RG_GPIO_LCD_RST             GPIO_NUM_18  // pins.h bench::kDisplayReset
+#define RG_GPIO_SDSPI_CS            GPIO_NUM_21  // pins.h bench::kSdCs
+#define RG_GPIO_SND_I2S_BCK         GPIO_NUM_40  // pins.h bench::kI2sBclk
+#define RG_GPIO_SND_I2S_WS          GPIO_NUM_41  // pins.h bench::kI2sLrclk
+#define RG_GPIO_SND_I2S_DATA        GPIO_NUM_42  // pins.h bench::kI2sSpeakerData
+#define DBMO_GPIO_CC1101_CS         GPIO_NUM_14  // pins.h bench::kCc1101Cs
+// Na bancada o SD_MODE do amplificador não vai a um GPIO (a placa dele o mantém ligado) e o
+// MCP23017 não existe: sem RG_GPIO_SND_AMP_ENABLE nem I2C.
+#else  // pinos da placa de uma face (pins.h target)
+#define RG_GPIO_I2C_SDA             GPIO_NUM_6   // pins.h target::kI2cSda
+#define RG_GPIO_I2C_SCL             GPIO_NUM_1   // pins.h target::kI2cScl
+#define RG_GPIO_LCD_CS              GPIO_NUM_41  // pins.h target::kDisplayCs
+#define RG_GPIO_LCD_DC              GPIO_NUM_39  // pins.h target::kDisplayDc
+#define RG_GPIO_LCD_BCKL            GPIO_NUM_14  // pins.h target::kDisplayBacklight
+#define RG_GPIO_LCD_RST             GPIO_NUM_40  // pins.h target::kDisplayReset
+#define RG_GPIO_SDSPI_CS            GPIO_NUM_47  // pins.h target::kSdCs
+#define RG_GPIO_SND_I2S_BCK         GPIO_NUM_17  // pins.h target::kI2sBclk
+#define RG_GPIO_SND_I2S_WS          GPIO_NUM_18  // pins.h target::kI2sLrclk
+#define RG_GPIO_SND_I2S_DATA        GPIO_NUM_16  // pins.h target::kI2sSpeakerData
+#define RG_GPIO_SND_AMP_ENABLE      GPIO_NUM_15  // pins.h target::kAmpShutdown
+#define DBMO_GPIO_CC1101_CS         GPIO_NUM_48  // pins.h target::kCc1101Cs
+#endif
+// Pino do d-BMO que o Retro-Go não conhece, tratado em RG_CUSTOM_PLATFORM_INIT().
+#define DBMO_GPIO_POWER_HOLD        GPIO_NUM_2   // pins.h target::kPowerHold
 
 #if DBMO_RG_ENABLE_POWER_HOLD
 #define DBMO_RG_POWER_HOLD_INIT()                                  \

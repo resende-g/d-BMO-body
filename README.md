@@ -212,31 +212,34 @@ serigrafia da placa.
 
 | Função | GPIO | Nota |
 |---|---:|---|
-| VBAT sense | 1 | ADC1; divisor 100k/100k, ×2 no firmware. Vem da placa de energia pelo conector placa a placa |
+| I²C SCL / SDA | 1 / 6 | pull-up 4,7k; PN532 0x24, MCP23017 0x20 |
+| Power-latch (HOLD) | 2 | GPIO RTC: segura o nível em deep sleep; vai à placa de energia |
+| IR RX / IR TX | 4 / 5 | módulos de 3 pinos na borda esquerda |
 | I²S SD IN (mic) | 7 | mic em 3,3 V, L/R no GND |
-| I²C SDA / SCL | 8 / 9 | pull-up 4,7k; PN532 0x24, MCP23017 0x20, EEPROM do cartucho |
-| CS Display | 10 | |
-| SPI MOSI / SCK / MISO | 11 / 12 / 13 | compartilhado: tela, CC1101, microSD |
-| CS CC1101 | 14 | |
-| CC1101 GDO0 | 15 | interrupção RF |
-| Display BLK | 16 | backlight (3,3 V fixo ou PWM) |
-| Display DC / RES | 17 / 18 | |
+| Status do carregador | 8 | GPIO RTC: acorda o chip ao ligar o carregador; vem da placa de energia |
+| VBAT sense | 9 | ADC1 canal 8; divisor 100k/100k na placa de energia, ×2 no firmware |
+| Botão de energia | 10 | GPIO RTC (acorda do deep sleep) fora dos pinos de strapping (ver [`docs/hardware/GPIO_MAP.md`](docs/hardware/GPIO_MAP.md), risco 1) |
+| SPI MOSI / SCK / MISO | 11 / 12 / 13 | compartilhado: tela, CC1101, microSD (IO_MUX nativo do FSPI) |
+| Display BLK | 14 | backlight por PWM; JP2 escolhe GPIO ou 3,3 V fixo |
+| Shutdown do MAX98357A (SD) | 15 | |
+| I²S DOUT (MAX98357A DIN) | 16 | |
+| I²S BCLK / LRC | 17 / 18 | divididos entre microfone e amplificador |
 | USB D− / D+ | 19 / 20 | USB nativo (gravação, serial CDC, BadUSB) |
-| CS microSD | 21 | slot do módulo da tela |
-| Botão de energia | 2 | GPIO RTC (acorda do deep sleep) fora dos pinos de strapping. Estava no GPIO 0 até 2026-11-25: segurar o botão ao ligar entraria no modo de download e o aparelho não ligaria. O GPIO 0 fica só como BOOT (ver [`docs/hardware/GPIO_MAP.md`](docs/hardware/GPIO_MAP.md), risco 1) |
-| Shutdown do MAX98357A (SD) | 3 | strapping (JTAG); seguro como saída depois do boot |
-| IR RX | 39 | |
-| I²S BCLK / LRC / DOUT | 40 / 41 / 42 | DOUT para o MAX98357A |
-| Power-latch (HOLD) | 48 | segura a alimentação ligada depois do clique no botão; vai à placa de energia |
-| Status do carregador | 6 | GPIO RTC: acorda o chip ao ligar o carregador; vem da placa de energia |
-| IR TX | 47 | |
-| Livre | 4, 5 | ADC1; eram dos analógicos, retirados em 25/11/2026. Na bancada, o 4 / 5 são o IR RX / TX no `bmo.ini` |
-| Livre | 38, 43, 44 | eram do cartucho, retirado em 25/11/2026. 38: LED RGB na DevKitC v1.1. 43 / 44: UART0, com o log de boot da ROM e a ponte USB-serial da DevKitC |
-| Livre | 45, 46 | strapping: o 45 define a tensão da flash no boot, **não usar** como saída que possa estar em alto no boot |
+| CC1101 GDO0 | 21 | interrupção RF |
+| Display DC / RES / CS | 39 / 40 / 41 | |
+| CS do microSD | 47 | slot do módulo da tela |
+| CS CC1101 | 48 | |
+| Livre | 0, 3, 45, 46 | strapping: o 0 fica só como BOOT; 45 define a tensão da flash no boot, **não usar** como saída que possa estar em alto no boot |
+| Livre | 38, 42, 43, 44 | 38: LED RGB na DevKitC v1.1. 43 / 44: UART0, com o log de boot da ROM e a ponte USB-serial da DevKitC |
+
+A ordem acima é a da placa principal de uma face (`hardware/placa-principal`), escolhida em
+26/11/2026 para cada módulo pegar os pinos da DevKitC do lado dele e a placa precisar de menos
+fios. Só o SPI (11, 12, 13) ficou onde estava; a protoboard de bancada continua com a fiação
+antiga (perfil `bench` de `pins.h`, igual ao `firmware/bruce/bmo.ini`).
 
 **MCP23017 (0x20):** 10 botões (D-pad 4, ação 4, select/start 2), botão ao GND com pull-up
-interno do MCP. GPA7 e GPB7 são só saída na revisão D do datasheet do MCP23017; GPB3 a GPB6
-sobram. **Segundo MCP23017 (0x21), opcional:**
+interno do MCP, na ordem de `pins.h` (`mcp_buttons`), escolhida pela placa de uma face. GPA7 e
+GPB7 são só saída na revisão D do datasheet do MCP23017; GPA0, GPA1, GPB0 e GPB3 sobram. **Segundo MCP23017 (0x21), opcional:**
 vibração (liga/desliga via transistor) e os 2 GPIOs do cartucho.
 
 **Não usar:** GPIO 26–37 (flash/PSRAM octal). Cuidado com strapping: 0, 3, 45, 46.

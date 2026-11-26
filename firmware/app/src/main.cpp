@@ -31,7 +31,11 @@
 
 namespace {
 
+#if defined(DBMO_PROFILE_TARGET)
 namespace pins = dbmo::config::target;
+#else
+namespace pins = dbmo::config::bench;
+#endif
 namespace esp32 = dbmo::platform::esp32;
 
 constexpr char kTag[] = "main";
@@ -132,7 +136,7 @@ dbmo::app::Hardware makeHardware() {
   hw.powerButtonGpio = &gGpio;
 #if defined(DBMO_PROFILE_TARGET)
   hw.profile = "target";
-  hw.powerButtonPin = pins::kPowerButton;  // GPIO 2: RTC, fora dos pinos de strapping
+  hw.powerButtonPin = pins::kPowerButton;  // GPIO RTC, fora dos pinos de strapping
   hw.batteryAdc = &gBatteryAdc;
   hw.powerSwitch = &gPowerLatch;
   hw.audioOutput = &gAudio.output();

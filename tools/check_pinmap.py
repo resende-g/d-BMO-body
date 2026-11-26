@@ -5,7 +5,8 @@ Fonte de verdade: firmware/config/include/dbmo/config/pins.h.
 
 Confere:
   1. firmware/bruce/bmo.ini      -> cada -D de pino igual ao perfil bench/target;
-  2. firmware/retro-go/.../config.h -> cada RG_GPIO_* igual ao perfil target;
+  2. firmware/retro-go/.../config.h -> cada RG_GPIO_* igual ao perfil bench (bloco
+     DBMO_RG_BENCH) e ao target (o resto);
   3. blocos gerados nos Markdown (entre os marcadores BEGIN/END pinmap) -> atualizados.
 
 Uso:
@@ -34,30 +35,30 @@ GENERATED_BLOCKS = [
     (ROOT / "README.md", "target"),
 ]
 
-# Flag do Bruce -> (perfil, constante de pins.h).
+# Flag do Bruce -> (perfil, constante de pins.h). O Bruce roda na protoboard: perfil bench.
 BRUCE_FLAGS = {
-    "TFT_CS": ("target", "kDisplayCs"),
-    "TFT_DC": ("target", "kDisplayDc"),
-    "TFT_RST": ("target", "kDisplayReset"),
-    "TFT_MOSI": ("target", "kSpiMosi"),
-    "TFT_SCLK": ("target", "kSpiSck"),
-    "TFT_MISO": ("target", "kSpiMiso"),
-    "TFT_BL": ("target", "kDisplayBacklight"),
-    "SPI_SCK_PIN": ("target", "kSpiSck"),
-    "SPI_MOSI_PIN": ("target", "kSpiMosi"),
-    "SPI_MISO_PIN": ("target", "kSpiMiso"),
-    "SPI_SS_PIN": ("target", "kCc1101Cs"),
-    "SDCARD_CS": ("target", "kSdCs"),
-    "SDCARD_SCK": ("target", "kSpiSck"),
-    "SDCARD_MISO": ("target", "kSpiMiso"),
-    "SDCARD_MOSI": ("target", "kSpiMosi"),
-    "CC1101_SS_PIN": ("target", "kCc1101Cs"),
-    "CC1101_GDO0_PIN": ("target", "kCc1101Gdo0"),
-    "CC1101_MOSI_PIN": ("target", "kSpiMosi"),
-    "CC1101_SCK_PIN": ("target", "kSpiSck"),
-    "CC1101_MISO_PIN": ("target", "kSpiMiso"),
-    "GROVE_SDA": ("target", "kI2cSda"),
-    "GROVE_SCL": ("target", "kI2cScl"),
+    "TFT_CS": ("bench", "kDisplayCs"),
+    "TFT_DC": ("bench", "kDisplayDc"),
+    "TFT_RST": ("bench", "kDisplayReset"),
+    "TFT_MOSI": ("bench", "kSpiMosi"),
+    "TFT_SCLK": ("bench", "kSpiSck"),
+    "TFT_MISO": ("bench", "kSpiMiso"),
+    "TFT_BL": ("bench", "kDisplayBacklight"),
+    "SPI_SCK_PIN": ("bench", "kSpiSck"),
+    "SPI_MOSI_PIN": ("bench", "kSpiMosi"),
+    "SPI_MISO_PIN": ("bench", "kSpiMiso"),
+    "SPI_SS_PIN": ("bench", "kCc1101Cs"),
+    "SDCARD_CS": ("bench", "kSdCs"),
+    "SDCARD_SCK": ("bench", "kSpiSck"),
+    "SDCARD_MISO": ("bench", "kSpiMiso"),
+    "SDCARD_MOSI": ("bench", "kSpiMosi"),
+    "CC1101_SS_PIN": ("bench", "kCc1101Cs"),
+    "CC1101_GDO0_PIN": ("bench", "kCc1101Gdo0"),
+    "CC1101_MOSI_PIN": ("bench", "kSpiMosi"),
+    "CC1101_SCK_PIN": ("bench", "kSpiSck"),
+    "CC1101_MISO_PIN": ("bench", "kSpiMiso"),
+    "GROVE_SDA": ("bench", "kI2cSda"),
+    "GROVE_SCL": ("bench", "kI2cScl"),
     "UP_BTN": ("bench", "kButtonUp"),
     "SEL_BTN": ("bench", "kButtonOk"),
     "DW_BTN": ("bench", "kButtonDown"),
@@ -175,28 +176,38 @@ def check_retro_go(pins: PinMap, errors: list[str]) -> int:
     if not RETRO_GO_CONFIG.exists():
         return 0
     text = RETRO_GO_CONFIG.read_text(encoding="utf-8")
-    defines = dict(re.findall(r"^\s*#define\s+(\w+)\s+(\w+)", text, flags=re.M))
-
-    def resolve(macro: str) -> str | None:
-        # Segue apelidos (uma macro definida como outra) até chegar a um número.
-        value = defines.get(macro)
-        for _ in range(8):
-            if value is None or value not in defines:
-                break
-            value = defines[value]
-        return value.removeprefix("GPIO_NUM_") if value else None
-
+    # O bloco "#if DBMO_RG_BENCH // pinos da bancada ... #else ... #endif" tem os pinos de cada
+    # perfil; o resto do arquivo vale para os dois.
+    m = re.search(r"^#if DBMO_RG_BENCH\s*//\s*pinos da bancada.*?\n(.*?)^#else.*?\n(.*?)^#endif",
+                  text, flags=re.M | re.S)
+    if not m:
+        errors.append("retro-go config.h: bloco '#if DBMO_RG_BENCH  // pinos da bancada' ausente")
+        return 0
+    shared = text[: m.start()] + text[m.end():]
     checked = 0
-    for macro, name in RETRO_GO_MACROS.items():
-        value = resolve(macro)
-        if value is None or value == "NC":
-            continue
-        checked += 1
-        expected = pins.gpio("target", name)
-        if not value.isdigit() or int(value) != expected:
-            errors.append(
-                f"retro-go config.h: {macro} = {value}, mas pins.h target::{name} = {expected}"
-            )
+    for profile, section in (("bench", m[1]), ("target", m[2])):
+        defines = dict(re.findall(r"^\s*#define\s+(\w+)\s+(\w+)", shared + section, flags=re.M))
+
+        def resolve(macro: str) -> str | None:
+            # Segue apelidos (uma macro definida como outra) até chegar a um número.
+            value = defines.get(macro)
+            for _ in range(8):
+                if value is None or value not in defines:
+                    break
+                value = defines[value]
+            return value.removeprefix("GPIO_NUM_") if value else None
+
+        for macro, name in RETRO_GO_MACROS.items():
+            value = resolve(macro)
+            if value is None or value == "NC":
+                continue
+            checked += 1
+            expected = pins.gpio(profile, name)
+            if not value.isdigit() or int(value) != expected:
+                errors.append(
+                    f"retro-go config.h ({profile}): {macro} = {value}, "
+                    f"mas pins.h {profile}::{name} = {expected}"
+                )
     return checked
 
 

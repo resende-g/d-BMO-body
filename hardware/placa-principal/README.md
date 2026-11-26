@@ -6,7 +6,7 @@
 | Para quem | Tiago Batista, que fabrica a placa em casa (corrosão de uma face) |
 | Ferramenta | EasyEDA Pro, projeto `dbmo` (esquemático e placa desenhados pelo MCP `easyeda-pro`) |
 | Fonte das ligações | [`ligacoes.json`](ligacoes.json), conferido contra `firmware/config/include/dbmo/config/pins.h` (perfil `target`) por [`conferir_netlist.py`](conferir_netlist.py) |
-| Estado | **Esquemático pronto e conferido (129 ligações, 0 divergências). Placa ainda não criada:** a API do EasyEDA Pro conectado não cria o documento de PCB (seção 5). Não corroer antes de fechar a seção 6 |
+| Estado | **Esquemático conferido contra `pins.h` (126 ligações). Layout em refação:** em 2026-11-26 o Gabriel pediu formato deitado, parecido com o Anbernic RG34XX (tela no meio, cartão SD saindo por cima, um IR em cada canto de cima, USB-C da DevKitC na lateral). A seção 5 descreve o layout em pé, já descartado; a rota e a lista de fios saem quando o novo layout fechar. Não corroer antes de fechar a seção 6 |
 
 ## 1. Escopo (decisões do Gabriel em 2026-11-25)
 
@@ -29,6 +29,7 @@
 | `ligacoes.json` | Pino de cada peça → net. É a fonte; o esquemático foi feito a partir dele |
 | `conferir_netlist.py` | Confere a netlist exportada do EasyEDA contra `ligacoes.json` e `pins.h`. Roda na CI |
 | `esquematico.enet` | Netlist exportada do esquemático (formato do EasyEDA Pro), em 2026-11-26 |
+| `fios.py` | Lê o Gerber exportado (zip) e lista os fios que faltam numa face; falha se houver curto ou trilha na camada de cima |
 | `lista-de-pecas.tsv` | Lista de peças exportada do esquemático (separada por tabulação) |
 
 Para conferir depois de mexer no esquemático: exportar a netlist (Exportar → Netlist, formato
@@ -47,70 +48,78 @@ Barra 1×8, 2,54 mm. A placa de energia ainda não tem peças compradas.
 | 1 | `+5V` | entrada | — | Alimentação: vai ao pino 5V da DevKitC (J1-21), entrada do regulador de 3,3 V dela |
 | 2 | `GND` | — | — | |
 | 3 | `+3V3` | saída | — | 3,3 V do regulador da DevKitC, para pull-ups ou lógica da placa de energia |
-| 4 | `POWER_BTN` | saída | 2 | O botão de energia (SW11) puxa ao GND. A placa de energia precisa ver o aperto para ligar |
-| 5 | `POWER_HOLD` | saída | 48 | Trava: o firmware segura a alimentação ligada depois do aperto |
-| 6 | `VBAT_SENSE` | entrada | 1 | Tensão da bateria pelo divisor 100k/100k, que fica na placa de energia (ADC1) |
-| 7 | `CHG_STAT` | entrada | 6 | Estado do carregador (dreno aberto, ativo em baixo, hipótese). GPIO RTC: acorda o chip |
+| 4 | `POWER_BTN` | saída | 10 | O botão de energia (SW11) puxa ao GND. A placa de energia precisa ver o aperto para ligar |
+| 5 | `POWER_HOLD` | saída | 2 | Trava: o firmware segura a alimentação ligada depois do aperto |
+| 6 | `VBAT_SENSE` | entrada | 9 | Tensão da bateria pelo divisor 100k/100k, que fica na placa de energia (ADC1) |
+| 7 | `CHG_STAT` | entrada | 8 | Estado do carregador (dreno aberto, ativo em baixo, hipótese). GPIO RTC: acorda o chip |
 | 8 | `GND` | — | — | |
 
 ### Sem a placa de energia (como usar hoje)
 
 - J2 fica vazio. A placa é alimentada pelo cabo USB da DevKitC, em qualquer uma das duas portas.
 - O 3,3 V de todos os módulos sai do regulador da própria DevKitC (pino 3V3, J1-1).
-- JP1 em **2-3**: amplificador no 3,3 V, como na bancada. JP2 em **1-2**: luz de fundo da tela
-  sempre acesa, como na bancada.
-- `POWER_HOLD`, `VBAT_SENSE` e `CHG_STAT` ficam sem nada do outro lado. O GPIO 1 lê um valor sem
+- O amplificador fica sempre no 3,3 V (sem jumper, como na bancada). JP2 em **1-2**: luz de
+  fundo da tela sempre acesa, como na bancada; em **2-3**, controlada pelo GPIO 14 (PWM).
+- `POWER_HOLD`, `VBAT_SENSE` e `CHG_STAT` ficam sem nada do outro lado. O GPIO 9 lê um valor sem
   sentido (o firmware do perfil `target` mostra uma bateria qualquer). O botão de energia funciona:
-  o GPIO 2 tem pull-up interno e acorda o chip do deep sleep.
+  o GPIO 10 tem pull-up interno e acorda o chip do deep sleep.
 
-## 4. Jumpers de escolha
+## 4. Jumper de escolha
 
 | Jumper | 1-2 | 2-3 | Por quê |
 |---|---|---|---|
-| JP1 | MAX98357A no `+5V` | MAX98357A no `+3V3` | Na bancada o amplificador rodou no 3,3 V. O 5 V dá mais volume, mas o 5 V no pino J1-21 com o USB ligado não foi conferido em fonte (DKC-14) |
-| JP2 | Luz de fundo no `+3V3` (sempre acesa) | Luz de fundo no GPIO 16 (PWM) | A corrente da luz de fundo da MSP3218 não foi conferida (MSP-05); na bancada ela está no 3,3 V |
+| JP2 | Luz de fundo no `+3V3` (sempre acesa) | Luz de fundo no GPIO 14 (PWM) | A corrente da luz de fundo da MSP3218 não foi conferida (MSP-05); na bancada ela está no 3,3 V |
 
-## 5. O que falta para a placa (bloqueado num clique)
+O JP1 (amplificador no 5 V ou no 3,3 V) saiu em 2026-11-26: o MAX98357A fica fixo no 3,3 V, que
+foi o validado na bancada.
 
-A extensão do MCP (0.5.1) com o EasyEDA Pro 3.2 não cria o documento de PCB
-(`pcb_Document.createBoard` indisponível; `createPcbFromSchematic` devolveu
-`capability_unavailable`). Falta um clique humano:
+## 5. Como a placa foi feita (layout em pé, descartado em 2026-11-26)
 
-1. No EasyEDA Pro, projeto `dbmo`: **Design → Converter esquemático em PCB** (ou *Atualizar PCB*),
-   1 camada de cobre, e aceitar as mudanças. Se estiver aberta, fechar a janela de exportação de
-   PDF que o MCP pediu (a exportação do PDF do esquemático expirou esperando por ela).
-2. Retomar a sessão do Claude que desenhou o esquemático. Com a placa criada, tudo o resto passa
-   pelo MCP: contorno, posições da tabela abaixo, regras da seção 6, autoroteamento só na camada
-   de baixo, DRC e exportação de Gerber, lista de peças e netlist da placa para esta pasta.
+1. **Esquemático** pelo MCP, a partir de `ligacoes.json`, conferido por `conferir_netlist.py`.
+2. **Posições e GPIOs** escolhidos para a placa de uma face precisar de poucos fios: um modelo
+   simples (cruzamentos das linhas de ligação, sem rotear) comparou em pé e deitado e escolheu
+   posição e rotação das peças pequenas, o mapa dos botões no MCP23017 e quais GPIOs da DevKitC
+   ficam com cada sinal. Em pé ganhou nas duas restrições testadas (63 contra 237 com a tela no
+   topo). Restrições fixas: tela encostada na borda de cima com a barra do SD à direita (o cartão
+   sai por cima, pedido do Gabriel em 2026-11-26), DevKitC logo abaixo com a antena na borda
+   esquerda, cruz e ABXY embaixo, IR e CC1101 em bordas com o módulo para fora, nada no caminho do
+   cabo USB.
+3. **Rota** pelo autoroteador do EasyEDA, só na camada de baixo, modo "Speed first" (o "Completion
+   first" cruza nets para fechar 100%). O que ele não consegue ligar vira fio: `fios.py` lê o
+   Gerber exportado e lista os fios em `fios.md`.
 
-Posições planejadas, em mm, origem no canto de cima à esquerda, vista do lado das peças (frente).
-Placa de 100 × 175 mm (cabe numa placa virgem de 15 × 20 cm). As zonas seguem a ordem de
-`docs/mechanical/ASSEMBLY_LAYOUT.md`: topo, placa principal, tela, controles, alto-falante.
+Placa de 110 × 185 mm (cabe numa placa virgem de 15 × 20 cm). Posições em mm, origem no canto de
+baixo à esquerda, vista do lado das peças:
 
-| Ref | Peça | Centro (x, y) | Como |
-|---|---|---|---|
-| J10, J11 | IR RX e IR TX | (10, 4) e (22, 4) | Barras na borda de cima; os módulos ficam em balanço para fora |
-| SW11 | Energia | (36, 8) | No topo, longe dos botões de jogo |
-| J7, J8 | INMP441 | (52, 5) e (52, 15) | Duas barras de 3 frente a frente (distância é hipótese, seção 6) |
-| J5 | CC1101 | (84, 10) | SMA para fora pela borda de cima |
-| U1 | DevKitC | fileiras em y = 32 e y = 54,86; pino 1 em x = 10 | Antena na borda esquerda, sem cobre embaixo; USB para a direita |
-| J2 | Placa de energia | x = 96, y de 28 a 46 | Vertical, na borda direita |
-| JP2 | Luz de fundo | (88, 58) | Fora da sombra da tela, para dar para trocar o jumper |
-| J3, J4 | Tela (14 pinos) e SD (4 pinos) | x = 92 e x = 8, centro em y = 93 | Tela deitada; nada embaixo dela além de trilhas |
-| SW9, SW10 | Select, Start | (40, 128), (60, 128) | |
-| SW1–SW4 | Cruz | centro (18, 148), botões a 10 mm | Cima, baixo, esquerda, direita |
-| SW5–SW8 | A, B, X, Y | centro (82, 148), botões a 10 mm | X em cima, A à direita, B embaixo, Y à esquerda |
-| U2, R1, R2, C1 | MCP23017 e passivos | U2 vertical em (50, 150); R1, R2 em (37, 146) e (41, 146); C1 junto do VDD | |
-| J6 | PN532 | (60, 170) | Conector de cabo: o PN532 vai na traseira (seção 6, item 11) |
-| J9, JP1 | MAX98357A e jumper | (12, 170) e (28, 170) | Módulo em balanço para fora da borda de baixo; alto-falante no borne dele |
+| Ref | Peça | Centro (x, y) | Rotação | Como |
+|---|---|---|---:|---|
+| J3, J4 | Tela (14 pinos) e SD (4 pinos) | (13, 154,5) e (97, 154,5) | 90 | Tela encostada no topo; nada embaixo dela além de trilhas |
+| U1 | DevKitC | (37,67, 108) | 90 | Pino 1 em x = 11; antena na borda esquerda; USB para a direita |
+| J10, J11 | IR RX e IR TX | (4, 86,8) e (4, 60,7) | 90 e 270 | Borda esquerda, módulos para fora |
+| J5 | CC1101 | (105,05, 81,2) | 90 | Borda direita, SMA para fora |
+| J7, J8 | INMP441 | (54,7, 69,4) e (54,7, 59,2) | 180 | |
+| J9 | MAX98357A | (52,2, 76,2) | 180 | Alto-falante por fio no borne |
+| J2 | Placa de energia | (74,6, 72,5) | 180 | Cabo até a placa de energia |
+| JP2 | Luz de fundo | (92, 92) | 180 | Abaixo da DevKitC, fora do caminho do cabo USB |
+| SW11 | Energia | (71,4, 82,2) | 0 | |
+| SW9, SW10 | Select, Start | (35,8, 53,9) e (74,7, 54) | 180 | |
+| SW1–SW4 | Cruz | centro (20, 32), botões a 10 mm | — | |
+| SW5–SW8 | A, B, X, Y | centro (90, 32), botões a 10 mm | — | X em cima, A à direita |
+| U2, C1 | MCP23017 e 100 nF | (59,4, 26,2) e (49,7, 31,2) | 90 e 180 | |
+| R1, R2 | Pull-ups do I²C | (43,3, 57) e (26,3, 68,1) | 270 | |
+| J6 | PN532 | (96,2, 61,2) | 180 | Cabo até o PN532 na traseira |
+
+**Pads tirados das pegadas** (pinos sem ligação; na montagem, tirar o contato da barra fêmea ou
+cortar a barra): U1 2, 3, 13, 14, 23, 24, 25, 26, 30, 31, 32, 33, 34, 35, 39, 42, 43; J3 10 a 14
+(toque); J9 4 (GAIN, solto = 9 dB); J5 8 (GDO2).
 
 ## 6. Pendente antes de fabricar
 
 | # | Item | Situação | Como fechar |
 |---|---|---|---|
 | 1 | Ordem dos pinos da DevKitC | **Fato:** o símbolo da LCSC (ESP32-S3-DEVKITC-1-N8R8, mesma placa e pinagem da N16R8) bate com o guia v1.1 da Espressif; `conferir_netlist.py` confere cada GPIO pelo nome do pino | — |
-| 2 | Pegada da DevKitC | **Pendente.** A pegada da LCSC chama `CONN-TH_ESP32-S3-DEVKITC-1U-N8`; a distância entre fileiras precisa dar 22,86 mm (`COMPONENT_DIMENSIONS.md`) | Conferir os pads quando a placa existir e com paquímetro na placa em mãos |
-| 3 | Distância entre a barra de 14 pinos e a do SD na MSP3218 | **Hipótese:** cerca de 84 mm (placa de 89,3 mm, nominal) | Paquímetro, antes de corroer |
+| 2 | Pegada da DevKitC | **Fato:** na pegada da LCSC (`CONN-TH_ESP32-S3-DEVKITC-1U-N8`) as fileiras ficam a 22,86 mm e os pinos 1 e 22 a 53,34 mm, como no footprint oficial da Espressif. Os pads livres saíram (seção 5) | Paquímetro na placa em mãos |
+| 3 | Tela MSP3218 | **Fato (Gabriel, 2026-11-26):** barra do SD à direita, cartão saindo por cima. **Hipótese:** cerca de 84 mm entre as barras (placa de 89,3 mm, nominal) e o pino 1 das duas barras embaixo | Paquímetro e conferir o pino 1, antes de corroer |
 | 4 | CC1101 E07-M1101D | **Fato:** pinos 1–4 pelo manual da Ebyte. **Hipótese:** 5–8 (fonte secundária) e ímpares numa fileira, pares na outra | Continuidade do pino 1 com a rosca da SMA |
 | 5 | INMP441 | **Fato:** nomes pela serigrafia (L/R, WS, SCK; GND, VDD, SD). **Hipótese:** distância entre fileiras e quais pinos se encaram | Paquímetro |
 | 6 | PN532 em I²C | **Hipótese:** ordem GND, VCC, SDA, SCL; chave em I²C (canal 1 ON, canal 2 OFF) | Ler a serigrafia; como vai por cabo, a ordem se ajusta no cabo |
@@ -122,3 +131,5 @@ Placa de 100 × 175 mm (cabe numa placa virgem de 15 × 20 cm). As zonas seguem 
 | 12 | Barras na lista de peças | As barras da lista são machos da LCSC, escolhidas só pela pegada. Para os módulos, comprar **barras fêmea** de 2,54 mm; machos só em J2, JP1 e JP2 (com dois jumpers de encaixe) | — |
 | 13 | `CHG_STAT` | **Hipótese:** dreno aberto, ativo em baixo, como os carregadores comuns. Sem pull-up na principal: o firmware liga o pull-up interno quando passar a ler o pino | Escolha do carregador da placa de energia |
 | 14 | Antena do ESP32-S3 | **Pendente:** os 15 mm sem metal recomendados (`KO-ESP`) não cabem; a antena fica na borda esquerda, sem cobre embaixo | Teste de alcance do Wi-Fi com a placa montada |
+| 15 | GPIOs novos | **Hipótese:** a troca de GPIOs de 2026-11-26 (README, Pinagem) segue as restrições do ESP32-S3 (ADC1 na bateria, RTC fora do strapping no botão, no carregador e na trava; SPI no IO_MUX), mas só o SPI, o microfone (7) e o IR RX (4) já rodaram nesses pinos | Testar cada módulo na placa montada |
+| 16 | Corpo dos módulos | **Hipótese:** o MAX98357A (J9) e o INMP441 (J7/J8) ficam no meio da placa; o lado para onde o corpo de cada módulo se estende a partir da barra não foi medido | Encaixar os módulos de verdade sobre a impressão em papel 1:1 antes de corroer |

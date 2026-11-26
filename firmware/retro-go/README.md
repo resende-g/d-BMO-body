@@ -69,28 +69,28 @@ Todos os itens, inclusive os confirmados, ainda precisam ser validados com o Ret
 | SPI MOSI (tela e SD) | 11 | `RG_GPIO_LCD_MOSI`, `RG_GPIO_SDSPI_MOSI` | `target::kSpiMosi` | CONFIRMADO |
 | SPI SCK (tela e SD) | 12 | `RG_GPIO_LCD_CLK`, `RG_GPIO_SDSPI_CLK` | `target::kSpiSck` | CONFIRMADO |
 | SPI MISO (tela e SD) | 13 | `RG_GPIO_LCD_MISO`, `RG_GPIO_SDSPI_MISO` | `target::kSpiMiso` | CONFIRMADO |
-| CS da tela | 10 | `RG_GPIO_LCD_CS` | `target::kDisplayCs` | CONFIRMADO |
-| DC da tela | 17 | `RG_GPIO_LCD_DC` | `target::kDisplayDc` | CONFIRMADO |
-| Reset da tela | 18 | `RG_GPIO_LCD_RST` | `target::kDisplayReset` | CONFIRMADO |
-| Backlight (PWM) | 16 | `RG_GPIO_LCD_BCKL` | `target::kDisplayBacklight` | PROPOSTO |
-| CS do SD | 21 | `RG_GPIO_SDSPI_CS` | `target::kSdCs` | PROPOSTO |
-| CS do CC1101 (só mantido em alto) | 14 | `DBMO_GPIO_CC1101_CS` | `target::kCc1101Cs` | PROPOSTO |
-| I2S BCLK | 40 | `RG_GPIO_SND_I2S_BCK` | `target::kI2sBclk` | PROPOSTO |
-| I2S LRCLK | 41 | `RG_GPIO_SND_I2S_WS` | `target::kI2sLrclk` | PROPOSTO |
-| I2S DATA (DIN do MAX98357A) | 42 | `RG_GPIO_SND_I2S_DATA` | `target::kI2sSpeakerData` | PROPOSTO |
-| Shutdown do amplificador | 3 | `RG_GPIO_SND_AMP_ENABLE` | `target::kAmpShutdown` | PROPOSTO |
-| I2C SDA | 8 | `RG_GPIO_I2C_SDA` | `target::kI2cSda` | PROPOSTO |
-| I2C SCL | 9 | `RG_GPIO_I2C_SCL` | `target::kI2cScl` | PROPOSTO |
+| CS da tela | 41 | `RG_GPIO_LCD_CS` | `target::kDisplayCs` | PROPOSTO |
+| DC da tela | 39 | `RG_GPIO_LCD_DC` | `target::kDisplayDc` | PROPOSTO |
+| Reset da tela | 40 | `RG_GPIO_LCD_RST` | `target::kDisplayReset` | PROPOSTO |
+| Backlight (PWM) | 14 | `RG_GPIO_LCD_BCKL` | `target::kDisplayBacklight` | PROPOSTO |
+| CS do SD | 47 | `RG_GPIO_SDSPI_CS` | `target::kSdCs` | PROPOSTO |
+| CS do CC1101 (só mantido em alto) | 48 | `DBMO_GPIO_CC1101_CS` | `target::kCc1101Cs` | PROPOSTO |
+| I2S BCLK | 17 | `RG_GPIO_SND_I2S_BCK` | `target::kI2sBclk` | PROPOSTO |
+| I2S LRCLK | 18 | `RG_GPIO_SND_I2S_WS` | `target::kI2sLrclk` | PROPOSTO |
+| I2S DATA (DIN do MAX98357A) | 16 | `RG_GPIO_SND_I2S_DATA` | `target::kI2sSpeakerData` | PROPOSTO |
+| Shutdown do amplificador | 15 | `RG_GPIO_SND_AMP_ENABLE` | `target::kAmpShutdown` | PROPOSTO |
+| I2C SDA | 6 | `RG_GPIO_I2C_SDA` | `target::kI2cSda` | PROPOSTO |
+| I2C SCL | 1 | `RG_GPIO_I2C_SCL` | `target::kI2cScl` | PROPOSTO |
 | MCP23017 dos botões | I2C 0x20 | `RG_I2C_GPIO_DRIVER 3`, `RG_I2C_GPIO_ADDR` | `i2c::kMcp23017Buttons` | PROPOSTO |
-| Bateria (ADC1 canal 0, divisor 100k/100k) | 1 | `RG_BATTERY_*`, atrás de `DBMO_RG_ENABLE_BATTERY_ADC` | `target::kVbatSense` | PROPOSTO, desligado |
-| Power-latch | 48 | `DBMO_GPIO_POWER_HOLD`, atrás de `DBMO_RG_ENABLE_POWER_HOLD` | `target::kPowerHold` | PROPOSTO, desligado |
+| Bateria (ADC1 canal 8, divisor 100k/100k) | 9 | `RG_BATTERY_*`, atrás de `DBMO_RG_ENABLE_BATTERY_ADC` | `target::kVbatSense` | PROPOSTO, desligado |
+| Power-latch | 2 | `DBMO_GPIO_POWER_HOLD`, atrás de `DBMO_RG_ENABLE_POWER_HOLD` | `target::kPowerHold` | PROPOSTO, desligado |
 | USB D- / D+ (console e gravação) | 19 / 20 | `CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG` no `sdkconfig` | `target::kUsbDm`, `kUsbDp` | CONFIRMADO (função fixa do chip) |
 | Orientação da tela (MADCTL `0x28`, com `0xB6` = `0x0A, 0x82`) | - | `DBMO_RG_LCD_MADCTL`, `RG_SCREEN_INIT` | - | VALIDADO EM BANCADA em 25/11/2026 (com `0xB6` = `0x0A, 0xA2` a imagem saiu de cabeça para baixo e espelhada) |
 | Clock SPI da tela (40 MHz) | - | `DBMO_RG_SCREEN_SPEED_HZ` | `spi::kDisplayHz` é 10 MHz | PENDENTE DE VALIDAÇÃO FÍSICA |
 | Clock do SD (20 MHz) | - | `RG_STORAGE_SDSPI_SPEED` | - | PENDENTE DE VALIDAÇÃO FÍSICA |
 | Curva de carga da bateria | - | `RG_BATTERY_CALC_PERCENT` | - | PENDENTE DE VALIDAÇÃO FÍSICA |
 
-Pinos do perfil `target` que o Retro-Go não usa nem configura: botão de energia (2), microfone I2S (7), GDO0 do CC1101 (15), IR RX (39), IR TX (47) e o status do carregador (6).
+Pinos do perfil `target` que o Retro-Go não usa nem configura: botão de energia (10), microfone I2S (7), GDO0 do CC1101 (21), IR RX (4), IR TX (5) e o status do carregador (8).
 
 Cada linha do `config.h` que fixa um pino termina com o comentário
 `pins.h <namespace>::<constante>`, para a conferência automática contra o mapa canônico.
@@ -105,19 +105,23 @@ MENU e OPTION.
 
 | Tecla do Retro-Go | Bit do MCP23017 | Pino | Botão do d-BMO (`pins.h mcp_buttons`) |
 |---|---:|---|---|
-| `RG_KEY_UP` | 0 | GPA0 | D-pad cima (`kDpadUp`) |
-| `RG_KEY_DOWN` | 1 | GPA1 | D-pad baixo (`kDpadDown`) |
-| `RG_KEY_LEFT` | 2 | GPA2 | D-pad esquerda (`kDpadLeft`) |
-| `RG_KEY_RIGHT` | 3 | GPA3 | D-pad direita (`kDpadRight`) |
-| `RG_KEY_A` | 4 | GPA4 | A (`kActionA`) |
-| `RG_KEY_B` | 5 | GPA5 | B (`kActionB`) |
-| `RG_KEY_MENU` | 6 | GPA6 | X (`kActionX`) |
+| sem botão | 0, 1 | GPA0, GPA1 | livres |
+| `RG_KEY_SELECT` | 2 | GPA2 | Select (`kSelect`) |
+| `RG_KEY_UP` | 3 | GPA3 | D-pad cima (`kDpadUp`) |
+| `RG_KEY_RIGHT` | 4 | GPA4 | D-pad direita (`kDpadRight`) |
+| `RG_KEY_LEFT` | 5 | GPA5 | D-pad esquerda (`kDpadLeft`) |
+| `RG_KEY_DOWN` | 6 | GPA6 | D-pad baixo (`kDpadDown`) |
 | sem botão | 7 | GPA7 | somente saída no MCP23017 (datasheet rev. D) |
-| `RG_KEY_OPTION` | 8 | GPB0 | Y (`kActionY`) |
-| `RG_KEY_SELECT` | 9 | GPB1 | Select (`kSelect`) |
-| `RG_KEY_START` | 10 | GPB2 | Start (`kStart`) |
-| sem botão | 11 a 14 | GPB3 a GPB6 | livres |
+| sem botão | 8 | GPB0 | livre |
+| `RG_KEY_B` | 9 | GPB1 | B (`kActionB`) |
+| `RG_KEY_A` | 10 | GPB2 | A (`kActionA`) |
+| sem botão | 11 | GPB3 | livre |
+| `RG_KEY_OPTION` | 12 | GPB4 | Y (`kActionY`) |
+| `RG_KEY_MENU` | 13 | GPB5 | X (`kActionX`) |
+| `RG_KEY_START` | 14 | GPB6 | Start (`kStart`) |
 | sem botão | 15 | GPB7 | somente saída no MCP23017 (datasheet rev. D) |
+
+A ordem segue a placa de uma face (2026-11-26): cada botão no pino do MCP23017 mais perto dele.
 
 Segurar MENU (o botão X) no boot abre o menu de recuperação (`RG_RECOVERY_BTN`).
 
@@ -166,7 +170,7 @@ em alto, cartão montado primeiro, os demais depois (ESP-IDF v5.3.6,
 usam `SPI2_HOST` para os dois: `fri3d-2024` (`config.h:14,25,94-105`) e `t-deck-plus`
 (`config.h:6,37,100-111`).
 
-O que o d-BMO acrescenta: o barramento também tem o CC1101 (CS 14), que o Retro-Go não
+O que o d-BMO acrescenta: o barramento também tem o CC1101 (CS 48 na placa, 14 na bancada), que o Retro-Go não
 conhece. `RG_CUSTOM_PLATFORM_INIT()` mantém esse CS em nível alto, do mesmo
 jeito que o alvo `t-deck-plus` faz com o rádio dele (`t-deck-plus/config.h:23-33`).
 `RG_STORAGE_SDSPI_HOLD_CS` não é definido: ele só serve para barramento não compartilhado
@@ -181,8 +185,8 @@ arquivo se ele existir.
 | Variável | Efeito |
 |---|---|
 | `DBMO_RG_BENCH=1` | perfil de bancada: 3 botões diretos, sem I2C nem MCP23017, tela a 10 MHz, partição FAT interna `vfs` como reserva do SD |
-| `DBMO_RG_ENABLE_BATTERY_ADC=1` | leitura da bateria no GPIO 1. Desligada porque o divisor não existe: com o pino solto o Retro-Go mostraria um nível falso |
-| `DBMO_RG_ENABLE_POWER_HOLD=1` | aciona o GPIO 48 no começo do boot. Exige `DBMO_RG_POWER_HOLD_LEVEL` (0 ou 1): o circuito do power-latch não está decidido e não há valor padrão |
+| `DBMO_RG_ENABLE_BATTERY_ADC=1` | leitura da bateria no GPIO 9. Desligada porque o divisor não existe: com o pino solto o Retro-Go mostraria um nível falso |
+| `DBMO_RG_ENABLE_POWER_HOLD=1` | aciona o GPIO 2 no começo do boot. Exige `DBMO_RG_POWER_HOLD_LEVEL` (0 ou 1): o circuito do power-latch não está decidido e não há valor padrão |
 | `DBMO_RG_LCD_MADCTL=0x..` | registrador de orientação e ordem de cor do ILI9341 (padrão `0x28`) |
 | `DBMO_RG_SCREEN_SPEED_HZ=n` | clock SPI da tela em Hz |
 | `DBMO_RG_NETWORKING=1` | compila com rede. O padrão passa `--no-networking` ao `rg_tool.py` |
@@ -462,7 +466,7 @@ dependem de que ela os ignore.
 6. **Clock da tela.** 40 MHz vem dos alvos de origem. No d-BMO só 10 MHz foi validado, em
    jumpers. O barramento também carrega o CC1101 e o cartucho.
 7. **SD lento no ESP-IDF 5.x**, pelo motivo descrito em [Versão do ESP-IDF](#versão-do-esp-idf).
-8. **Áudio.** O Retro-Go liga o amplificador pondo o GPIO 3 em nível alto
+8. **Áudio.** O Retro-Go liga o amplificador pondo o GPIO 15 em nível alto
    (`drivers/audio/i2s.c:15-21,94-98,190-198`). Pelo datasheet do MAX98357A, o nível no pino
    SD_MODE também escolhe o canal: acionado direto pelo GPIO, tende a sair só o canal esquerdo.
    Isso não foi verificado nesta sessão e depende de como o módulo for ligado. O volume é digital
