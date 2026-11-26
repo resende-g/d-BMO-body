@@ -223,7 +223,7 @@ serigrafia da placa.
 | Display DC / RES | 17 / 18 | |
 | USB D− / D+ | 19 / 20 | USB nativo (gravação, serial CDC, BadUSB) |
 | CS microSD | 21 | slot do módulo da tela |
-| Botão de energia | 0 | strapping; GPIO RTC, acorda do deep sleep. **Risco aberto:** GPIO 0 em nível baixo na saída do reset entra em modo de download; se o mesmo botão liga a alimentação, o aparelho pode não ligar (ver [`docs/hardware/GPIO_MAP.md`](docs/hardware/GPIO_MAP.md), risco 1) |
+| Botão de energia | 2 | GPIO RTC (acorda do deep sleep) fora dos pinos de strapping. Estava no GPIO 0 até 2026-11-25: segurar o botão ao ligar entraria no modo de download e o aparelho não ligaria. O GPIO 0 fica só como BOOT (ver [`docs/hardware/GPIO_MAP.md`](docs/hardware/GPIO_MAP.md), risco 1) |
 | Shutdown do MAX98357A (SD) | 3 | strapping (JTAG); seguro como saída depois do boot |
 | CS do cartucho | 38 | na DevKitC, 38 ou 48 é o LED RGB, conforme a revisão: na bancada, usar o que não for LED |
 | IR RX | 39 | |

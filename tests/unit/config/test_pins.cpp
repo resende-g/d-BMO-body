@@ -67,12 +67,17 @@ static void test_every_usable_gpio_is_assigned_or_listed_as_free() {
   TEST_ASSERT_EQUAL_size_t(usable, assigned + free);
 }
 
-static void test_strapping_pins_in_use_are_flagged() {
-  // GPIO0 (botão de energia) é strapping de boot: o risco precisa estar marcado.
+static void test_power_button_is_an_rtc_gpio_outside_the_strapping_pins() {
+  // Decisão de 2026-11-25 (alternativa A de docs/hardware/sources/ESP32-S3.md, seção 6): com o
+  // botão no GPIO 0, segurá-lo ao ligar entraria no modo de download e o aparelho não ligaria.
+  // O botão precisa acordar do deep sleep (GPIO RTC) sem ser lido como strap no reset.
   const PinAssignment *power = findSignal(target::kPins, "POWER_BUTTON");
   TEST_ASSERT_NOT_NULL(power);
-  TEST_ASSERT_TRUE(isStrappingGpio(power->gpio));
-  TEST_ASSERT_TRUE(power->status == PinStatus::ProposedAtRisk);
+  TEST_ASSERT_TRUE(isRtcGpio(power->gpio));
+  TEST_ASSERT_FALSE(isStrappingGpio(power->gpio));
+  TEST_ASSERT_TRUE(power->status == PinStatus::Proposed);
+  // O GPIO 0 fica só como BOOT: livre no target.
+  TEST_ASSERT_FALSE(usesGpio(target::kPins, 0));
 }
 
 static void test_shared_bus_pins_are_identical_in_both_profiles() {
@@ -92,8 +97,12 @@ static void test_bench_and_target_disagree_exactly_where_documented() {
   // A migração precisa mover os botões para o MCP23017 antes de ligar essas funções.
   TEST_ASSERT_EQUAL_INT8(target::kIrRx, bench::kButtonUp);
   TEST_ASSERT_EQUAL_INT8(target::kIrTx, bench::kButtonDown);
-  // OK e IR da bancada ficam em pinos livres do target (eram dos analógicos).
-  for (int8_t gpio : {bench::kButtonOk, bench::kIrRx, bench::kIrTx})
+  // O OK da bancada fica no pino do botão de energia do target; na bancada, o botão de energia
+  // é o BOOT da DevKitC (GPIO 0), livre no target.
+  TEST_ASSERT_EQUAL_INT8(target::kPowerButton, bench::kButtonOk);
+  TEST_ASSERT_EQUAL_INT8(0, bench::kPowerButton);
+  // IR da bancada fica em pinos livres do target (eram dos analógicos).
+  for (int8_t gpio : {bench::kPowerButton, bench::kIrRx, bench::kIrTx})
     TEST_ASSERT_FALSE(usesGpio(target::kPins, gpio));
 }
 
@@ -141,7 +150,7 @@ int main() {
   RUN_TEST(test_gpio_classification_helpers);
   RUN_TEST(test_target_profile_never_drives_the_free_pins);
   RUN_TEST(test_every_usable_gpio_is_assigned_or_listed_as_free);
-  RUN_TEST(test_strapping_pins_in_use_are_flagged);
+  RUN_TEST(test_power_button_is_an_rtc_gpio_outside_the_strapping_pins);
   RUN_TEST(test_shared_bus_pins_are_identical_in_both_profiles);
   RUN_TEST(test_bench_and_target_disagree_exactly_where_documented);
   RUN_TEST(test_i2c_addresses_do_not_collide);

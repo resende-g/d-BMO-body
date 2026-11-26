@@ -104,12 +104,10 @@ dbmo::app::Hardware makeHardware() {
   hw.irReceiver = &gIrReceiver;
   hw.irTransmitter = &gIrTransmitter;
   hw.sleep = &gSleep;
-  // Botão de energia no GPIO 0 (na DevKitC, o botão BOOT). Pino de strap: risco aberto
-  // registrado em docs/hardware/GPIO_MAP.md.
   hw.powerButtonGpio = &gGpio;
-  hw.powerButtonPin = pins::kPowerButton;
 #if defined(DBMO_PROFILE_TARGET)
   hw.profile = "target";
+  hw.powerButtonPin = pins::kPowerButton;  // GPIO 2: RTC, fora dos pinos de strapping
   hw.batteryAdc = &gBatteryAdc;
   hw.powerSwitch = &gPowerLatch;
   hw.audioOutput = &gAudio.output();
@@ -117,6 +115,7 @@ dbmo::app::Hardware makeHardware() {
   hw.cartridgeSpi = &gCartridgeSpi;
 #else
   hw.profile = "bench";
+  hw.powerButtonPin = bench::kPowerButton;  // BOOT da DevKitC; o GPIO 2 é o OK
   hw.audioOutput = &gAudio.output();
   hw.audioInput = &gAudio.input();
 #endif
