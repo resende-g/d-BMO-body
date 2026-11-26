@@ -113,6 +113,7 @@ class RadioSubsystem final : public ISubsystem {
   ChipId chipId_{0, 0};
   RadioState state_ = RadioState::Off;
   bool initialized_ = false;
+  Status lastInitFailure_ = Status::Ok;
   bool wantReceive_ = false;
   uint8_t errors_ = 0;
   uint32_t lastPollMs_ = 0;

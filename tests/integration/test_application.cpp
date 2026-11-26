@@ -951,6 +951,25 @@ void test_boot_log_says_internal_memory_values_apply_when_the_card_has_no_config
   dbmo::logger().clearSinks();
 }
 
+void test_absent_peripheral_is_reported_once_not_at_every_retry() {
+  // Bancada, 2026-11-22: sem PN532, o log repetia "PN532 nao respondeu" e "nfc: hardware
+  // ausente" a cada nova tentativa, a cada 15 s.
+  dbmo::mock::RecordingLogSink sink;
+  TEST_ASSERT_OK(dbmo::logger().addSink(&sink));
+  Hardware hw;
+  hw.clock = &rig->clock;
+  hw.display = &rig->display;
+  Application app(hw);
+  TEST_ASSERT_OK(app.begin());
+  rig->run(app, 65000);
+  TEST_ASSERT_EQUAL(SubsystemState::Absent, stateOf(app, "nfc"));
+  TEST_ASSERT_EQUAL_UINT(1, sink.countContaining("PN532 nao respondeu"));
+  TEST_ASSERT_EQUAL_UINT(1, sink.countContaining("nfc: hardware ausente"));
+  TEST_ASSERT_TRUE(sink.countContaining("CC1101 nao respondeu") <= 1);
+  TEST_ASSERT_EQUAL_UINT(1, sink.countContaining("radio: hardware ausente"));
+  dbmo::logger().clearSinks();
+}
+
 void test_boot_log_says_defaults_when_nothing_is_saved_anywhere() {
   dbmo::mock::RecordingLogSink sink;
   TEST_ASSERT_OK(dbmo::logger().addSink(&sink));
@@ -1112,6 +1131,7 @@ int main() {
   RUN_TEST(test_mic_command_uses_the_longer_buffer_the_platform_gives);
   RUN_TEST(test_boot_log_says_internal_memory_values_apply_when_the_card_has_no_config);
   RUN_TEST(test_boot_log_says_defaults_when_nothing_is_saved_anywhere);
+  RUN_TEST(test_absent_peripheral_is_reported_once_not_at_every_retry);
   RUN_TEST(test_console_commands);
   RUN_TEST(test_long_run_is_stable);
   return UNITY_END();

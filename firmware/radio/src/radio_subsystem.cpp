@@ -108,10 +108,13 @@ Status RadioSubsystem::init() {
   if (!isOk(status)) {
     // Timeout esperando o "pronto" também é ausência de chip.
     const Status reported = status == Status::Timeout ? Status::HardwareAbsent : status;
-    DBMO_LOGW(kTag, "CC1101 nao respondeu: %s", toString(status));
+    // Só a primeira falha (ou uma falha diferente) vai ao log; o System tenta de novo depois.
+    if (status != lastInitFailure_) DBMO_LOGW(kTag, "CC1101 nao respondeu: %s", toString(status));
+    lastInitFailure_ = status;
     return reported;
   }
   initialized_ = true;
+  lastInitFailure_ = Status::Ok;
   lastPollMs_ = clock_.nowMs();
   DBMO_LOGI(kTag, "CC1101 PARTNUM=0x%02X VERSION=0x%02X; transmissao %s",
             static_cast<unsigned>(chipId_.partnum), static_cast<unsigned>(chipId_.version),
