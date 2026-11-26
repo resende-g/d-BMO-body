@@ -449,13 +449,15 @@ void test_menu_radio_screen_only_toggles_reception() {
   TEST_ASSERT_EQUAL_UINT(0, rig->radioChip.transmitCount);
 }
 
+void test_menu_games_item_is_hidden_without_an_app_switch() {
+  Application app(rig->fullHardware());  // sem troca de firmware
+  TEST_ASSERT_OK(app.begin());
+  rig->run(app, 100);
+  TEST_ASSERT_FALSE(app.menu().available(dbmo::app::MenuItem::Games));
+}
+
+// Uma aplicação por teste: ela registra a saída de log dela no logger global.
 void test_menu_games_item_needs_the_other_firmware() {
-  {
-    Application app(rig->fullHardware());  // sem troca de firmware
-    TEST_ASSERT_OK(app.begin());
-    rig->run(app, 100);
-    TEST_ASSERT_FALSE(app.menu().available(dbmo::app::MenuItem::Games));
-  }
   FakeAppSwitch games(rig->card);
   games.installed = false;  // firmware do d-BMO gravado sozinho, sem o Retro-Go
   Hardware hw = rig->fullHardware();
@@ -1177,6 +1179,7 @@ int main() {
   RUN_TEST(test_menu_status_shows_absent_subsystems_and_hides_their_items);
   RUN_TEST(test_menu_radio_screen_only_toggles_reception);
   RUN_TEST(test_menu_buttons_and_about_screens);
+  RUN_TEST(test_menu_games_item_is_hidden_without_an_app_switch);
   RUN_TEST(test_menu_games_item_needs_the_other_firmware);
   RUN_TEST(test_menu_games_saves_the_config_and_switches_firmware);
   RUN_TEST(test_idle_menu_redraws_nothing_and_returns_to_the_face);
