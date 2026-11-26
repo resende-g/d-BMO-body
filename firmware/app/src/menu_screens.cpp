@@ -64,6 +64,7 @@ const char *radioLabel(radio::RadioState state) {
 void Application::updateMenuAvailability() {
   menu_.setAvailable(MenuItem::Infrared, inOperation(infrared_));
   menu_.setAvailable(MenuItem::Radio, inOperation(radio_));
+  menu_.setAvailable(MenuItem::Games, hw_.appSwitch != nullptr && hw_.appSwitch->gamesAvailable());
 }
 
 void Application::handleMenu(input::Button button, input::ButtonAction action, uint32_t nowMs) {
@@ -74,6 +75,7 @@ void Application::handleMenu(input::Button button, input::ButtonAction action, u
       menuText_.invalidate();
       irLearnNote_ = IrLearnNote::None;
       radioToggled_ = false;
+      gamesTried_ = false;
       break;
     case MenuAction::Closed: face_.setVisible(true); return;
     case MenuAction::LearnIr:
@@ -89,6 +91,14 @@ void Application::handleMenu(input::Button button, input::ButtonAction action, u
                 toString(radioToggleStatus_));
       break;
     }
+    case MenuAction::BootGames:
+      // A placa reinicia: a configuração vai para o cartão (ou a memória interna) antes.
+      (void)persistence_.saveNow();
+      DBMO_LOGI(kTag, "jogos: reiniciando no Retro-Go");
+      gamesStatus_ = hw_.appSwitch != nullptr ? hw_.appSwitch->bootGames() : Status::Unsupported;
+      gamesTried_ = true;  // só chega aqui se a troca não reiniciou a placa
+      DBMO_LOGW(kTag, "jogos: troca falhou: %s", toString(gamesStatus_));
+      break;
     case MenuAction::Redraw: break;
   }
   menuDirty_ = true;
@@ -116,6 +126,7 @@ void Application::composeMenu() {
     case MenuScreen::Infrared: composeInfrared(); break;
     case MenuScreen::Radio: composeRadio(); break;
     case MenuScreen::Buttons: composeButtons(); break;
+    case MenuScreen::Games: composeGames(); break;
     case MenuScreen::About: composeAbout(); break;
     case MenuScreen::Closed: return;
   }
@@ -229,6 +240,14 @@ void Application::composeButtons() {
     menuText_.printLine(3 + i, i == 0 ? Style::Selected : Style::Normal, "  %s: %s",
                         input::toString(record.button), input::toString(record.action));
   }
+}
+
+void Application::composeGames() {
+  menuText_.setLine(kTitleRow, "Jogos", Style::Title);
+  menuText_.setLine(2, "Reinicia no Retro-Go.");
+  menuText_.setLine(3, "Reset volta ao d-BMO.");
+  if (gamesTried_) menuText_.printLine(5, Style::Selected, "falhou: %s", toString(gamesStatus_));
+  menuText_.setLine(kActionHintRow, "OK: abrir o Retro-Go", Style::Hint);
 }
 
 void Application::composeAbout() {

@@ -63,6 +63,26 @@ class FakeAudioInput final : public dbmo::audio::IAudioInput {
   bool running = false;
 };
 
+// Troca para o Retro-Go: registra se a configuração já estava no cartão quando a troca foi
+// pedida, porque depois dela a placa reinicia.
+class FakeAppSwitch final : public dbmo::app::IAppSwitch {
+ public:
+  explicit FakeAppSwitch(dbmo::sim::MemoryFileSystem &card) : card_(card) {}
+  bool gamesAvailable() const override { return installed; }
+  Status bootGames() override {
+    ++boots;
+    configOnCardAtBoot = card_.exists(dbmo::storage::kConfigFile);
+    return result;
+  }
+  bool installed = true;
+  int boots = 0;
+  bool configOnCardAtBoot = false;
+  Status result = Status::Ok;
+
+ private:
+  dbmo::sim::MemoryFileSystem &card_;
+};
+
 class FakeIrReceiver final : public dbmo::infrared::IIrReceiver {
  public:
   Status begin() override { return Status::Ok; }
@@ -427,6 +447,53 @@ void test_menu_radio_screen_only_toggles_reception() {
   TEST_ASSERT_EQUAL(dbmo::radio::RadioState::Idle, app.radio().state());
   TEST_ASSERT_TRUE(screenHas(app, "estado: em repouso"));
   TEST_ASSERT_EQUAL_UINT(0, rig->radioChip.transmitCount);
+}
+
+void test_menu_games_item_needs_the_other_firmware() {
+  {
+    Application app(rig->fullHardware());  // sem troca de firmware
+    TEST_ASSERT_OK(app.begin());
+    rig->run(app, 100);
+    TEST_ASSERT_FALSE(app.menu().available(dbmo::app::MenuItem::Games));
+  }
+  FakeAppSwitch games(rig->card);
+  games.installed = false;  // firmware do d-BMO gravado sozinho, sem o Retro-Go
+  Hardware hw = rig->fullHardware();
+  hw.appSwitch = &games;
+  Application app(hw);
+  TEST_ASSERT_OK(app.begin());
+  rig->run(app, 100);
+  TEST_ASSERT_FALSE(app.menu().available(dbmo::app::MenuItem::Games));
+}
+
+void test_menu_games_saves_the_config_and_switches_firmware() {
+  FakeAppSwitch games(rig->card);
+  Hardware hw = rig->fullHardware();
+  hw.appSwitch = &games;
+  Application app(hw);
+  TEST_ASSERT_OK(app.begin());
+  rig->run(app, 100);
+  TEST_ASSERT_TRUE(app.menu().available(dbmo::app::MenuItem::Games));
+  TEST_ASSERT_FALSE(rig->card.exists(dbmo::storage::kConfigFile));
+
+  rig->click(app, mcp::kActionA);
+  for (int i = 0; i < 4; ++i) rig->click(app, mcp::kDpadDown);
+  rig->click(app, mcp::kActionA);
+  TEST_ASSERT_EQUAL_STRING("Jogos", app.menuScreen().line(0));
+  TEST_ASSERT_TRUE(screenHas(app, "OK: abrir o Retro-Go"));
+  TEST_ASSERT_EQUAL_INT(0, games.boots);  // entrar no item não troca nada
+
+  rig->click(app, mcp::kActionA);
+  TEST_ASSERT_EQUAL_INT(1, games.boots);
+  TEST_ASSERT_TRUE(games.configOnCardAtBoot);  // gravada antes de reiniciar
+
+  // Se a troca falhar, o d-BMO segue e mostra o motivo.
+  games.result = Status::NotFound;
+  rig->click(app, mcp::kActionA);
+  TEST_ASSERT_EQUAL_INT(2, games.boots);
+  TEST_ASSERT_TRUE(screenHas(app, "falhou: NotFound"));
+  TEST_ASSERT_TRUE(app.system().state() == SystemState::Running ||
+                   app.system().state() == SystemState::Degraded);
 }
 
 void test_menu_buttons_and_about_screens() {
@@ -1110,6 +1177,8 @@ int main() {
   RUN_TEST(test_menu_status_shows_absent_subsystems_and_hides_their_items);
   RUN_TEST(test_menu_radio_screen_only_toggles_reception);
   RUN_TEST(test_menu_buttons_and_about_screens);
+  RUN_TEST(test_menu_games_item_needs_the_other_firmware);
+  RUN_TEST(test_menu_games_saves_the_config_and_switches_firmware);
   RUN_TEST(test_idle_menu_redraws_nothing_and_returns_to_the_face);
   RUN_TEST(test_missing_required_hardware_is_refused);
   RUN_TEST(test_button_press_reaches_the_event_bus);
