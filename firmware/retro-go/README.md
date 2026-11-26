@@ -75,7 +75,7 @@ Todos os itens, inclusive os confirmados, ainda precisam ser validados com o Ret
 | Backlight (PWM) | 16 | `RG_GPIO_LCD_BCKL` | `target::kDisplayBacklight` | PROPOSTO |
 | CS do SD | 21 | `RG_GPIO_SDSPI_CS` | `target::kSdCs` | PROPOSTO |
 | CS do CC1101 (só mantido em alto) | 14 | `DBMO_GPIO_CC1101_CS` | `target::kCc1101Cs` | PROPOSTO |
-| CS do cartucho (só mantido em alto) | 38 | `DBMO_GPIO_CARTRIDGE_CS` | `target::kCartridgeCs` | PROPOSTO |
+| CS do cartucho (só mantido em alto) | 38 | `DBMO_GPIO_CARTRIDGE_CS` | livre no `target` (v1 sem cartucho desde 2026-11-25) | A REMOVER |
 | I2S BCLK | 40 | `RG_GPIO_SND_I2S_BCK` | `target::kI2sBclk` | PROPOSTO |
 | I2S LRCLK | 41 | `RG_GPIO_SND_I2S_WS` | `target::kI2sLrclk` | PROPOSTO |
 | I2S DATA (DIN do MAX98357A) | 42 | `RG_GPIO_SND_I2S_DATA` | `target::kI2sSpeakerData` | PROPOSTO |
@@ -91,8 +91,8 @@ Todos os itens, inclusive os confirmados, ainda precisam ser validados com o Ret
 | Clock do SD (20 MHz) | - | `RG_STORAGE_SDSPI_SPEED` | - | PENDENTE DE VALIDAÇÃO FÍSICA |
 | Curva de carga da bateria | - | `RG_BATTERY_CALC_PERCENT` | - | PENDENTE DE VALIDAÇÃO FÍSICA |
 
-Pinos do perfil `target` que o Retro-Go não usa nem configura: botão de energia (2), microfone I2S (7), GDO0 do CC1101 (15), IR RX (39), IR TX (47) e o UART0 do
-cartucho (43, 44; ver a nota sobre o console em [sdkconfig](#sdkconfig-psram-octal-flash-e-console)).
+Pinos do perfil `target` que o Retro-Go não usa nem configura: botão de energia (2), microfone I2S (7), GDO0 do CC1101 (15), IR RX (39), IR TX (47), estado do carregador (4). O UART0
+(43, 44), que era do cartucho, ficou livre em 2026-11-25 (ver a nota sobre o console em [sdkconfig](#sdkconfig-psram-octal-flash-e-console)).
 
 Cada linha do `config.h` que fixa um pino termina com o comentário
 `pins.h <namespace>::<constante>`, para a conferência automática contra o mapa canônico.

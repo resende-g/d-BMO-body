@@ -245,7 +245,7 @@
 // Pinos do d-BMO que o Retro-Go não conhece, tratados em RG_CUSTOM_PLATFORM_INIT().
 // ---------------------------------------------------------------------------
 #define DBMO_GPIO_CC1101_CS         GPIO_NUM_14 // pins.h target::kCc1101Cs
-#define DBMO_GPIO_CARTRIDGE_CS      GPIO_NUM_38 // pins.h target::kCartridgeCs
+#define DBMO_GPIO_CARTRIDGE_CS      GPIO_NUM_38 // livre no target desde 2026-11-25 (sem cartucho)
 #define DBMO_GPIO_POWER_HOLD        GPIO_NUM_48 // pins.h target::kPowerHold
 
 #if DBMO_RG_ENABLE_POWER_HOLD

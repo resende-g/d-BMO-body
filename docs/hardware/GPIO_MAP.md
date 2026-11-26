@@ -2,10 +2,10 @@
 
 | Campo | Valor |
 |---|---|
-| Versão | 0.1 (2026-11-12) |
+| Versão | 0.2 (2026-11-25) |
 | Fonte de verdade | `firmware/config/include/dbmo/config/pins.h` |
 | Evidências | `docs/hardware/sources/ESP32-S3.md` (identificadores `S3-…`, `MOD-…`, `DKC-…`) |
-| Estado | Pinagem **proposta**. Validados em hardware na bancada (21 a 25/11/2026): tela, três botões, receptor de IR (GPIO 4), CS do CC1101, CS do SD e os três pinos I2S do microfone |
+| Estado | Pinagem **proposta**. Validados em hardware na bancada (21 a 25/11/2026): tela, três botões, receptor de IR (GPIO 4), CS do CC1101, CS do SD e os três pinos I2S do microfone. Desde 2026-11-25 o `target` não tem cartucho e é a pinagem da placa principal de uma face ([`../../hardware/pcb/`](../../hardware/pcb/README.md)); bateria, carga e power-latch ficam numa placa de energia futura, ligada pelo conector CN1 |
 
 As tabelas entre os marcadores `BEGIN pinmap` são **geradas** a partir de `pins.h`
 (`python3 tools/check_pinmap.py --write`) e conferidas na CI: não editar à mão.
@@ -30,6 +30,7 @@ Nenhum pino é "definitivo": a pinagem só fecha depois dos ensaios de bancada d
 | 1 | `VBAT_SENSE` | PROPOSTO |
 | 2 | `POWER_BUTTON` | PROPOSTO |
 | 3 | `AMP_SHUTDOWN` | PROPOSTO |
+| 4 | `CHARGER_STATUS` | PROPOSTO |
 | 7 | `I2S_MIC_DATA` | VALIDADO EM BANCADA |
 | 8 | `I2C_SDA` | PROPOSTO |
 | 9 | `I2C_SCL` | PROPOSTO |
@@ -45,13 +46,10 @@ Nenhum pino é "definitivo": a pinagem só fecha depois dos ensaios de bancada d
 | 19 | `USB_DM` | CONFIRMADO (fabricante) |
 | 20 | `USB_DP` | CONFIRMADO (fabricante) |
 | 21 | `SD_CS` | VALIDADO EM BANCADA |
-| 38 | `CARTRIDGE_CS` | PROPOSTO |
 | 39 | `IR_RX` | PROPOSTO |
 | 40 | `I2S_BCLK` | VALIDADO EM BANCADA |
 | 41 | `I2S_LRCLK` | VALIDADO EM BANCADA |
 | 42 | `I2S_SPEAKER_DATA` | PROPOSTO |
-| 43 | `CARTRIDGE_UART_TX` | PROPOSTO, COM RISCO ABERTO |
-| 44 | `CARTRIDGE_UART_RX` | PROPOSTO, COM RISCO ABERTO |
 | 47 | `IR_TX` | PROPOSTO |
 | 48 | `POWER_HOLD` | PROPOSTO |
 
@@ -118,12 +116,12 @@ botão de energia em GPIO de RTC.
 | # | Pino | Uso proposto | Problema | Estado |
 |---:|---|---|---|---|
 | 1 | GPIO 0 | Botão de energia (até 2026-11-25) | GPIO 0 em nível baixo na saída do reset entra em modo de download (S3-STRAP-05). Se o mesmo botão liga a alimentação e puxa o GPIO 0 ao terra, **o aparelho não liga**: o firmware não roda e a trava nunca é segura. Análise completa em `sources/ESP32-S3.md`, seção 6 | **Resolvido por projeto em 2026-11-25** (alternativa A): o botão foi para o GPIO 2, RTC e fora dos pinos de strapping (S3-RTC-01, S3-STRAP-01); o GPIO 0 fica só como BOOT. Um `static_assert` em `pins.h` impede a volta a um pino de strapping. Na bancada, o botão de energia continua sendo o BOOT (GPIO 0), porque o 2 é o OK |
-| 2 | GPIO 43/44 | UART do cartucho | É o UART0: a ROM imprime o log de boot em GPIO 43 a cada partida, e mudar isso é gravação permanente de eFuse (S3-STRAP-16). O fabricante recomenda outro UART para a aplicação (S3-UART-03). Na DevKitC os pinos estão na ponte USB-UART (DKC-07) | **Risco aberto.** O cartucho receberia o log de boot como dados |
-| 3 | GPIO 48 | Trava de alimentação (HOLD) | Não é GPIO de RTC: não mantém o nível em deep sleep sem configuração extra (S3-RTC-08). No reset é entrada sem pull (S3-GPIO-08): a trava precisa de resistor externo que defina o estado. Na DevKitC v1.0 é o LED RGB (DKC-01) | Proposto; depende do circuito da trava, que não existe |
-| 4 | GPIO 38 | CS do cartucho | Na DevKitC v1.1 é o LED RGB (DKC-02). Com o USB-OTG Download Boot habilitado, a ROM leva o pino a nível baixo (S3-USB-10), o que selecionaria o cartucho | Proposto; conferir na bancada |
+| 2 | GPIO 43/44 | UART do cartucho (até 2026-11-25) | É o UART0: a ROM imprime o log de boot em GPIO 43 a cada partida, e mudar isso é gravação permanente de eFuse (S3-STRAP-16). O fabricante recomenda outro UART para a aplicação (S3-UART-03). Na DevKitC os pinos estão na ponte USB-UART (DKC-07) | **Encerrado em 2026-11-25:** o v1 ficou sem cartucho e os pinos ficaram livres. Não servem para botão na placa: a ponte USB-UART da DevKitC aciona o 44 |
+| 3 | GPIO 48 | Trava de alimentação (HOLD), na placa de energia via CN1 | Não é GPIO de RTC: não mantém o nível em deep sleep sem configuração extra (S3-RTC-08). No reset é entrada sem pull (S3-GPIO-08): a trava precisa de resistor externo que defina o estado. Na DevKitC v1.0 é o LED RGB (DKC-01) | Proposto; depende do circuito da trava, que fica na placa de energia (ainda não projetada) |
+| 4 | GPIO 38 | CS do cartucho (até 2026-11-25) | Na DevKitC v1.1 é o LED RGB (DKC-02). Com o USB-OTG Download Boot habilitado, a ROM leva o pino a nível baixo (S3-USB-10) | **Encerrado em 2026-11-25:** sem cartucho, o pino ficou livre |
 | 5 | GPIO 3 | Desligamento do amplificador | Flutuante no reset (S3-STRAP-14) e com glitch ao energizar (S3-GLT-01): o estado do amplificador durante o boot depende de resistor externo | Proposto; conferir se há estalo no alto-falante ao ligar |
 | 6 | GPIO 39–42 | IR RX e I2S | Pinos de JTAG; a ROM aciona 39 e 40 em um dos modos de download (S3-USB-10) | Proposto; conferir na bancada |
-| 7 | GPIO 4, 5, 6 | Livres | Eram os analógicos, retirados do v1 em 2026-11-25; o GPIO 2 virou o botão de energia | Removido em 2026-11-25: v1 sem analógicos nem gatilhos |
+| 7 | GPIO 5, 6, 38, 43, 44 | Livres | 5 e 6 eram dos analógicos (o 2 virou o botão de energia e o 4, o estado do carregador da placa de energia); 38, 43 e 44 eram do cartucho. Sem ressalva sobram 5, 6 e 38, pouco para 10 botões: os botões ficam no MCP23017 (decisão de 2026-11-25) | Removidos em 2026-11-25: v1 sem analógicos, gatilhos nem cartucho |
 | 8 | GPIO 16 | Backlight por PWM | Na bancada o LED da tela está direto no 3V3; o controle por PWM nunca foi testado, e a corrente do backlight não é conhecida (`PERIPHERALS.md`, MSP-05) | Proposto; pode exigir transistor |
 | 9 | GPIO 47, 48 | IR TX e trava | Dividem o domínio de alimentação da flash/PSRAM (S3-GPIO-09, S3-GPIO-11). O estado de fábrica do eFuse que fixa essa tensão no N16R8 não foi verificado (S3-STRAP-11); o registro de bancada indica 3,3 V | Proposto |
 | 10 | GPIO 45, 46 | Livres | GPIO 45 em nível alto no reset leva a alimentação da flash a 1,8 V (S3-STRAP-09); GPIO 46 participa do modo de boot | **Manter livres**; nunca ligar a algo que os puxe no reset |
@@ -135,8 +133,9 @@ Em ordem de custo, todos possíveis com a DevKitC:
 1. **GPIO 0 no power-up**: segurar o botão BOOT ao energizar e observar no UART0 se aparece a
    mensagem de espera de download. Não decide mais o risco 1 (botão no GPIO 2 desde
    2026-11-25); só confirma na peça o que a fonte diz.
-2. **Revisão da DevKitC** (riscos 3 e 4): ler a serigrafia ao lado do LED RGB (DKC-04).
-3. **Log de boot em GPIO 43** (risco 2): observar o pino com analisador lógico a cada reset.
+2. **Revisão da DevKitC**: ler a serigrafia ao lado do LED RGB (DKC-04). Desde 2026-11-25 só
+   diz qual dos pinos livres 38 e 48 é o LED.
+3. Removido em 2026-11-25 (log de boot no UART do cartucho; o v1 não tem mais cartucho).
 4. **Deep sleep com despertar pelo botão de energia**: gravar o firmware próprio, usar o
    comando `off` e acordar pelo botão. Na bancada é o BOOT (GPIO 0): conferir se o chip volta ao
    firmware ou ao modo de download (a fonte não esclarece se os straps são reamostrados ao
@@ -150,8 +149,9 @@ Registradas em `sources/ESP32-S3.md`, seção 9. As que afetam o mapa:
 
 - O README tratava o GPIO 0 só como "strapping; GPIO RTC" e não avisava do modo de download.
   Resolvido em 2026-11-25: o botão de energia foi para o GPIO 2.
-- O README dá a UART em 43/44 como "liberada porque o console usa o USB CDC": a ROM
-  continua imprimindo o log de boot nesses pinos.
+- O README dava a UART em 43/44 como "liberada porque o console usa o USB CDC": a ROM
+  continua imprimindo o log de boot nesses pinos. Encerrado em 2026-11-25: sem cartucho, a
+  UART saiu da pinagem.
 - O README conta 16 botões no MCP23017; a revisão D do datasheet restringe GPA7 e GPB7 a
   saída, o que deixa **14 entradas** (`PERIPHERALS.md`, MCP-03 a MCP-05). Resolvido em
   2026-11-25: sem analógicos nem gatilhos, o v1 tem 10 botões e o README já conta 10.

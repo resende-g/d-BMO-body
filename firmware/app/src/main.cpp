@@ -5,7 +5,8 @@
 //
 // Dois perfis (platformio.ini):
 //   DBMO_PROFILE_BENCH   a protoboard de hoje: tela, três botões em GPIO, IR;
-//   DBMO_PROFILE_TARGET  a pinagem proposta do v1 (pins.h, namespace target).
+//   DBMO_PROFILE_TARGET  a pinagem proposta do v1 (pins.h, namespace target): a placa principal
+//                        de uma face, sem cartucho; bateria e trava ficam na placa de energia.
 // Periférico que não estiver ligado aparece como ausente no comando "status".
 #include <Adafruit_ILI9341.h>
 #include <Arduino.h>
@@ -64,11 +65,12 @@ esp32::Ili9341Display gDisplay(gTft, gClock, &gBacklight);
 dbmo::input::Mcp23017 gExpander(gI2c, dbmo::config::i2c::kMcp23017Buttons);
 dbmo::input::Mcp23017ButtonSource gButtons(gExpander,
                                            dbmo::input::Mcp23017ButtonSource::defaultMap());
+// Bateria e trava ficam na placa de energia, ligada pelo conector CN1 da placa principal. Sem
+// ela (só o USB da DevKitC), a leitura da bateria não tem sentido e a trava não segura nada.
 esp32::ArduinoAdcChannel gBatteryAdc(static_cast<uint8_t>(pins::kVbatSense));
 dbmo::power::GpioPowerLatch gPowerLatch(gGpio, pins::kPowerHold);
 esp32::I2sAudio gAudio(pins::kI2sBclk, pins::kI2sLrclk, pins::kI2sSpeakerData, pins::kI2sMicData,
                        pins::kAmpShutdown);
-esp32::ArduinoSpiDevice gCartridgeSpi(SPI, pins::kCartridgeCs, pins::kSpiMiso, 1000000);
 esp32::RmtIrReceiver gIrReceiver(pins::kIrRx);
 esp32::RmtIrTransmitter gIrTransmitter(pins::kIrTx);
 #else
@@ -112,7 +114,6 @@ dbmo::app::Hardware makeHardware() {
   hw.powerSwitch = &gPowerLatch;
   hw.audioOutput = &gAudio.output();
   hw.audioInput = &gAudio.input();
-  hw.cartridgeSpi = &gCartridgeSpi;
 #else
   hw.profile = "bench";
   hw.powerButtonPin = bench::kPowerButton;  // BOOT da DevKitC; o GPIO 2 é o OK
@@ -146,9 +147,6 @@ void parkChipSelects() {
       pins::kDisplayCs,
       pins::kCc1101Cs,
       pins::kSdCs,
-#if defined(DBMO_PROFILE_TARGET)
-      pins::kCartridgeCs,
-#endif
   };
   for (int8_t cs : chipSelects) {
     pinMode(static_cast<uint8_t>(cs), OUTPUT);

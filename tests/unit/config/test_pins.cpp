@@ -61,10 +61,27 @@ static void test_every_usable_gpio_is_assigned_or_listed_as_free() {
     if (isUsableGpio(gpio)) ++usable;
   const size_t assigned = sizeof(target::kPins) / sizeof(target::kPins[0]);
   const size_t free = sizeof(target::kFreePins) / sizeof(target::kFreePins[0]);
-  // 33 GPIOs utilizáveis no módulo: 27 atribuídos + 6 livres. Se a conta mudar, a
-  // documentação (GPIO_MAP.md) precisa mudar junto.
+  // 33 GPIOs utilizáveis no módulo: 25 atribuídos + 8 livres desde 2026-11-25 (v1 sem
+  // cartucho). Se a conta mudar, a documentação (GPIO_MAP.md) e a placa (hardware/pcb/)
+  // precisam mudar junto.
   TEST_ASSERT_EQUAL_size_t(33, usable);
   TEST_ASSERT_EQUAL_size_t(usable, assigned + free);
+}
+
+static void test_target_has_no_cartridge_and_keeps_the_power_board_signals() {
+  // Decisões de 2026-11-25: o v1 não tem cartucho (os pinos dele ficam livres) e é feito de
+  // duas placas; os sinais da placa de energia continuam reservados, indo ao conector CN1.
+  for (const char *gone : {"CARTRIDGE_CS", "CARTRIDGE_UART_TX", "CARTRIDGE_UART_RX"})
+    TEST_ASSERT_NULL_MESSAGE(findSignal(target::kPins, gone), gone);
+  for (const char *kept : {"VBAT_SENSE", "POWER_HOLD", "POWER_BUTTON", "CHARGER_STATUS"})
+    TEST_ASSERT_NOT_NULL_MESSAGE(findSignal(target::kPins, kept), kept);
+  TEST_ASSERT_TRUE(isAdc1Gpio(target::kVbatSense));
+  for (int8_t gpio : {38, 43, 44}) {
+    TEST_ASSERT_FALSE(usesGpio(target::kPins, gpio));
+    bool listed = false;
+    for (int8_t free : target::kFreePins) listed = listed || free == gpio;
+    TEST_ASSERT_TRUE(listed);
+  }
 }
 
 static void test_power_button_is_an_rtc_gpio_outside_the_strapping_pins() {
@@ -101,9 +118,11 @@ static void test_bench_and_target_disagree_exactly_where_documented() {
   // é o BOOT da DevKitC (GPIO 0), livre no target.
   TEST_ASSERT_EQUAL_INT8(target::kPowerButton, bench::kButtonOk);
   TEST_ASSERT_EQUAL_INT8(0, bench::kPowerButton);
-  // IR da bancada fica em pinos livres do target (eram dos analógicos).
-  for (int8_t gpio : {bench::kPowerButton, bench::kIrRx, bench::kIrTx})
+  // O botão de energia (BOOT) e o IR TX da bancada ficam em pinos livres do target; o IR RX da
+  // bancada (GPIO 4) é o estado do carregador no target.
+  for (int8_t gpio : {bench::kPowerButton, bench::kIrTx})
     TEST_ASSERT_FALSE(usesGpio(target::kPins, gpio));
+  TEST_ASSERT_EQUAL_INT8(target::kChargerStatus, bench::kIrRx);
 }
 
 static void test_i2c_addresses_do_not_collide() {
@@ -150,6 +169,7 @@ int main() {
   RUN_TEST(test_gpio_classification_helpers);
   RUN_TEST(test_target_profile_never_drives_the_free_pins);
   RUN_TEST(test_every_usable_gpio_is_assigned_or_listed_as_free);
+  RUN_TEST(test_target_has_no_cartridge_and_keeps_the_power_board_signals);
   RUN_TEST(test_power_button_is_an_rtc_gpio_outside_the_strapping_pins);
   RUN_TEST(test_shared_bus_pins_are_identical_in_both_profiles);
   RUN_TEST(test_bench_and_target_disagree_exactly_where_documented);

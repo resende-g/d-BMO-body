@@ -5,8 +5,12 @@
 // Retro-Go (firmware/retro-go/) são conferidos contra ele por tools/check_pinmap.py.
 //
 // Existem dois perfis:
-//   - target: a pinagem PROPOSTA para o v1 completo (README > Pinagem). Não é definitiva:
-//     só os itens marcados BenchValidated foram ligados e testados.
+//   - target: a pinagem PROPOSTA para o v1 (README > Pinagem), a da placa principal de uma face
+//     (hardware/pcb/). Não é definitiva: só os itens marcados BenchValidated foram ligados e
+//     testados. Desde 2026-11-25 o v1 não tem cartucho e é feito de duas placas: a principal e
+//     uma placa de energia futura (bateria, carga, regulador, power-latch), ligadas pelo
+//     conector CN1. Os sinais de energia continuam aqui; sem a placa de energia, alimenta pelo
+//     USB da DevKitC.
 //   - bench:  a fiação que existe hoje na protoboard (tela + 3 botões diretos), igual ao
 //     firmware/bruce/bmo.ini.
 //
@@ -57,10 +61,12 @@ namespace target {
 
 // GPIO RTC fora dos pinos de strapping: acorda do deep sleep e não é lido como strap no reset.
 // Estava no GPIO 0 até 2026-11-25 (risco 1 do GPIO_MAP.md); o GPIO 0 ficou só como BOOT.
-inline constexpr int8_t kPowerButton = 2;
-inline constexpr int8_t kVbatSense = 1;    // ADC1; divisor 100k/100k
+inline constexpr int8_t kPowerButton = 2;  // também vai ao CN1, para a placa de energia
+inline constexpr int8_t kVbatSense = 1;    // ADC1; divisor 100k/100k na placa de energia
 inline constexpr int8_t kAmpShutdown = 3;  // MAX98357A SD_MODE; strapping (JTAG)
-inline constexpr int8_t kI2sMicData = 7;   // INMP441 SD
+// Estado do carregador (CHRG/STDBY, coletor aberto: pull-up interno), vindo do CN1.
+inline constexpr int8_t kChargerStatus = 4;
+inline constexpr int8_t kI2sMicData = 7;  // INMP441 SD
 inline constexpr int8_t kI2cSda = 8;
 inline constexpr int8_t kI2cScl = 9;
 inline constexpr int8_t kDisplayCs = 10;
@@ -75,20 +81,18 @@ inline constexpr int8_t kDisplayReset = 18;
 inline constexpr int8_t kUsbDm = 19;
 inline constexpr int8_t kUsbDp = 20;
 inline constexpr int8_t kSdCs = 21;
-inline constexpr int8_t kCartridgeCs = 38;  // na DevKitC, 38 ou 48 é o LED RGB (revisão)
 inline constexpr int8_t kIrRx = 39;
 inline constexpr int8_t kI2sBclk = 40;
 inline constexpr int8_t kI2sLrclk = 41;
-inline constexpr int8_t kI2sSpeakerData = 42;   // MAX98357A DIN
-inline constexpr int8_t kCartridgeUartTx = 43;  // UART0 TX
-inline constexpr int8_t kCartridgeUartRx = 44;  // UART0 RX
+inline constexpr int8_t kI2sSpeakerData = 42;  // MAX98357A DIN
 inline constexpr int8_t kIrTx = 47;
-inline constexpr int8_t kPowerHold = 48;  // power-latch
+inline constexpr int8_t kPowerHold = 48;  // power-latch, na placa de energia (CN1)
 
 inline constexpr PinAssignment kPins[] = {
     {"POWER_BUTTON", kPowerButton, PinStatus::Proposed},
     {"VBAT_SENSE", kVbatSense, PinStatus::Proposed},
     {"AMP_SHUTDOWN", kAmpShutdown, PinStatus::Proposed},
+    {"CHARGER_STATUS", kChargerStatus, PinStatus::Proposed},
     {"I2S_MIC_DATA", kI2sMicData, PinStatus::BenchValidated},
     {"I2C_SDA", kI2cSda, PinStatus::Proposed},
     {"I2C_SCL", kI2cScl, PinStatus::Proposed},
@@ -104,21 +108,22 @@ inline constexpr PinAssignment kPins[] = {
     {"USB_DM", kUsbDm, PinStatus::ChipFixed},
     {"USB_DP", kUsbDp, PinStatus::ChipFixed},
     {"SD_CS", kSdCs, PinStatus::BenchValidated},
-    {"CARTRIDGE_CS", kCartridgeCs, PinStatus::Proposed},
     {"IR_RX", kIrRx, PinStatus::Proposed},
     {"I2S_BCLK", kI2sBclk, PinStatus::BenchValidated},
     {"I2S_LRCLK", kI2sLrclk, PinStatus::BenchValidated},
     {"I2S_SPEAKER_DATA", kI2sSpeakerData, PinStatus::Proposed},
-    {"CARTRIDGE_UART_TX", kCartridgeUartTx, PinStatus::ProposedAtRisk},
-    {"CARTRIDGE_UART_RX", kCartridgeUartRx, PinStatus::ProposedAtRisk},
     {"IR_TX", kIrTx, PinStatus::Proposed},
     {"POWER_HOLD", kPowerHold, PinStatus::Proposed},
 };
 
-// Livres no perfil target. 4, 5 e 6 (ADC1) eram dos analógicos, retirados do v1 em 2026-11-25
-// (o 2 virou o botão de energia). 0, 45 e 46 são de strapping: o 0 fica só como BOOT (pad de
-// teste ou botão interno), e 45 e 46 não podem ser puxados no reset.
-inline constexpr int8_t kFreePins[] = {0, 4, 5, 6, 45, 46};
+// Livres no perfil target (decisões de 2026-11-25):
+//   5, 6      eram dos analógicos (o 2 virou o botão de energia e o 4, o estado do carregador);
+//   38, 43, 44 eram do cartucho (CS e UART0). Na DevKitC, 38 ou 48 é o LED RGB (revisão) e
+//             43/44 ficam na ponte USB-UART;
+//   0, 45, 46 são de strapping: o 0 fica só como BOOT, e 45 e 46 não podem ser puxados no reset.
+// Os botões, menos o de energia, ficam no MCP23017 (i2c::kMcp23017Buttons), decisão de
+// 2026-11-25: sobram só 5, 6 e 38 sem ressalva para 10 botões.
+inline constexpr int8_t kFreePins[] = {0, 5, 6, 38, 43, 44, 45, 46};
 
 }  // namespace target
 
@@ -235,10 +240,10 @@ static_assert(detail::allUsable(target::kPins), "perfil target usa GPIO indispon
 static_assert(detail::noDuplicates(target::kPins), "perfil target tem GPIO duplicado");
 static_assert(detail::allUsable(bench::kPins), "perfil bench usa GPIO indisponível no N16R8");
 static_assert(detail::noDuplicates(bench::kPins), "perfil bench tem GPIO duplicado");
-static_assert(isAdc1Gpio(target::kVbatSense),
-              "a leitura da bateria precisa estar no ADC1 (GPIO 1-10)");
 static_assert(!isStrappingGpio(target::kPowerButton),
               "botao de energia no target fora dos pinos de strapping (GPIO_MAP.md, risco 1)");
+static_assert(isAdc1Gpio(target::kVbatSense),
+              "a leitura da bateria precisa estar no ADC1 (GPIO 1-10)");
 static_assert(isRtcGpio(target::kPowerButton) && isRtcGpio(bench::kPowerButton) &&
                   isRtcGpio(bench::kButtonOk),
               "o pino que acorda do deep sleep precisa ser GPIO RTC (0-21)");
