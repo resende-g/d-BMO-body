@@ -32,3 +32,12 @@ int gpio_reset_pin(gpio_num_t gpio_num);
 int gpio_set_level(gpio_num_t gpio_num, uint32_t level);
 int gpio_set_direction(gpio_num_t gpio_num, int mode);
 int gpio_set_pull_mode(gpio_num_t gpio_num, int pull);
+
+/* esp_partition.h e esp_ota_ops.h, só o que o alvo usa */
+typedef int esp_err_t;
+typedef struct { int type, subtype; uint32_t address, size; char label[17]; } esp_partition_t;
+enum { ESP_PARTITION_TYPE_APP = 0x00 };
+enum { ESP_PARTITION_SUBTYPE_APP_FACTORY = 0x00, ESP_PARTITION_SUBTYPE_ANY = 0xff };
+const esp_partition_t *esp_partition_find_first(int type, int subtype, const char *label);
+const esp_partition_t *esp_ota_get_boot_partition(void);
+esp_err_t esp_ota_set_boot_partition(const esp_partition_t *partition);
