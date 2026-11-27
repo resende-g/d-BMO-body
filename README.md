@@ -232,14 +232,14 @@ serigrafia da placa.
 | Livre | 0, 3, 45, 46 | strapping: o 0 fica só como BOOT; 45 define a tensão da flash no boot, **não usar** como saída que possa estar em alto no boot |
 | Livre | 38, 42, 43, 44 | 38: LED RGB na DevKitC v1.1. 43 / 44: UART0, com o log de boot da ROM e a ponte USB-serial da DevKitC |
 
-A ordem acima é a da placa principal de uma face (`hardware/placa-principal`), escolhida em
-26/11/2026 para cada módulo pegar os pinos da DevKitC do lado dele e a placa precisar de menos
-fios. Só o SPI (11, 12, 13) ficou onde estava; a protoboard de bancada continua com a fiação
+Os números acima são os de 26/11/2026. Desde 27/11/2026 a CPU é a placa-base
+(`hardware/placa-principal`), que leva cada pino da DevKitC a barras de pinos; os módulos (botões
+da esquerda e da direita, energia) chegam por cabo Dupont. Só o SPI (11, 12, 13) ficou onde estava; a protoboard de bancada continua com a fiação
 antiga (perfil `bench` de `pins.h`, igual ao `firmware/bruce/bmo.ini`).
 
 **MCP23017 (0x20):** 10 botões (D-pad 4, ação 4, select/start 2), botão ao GND com pull-up
-interno do MCP, na ordem de `pins.h` (`mcp_buttons`), escolhida pela placa de uma face. GPA7 e
-GPB7 são só saída na revisão D do datasheet do MCP23017; GPA0, GPA1, GPB0 e GPB3 sobram. **Segundo MCP23017 (0x21), opcional:**
+interno do MCP, na ordem de `pins.h` (`mcp_buttons`), escolhida em 27/11/2026 pela placa de botões da esquerda (`hardware/placa-botoes-esquerda`). GPA7 e
+GPB7 são só saída na revisão D do datasheet do MCP23017; GPA2, GPA3, GPB1 e GPB5 sobram. **Segundo MCP23017 (0x21), opcional:**
 vibração (liga/desliga via transistor) e os 2 GPIOs do cartucho.
 
 **Não usar:** GPIO 26–37 (flash/PSRAM octal). Cuidado com strapping: 0, 3, 45, 46.

@@ -105,23 +105,24 @@ MENU e OPTION.
 
 | Tecla do Retro-Go | Bit do MCP23017 | Pino | Botão do d-BMO (`pins.h mcp_buttons`) |
 |---|---:|---|---|
-| sem botão | 0, 1 | GPA0, GPA1 | livres |
-| `RG_KEY_SELECT` | 2 | GPA2 | Select (`kSelect`) |
-| `RG_KEY_UP` | 3 | GPA3 | D-pad cima (`kDpadUp`) |
-| `RG_KEY_RIGHT` | 4 | GPA4 | D-pad direita (`kDpadRight`) |
-| `RG_KEY_LEFT` | 5 | GPA5 | D-pad esquerda (`kDpadLeft`) |
-| `RG_KEY_DOWN` | 6 | GPA6 | D-pad baixo (`kDpadDown`) |
+| `RG_KEY_RIGHT` | 0 | GPA0 | D-pad direita (`kDpadRight`) |
+| `RG_KEY_START` | 1 | GPA1 | Start (`kStart`) |
+| sem botão | 2 | GPA2 | livre |
+| sem botão | 3 | GPA3 | livre |
+| `RG_KEY_DOWN` | 4 | GPA4 | D-pad baixo (`kDpadDown`) |
+| `RG_KEY_SELECT` | 5 | GPA5 | Select (`kSelect`) |
+| `RG_KEY_LEFT` | 6 | GPA6 | D-pad esquerda (`kDpadLeft`) |
 | sem botão | 7 | GPA7 | somente saída no MCP23017 (datasheet rev. D) |
-| sem botão | 8 | GPB0 | livre |
-| `RG_KEY_B` | 9 | GPB1 | B (`kActionB`) |
+| `RG_KEY_OPTION` | 8 | GPB0 | Y (`kActionY`) |
+| sem botão | 9 | GPB1 | livre |
 | `RG_KEY_A` | 10 | GPB2 | A (`kActionA`) |
-| sem botão | 11 | GPB3 | livre |
-| `RG_KEY_OPTION` | 12 | GPB4 | Y (`kActionY`) |
-| `RG_KEY_MENU` | 13 | GPB5 | X (`kActionX`) |
-| `RG_KEY_START` | 14 | GPB6 | Start (`kStart`) |
+| `RG_KEY_B` | 11 | GPB3 | B (`kActionB`) |
+| `RG_KEY_MENU` | 12 | GPB4 | X (`kActionX`) |
+| sem botão | 13 | GPB5 | livre |
+| `RG_KEY_UP` | 14 | GPB6 | D-pad cima (`kDpadUp`) |
 | sem botão | 15 | GPB7 | somente saída no MCP23017 (datasheet rev. D) |
 
-A ordem segue a placa de uma face (2026-11-26): cada botão no pino do MCP23017 mais perto dele.
+A ordem vem da placa de botões da esquerda (`hardware/placa-botoes-esquerda`), escolhida em 2026-11-27 para a placa de uma face rotear com menos fios.
 
 Segurar MENU (o botão X) no boot abre o menu de recuperação (`RG_RECOVERY_BTN`).
 

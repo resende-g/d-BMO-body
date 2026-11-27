@@ -110,8 +110,8 @@ static void test_default_map_reads_each_of_the_10_buttons() {
                                     toString(wire.button));
     sim.release(wire.pin);
   }
-  // Bits sem botão: os somente saída (7 e 15) e os que sobraram (0, 1, 8 e 11).
-  for (uint8_t pin : {0, 1, 7, 8, 11, 15}) sim.press(pin);
+  // Bits sem botão: os somente saída (7 e 15) e os que sobraram (2, 3, 9 e 13).
+  for (uint8_t pin : {2, 3, 7, 9, 13, 15}) sim.press(pin);
   TEST_ASSERT_EQUAL_UINT32(0, source.read().value());
 }
 

@@ -172,16 +172,16 @@
 // baixo (.level = 0). .num é o bit: 0-7 = GPA0-7, 8-15 = GPB0-7. Os bits 7 e 15 (GPA7 e GPB7)
 // ficam sem botão: o datasheet do MCP23017 (DS20001952, rev. D) os declara somente saída.
 #define RG_GAMEPAD_I2C_MAP {\
-    {RG_KEY_UP,     .num = 3,  .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kDpadUp */ \
-    {RG_KEY_DOWN,   .num = 6,  .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kDpadDown */ \
-    {RG_KEY_LEFT,   .num = 5,  .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kDpadLeft */ \
-    {RG_KEY_RIGHT,  .num = 4,  .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kDpadRight */ \
+    {RG_KEY_UP,     .num = 14, .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kDpadUp */ \
+    {RG_KEY_DOWN,   .num = 4,  .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kDpadDown */ \
+    {RG_KEY_LEFT,   .num = 6,  .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kDpadLeft */ \
+    {RG_KEY_RIGHT,  .num = 0,  .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kDpadRight */ \
     {RG_KEY_A,      .num = 10, .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kActionA */ \
-    {RG_KEY_B,      .num = 9,  .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kActionB */ \
-    {RG_KEY_MENU,   .num = 13, .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kActionX */ \
-    {RG_KEY_OPTION, .num = 12, .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kActionY */ \
-    {RG_KEY_SELECT, .num = 2,  .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kSelect */ \
-    {RG_KEY_START,  .num = 14, .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kStart */ \
+    {RG_KEY_B,      .num = 11, .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kActionB */ \
+    {RG_KEY_MENU,   .num = 12, .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kActionX */ \
+    {RG_KEY_OPTION, .num = 8,  .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kActionY */ \
+    {RG_KEY_SELECT, .num = 5,  .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kSelect */ \
+    {RG_KEY_START,  .num = 1,  .pullup = 1, .level = 0}, /* pins.h mcp_buttons::kStart */ \
 }
 
 #endif
@@ -206,7 +206,7 @@
 // LED de status: o d-BMO não tem (RG_GPIO_LED fica indefinido).
 
 // ---------------------------------------------------------------------------
-// Pinos. Desde 2026-11-26 o perfil target (a placa de uma face, hardware/placa-principal) e a
+// Pinos. Desde 2026-11-26 o perfil target (a placa-base, hardware/placa-principal) e a
 // bancada (a protoboard de hoje) só têm em comum o SPI (11, 12, 13). DBMO_RG_BENCH escolhe a
 // fiação da protoboard; sem ele, vale a da placa. tools/check_pinmap.py confere os dois blocos.
 // ---------------------------------------------------------------------------
@@ -232,7 +232,7 @@
 #define DBMO_GPIO_CC1101_CS         GPIO_NUM_14  // pins.h bench::kCc1101Cs
 // Na bancada o SD_MODE do amplificador não vai a um GPIO (a placa dele o mantém ligado) e o
 // MCP23017 não existe: sem RG_GPIO_SND_AMP_ENABLE nem I2C.
-#else  // pinos da placa de uma face (pins.h target)
+#else  // pinos da placa-base (pins.h target)
 #define RG_GPIO_I2C_SDA             GPIO_NUM_6   // pins.h target::kI2cSda
 #define RG_GPIO_I2C_SCL             GPIO_NUM_1   // pins.h target::kI2cScl
 #define RG_GPIO_LCD_CS              GPIO_NUM_41  // pins.h target::kDisplayCs

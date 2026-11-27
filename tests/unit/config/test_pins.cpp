@@ -96,7 +96,7 @@ static void test_power_board_signals_wake_and_cartridge_is_gone() {
 
 static void test_shared_bus_pins_are_identical_in_both_profiles() {
   // Desde 2026-11-26 só o SPI é igual nos dois perfis: o resto do target segue a placa de uma
-  // face (hardware/placa-principal) e o bench continua sendo a fiação da protoboard.
+  // placa-base (hardware/placa-principal) e o bench continua sendo a fiação da protoboard.
   const char *shared[] = {"SPI_MOSI", "SPI_SCK", "SPI_MISO"};
   for (const char *signal : shared) {
     const PinAssignment *t = findSignal(target::kPins, signal);
@@ -109,7 +109,7 @@ static void test_shared_bus_pins_are_identical_in_both_profiles() {
 
 static void test_bench_profile_keeps_the_protoboard_wiring() {
   // A protoboard validada em 2026-11-21 a 25 (docs/hardware/BREADBOARD_MAP.md). Mudar a placa
-  // de uma face não pode mudar estes números sem a protoboard ser religada.
+  // de pinagem não pode mudar estes números sem a protoboard ser religada.
   const struct {
     const char *signal;
     int8_t gpio;
@@ -145,10 +145,10 @@ static void test_mcp_button_bits_are_unique_and_avoid_output_only_pins() {
     seen = static_cast<uint16_t>(seen | (1u << bit));
   }
   // GPA7 e GPB7 são somente saída no MCP23017 (datasheet rev. D): nenhum botão neles.
-  // Ordem de 2026-11-26 (placa de uma face): GPA2-6 e GPB1-2, GPB4-6.
+  // Ordem de 2026-11-27 (placa de botões da esquerda): GPA0, 1, 4-6 e GPB0, 2-4, 6.
   TEST_ASSERT_EQUAL_HEX16(0x8080, mcp_buttons::kOutputOnlyMask);
   TEST_ASSERT_EQUAL_HEX16(0, seen & mcp_buttons::kOutputOnlyMask);
-  TEST_ASSERT_EQUAL_HEX16(0x767C, seen);
+  TEST_ASSERT_EQUAL_HEX16(0x5D73, seen);
 }
 
 static void test_claiming_the_whole_target_profile_at_runtime_has_no_conflict() {

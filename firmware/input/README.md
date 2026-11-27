@@ -59,7 +59,7 @@ depois de uma leitura bem-sucedida.
 A revisão D do datasheet (Microchip DS20001952D, junho de 2022) declara GPA7 e GPB7 como
 somente saída no MCP23017 (`docs/hardware/sources/PERIPHERALS.md`, MCP-03 a MCP-06). O
 driver recusa configurá-los como entrada e o mapa padrão (`pins.h`, `mcp_buttons`) não
-põe botão neles. Os 10 botões do v1 cabem com folga: GPB3 a GPB6 sobram.
+põe botão neles. Os 10 botões do v1 cabem com folga: GPA2, GPA3, GPB1 e GPB5 sobram.
 
 Os endereços dos registradores usados (`IODIR` 0x00, `IPOL` 0x02, `IOCON` 0x0A, `GPPU`
 0x0C, `GPIO` 0x12, `OLAT` 0x14, com `IOCON.BANK = 0`) não constam do registro de

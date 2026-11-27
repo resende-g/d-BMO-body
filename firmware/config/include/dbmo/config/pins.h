@@ -55,12 +55,12 @@ constexpr bool isRtcGpio(int gpio) { return gpio >= 0 && gpio <= 21; }
 // ---------------------------------------------------------------------------
 namespace target {
 
-// Desde 2026-11-26 a ordem dos GPIOs segue a placa principal de uma face
-// (hardware/placa-principal), com a tela encostada no topo: cada módulo pega os pinos da DevKitC
-// que ficam do lado dele, para a placa precisar de menos fios. Os pinos de SPI (11, 12 e 13, IO_MUX
-// nativo do FSPI) não mudaram. Os outros são PROPOSTOS até a placa ser montada, menos os que caíram
-// no mesmo GPIO já validado na bancada (microfone no 7, IR RX no 4). A bancada continua no perfil
-// bench.
+// Os números dos GPIOs são os de 2026-11-26. Desde 2026-11-27 a CPU é a placa-base
+// (hardware/placa-principal), que leva cada pino da DevKitC a barras de pinos; os módulos (botões
+// da esquerda e da direita, energia) chegam por cabo Dupont. Os pinos de SPI (11, 12 e 13, IO_MUX
+// nativo do FSPI) não mudaram. Os outros são PROPOSTOS até as placas serem montadas, menos os que
+// caíram no mesmo GPIO já validado na bancada (microfone no 7, IR RX no 4). A bancada continua no
+// perfil bench.
 inline constexpr int8_t kI2cScl = 1;
 // Trava da placa de energia. GPIO RTC: segura o nível em deep sleep.
 inline constexpr int8_t kPowerHold = 2;
@@ -128,8 +128,8 @@ inline constexpr int8_t kFreePins[] = {0, 3, 38, 42, 43, 44, 45, 46};
 
 // ---------------------------------------------------------------------------
 // Perfil bench: a protoboard de hoje (igual ao firmware/bruce/bmo.ini). Até 2026-11-26 a tela,
-// o SD, o CC1101, o I2C e o I2S estavam nos mesmos GPIOs do target; desde a troca para a placa
-// de uma face, só o SPI (11, 12, 13) continua igual. Os números abaixo são os da fiação da
+// o SD, o CC1101, o I2C e o I2S estavam nos mesmos GPIOs do target; desde a troca de pinagem
+// de 2026-11-26, só o SPI (11, 12, 13) continua igual. Os números abaixo são os da fiação da
 // protoboard, validados na bancada.
 // ---------------------------------------------------------------------------
 namespace bench {
@@ -214,20 +214,20 @@ inline constexpr uint32_t kSdInitHz = 400000;
 // O datasheet do MCP23017 (Microchip DS20001952, revisão D) declara GPA7 e GPB7 como
 // somente saída. Por isso os bits 7 e 15 não recebem botão: um MCP23017 oferece 14
 // entradas. Ver docs/hardware/sources/PERIPHERALS.md (MCP-03 a MCP-06).
-// São 10 botões; sobram 0, 1, 8 e 11 (GPA0, GPA1, GPB0 e GPB3).
+// São 10 botões; sobram 2, 3, 9 e 13 (GPA2, GPA3, GPB1 e GPB5).
 namespace mcp_buttons {
-// Ordem escolhida em 2026-11-26 pela placa de uma face (cada botão no pino do MCP23017 mais
-// perto dele no roteamento).
-inline constexpr uint8_t kSelect = 2;     // GPA2
-inline constexpr uint8_t kDpadUp = 3;     // GPA3
-inline constexpr uint8_t kDpadRight = 4;  // GPA4
-inline constexpr uint8_t kDpadLeft = 5;   // GPA5
-inline constexpr uint8_t kDpadDown = 6;   // GPA6
-inline constexpr uint8_t kActionB = 9;    // GPB1
+// A ordem vem da placa de botões da esquerda (hardware/placa-botoes-esquerda), escolhida em
+// 2026-11-27 para a placa de uma face rotear com menos fios.
+inline constexpr uint8_t kDpadRight = 0;  // GPA0
+inline constexpr uint8_t kStart = 1;      // GPA1
+inline constexpr uint8_t kDpadDown = 4;   // GPA4
+inline constexpr uint8_t kSelect = 5;     // GPA5
+inline constexpr uint8_t kDpadLeft = 6;   // GPA6
+inline constexpr uint8_t kActionY = 8;    // GPB0
 inline constexpr uint8_t kActionA = 10;   // GPB2
-inline constexpr uint8_t kActionY = 12;   // GPB4
-inline constexpr uint8_t kActionX = 13;   // GPB5
-inline constexpr uint8_t kStart = 14;     // GPB6
+inline constexpr uint8_t kActionB = 11;   // GPB3
+inline constexpr uint8_t kActionX = 12;   // GPB4
+inline constexpr uint8_t kDpadUp = 14;    // GPB6
 // GPA7 e GPB7: não usar como entrada.
 inline constexpr uint16_t kOutputOnlyMask = 0x8080;
 }  // namespace mcp_buttons
