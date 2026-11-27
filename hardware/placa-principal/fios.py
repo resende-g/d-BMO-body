@@ -4,12 +4,16 @@ do EasyEDA Pro. Não roteia nada: só lê o cobre que o autoroteador do EasyEDA 
 
 Uso:
   python3 hardware/placa-principal/fios.py hardware/placa-principal/gerber.zip
+  python3 hardware/placa-principal/fios.py hardware/placa-energia/gerber.zip hardware/placa-energia/ligacoes.json
 
 Lê `FlyingProbeTesting.json` (pads, com net e posição) e `Gerber_BottomLayer.GBL` (trilhas),
 monta as ilhas de cobre ligado e:
   1. falha se uma ilha juntar pads de nets diferentes (curto) ou se houver trilha na camada de cima;
   2. para cada net em mais de uma ilha, escolhe os fios que ligam as ilhas pelo menor
-     comprimento total (árvore geradora mínima entre ilhas, fio de pad a pad).
+     comprimento total (árvore geradora mínima entre ilhas, fio de pad a pad);
+  3. mede a isolação mínima entre cobres de nets diferentes (pads quadrados como quadrados) e
+     falha abaixo de ISOLACAO; mede o contorno e o cobre mais perto da borda; lista os trechos
+     de trilha mais finos que TRILHA.
 
 Imprime a tabela de fios em Markdown. Só a biblioteca padrão.
 """
@@ -24,6 +28,8 @@ import zipfile
 from pathlib import Path
 
 MIL = 0.0254  # mm
+ISOLACAO = 0.5  # mm, regra das placas do Tiago
+TRILHA = 0.8  # mm, largura pedida pelo Tiago
 HERE = Path(__file__).resolve().parent
 
 
@@ -67,7 +73,15 @@ def seg_dist(a, b) -> float:
     return min(pt(*p1, *p3, *p4), pt(*p2, *p3, *p4), pt(*p3, *p1, *p2), pt(*p4, *p1, *p2))
 
 
-def main(path: str) -> int:
+def outline(x, y, sx, sy, ang) -> list[tuple[float, float, float, float, float]]:
+    """Lados de um pad retangular girado de `ang` graus, como segmentos de largura zero."""
+    c, s = math.cos(math.radians(ang)), math.sin(math.radians(ang))
+    pts = [(x + dx * c - dy * s, y + dx * s + dy * c)
+           for dx, dy in ((-sx / 2, -sy / 2), (sx / 2, -sy / 2), (sx / 2, sy / 2), (-sx / 2, sy / 2))]
+    return [(*pts[i], *pts[(i + 1) % 4], 0.0) for i in range(4)]
+
+
+def main(path: str, ligacoes: str | None = None) -> int:
     if zipfile.is_zipfile(path):
         z = zipfile.ZipFile(path)
         read = lambda name: z.read(name).decode()  # noqa: E731
@@ -79,7 +93,7 @@ def main(path: str) -> int:
     f = fp["pins"]["fields"]
     # O arquivo repete cada pad como "REF_PINO" e como "PADn_PINO", e troca alguns nomes de net
     # por "NET_n". O nome e a net de verdade vêm de REF_PINO e de ligacoes.json.
-    expected = json.loads((HERE / "ligacoes.json").read_text())
+    expected = json.loads((Path(ligacoes) if ligacoes else HERE / "ligacoes.json").read_text())
     rows = [r for r in fp["pins"]["rows"]
             if r[f.index("NET_NAME")] and not r[f.index("PIN_NAME")].startswith("PAD")]
     # Pad sem ligação recebe uma "NET_n" só dele: não entra na conta.
@@ -87,6 +101,7 @@ def main(path: str) -> int:
     for r in rows:
         uses.setdefault(r[f.index("NET_NAME")], set()).add(r[f.index("PIN_NAME")])
     pads = {}
+    square = {}
     for r in rows:
         name, net = r[f.index("PIN_NAME")], r[f.index("NET_NAME")]
         ref, pin = name.rsplit("_", 1)
@@ -96,8 +111,10 @@ def main(path: str) -> int:
                 continue
             raise SystemExit(f"{ref}.{pin} tem a net {net} na placa e nenhuma em ligacoes.json")
         x, y = r[f.index("PIN_X")] * MIL, r[f.index("PIN_Y")] * MIL
-        rad = min(r[f.index("PAD_SIZEX")], r[f.index("PAD_SIZEY")]) * MIL / 2
-        pads[f"{ref}.{pin}"] = (x, y, rad, real)
+        sx, sy = r[f.index("PAD_SIZEX")] * MIL, r[f.index("PAD_SIZEY")] * MIL
+        pads[f"{ref}.{pin}"] = (x, y, min(sx, sy) / 2, real)
+        if r[f.index("PAD_SHAPE")] != "C":
+            square[f"{ref}.{pin}"] = outline(x, y, sx, sy, r[f.index("PAD_ANGLE")])
     if len(pads) != sum(len(v) for v in expected.values()):
         raise SystemExit(f"{len(pads)} pads com net na placa; ligacoes.json tem "
                          f"{sum(len(v) for v in expected.values())}")
@@ -150,8 +167,57 @@ def main(path: str) -> int:
         print(f"| W{i} | `{net}` | {a} | {b} | {length:.1f} mm |")
     total = sum(w[3] for w in wires)
     print(f"\n{len(wires)} fios, {total:.0f} mm de fio no total; {len(segs)} trilhas; sem curtos.")
-    return 0
+
+    # Isolação: menor distância de borda a borda entre cobres de ilhas com nets diferentes.
+    net_of = {find(k): pads[n][3] for k, n in enumerate(names)}
+    shapes = [square.get(n, [nodes[k]]) for k, n in enumerate(names)] + [[s] for s in segs]
+    box = [(min(min(s[0], s[2]) - s[4] / 2 for s in sh), min(min(s[1], s[3]) - s[4] / 2 for s in sh),
+            max(max(s[0], s[2]) + s[4] / 2 for s in sh), max(max(s[1], s[3]) + s[4] / 2 for s in sh))
+           for sh in shapes]
+    label = lambda i: names[i] if i < len(names) else f"trilha `{net_of.get(find(i))}`"  # noqa: E731
+    best, low = (math.inf, 0, 0), []
+    for i in range(len(nodes)):
+        for j in range(i + 1, len(nodes)):
+            if find(i) == find(j) or find(i) not in net_of or find(j) not in net_of:
+                continue
+            a, b = box[i], box[j]
+            if max(a[0] - b[2], b[0] - a[2], a[1] - b[3], b[1] - a[3]) > ISOLACAO:
+                continue
+            d = min(seg_dist(p, q) - p[4] / 2 - q[4] / 2 for p in shapes[i] for q in shapes[j])
+            best = min(best, (d, i, j))
+            if d < ISOLACAO - 0.005:
+                low.append(f"{label(i)} × {label(j)}: {d:.2f} mm")
+    if best[0] < math.inf:
+        print(f"Isolação mínima: {best[0]:.2f} mm ({label(best[1])} × {label(best[2])}).")
+    for line in low:
+        print(f"ISOLAÇÃO abaixo de {ISOLACAO} mm: {line}")
+
+    # Borda: cobre até o retângulo que envolve o contorno da placa.
+    x = y = 0.0
+    corners = []
+    for m in re.finditer(r"(?:X(-?\d+))?(?:Y(-?\d+))?D0[12]\*", read("Gerber_BoardOutlineLayer.GKO")):
+        x, y = (int(m[1]) / 1e5 if m[1] else x), (int(m[2]) / 1e5 if m[2] else y)
+        corners.append((x, y))
+    x0, y0 = min(c[0] for c in corners), min(c[1] for c in corners)
+    x1, y1 = max(c[0] for c in corners), max(c[1] for c in corners)
+    edge = min((min(min(s[0], s[2]) - x0, x1 - max(s[0], s[2]), min(s[1], s[3]) - y0, y1 - max(s[1], s[3]))
+                - s[4] / 2, k) for k, sh in enumerate(shapes) for s in sh)
+    print(f"Contorno: {x1 - x0:.2f} × {y1 - y0:.2f} mm. Cobre mais perto da borda: {edge[0]:.2f} mm "
+          f"({label(edge[1])}).")
+
+    thin: dict[tuple, list] = {}
+    for k, s in enumerate(segs, len(names)):
+        if s[4] < TRILHA - 1e-6:
+            near = min(range(len(names)), key=lambda p: seg_dist(nodes[p], s))
+            t = thin.setdefault((net_of.get(find(k)), s[4]), [0.0, set()])
+            t[0] += math.hypot(s[2] - s[0], s[3] - s[1])
+            t[1].add(names[near])
+    if thin:
+        print(f"\nTrilhas mais finas que {TRILHA} mm:\n\n| Net | Largura | Comprimento | Perto de |\n|---|---:|---:|---|")
+        for (net, w), (length, near) in sorted(thin.items(), key=lambda t: (t[0][0] or "", t[0][1])):
+            print(f"| `{net}` | {w:.2f} mm | {length:.1f} mm | {', '.join(sorted(near))} |")
+    return 1 if low else 0
 
 
 if __name__ == "__main__":
-    sys.exit(main(sys.argv[1]))
+    sys.exit(main(*sys.argv[1:3]))
