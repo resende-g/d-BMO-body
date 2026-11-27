@@ -1,0 +1,407 @@
+{
+    "version": "2.0.0",
+    "components": {
+        "gge1": {
+            "props": {
+                "Unique ID": "gge1",
+                "Add into BOM": "yes",
+                "Convert to PCB": "yes",
+                "Symbol": "379044aa53c7c976",
+                "Designator": "SW5",
+                "Device": "78d9b23261b0db0b",
+                "LCSC Part Name": "6*6*5mm 直插 轻触开关",
+                "Supplier Part": "C53447028",
+                "Manufacturer": "LXWCONN(连兴旺电子)",
+                "Manufacturer Part": "LXW-TS-6X6X5-DIP",
+                "Supplier Footprint": "插件-4P,6x6mm",
+                "JLCPCB Part Class": "Extended Part",
+                "Datasheet": "https://item.szlcsc.com/datasheet/LXW-TS-6X6X5-DIP/56599287.html",
+                "Supplier": "LCSC",
+                "Footprint": "530c74113c03e9d7",
+                "3D Model": "1b2aa19db9484d8f9f922c3504714525|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "SW-TH_4P-L6.0-W6.0-H5.0-LS6.5-P4.50",
+                "3D Model Transform": "236.22,323.03,0,90,0,0,0,0,-137.795",
+                "Name": "={Manufacturer Part}",
+                "Description": "",
+                "Reuse Block": "",
+                "Group ID": "",
+                "Channel ID": "$1I2",
+                "DeviceName": "LXW-TS-6X6X5-DIP",
+                "FootprintName": "SW-TH_4P-L6.0-W6.0-P4.50-LS6.5"
+            },
+            "pinInfoMap": {
+                "1": {
+                    "name": "1",
+                    "number": "1",
+                    "net": "BTN_A",
+                    "props": {
+                        "Pin Number": "1"
+                    }
+                },
+                "2": {
+                    "name": "2",
+                    "number": "2",
+                    "net": "",
+                    "props": {
+                        "Pin Number": "2"
+                    }
+                },
+                "3": {
+                    "name": "3",
+                    "number": "3",
+                    "net": "",
+                    "props": {
+                        "Pin Number": "3"
+                    }
+                },
+                "4": {
+                    "name": "4",
+                    "number": "4",
+                    "net": "GND",
+                    "props": {
+                        "Pin Number": "4"
+                    }
+                }
+            }
+        },
+        "gge2": {
+            "props": {
+                "Unique ID": "gge2",
+                "Add into BOM": "yes",
+                "Convert to PCB": "yes",
+                "Symbol": "379044aa53c7c976",
+                "Designator": "SW6",
+                "Device": "78d9b23261b0db0b",
+                "LCSC Part Name": "6*6*5mm 直插 轻触开关",
+                "Supplier Part": "C53447028",
+                "Manufacturer": "LXWCONN(连兴旺电子)",
+                "Manufacturer Part": "LXW-TS-6X6X5-DIP",
+                "Supplier Footprint": "插件-4P,6x6mm",
+                "JLCPCB Part Class": "Extended Part",
+                "Datasheet": "https://item.szlcsc.com/datasheet/LXW-TS-6X6X5-DIP/56599287.html",
+                "Supplier": "LCSC",
+                "Footprint": "530c74113c03e9d7",
+                "3D Model": "1b2aa19db9484d8f9f922c3504714525|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "SW-TH_4P-L6.0-W6.0-H5.0-LS6.5-P4.50",
+                "3D Model Transform": "236.22,323.03,0,90,0,0,0,0,-137.795",
+                "Name": "={Manufacturer Part}",
+                "Description": "",
+                "Reuse Block": "",
+                "Group ID": "",
+                "Channel ID": "$1I3",
+                "DeviceName": "LXW-TS-6X6X5-DIP",
+                "FootprintName": "SW-TH_4P-L6.0-W6.0-P4.50-LS6.5"
+            },
+            "pinInfoMap": {
+                "1": {
+                    "name": "1",
+                    "number": "1",
+                    "net": "BTN_B",
+                    "props": {
+                        "Pin Number": "1"
+                    }
+                },
+                "2": {
+                    "name": "2",
+                    "number": "2",
+                    "net": "",
+                    "props": {
+                        "Pin Number": "2"
+                    }
+                },
+                "3": {
+                    "name": "3",
+                    "number": "3",
+                    "net": "",
+                    "props": {
+                        "Pin Number": "3"
+                    }
+                },
+                "4": {
+                    "name": "4",
+                    "number": "4",
+                    "net": "GND",
+                    "props": {
+                        "Pin Number": "4"
+                    }
+                }
+            }
+        },
+        "gge3": {
+            "props": {
+                "Unique ID": "gge3",
+                "Add into BOM": "yes",
+                "Convert to PCB": "yes",
+                "Symbol": "379044aa53c7c976",
+                "Designator": "SW7",
+                "Device": "78d9b23261b0db0b",
+                "LCSC Part Name": "6*6*5mm 直插 轻触开关",
+                "Supplier Part": "C53447028",
+                "Manufacturer": "LXWCONN(连兴旺电子)",
+                "Manufacturer Part": "LXW-TS-6X6X5-DIP",
+                "Supplier Footprint": "插件-4P,6x6mm",
+                "JLCPCB Part Class": "Extended Part",
+                "Datasheet": "https://item.szlcsc.com/datasheet/LXW-TS-6X6X5-DIP/56599287.html",
+                "Supplier": "LCSC",
+                "Footprint": "530c74113c03e9d7",
+                "3D Model": "1b2aa19db9484d8f9f922c3504714525|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "SW-TH_4P-L6.0-W6.0-H5.0-LS6.5-P4.50",
+                "3D Model Transform": "236.22,323.03,0,90,0,0,0,0,-137.795",
+                "Name": "={Manufacturer Part}",
+                "Description": "",
+                "Reuse Block": "",
+                "Group ID": "",
+                "Channel ID": "$1I4",
+                "DeviceName": "LXW-TS-6X6X5-DIP",
+                "FootprintName": "SW-TH_4P-L6.0-W6.0-P4.50-LS6.5"
+            },
+            "pinInfoMap": {
+                "1": {
+                    "name": "1",
+                    "number": "1",
+                    "net": "BTN_X",
+                    "props": {
+                        "Pin Number": "1"
+                    }
+                },
+                "2": {
+                    "name": "2",
+                    "number": "2",
+                    "net": "",
+                    "props": {
+                        "Pin Number": "2"
+                    }
+                },
+                "3": {
+                    "name": "3",
+                    "number": "3",
+                    "net": "",
+                    "props": {
+                        "Pin Number": "3"
+                    }
+                },
+                "4": {
+                    "name": "4",
+                    "number": "4",
+                    "net": "GND",
+                    "props": {
+                        "Pin Number": "4"
+                    }
+                }
+            }
+        },
+        "gge4": {
+            "props": {
+                "Unique ID": "gge4",
+                "Add into BOM": "yes",
+                "Convert to PCB": "yes",
+                "Symbol": "379044aa53c7c976",
+                "Designator": "SW8",
+                "Device": "78d9b23261b0db0b",
+                "LCSC Part Name": "6*6*5mm 直插 轻触开关",
+                "Supplier Part": "C53447028",
+                "Manufacturer": "LXWCONN(连兴旺电子)",
+                "Manufacturer Part": "LXW-TS-6X6X5-DIP",
+                "Supplier Footprint": "插件-4P,6x6mm",
+                "JLCPCB Part Class": "Extended Part",
+                "Datasheet": "https://item.szlcsc.com/datasheet/LXW-TS-6X6X5-DIP/56599287.html",
+                "Supplier": "LCSC",
+                "Footprint": "530c74113c03e9d7",
+                "3D Model": "1b2aa19db9484d8f9f922c3504714525|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "SW-TH_4P-L6.0-W6.0-H5.0-LS6.5-P4.50",
+                "3D Model Transform": "236.22,323.03,0,90,0,0,0,0,-137.795",
+                "Name": "={Manufacturer Part}",
+                "Description": "",
+                "Reuse Block": "",
+                "Group ID": "",
+                "Channel ID": "$1I5",
+                "DeviceName": "LXW-TS-6X6X5-DIP",
+                "FootprintName": "SW-TH_4P-L6.0-W6.0-P4.50-LS6.5"
+            },
+            "pinInfoMap": {
+                "1": {
+                    "name": "1",
+                    "number": "1",
+                    "net": "BTN_Y",
+                    "props": {
+                        "Pin Number": "1"
+                    }
+                },
+                "2": {
+                    "name": "2",
+                    "number": "2",
+                    "net": "",
+                    "props": {
+                        "Pin Number": "2"
+                    }
+                },
+                "3": {
+                    "name": "3",
+                    "number": "3",
+                    "net": "",
+                    "props": {
+                        "Pin Number": "3"
+                    }
+                },
+                "4": {
+                    "name": "4",
+                    "number": "4",
+                    "net": "GND",
+                    "props": {
+                        "Pin Number": "4"
+                    }
+                }
+            }
+        },
+        "gge5": {
+            "props": {
+                "Unique ID": "gge5",
+                "Add into BOM": "yes",
+                "Convert to PCB": "yes",
+                "Symbol": "6effe0093416a7d2",
+                "Designator": "JD",
+                "Device": "89a77b56a81f6e0f",
+                "LCSC Part Name": "1x5P 间距:2.54mm 方针 直插",
+                "Supplier Part": "C492404",
+                "Manufacturer": "XFCN(兴飞)",
+                "Manufacturer Part": "PZ254V-11-05P",
+                "Supplier Footprint": "插件,P=2.54mm",
+                "JLCPCB Part Class": "Extended Part",
+                "Datasheet": "https://item.szlcsc.com/datasheet/PZ254V-11-05P/502960.html",
+                "Supplier": "LCSC",
+                "Footprint": "bb54b19de292a272",
+                "3D Model": "98c612b43cbb479a86eae3328ff22ecc|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "HDR-TH_5P-P2.54-M-LI-1X5P",
+                "3D Model Transform": "499.999,100,0,0,0,0,0,0,-118.11",
+                "Pin Structure": "1x5P",
+                "Pitch": "2.54mm",
+                "Row Spacing": "-",
+                "Circluar Pins/Square Pins": "Square pin",
+                "Mounting Type": "Through Hole",
+                "Number of Rows": "1",
+                "Number of Pins": "5P",
+                "Current Rating": "3A",
+                "Voltage Rating (Max)": "250V",
+                "Length of Mating Pin": "6.1mm",
+                "Insulation Height": "2.5mm",
+                "Length of End Connection Pin": "3mm",
+                "Contact Material": "Brass",
+                "Contact Plating": "Gold",
+                "Operating Temperature": "-40℃~+105℃",
+                "Color": "Black",
+                "Name": "={Manufacturer Part}",
+                "Description": "Pin Structure:1x5P Pitch:2.54mm Row Spacing:- Circluar Pins/Square Pins:Square pin Mounting Type:Through Hole Number of Rows:1 Number of Pins:5P Current Rating:3A Voltage Rating (Max):250V Length of Mating Pin:6.1mm Insulation Height:2.5mm Length of End C",
+                "Reuse Block": "",
+                "Group ID": "",
+                "Channel ID": "$1I6",
+                "DeviceName": "PZ254V-11-05P",
+                "FootprintName": "HDR-TH_5P-P2.54-V-M"
+            },
+            "pinInfoMap": {
+                "1": {
+                    "name": "1",
+                    "number": "1",
+                    "net": "BTN_A",
+                    "props": {
+                        "Pin Number": "1"
+                    }
+                },
+                "2": {
+                    "name": "2",
+                    "number": "2",
+                    "net": "BTN_B",
+                    "props": {
+                        "Pin Number": "2"
+                    }
+                },
+                "3": {
+                    "name": "3",
+                    "number": "3",
+                    "net": "BTN_X",
+                    "props": {
+                        "Pin Number": "3"
+                    }
+                },
+                "4": {
+                    "name": "4",
+                    "number": "4",
+                    "net": "BTN_Y",
+                    "props": {
+                        "Pin Number": "4"
+                    }
+                },
+                "5": {
+                    "name": "5",
+                    "number": "5",
+                    "net": "GND",
+                    "props": {
+                        "Pin Number": "5"
+                    }
+                }
+            }
+        }
+    },
+    "designRule": {
+        "trackPhysics": {
+            "copperThickness1oz": {
+                "name": "copperThickness1oz",
+                "isDefault": true,
+                "unit": "mm",
+                "strokeValue": {
+                    "common": {
+                        "min": 0.127,
+                        "max": 2.54,
+                        "default": 0.254
+                    }
+                }
+            },
+            "copperThickness2oz": {
+                "name": "copperThickness2oz",
+                "isDefault": false,
+                "unit": "mm",
+                "strokeValue": {
+                    "common": {
+                        "min": 0.203,
+                        "max": 2.54,
+                        "default": 0.254
+                    }
+                }
+            }
+        },
+        "netRule": {
+            "BTN_A": {
+                "net": "BTN_A",
+                "ruleMap": {
+                    "TrackPhysics": ""
+                }
+            },
+            "BTN_B": {
+                "net": "BTN_B",
+                "ruleMap": {
+                    "TrackPhysics": ""
+                }
+            },
+            "BTN_X": {
+                "net": "BTN_X",
+                "ruleMap": {
+                    "TrackPhysics": ""
+                }
+            },
+            "BTN_Y": {
+                "net": "BTN_Y",
+                "ruleMap": {
+                    "TrackPhysics": ""
+                }
+            },
+            "GND": {
+                "net": "GND",
+                "ruleMap": {
+                    "TrackPhysics": ""
+                }
+            }
+        }
+    },
+    "differentialPair": {},
+    "netClass": {},
+    "equalLengthNetGroup": {}
+}

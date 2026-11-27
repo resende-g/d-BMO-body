@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="41.243mm" height="41.243mm" viewBox="-1.0 -41.005 41.243 41.243">
+<rect x="-1.0" y="-41.005" width="41.243" height="41.243" fill="#fff"/>
+<g transform="translate(39.243 0) scale(-1 1)">
+<g fill="#000">
+<rect x="2.150" y="-15.770" width="1.700" height="1.700" rx="0.000"/>
+<circle cx="3.000" cy="-17.460" r="0.850"/>
+<circle cx="3.000" cy="-20.000" r="0.850"/>
+<circle cx="3.000" cy="-22.540" r="0.850"/>
+<circle cx="3.000" cy="-25.080" r="0.850"/>
+<circle cx="29.250" cy="-22.250" r="0.900"/>
+<circle cx="35.750" cy="-22.250" r="0.900"/>
+<circle cx="29.250" cy="-17.750" r="0.900"/>
+<circle cx="35.750" cy="-17.750" r="0.900"/>
+<circle cx="19.250" cy="-12.250" r="0.900"/>
+<circle cx="25.750" cy="-12.250" r="0.900"/>
+<circle cx="19.250" cy="-7.750" r="0.900"/>
+<circle cx="25.750" cy="-7.750" r="0.900"/>
+<circle cx="19.250" cy="-32.250" r="0.900"/>
+<circle cx="25.750" cy="-32.250" r="0.900"/>
+<circle cx="19.250" cy="-27.750" r="0.900"/>
+<circle cx="25.750" cy="-27.750" r="0.900"/>
+<circle cx="9.250" cy="-22.250" r="0.900"/>
+<circle cx="15.750" cy="-22.250" r="0.900"/>
+<circle cx="9.250" cy="-17.750" r="0.900"/>
+<circle cx="15.750" cy="-17.750" r="0.900"/>
+<line x1="9.250" y1="-22.250" x2="3.290" y2="-22.250" stroke="#000" stroke-width="0.800" stroke-linecap="round"/>
+<line x1="3.290" y1="-22.250" x2="3.000" y2="-22.540" stroke="#000" stroke-width="0.800" stroke-linecap="round"/>
+<line x1="3.000" y1="-14.920" x2="4.767" y2="-14.920" stroke="#000" stroke-width="0.800" stroke-linecap="round"/>
+<line x1="4.767" y1="-14.920" x2="9.687" y2="-10.000" stroke="#000" stroke-width="0.800" stroke-linecap="round"/>
+<line x1="9.687" y1="-10.000" x2="19.700" y2="-10.000" stroke="#000" stroke-width="0.800" stroke-linecap="round"/>
+<line x1="19.700" y1="-10.000" x2="26.552" y2="-16.852" stroke="#000" stroke-width="0.800" stroke-linecap="round"/>
+<line x1="26.552" y1="-16.852" x2="26.552" y2="-19.552" stroke="#000" stroke-width="0.800" stroke-linecap="round"/>
+<line x1="26.552" y1="-19.552" x2="29.250" y2="-22.250" stroke="#000" stroke-width="0.800" stroke-linecap="round"/>
+<line x1="3.000" y1="-20.000" x2="3.821" y2="-20.000" stroke="#000" stroke-width="0.800" stroke-linecap="round"/>
+<line x1="3.821" y1="-20.000" x2="8.126" y2="-15.695" stroke="#000" stroke-width="0.800" stroke-linecap="round"/>
+<line x1="8.126" y1="-15.695" x2="16.605" y2="-15.695" stroke="#000" stroke-width="0.800" stroke-linecap="round"/>
+<line x1="16.605" y1="-15.695" x2="21.293" y2="-20.383" stroke="#000" stroke-width="0.800" stroke-linecap="round"/>
+<line x1="21.293" y1="-20.383" x2="21.293" y2="-30.207" stroke="#000" stroke-width="0.800" stroke-linecap="round"/>
+<line x1="21.293" y1="-30.207" x2="19.250" y2="-32.250" stroke="#000" stroke-width="0.800" stroke-linecap="round"/>
+<line x1="19.250" y1="-12.250" x2="9.708" y2="-12.250" stroke="#000" stroke-width="0.800" stroke-linecap="round"/>
+<line x1="9.708" y1="-12.250" x2="4.498" y2="-17.460" stroke="#000" stroke-width="0.800" stroke-linecap="round"/>
+<line x1="4.498" y1="-17.460" x2="3.000" y2="-17.460" stroke="#000" stroke-width="0.800" stroke-linecap="round"/>
+<line x1="9.134" y1="-25.080" x2="13.051" y2="-21.163" stroke="#000" stroke-width="0.800" stroke-linecap="round"/>
+<line x1="13.051" y1="-21.163" x2="13.051" y2="-20.448" stroke="#000" stroke-width="0.800" stroke-linecap="round"/>
+<line x1="13.052" y1="-20.448" x2="15.750" y2="-17.750" stroke="#000" stroke-width="0.800" stroke-linecap="round"/>
+<line x1="3.000" y1="-25.080" x2="9.134" y2="-25.080" stroke="#000" stroke-width="0.800" stroke-linecap="round"/>
+<line x1="9.134" y1="-25.080" x2="18.454" y2="-34.400" stroke="#000" stroke-width="0.800" stroke-linecap="round"/>
+<line x1="18.454" y1="-34.400" x2="19.996" y2="-34.400" stroke="#000" stroke-width="0.800" stroke-linecap="round"/>
+<line x1="19.996" y1="-34.400" x2="25.750" y2="-28.646" stroke="#000" stroke-width="0.800" stroke-linecap="round"/>
+<line x1="25.750" y1="-28.646" x2="25.750" y2="-27.750" stroke="#000" stroke-width="0.800" stroke-linecap="round"/>
+<line x1="25.750" y1="-27.750" x2="26.726" y2="-27.750" stroke="#000" stroke-width="0.800" stroke-linecap="round"/>
+<line x1="26.726" y1="-27.750" x2="35.750" y2="-18.726" stroke="#000" stroke-width="0.800" stroke-linecap="round"/>
+<line x1="35.750" y1="-18.726" x2="35.750" y2="-17.750" stroke="#000" stroke-width="0.800" stroke-linecap="round"/>
+<line x1="35.750" y1="-17.750" x2="25.750" y2="-7.750" stroke="#000" stroke-width="0.800" stroke-linecap="round"/>
+</g>
+<g fill="#fff">
+<circle cx="3.000" cy="-14.920" r="0.400"/>
+<circle cx="3.000" cy="-17.460" r="0.400"/>
+<circle cx="3.000" cy="-20.000" r="0.400"/>
+<circle cx="3.000" cy="-22.540" r="0.400"/>
+<circle cx="3.000" cy="-25.080" r="0.400"/>
+<circle cx="29.250" cy="-22.250" r="0.450"/>
+<circle cx="35.750" cy="-22.250" r="0.450"/>
+<circle cx="29.250" cy="-17.750" r="0.450"/>
+<circle cx="35.750" cy="-17.750" r="0.450"/>
+<circle cx="19.250" cy="-12.250" r="0.450"/>
+<circle cx="25.750" cy="-12.250" r="0.450"/>
+<circle cx="19.250" cy="-7.750" r="0.450"/>
+<circle cx="25.750" cy="-7.750" r="0.450"/>
+<circle cx="19.250" cy="-32.250" r="0.450"/>
+<circle cx="25.750" cy="-32.250" r="0.450"/>
+<circle cx="19.250" cy="-27.750" r="0.450"/>
+<circle cx="25.750" cy="-27.750" r="0.450"/>
+<circle cx="9.250" cy="-22.250" r="0.450"/>
+<circle cx="15.750" cy="-22.250" r="0.450"/>
+<circle cx="9.250" cy="-17.750" r="0.450"/>
+<circle cx="15.750" cy="-17.750" r="0.450"/>
+</g>
+<g fill="none">
+<line x1="0.000" y1="-0.762" x2="0.000" y2="-40.005" stroke="#888" stroke-width="0.1" stroke-linecap="round"/>
+<line x1="0.000" y1="-40.005" x2="39.243" y2="-40.005" stroke="#888" stroke-width="0.1" stroke-linecap="round"/>
+<line x1="39.243" y1="-40.005" x2="39.243" y2="-0.762" stroke="#888" stroke-width="0.1" stroke-linecap="round"/>
+<line x1="39.243" y1="-0.762" x2="0.000" y2="-0.762" stroke="#888" stroke-width="0.1" stroke-linecap="round"/>
+</g>
+</g></svg>
