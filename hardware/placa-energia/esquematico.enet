@@ -1,0 +1,1178 @@
+{
+    "version": "2.0.0",
+    "components": {
+        "gge1": {
+            "props": {
+                "Unique ID": "gge1",
+                "Add into BOM": "yes",
+                "Convert to PCB": "yes",
+                "Symbol": "a577764d6f17d7b6",
+                "Designator": "U1",
+                "Device": "4d57b34c7ecc21c5",
+                "LCSC Part Name": "1A线性锂离子电池充电器",
+                "Supplier Part": "C16581",
+                "Manufacturer": "TOPPOWER(南京拓微)",
+                "Manufacturer Part": "TP4056-42-ESOP8",
+                "Supplier Footprint": "ESOP-8",
+                "JLCPCB Part Class": "Extended Part",
+                "Datasheet": "https://item.szlcsc.com/datasheet/TP4056-42-ESOP8/17264.html",
+                "Supplier": "LCSC",
+                "Footprint": "0d40e30fff9e6f5b",
+                "3D Model": "7028148f6b924eec86ae6696b4a125a2|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "ESOP-8_L4.9-W3.9-H1.6-LS6.0-P1.27",
+                "3D Model Transform": "240.157,192.913,0,90,0,0,0,0,0",
+                "The Chip Type": "Charging IC",
+                "Voltage - Supply": "4V~8V",
+                "Charge Current - Max": "1A",
+                "Charging Saturation Voltage": "4.2V",
+                "End-Off Voltage": "-",
+                "Type of Battery": "Lithium Battery",
+                "Number of Cells": "1",
+                "Operating Temperature": "-40℃~+85℃",
+                "Battery Temperature Detection": "Support",
+                "0V Battery Charge": "-",
+                "Supply Current (Iq)": "2uA",
+                "Balance Current": "-",
+                "Interface": "-",
+                "Features": "Constant voltage charging；Constant current charging；Automatic recharge；Charge termination；Soft-start；Programmable charging current；Under-voltage lockout；Trickle charging",
+                "Name": "={Manufacturer Part}",
+                "Description": "The Chip Type:Charging IC Voltage - Supply:4V~8V Voltage - Supply:4V~8V Charge Current - Max:1A Charging Saturation Voltage:4.2V End-Off Voltage:- Type of Battery:Lithium Battery Number of Cells:1 Number of Cells:1 Operating Temperature:-40℃~+85℃ Operatin",
+                "Reuse Block": "",
+                "Group ID": "",
+                "Channel ID": "$1I2",
+                "DeviceName": "TP4056-42-ESOP8",
+                "FootprintName": "ESOP-8_L4.9-W3.9-P1.27-LS6.0-BL-EP"
+            },
+            "pinInfoMap": {
+                "1": {
+                    "name": "TEMP",
+                    "number": "1",
+                    "net": "TEMP",
+                    "props": {
+                        "Pin Number": "1"
+                    }
+                },
+                "2": {
+                    "name": "PROG",
+                    "number": "2",
+                    "net": "PROG",
+                    "props": {
+                        "Pin Number": "2"
+                    }
+                },
+                "3": {
+                    "name": "GND",
+                    "number": "3",
+                    "net": "GND",
+                    "props": {
+                        "Pin Number": "3"
+                    }
+                },
+                "4": {
+                    "name": "VCC",
+                    "number": "4",
+                    "net": "+5V",
+                    "props": {
+                        "Pin Number": "4"
+                    }
+                },
+                "5": {
+                    "name": "BAT",
+                    "number": "5",
+                    "net": "BAT+",
+                    "props": {
+                        "Pin Number": "5"
+                    }
+                },
+                "6": {
+                    "name": "STDBY#",
+                    "number": "6",
+                    "net": "",
+                    "props": {
+                        "Pin Number": "6"
+                    }
+                },
+                "7": {
+                    "name": "CHRG#",
+                    "number": "7",
+                    "net": "CHG_STAT",
+                    "props": {
+                        "Pin Number": "7"
+                    }
+                },
+                "8": {
+                    "name": "CE",
+                    "number": "8",
+                    "net": "+5V",
+                    "props": {
+                        "Pin Number": "8"
+                    }
+                },
+                "9": {
+                    "name": "EP",
+                    "number": "9",
+                    "net": "GND",
+                    "props": {
+                        "Pin Number": "9"
+                    }
+                }
+            }
+        },
+        "gge2": {
+            "props": {
+                "Unique ID": "gge2",
+                "Add into BOM": "yes",
+                "Convert to PCB": "yes",
+                "Symbol": "7bd579b811d63e09",
+                "Designator": "R1",
+                "Device": "5683ee51ebf10010",
+                "LCSC Part Name": "金属膜电阻 2.43kΩ ±1% 250mW",
+                "Supplier Part": "C1365595",
+                "Manufacturer": "YAGEO(国巨)",
+                "Manufacturer Part": "MFR-25FBF52-2K43",
+                "Supplier Footprint": "插件,D2.4xL6.3mm",
+                "JLCPCB Part Class": "Extended Part",
+                "Datasheet": "https://item.szlcsc.com/datasheet/MFR-25FBF52-2K43/1455884.html",
+                "Supplier": "LCSC",
+                "Footprint": "29f915da377bc730",
+                "3D Model": "1723974b41284f5c8da509f1f508e955|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "RES-TH_BD2.4-L6.3-P10.30-D0.6",
+                "3D Model Transform": "427.165,94.32816,0,0,0,0,0,0,-196.85",
+                "Type": "Metal Film Resistor",
+                "Value": "2.43kΩ",
+                "Tolerance": "±1%",
+                "Power(Watts)": "250mW",
+                "Temperature Coefficient": "±100ppm/℃",
+                "Operating Temperature": "-55℃~+155℃",
+                "Name": "={Value}",
+                "Description": "Type:Metal Film Resistor Resistance:2.43kΩ Tolerance:±1% Tolerance:±1% Power(Watts):250mW Temperature Coefficient:±100ppm/℃ Temperature Coefficient:±100ppm/℃ Operating Temperature:-55℃~+155℃ Operating Temperature:-55℃~+155℃",
+                "Reuse Block": "",
+                "Group ID": "",
+                "Channel ID": "$1I3",
+                "DeviceName": "MFR-25FBF52-2K43",
+                "FootprintName": "RES-TH_BD2.4-L6.3-P10.30-D0.6"
+            },
+            "pinInfoMap": {
+                "1": {
+                    "name": "1",
+                    "number": "1",
+                    "net": "PROG",
+                    "props": {
+                        "Pin Number": "1"
+                    }
+                },
+                "2": {
+                    "name": "2",
+                    "number": "2",
+                    "net": "GND",
+                    "props": {
+                        "Pin Number": "2"
+                    }
+                }
+            }
+        },
+        "gge3": {
+            "props": {
+                "Unique ID": "gge3",
+                "Add into BOM": "yes",
+                "Convert to PCB": "yes",
+                "Symbol": "d6f1bdf857c68b99",
+                "Designator": "R2",
+                "Device": "c3271a6988899c50",
+                "LCSC Part Name": "金属膜电阻 5.6kΩ ±1% 250mW",
+                "Supplier Part": "C1372023",
+                "Manufacturer": "YAGEO(国巨)",
+                "Manufacturer Part": "MFR-25FBF52-5K6",
+                "Supplier Footprint": "插件,D2.4xL6.3mm",
+                "JLCPCB Part Class": "Extended Part",
+                "Datasheet": "https://item.szlcsc.com/datasheet/MFR-25FBF52-5K6/1462312.html",
+                "Supplier": "LCSC",
+                "Footprint": "29f915da377bc730",
+                "3D Model": "1723974b41284f5c8da509f1f508e955|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "RES-TH_BD2.4-L6.3-P10.30-D0.6",
+                "3D Model Transform": "427.165,94.32816,0,0,0,0,0,0,-196.85",
+                "Type": "Metal Film Resistor",
+                "Value": "5.6kΩ",
+                "Tolerance": "±1%",
+                "Power(Watts)": "250mW",
+                "Temperature Coefficient": "±100ppm/℃",
+                "Operating Temperature": "-55℃~+155℃",
+                "Name": "={Value}",
+                "Description": "Type:Metal Film Resistor Resistance:5.6kΩ Tolerance:±1% Tolerance:±1% Power(Watts):250mW Temperature Coefficient:±100ppm/℃ Temperature Coefficient:±100ppm/℃ Operating Temperature:-55℃~+155℃ Operating Temperature:-55℃~+155℃",
+                "Reuse Block": "",
+                "Group ID": "",
+                "Channel ID": "$1I4",
+                "DeviceName": "MFR-25FBF52-5K6",
+                "FootprintName": "RES-TH_BD2.4-L6.3-P10.30-D0.6"
+            },
+            "pinInfoMap": {
+                "1": {
+                    "name": "1",
+                    "number": "1",
+                    "net": "+5V",
+                    "props": {
+                        "Pin Number": "1"
+                    }
+                },
+                "2": {
+                    "name": "2",
+                    "number": "2",
+                    "net": "TEMP",
+                    "props": {
+                        "Pin Number": "2"
+                    }
+                }
+            }
+        },
+        "gge4": {
+            "props": {
+                "Unique ID": "gge4",
+                "Add into BOM": "yes",
+                "Convert to PCB": "yes",
+                "Symbol": "dc0208d85f1c4ff1",
+                "Designator": "C1",
+                "Device": "3aef1b2796eaff0c",
+                "LCSC Part Name": "10uF/25V-C5X11DIP",
+                "Supplier Part": "C9900003841",
+                "Manufacturer": "",
+                "Manufacturer Part": "10uF/25V-C5X11DIP",
+                "Supplier Footprint": "CAP-TH_BD5.0-P2.00",
+                "JLCPCB Part Class": "Extended Part",
+                "Datasheet": "",
+                "Supplier": "LCSC",
+                "Footprint": "3f8cb79edd227899",
+                "3D Model": "2e0d229f5de147ce8ad55c0741e834ed|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "CAP-TH_BD5.0-P2.00-D0.6-FD",
+                "3D Model Transform": "196.70055,196.77528,0,0,0,0,0.118,0,-137.795",
+                "Name": "={Manufacturer Part}",
+                "Description": "",
+                "Reuse Block": "",
+                "Group ID": "",
+                "Channel ID": "$1I5",
+                "DeviceName": "10uF/25V-C5X11DIP",
+                "FootprintName": "CAP-TH_BD5.0-P2.00-D0.6-FD"
+            },
+            "pinInfoMap": {
+                "1": {
+                    "name": "1",
+                    "number": "1",
+                    "net": "+5V",
+                    "props": {
+                        "Pin Number": "1"
+                    }
+                },
+                "2": {
+                    "name": "2",
+                    "number": "2",
+                    "net": "GND",
+                    "props": {
+                        "Pin Number": "2"
+                    }
+                }
+            }
+        },
+        "gge5": {
+            "props": {
+                "Unique ID": "gge5",
+                "Add into BOM": "yes",
+                "Convert to PCB": "yes",
+                "Symbol": "dc0208d85f1c4ff1",
+                "Designator": "C2",
+                "Device": "3aef1b2796eaff0c",
+                "LCSC Part Name": "10uF/25V-C5X11DIP",
+                "Supplier Part": "C9900003841",
+                "Manufacturer": "",
+                "Manufacturer Part": "10uF/25V-C5X11DIP",
+                "Supplier Footprint": "CAP-TH_BD5.0-P2.00",
+                "JLCPCB Part Class": "Extended Part",
+                "Datasheet": "",
+                "Supplier": "LCSC",
+                "Footprint": "3f8cb79edd227899",
+                "3D Model": "2e0d229f5de147ce8ad55c0741e834ed|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "CAP-TH_BD5.0-P2.00-D0.6-FD",
+                "3D Model Transform": "196.70055,196.77528,0,0,0,0,0.118,0,-137.795",
+                "Name": "={Manufacturer Part}",
+                "Description": "",
+                "Reuse Block": "",
+                "Group ID": "",
+                "Channel ID": "$1I6",
+                "DeviceName": "10uF/25V-C5X11DIP",
+                "FootprintName": "CAP-TH_BD5.0-P2.00-D0.6-FD"
+            },
+            "pinInfoMap": {
+                "1": {
+                    "name": "1",
+                    "number": "1",
+                    "net": "BAT+",
+                    "props": {
+                        "Pin Number": "1"
+                    }
+                },
+                "2": {
+                    "name": "2",
+                    "number": "2",
+                    "net": "GND",
+                    "props": {
+                        "Pin Number": "2"
+                    }
+                }
+            }
+        },
+        "gge7": {
+            "props": {
+                "Unique ID": "gge7",
+                "Add into BOM": "yes",
+                "Convert to PCB": "yes",
+                "Symbol": "38eeb54bc5fa7d17",
+                "Designator": "JP1",
+                "Device": "62abfb1b9a2651a2",
+                "LCSC Part Name": "1x2P 间距:2.54mm 方针 直插",
+                "Supplier Part": "C492401",
+                "Manufacturer": "XFCN(兴飞)",
+                "Manufacturer Part": "PZ254V-11-02P",
+                "Supplier Footprint": "插件,P=2.54mm",
+                "JLCPCB Part Class": "Extended Part",
+                "Datasheet": "https://item.szlcsc.com/datasheet/PZ254V-11-02P/502957.html",
+                "Supplier": "LCSC",
+                "Footprint": "01b95c2f7e8b5b83",
+                "3D Model": "b9a02bffb1e248eabf92e8e2aa859dc0|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "HDR2.54-M-LI-1X2P",
+                "3D Model Transform": "200,100,0,0,0,0,0,0,-118.11",
+                "Pin Structure": "1x2P",
+                "Pitch": "2.54mm",
+                "Row Spacing": "-",
+                "Circluar Pins/Square Pins": "Square pin",
+                "Mounting Type": "Through Hole",
+                "Number of Rows": "1",
+                "Number of Pins": "2P",
+                "Current Rating": "3A",
+                "Voltage Rating (Max)": "250V",
+                "Length of Mating Pin": "6.1mm",
+                "Insulation Height": "2.5mm",
+                "Length of End Connection Pin": "3mm",
+                "Contact Material": "Brass",
+                "Contact Plating": "Gold",
+                "Operating Temperature": "-40℃~+105℃",
+                "Color": "Black",
+                "Name": "={Manufacturer Part}",
+                "Description": "Pin Structure:1x2P Pitch:2.54mm Row Spacing:- Circluar Pins/Square Pins:Square pin Mounting Type:Through Hole Number of Rows:1 Number of Pins:2P Current Rating:3A Voltage Rating (Max):250V Length of Mating Pin:6.1mm Insulation Height:2.5mm Length of End C",
+                "Reuse Block": "",
+                "Group ID": "",
+                "Channel ID": "$1I8",
+                "DeviceName": "PZ254V-11-02P",
+                "FootprintName": "HDR-TH_2P-P2.54-V-M"
+            },
+            "pinInfoMap": {
+                "1": {
+                    "name": "1",
+                    "number": "1",
+                    "net": "TEMP",
+                    "props": {
+                        "Pin Number": "1"
+                    }
+                },
+                "2": {
+                    "name": "2",
+                    "number": "2",
+                    "net": "GND",
+                    "props": {
+                        "Pin Number": "2"
+                    }
+                }
+            }
+        },
+        "gge8": {
+            "props": {
+                "Unique ID": "gge8",
+                "Add into BOM": "yes",
+                "Convert to PCB": "yes",
+                "Symbol": "7caefee9cbcf0664",
+                "Designator": "Q1",
+                "Device": "e317b6aa06e6c673",
+                "LCSC Part Name": "1个P沟道 耐压:30V 电流:4A",
+                "Supplier Part": "C15127",
+                "Manufacturer": "AOS",
+                "Manufacturer Part": "AO3401A",
+                "Supplier Footprint": "SOT-23",
+                "JLCPCB Part Class": "Basic Part",
+                "Datasheet": "https://item.szlcsc.com/datasheet/AO3401A/15801.html",
+                "Supplier": "LCSC",
+                "Footprint": "27abfddcd9cb2ed4",
+                "3D Model": "62a57c6760504a01965db6419a6d07df|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "SOT-23-3P_L2.9-W1.3-H1.0-LS2.4-P0.95",
+                "3D Model Transform": "98.64468,114.173,0,180,0,0,0.001,-0.002,0",
+                "Number": "1 P-Channel",
+                "Drain to Source Voltage": "30V",
+                "Current - Continuous Drain(Id)": "4A",
+                "RDS(on)": "47mΩ@10V；85mΩ@2.5V；60mΩ@4.5V",
+                "Pd - Power Dissipation": "-",
+                "Gate Threshold Voltage (Vgs(th))": "900mV",
+                "Gate Charge(Qg)": "14nC@10V",
+                "Input Capacitance(Ciss)": "645pF",
+                "Reverse Transfer Capacitance (Crss@Vds)": "55pF",
+                "Operating Temperature": "-",
+                "Type": "-",
+                "Output Capacitance(Coss)": "80pF",
+                "Name": "={Manufacturer Part}",
+                "Description": "Number:1 P-Channel Drain to Source Voltage:30V Current - Continuous Drain(Id):4A RDS(on):47mΩ@10V；85mΩ@2.5V；60mΩ@4.5V Pd - Power Dissipation:- Gate Threshold Voltage (Vgs(th)):900mV Gate Charge(Qg):14nC@10V Input Capacitance(Ciss):645pF Reverse Transfer C",
+                "Reuse Block": "",
+                "Group ID": "",
+                "Channel ID": "$1I9",
+                "DeviceName": "AO3401A_C15127",
+                "FootprintName": "SOT-23_L2.9-W1.3-P1.90-LS2.4-BR"
+            },
+            "pinInfoMap": {
+                "1": {
+                    "name": "G",
+                    "number": "1",
+                    "net": "LATCH_G",
+                    "props": {
+                        "Pin Number": "1"
+                    }
+                },
+                "2": {
+                    "name": "S",
+                    "number": "2",
+                    "net": "BAT+",
+                    "props": {
+                        "Pin Number": "2"
+                    }
+                },
+                "3": {
+                    "name": "D",
+                    "number": "3",
+                    "net": "VSYS",
+                    "props": {
+                        "Pin Number": "3"
+                    }
+                }
+            }
+        },
+        "gge9": {
+            "props": {
+                "Unique ID": "gge9",
+                "Add into BOM": "yes",
+                "Convert to PCB": "yes",
+                "Symbol": "d741731522650add",
+                "Designator": "R3",
+                "Device": "2e5c45b02c66a7da",
+                "LCSC Part Name": "金属膜电阻 100kΩ ±1% 250mW",
+                "Supplier Part": "C1364475",
+                "Manufacturer": "YAGEO(国巨)",
+                "Manufacturer Part": "MFR-25FBF52-100K",
+                "Supplier Footprint": "插件,D2.4xL6.3mm",
+                "JLCPCB Part Class": "Extended Part",
+                "Datasheet": "https://item.szlcsc.com/datasheet/MFR-25FBF52-100K/1454763.html",
+                "Supplier": "LCSC",
+                "Footprint": "29f915da377bc730",
+                "3D Model": "1723974b41284f5c8da509f1f508e955|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "RES-TH_BD2.4-L6.3-P10.30-D0.6",
+                "3D Model Transform": "427.165,94.32816,0,0,0,0,0,0,-196.85",
+                "Type": "Metal Film Resistor",
+                "Value": "100kΩ",
+                "Tolerance": "±1%",
+                "Power(Watts)": "250mW",
+                "Temperature Coefficient": "±100ppm/℃",
+                "Operating Temperature": "-55℃~+155℃",
+                "Name": "={Value}",
+                "Description": "Type:Metal Film Resistor Resistance:100kΩ Tolerance:±1% Tolerance:±1% Power(Watts):250mW Temperature Coefficient:±100ppm/℃ Temperature Coefficient:±100ppm/℃ Operating Temperature:-55℃~+155℃ Operating Temperature:-55℃~+155℃",
+                "Reuse Block": "",
+                "Group ID": "",
+                "Channel ID": "$1I10",
+                "DeviceName": "MFR-25FBF52-100K",
+                "FootprintName": "RES-TH_BD2.4-L6.3-P10.30-D0.6"
+            },
+            "pinInfoMap": {
+                "1": {
+                    "name": "1",
+                    "number": "1",
+                    "net": "BAT+",
+                    "props": {
+                        "Pin Number": "1"
+                    }
+                },
+                "2": {
+                    "name": "2",
+                    "number": "2",
+                    "net": "LATCH_G",
+                    "props": {
+                        "Pin Number": "2"
+                    }
+                }
+            }
+        },
+        "gge10": {
+            "props": {
+                "Unique ID": "gge10",
+                "Add into BOM": "yes",
+                "Convert to PCB": "yes",
+                "Symbol": "d741210fd55d6fda",
+                "Designator": "D1",
+                "Device": "2af975a3e2dc4d23",
+                "LCSC Part Name": "75V 200mA",
+                "Supplier Part": "C14516",
+                "Manufacturer": "ST(先科)",
+                "Manufacturer Part": "1N4148",
+                "Supplier Footprint": "DO-35",
+                "JLCPCB Part Class": "Extended Part",
+                "Datasheet": "https://item.szlcsc.com/datasheet/1N4148/15180.html",
+                "Supplier": "LCSC",
+                "Footprint": "0f07d70d0be87849",
+                "3D Model": "09b4c726fc1c407395ee65728e2ebdfb|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "DO-35_BD2.0-L4.0-P8.00-D0.5-FD",
+                "3D Model Transform": "393.826,83.081,0,180,0,0,0,0,-137.795",
+                "Diode Configuration": "1 Independent",
+                "Pd - Power Dissipation": "500mW",
+                "Current - Rectified": "200mA",
+                "Voltage - DC Reverse(Vr)": "75V",
+                "Voltage - Forward(Vf@If)": "1V@10mA",
+                "Non-Repetitive Peak Forward Surge Current": "4A",
+                "Reverse Leakage Current (Ir)": "5uA@75V",
+                "Reverse Recovery Time (trr)": "4ns",
+                "Operating Junction Temperature Range": "-",
+                "Name": "={Manufacturer Part}",
+                "Description": "Diode Configuration:1 Independent Pd - Power Dissipation:500mW Current - Rectified:200mA Voltage - DC Reverse(Vr):75V Voltage - Forward(Vf@If):1V@10mA Non-Repetitive Peak Forward Surge Current:4A Reverse Leakage Current (Ir):5uA@75V Reverse Recovery Time",
+                "Reuse Block": "",
+                "Group ID": "",
+                "Channel ID": "$1I11",
+                "DeviceName": "1N4148_C14516",
+                "FootprintName": "DO-35_BD2.0-L4.0-P8.00-D0.5-FD"
+            },
+            "pinInfoMap": {
+                "1": {
+                    "name": "A",
+                    "number": "1",
+                    "net": "LATCH_G",
+                    "props": {
+                        "Pin Number": "1"
+                    }
+                },
+                "2": {
+                    "name": "C",
+                    "number": "2",
+                    "net": "PWR_KEY",
+                    "props": {
+                        "Pin Number": "2"
+                    }
+                }
+            }
+        },
+        "gge11": {
+            "props": {
+                "Unique ID": "gge11",
+                "Add into BOM": "yes",
+                "Convert to PCB": "yes",
+                "Symbol": "f643ba0197e6cef1",
+                "Designator": "Q2",
+                "Device": "290fd0a57e1a12bf",
+                "LCSC Part Name": "1个N沟道 耐压:50V 电流:0.22A",
+                "Supplier Part": "C78284",
+                "Manufacturer": "CJ(江苏长电/长晶)",
+                "Manufacturer Part": "BSS138",
+                "Supplier Footprint": "SOT-23",
+                "JLCPCB Part Class": "Extended Part",
+                "Datasheet": "https://item.szlcsc.com/datasheet/BSS138/79418.html",
+                "Supplier": "LCSC",
+                "Footprint": "a8442d833e9aacf6",
+                "3D Model": "62a57c6760504a01965db6419a6d07df|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "SOT-23-3P_L2.9-W1.3-H1.0-LS2.4-P0.95",
+                "3D Model Transform": "98.425,114.173,0,180,0,0,0.0005,-0.0005,0",
+                "Number": "1 N-channel",
+                "Drain to Source Voltage": "50V",
+                "Current - Continuous Drain(Id)": "220mA",
+                "RDS(on)": "6Ω@4.5V",
+                "Pd - Power Dissipation": "350mW",
+                "Gate Threshold Voltage (Vgs(th))": "800mV",
+                "Gate Charge(Qg)": "-",
+                "Input Capacitance(Ciss)": "27pF",
+                "Reverse Transfer Capacitance (Crss@Vds)": "6pF",
+                "Operating Temperature": "-55℃~+150℃",
+                "Configuration": "-",
+                "Type": "N-Channel",
+                "Output Capacitance(Coss)": "13pF",
+                "Vgs": "±20V",
+                "Name": "={Manufacturer Part}",
+                "Description": "Number:1 N-channel Drain to Source Voltage:50V Current - Continuous Drain(Id):220mA RDS(on):6Ω@4.5V Pd - Power Dissipation:350mW Gate Threshold Voltage (Vgs(th)):800mV Gate Charge(Qg):- Input Capacitance(Ciss):27pF Reverse Transfer Capacitance (Crss@Vds):",
+                "Reuse Block": "",
+                "Group ID": "",
+                "Channel ID": "$1I12",
+                "DeviceName": "BSS138_C78284",
+                "FootprintName": "SOT-23-3_L2.9-W1.3-P1.90-LS2.4-BR"
+            },
+            "pinInfoMap": {
+                "1": {
+                    "name": "G",
+                    "number": "1",
+                    "net": "POWER_HOLD",
+                    "props": {
+                        "Pin Number": "1"
+                    }
+                },
+                "2": {
+                    "name": "S",
+                    "number": "2",
+                    "net": "GND",
+                    "props": {
+                        "Pin Number": "2"
+                    }
+                },
+                "3": {
+                    "name": "D",
+                    "number": "3",
+                    "net": "LATCH_G",
+                    "props": {
+                        "Pin Number": "3"
+                    }
+                }
+            }
+        },
+        "gge12": {
+            "props": {
+                "Unique ID": "gge12",
+                "Add into BOM": "yes",
+                "Convert to PCB": "yes",
+                "Symbol": "d741731522650add",
+                "Designator": "R4",
+                "Device": "2e5c45b02c66a7da",
+                "LCSC Part Name": "金属膜电阻 100kΩ ±1% 250mW",
+                "Supplier Part": "C1364475",
+                "Manufacturer": "YAGEO(国巨)",
+                "Manufacturer Part": "MFR-25FBF52-100K",
+                "Supplier Footprint": "插件,D2.4xL6.3mm",
+                "JLCPCB Part Class": "Extended Part",
+                "Datasheet": "https://item.szlcsc.com/datasheet/MFR-25FBF52-100K/1454763.html",
+                "Supplier": "LCSC",
+                "Footprint": "29f915da377bc730",
+                "3D Model": "1723974b41284f5c8da509f1f508e955|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "RES-TH_BD2.4-L6.3-P10.30-D0.6",
+                "3D Model Transform": "427.165,94.32816,0,0,0,0,0,0,-196.85",
+                "Type": "Metal Film Resistor",
+                "Value": "100kΩ",
+                "Tolerance": "±1%",
+                "Power(Watts)": "250mW",
+                "Temperature Coefficient": "±100ppm/℃",
+                "Operating Temperature": "-55℃~+155℃",
+                "Name": "={Value}",
+                "Description": "Type:Metal Film Resistor Resistance:100kΩ Tolerance:±1% Tolerance:±1% Power(Watts):250mW Temperature Coefficient:±100ppm/℃ Temperature Coefficient:±100ppm/℃ Operating Temperature:-55℃~+155℃ Operating Temperature:-55℃~+155℃",
+                "Reuse Block": "",
+                "Group ID": "",
+                "Channel ID": "$1I13",
+                "DeviceName": "MFR-25FBF52-100K",
+                "FootprintName": "RES-TH_BD2.4-L6.3-P10.30-D0.6"
+            },
+            "pinInfoMap": {
+                "1": {
+                    "name": "1",
+                    "number": "1",
+                    "net": "POWER_HOLD",
+                    "props": {
+                        "Pin Number": "1"
+                    }
+                },
+                "2": {
+                    "name": "2",
+                    "number": "2",
+                    "net": "GND",
+                    "props": {
+                        "Pin Number": "2"
+                    }
+                }
+            }
+        },
+        "gge13": {
+            "props": {
+                "Unique ID": "gge13",
+                "Add into BOM": "yes",
+                "Convert to PCB": "yes",
+                "Symbol": "747a13e9259eae44",
+                "Designator": "D2",
+                "Device": "51d0e0dcc7f4aad1",
+                "LCSC Part Name": "电压:40V 电流:3A",
+                "Supplier Part": "C8678",
+                "Manufacturer": "MDD(辰达半导体)",
+                "Manufacturer Part": "SS34",
+                "Supplier Footprint": "SMA(DO-214AC)",
+                "JLCPCB Part Class": "Basic Part",
+                "Datasheet": "https://item.szlcsc.com/datasheet/SS34/9178.html",
+                "Supplier": "LCSC",
+                "Footprint": "025948fd17254ead",
+                "3D Model": "e3551acb3c5a4975a5e9d36087fe1fa2|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "SMA_L4.3-W2.6-LS5.2-RD",
+                "3D Model Transform": "185.039,102.362,0,0,0,0,0,0,0",
+                "Diode Configuration": "Standalone",
+                "Voltage - Forward(Vf@If)": "550mV@3A",
+                "Voltage - DC Reverse(Vr)": "40V",
+                "Current - Rectified": "3A",
+                "Reverse Leakage Current (Ir)": "500uA@40V",
+                "Operating Junction Temperature Range": "-55℃~+125℃",
+                "Non-Repetitive Peak Forward Surge Current": "80A",
+                "Power Dissipation": "-",
+                "Name": "={Manufacturer Part}",
+                "Description": "Diode Configuration:Standalone Voltage - Forward(Vf@If):550mV@3A Voltage - DC Reverse(Vr):40V Current - Rectified:3A Reverse Leakage Current (Ir):500uA@40V Operating Junction Temperature Range:-55℃~+125℃ Operating Junction Temperature Range:-55℃~+125℃ Non",
+                "Reuse Block": "",
+                "Group ID": "",
+                "Channel ID": "$1I14",
+                "DeviceName": "SS34_C8678",
+                "FootprintName": "SMA_L4.3-W2.6-LS5.2-RD"
+            },
+            "pinInfoMap": {
+                "1": {
+                    "name": "K",
+                    "number": "1",
+                    "net": "+5V",
+                    "props": {
+                        "Pin Number": "1"
+                    }
+                },
+                "2": {
+                    "name": "A",
+                    "number": "2",
+                    "net": "VSYS",
+                    "props": {
+                        "Pin Number": "2"
+                    }
+                }
+            }
+        },
+        "gge14": {
+            "props": {
+                "Unique ID": "gge14",
+                "Add into BOM": "yes",
+                "Convert to PCB": "yes",
+                "Symbol": "d741731522650add",
+                "Designator": "R5",
+                "Device": "2e5c45b02c66a7da",
+                "LCSC Part Name": "金属膜电阻 100kΩ ±1% 250mW",
+                "Supplier Part": "C1364475",
+                "Manufacturer": "YAGEO(国巨)",
+                "Manufacturer Part": "MFR-25FBF52-100K",
+                "Supplier Footprint": "插件,D2.4xL6.3mm",
+                "JLCPCB Part Class": "Extended Part",
+                "Datasheet": "https://item.szlcsc.com/datasheet/MFR-25FBF52-100K/1454763.html",
+                "Supplier": "LCSC",
+                "Footprint": "29f915da377bc730",
+                "3D Model": "1723974b41284f5c8da509f1f508e955|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "RES-TH_BD2.4-L6.3-P10.30-D0.6",
+                "3D Model Transform": "427.165,94.32816,0,0,0,0,0,0,-196.85",
+                "Type": "Metal Film Resistor",
+                "Value": "100kΩ",
+                "Tolerance": "±1%",
+                "Power(Watts)": "250mW",
+                "Temperature Coefficient": "±100ppm/℃",
+                "Operating Temperature": "-55℃~+155℃",
+                "Name": "={Value}",
+                "Description": "Type:Metal Film Resistor Resistance:100kΩ Tolerance:±1% Tolerance:±1% Power(Watts):250mW Temperature Coefficient:±100ppm/℃ Temperature Coefficient:±100ppm/℃ Operating Temperature:-55℃~+155℃ Operating Temperature:-55℃~+155℃",
+                "Reuse Block": "",
+                "Group ID": "",
+                "Channel ID": "$1I15",
+                "DeviceName": "MFR-25FBF52-100K",
+                "FootprintName": "RES-TH_BD2.4-L6.3-P10.30-D0.6"
+            },
+            "pinInfoMap": {
+                "1": {
+                    "name": "1",
+                    "number": "1",
+                    "net": "VSYS",
+                    "props": {
+                        "Pin Number": "1"
+                    }
+                },
+                "2": {
+                    "name": "2",
+                    "number": "2",
+                    "net": "VBAT_SENSE",
+                    "props": {
+                        "Pin Number": "2"
+                    }
+                }
+            }
+        },
+        "gge15": {
+            "props": {
+                "Unique ID": "gge15",
+                "Add into BOM": "yes",
+                "Convert to PCB": "yes",
+                "Symbol": "d741731522650add",
+                "Designator": "R6",
+                "Device": "2e5c45b02c66a7da",
+                "LCSC Part Name": "金属膜电阻 100kΩ ±1% 250mW",
+                "Supplier Part": "C1364475",
+                "Manufacturer": "YAGEO(国巨)",
+                "Manufacturer Part": "MFR-25FBF52-100K",
+                "Supplier Footprint": "插件,D2.4xL6.3mm",
+                "JLCPCB Part Class": "Extended Part",
+                "Datasheet": "https://item.szlcsc.com/datasheet/MFR-25FBF52-100K/1454763.html",
+                "Supplier": "LCSC",
+                "Footprint": "29f915da377bc730",
+                "3D Model": "1723974b41284f5c8da509f1f508e955|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "RES-TH_BD2.4-L6.3-P10.30-D0.6",
+                "3D Model Transform": "427.165,94.32816,0,0,0,0,0,0,-196.85",
+                "Type": "Metal Film Resistor",
+                "Value": "100kΩ",
+                "Tolerance": "±1%",
+                "Power(Watts)": "250mW",
+                "Temperature Coefficient": "±100ppm/℃",
+                "Operating Temperature": "-55℃~+155℃",
+                "Name": "={Value}",
+                "Description": "Type:Metal Film Resistor Resistance:100kΩ Tolerance:±1% Tolerance:±1% Power(Watts):250mW Temperature Coefficient:±100ppm/℃ Temperature Coefficient:±100ppm/℃ Operating Temperature:-55℃~+155℃ Operating Temperature:-55℃~+155℃",
+                "Reuse Block": "",
+                "Group ID": "",
+                "Channel ID": "$1I16",
+                "DeviceName": "MFR-25FBF52-100K",
+                "FootprintName": "RES-TH_BD2.4-L6.3-P10.30-D0.6"
+            },
+            "pinInfoMap": {
+                "1": {
+                    "name": "1",
+                    "number": "1",
+                    "net": "VBAT_SENSE",
+                    "props": {
+                        "Pin Number": "1"
+                    }
+                },
+                "2": {
+                    "name": "2",
+                    "number": "2",
+                    "net": "GND",
+                    "props": {
+                        "Pin Number": "2"
+                    }
+                }
+            }
+        },
+        "gge16": {
+            "props": {
+                "Unique ID": "gge16",
+                "Add into BOM": "yes",
+                "Convert to PCB": "yes",
+                "Symbol": "8befe5e15643520d",
+                "Designator": "C3",
+                "Device": "e73faac601595c0b",
+                "LCSC Part Name": "100nF ±10% 50V",
+                "Supplier Part": "C162685",
+                "Manufacturer": "muRata(村田)",
+                "Manufacturer Part": "RDER71H104K0K1H03B",
+                "Supplier Footprint": "插件,P=5mm",
+                "JLCPCB Part Class": "Extended Part",
+                "Datasheet": "https://item.szlcsc.com/datasheet/RDER71H104K0K1H03B/174066.html",
+                "Supplier": "LCSC",
+                "Footprint": "a6871df419cd52e3",
+                "3D Model": "2b0a8f1f83cb40dd8505e9775caa01b7|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "CAP-TH_L5.0-W2.5-P5.08",
+                "3D Model Transform": "222.8342,98.419,0,0,0,0,0,0,-118.11",
+                "Value": "100nF",
+                "Tolerance": "±10%",
+                "Voltage Rating": "50V",
+                "Temperature Coefficient": "X7R",
+                "Pin Spacing": "5mm",
+                "Name": "={Value}",
+                "Description": "Capacitance:100nF Tolerance:±10% Tolerance:±10% Voltage Rating:50V Temperature Coefficient:X7R Pin Spacing:5mm",
+                "Reuse Block": "",
+                "Group ID": "",
+                "Channel ID": "$1I17",
+                "DeviceName": "RDER71H104K0K1H03B",
+                "FootprintName": "CAP-TH_L5.0-W2.5-P5.08-D0.7"
+            },
+            "pinInfoMap": {
+                "1": {
+                    "name": "1",
+                    "number": "1",
+                    "net": "VBAT_SENSE",
+                    "props": {
+                        "Pin Number": "1"
+                    }
+                },
+                "2": {
+                    "name": "2",
+                    "number": "2",
+                    "net": "GND",
+                    "props": {
+                        "Pin Number": "2"
+                    }
+                }
+            }
+        },
+        "gge17": {
+            "props": {
+                "Unique ID": "gge17",
+                "Add into BOM": "yes",
+                "Convert to PCB": "yes",
+                "Symbol": "8f08470bf4e0b72a",
+                "Designator": "J2",
+                "Device": "921df65592644c35",
+                "LCSC Part Name": "1x8P 间距:2.54mm 方针 直插",
+                "Supplier Part": "C492407",
+                "Manufacturer": "XFCN(兴飞)",
+                "Manufacturer Part": "PZ254V-11-08P",
+                "Supplier Footprint": "插件,P=2.54mm",
+                "JLCPCB Part Class": "Extended Part",
+                "Datasheet": "https://item.szlcsc.com/datasheet/PZ254V-11-08P/502963.html",
+                "Supplier": "LCSC",
+                "Footprint": "acd6aa946b82b6b7",
+                "3D Model": "926dcf5c05be473f8295f20cc8ccf72f|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "HDR-TH_8P-P2.54-V-M",
+                "3D Model Transform": "807.87244,98.425,0,0,0,0,0,0,-118.11",
+                "Pin Structure": "1x8P",
+                "Pitch": "2.54mm",
+                "Row Spacing": "-",
+                "Circluar Pins/Square Pins": "Square pin",
+                "Mounting Type": "Through Hole",
+                "Number of Rows": "1",
+                "Number of Pins": "8P",
+                "Current Rating": "3A",
+                "Voltage Rating (Max)": "250V",
+                "Length of Mating Pin": "6.1mm",
+                "Insulation Height": "2.5mm",
+                "Length of End Connection Pin": "3mm",
+                "Contact Material": "Brass",
+                "Contact Plating": "Gold",
+                "Operating Temperature": "-40℃~+105℃",
+                "Color": "Black",
+                "Name": "={Manufacturer Part}",
+                "Description": "Pin Structure:1x8P Pitch:2.54mm Row Spacing:- Circluar Pins/Square Pins:Square pin Mounting Type:Through Hole Number of Rows:1 Number of Pins:8P Current Rating:3A Voltage Rating (Max):250V Length of Mating Pin:6.1mm Insulation Height:2.5mm Length of End C",
+                "Reuse Block": "",
+                "Group ID": "",
+                "Channel ID": "$1I18",
+                "DeviceName": "PZ254V-11-08P",
+                "FootprintName": "HDR-TH_8P-P2.54-V-M"
+            },
+            "pinInfoMap": {
+                "1": {
+                    "name": "1",
+                    "number": "1",
+                    "net": "+5V",
+                    "props": {
+                        "Pin Number": "1"
+                    }
+                },
+                "2": {
+                    "name": "2",
+                    "number": "2",
+                    "net": "GND",
+                    "props": {
+                        "Pin Number": "2"
+                    }
+                },
+                "3": {
+                    "name": "3",
+                    "number": "3",
+                    "net": "",
+                    "props": {
+                        "Pin Number": "3"
+                    }
+                },
+                "4": {
+                    "name": "4",
+                    "number": "4",
+                    "net": "PWR_KEY",
+                    "props": {
+                        "Pin Number": "4"
+                    }
+                },
+                "5": {
+                    "name": "5",
+                    "number": "5",
+                    "net": "POWER_HOLD",
+                    "props": {
+                        "Pin Number": "5"
+                    }
+                },
+                "6": {
+                    "name": "6",
+                    "number": "6",
+                    "net": "VBAT_SENSE",
+                    "props": {
+                        "Pin Number": "6"
+                    }
+                },
+                "7": {
+                    "name": "7",
+                    "number": "7",
+                    "net": "CHG_STAT",
+                    "props": {
+                        "Pin Number": "7"
+                    }
+                },
+                "8": {
+                    "name": "8",
+                    "number": "8",
+                    "net": "GND",
+                    "props": {
+                        "Pin Number": "8"
+                    }
+                }
+            }
+        },
+        "gge18": {
+            "props": {
+                "Unique ID": "gge18",
+                "Add into BOM": "yes",
+                "Convert to PCB": "yes",
+                "Symbol": "e26cf29265390188",
+                "Designator": "J1",
+                "Device": "7c263f22a8bec2d6",
+                "LCSC Part Name": "1x3P 间距:2.54mm 方针 直插",
+                "Supplier Part": "C2937625",
+                "Manufacturer": "XFCN(兴飞)",
+                "Manufacturer Part": "PZ254V-11-03P",
+                "Supplier Footprint": "插件,P=2.54mm",
+                "JLCPCB Part Class": "Extended Part",
+                "Datasheet": "https://item.szlcsc.com/datasheet/PZ254V-11-03P/3293280.html",
+                "Supplier": "LCSC",
+                "Footprint": "7a4b52d22387e461",
+                "3D Model": "bd28a638fbd247be9398fd5d39c366ec|0819f05c4eef4c71ace90d822a990e87",
+                "3D Model Title": "HDR-TH_3P-P2.54-V-M_PZ254V-11-03P",
+                "3D Model Transform": "300.3931,100,0,0,0,0,0,0,-118.11",
+                "Pin Structure": "1x3P",
+                "Pitch": "2.54mm",
+                "Row Spacing": "-",
+                "Circluar Pins/Square Pins": "Square pin",
+                "Mounting Type": "Through Hole",
+                "Number of Rows": "1",
+                "Number of Pins": "3P",
+                "Current Rating": "3A",
+                "Voltage Rating (Max)": "250V",
+                "Length of Mating Pin": "6.1mm",
+                "Insulation Height": "2.5mm",
+                "Length of End Connection Pin": "3mm",
+                "Contact Material": "Brass",
+                "Contact Plating": "Gold",
+                "Operating Temperature": "-40℃~+105℃",
+                "Color": "Black",
+                "Supplementary Features": "-",
+                "Name": "={Manufacturer Part}",
+                "Description": "Pin Structure:1x3P Pitch:2.54mm Row Spacing:- Circluar Pins/Square Pins:Square pin Mounting Type:Through Hole Number of Rows:1 Number of Pins:3P Current Rating:3A Voltage Rating (Max):250V Length of Mating Pin:6.1mm Insulation Height:2.5mm Length of End C",
+                "Reuse Block": "",
+                "Group ID": "",
+                "Channel ID": "$1dc82579642522822",
+                "DeviceName": "PZ254V-11-03P",
+                "FootprintName": "HDR-TH_3P-P2.54-V-M_PZ254V-11-03P"
+            },
+            "pinInfoMap": {
+                "1": {
+                    "name": "1",
+                    "number": "1",
+                    "net": "BAT+",
+                    "props": {
+                        "Pin Number": "1"
+                    }
+                },
+                "2": {
+                    "name": "2",
+                    "number": "2",
+                    "net": "GND",
+                    "props": {
+                        "Pin Number": "2"
+                    }
+                },
+                "3": {
+                    "name": "3",
+                    "number": "3",
+                    "net": "TEMP",
+                    "props": {
+                        "Pin Number": "3"
+                    }
+                }
+            }
+        }
+    },
+    "designRule": {
+        "trackPhysics": {
+            "copperThickness1oz": {
+                "name": "copperThickness1oz",
+                "isDefault": true,
+                "unit": "mm",
+                "strokeValue": {
+                    "common": {
+                        "min": 0.127,
+                        "max": 2.54,
+                        "default": 0.254
+                    }
+                }
+            },
+            "copperThickness2oz": {
+                "name": "copperThickness2oz",
+                "isDefault": false,
+                "unit": "mm",
+                "strokeValue": {
+                    "common": {
+                        "min": 0.203,
+                        "max": 2.54,
+                        "default": 0.254
+                    }
+                }
+            }
+        },
+        "netRule": {
+            "TEMP": {
+                "net": "TEMP",
+                "ruleMap": {
+                    "TrackPhysics": ""
+                }
+            },
+            "PROG": {
+                "net": "PROG",
+                "ruleMap": {
+                    "TrackPhysics": ""
+                }
+            },
+            "GND": {
+                "net": "GND",
+                "ruleMap": {
+                    "TrackPhysics": ""
+                }
+            },
+            "+5V": {
+                "net": "+5V",
+                "ruleMap": {
+                    "TrackPhysics": ""
+                }
+            },
+            "BAT+": {
+                "net": "BAT+",
+                "ruleMap": {
+                    "TrackPhysics": ""
+                }
+            },
+            "CHG_STAT": {
+                "net": "CHG_STAT",
+                "ruleMap": {
+                    "TrackPhysics": ""
+                }
+            },
+            "LATCH_G": {
+                "net": "LATCH_G",
+                "ruleMap": {
+                    "TrackPhysics": ""
+                }
+            },
+            "VSYS": {
+                "net": "VSYS",
+                "ruleMap": {
+                    "TrackPhysics": ""
+                }
+            },
+            "PWR_KEY": {
+                "net": "PWR_KEY",
+                "ruleMap": {
+                    "TrackPhysics": ""
+                }
+            },
+            "POWER_HOLD": {
+                "net": "POWER_HOLD",
+                "ruleMap": {
+                    "TrackPhysics": ""
+                }
+            },
+            "VBAT_SENSE": {
+                "net": "VBAT_SENSE",
+                "ruleMap": {
+                    "TrackPhysics": ""
+                }
+            }
+        }
+    },
+    "differentialPair": {},
+    "netClass": {},
+    "equalLengthNetGroup": {}
+}
