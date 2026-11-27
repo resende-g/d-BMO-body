@@ -5,7 +5,7 @@
 | Versão | 0.2 (2026-11-27) |
 | Para quem | Tiago Batista, que fabrica a placa em casa (corrosão de uma face) |
 | Ferramenta | EasyEDA Pro, projeto `dbmo`, placa `energia` (Schematic2 + PCB2) |
-| Tamanho | 57,5 × 36,4 mm, contorno do Gerber (limite do Tiago: 70 × 70 mm); deve crescer para 60,1 × 38,1 mm (seção 6, item 10) |
+| Tamanho | 60,1 × 39,8 mm, contorno do Gerber (limite do Tiago: 70 × 70 mm) |
 | Fonte das ligações | [`ligacoes.json`](ligacoes.json) |
 | Estado | **Desenhada e roteada, 5 fios (4 de verdade), sem curto** (`fios.py` sobre o Gerber exportado do EasyEDA). Nenhuma peça comprada, nada montado. Não corroer antes de fechar a seção 6 |
 
@@ -75,7 +75,7 @@ JE-5 da placa de botões da esquerda (o botão de energia e o D1 ficam lá).
 Rota pelo Freerouting 2.5.0 só na camada de baixo (trilha 0,6 mm, mínimo 0,4 mm, isolação 0,5 mm),
 importada no PCB2 pela API. Medido no Gerber exportado (`fios.md`): isolação mínima de 0,52 mm; toda
 trilha com 0,6 mm, menos 38,9 mm com 0,45 mm (`GND`, `POWER_HOLD`, `PWR_KEY` e `TEMP`); cobre a
-1,05 mm da borda no ponto mais perto (pad R3.1). `fios.md` lista 5 fios; o W4 (GND J2-2 ↔ J2-8) não precisa ser feito,
+2,50 mm da borda no ponto mais perto (pad R3.1). `fios.md` lista 5 fios; o W4 (GND J2-2 ↔ J2-8) não precisa ser feito,
 porque os dois GND do cabo se juntam na placa-base. O W1 (`BAT+`) e o fio do `CHG_STAT` passam por
 cima do TP4056. Um fio é inevitável nesta topologia: o CE (pino 8) é `+5V` e fica na diagonal oposta
 do VCC (pino 4), e com o NTC ligado qualquer volta em torno do chip tranca o `TEMP` ou o `CHRG`.
@@ -115,5 +115,5 @@ do VCC (pino 4), e com o NTC ligado qualquer volta em torno do chip tranca o `TE
 | 7 | Pino 6 do TP4056 | **Decisão do desenho:** o pad do STDBY (sem ligação) sai da pegada, para abrir passagem entre os pinos 5 e 7 | Editar a pegada no EasyEDA (Gabriel) |
 | 8 | Corrente com USB de computador | **Hipótese:** carga de 500 mA mais o aparelho passa dos 500 mA de uma porta USB 2.0 | Carregar com carregador de parede ou trocar R1 por 3 kΩ (400 mA) |
 | 9 | EN da DevKitC | **Pendente:** supervisor de tensão no EN (`S3-PWR-10`) não foi incluído | Avaliar depois das medições do item 2 |
-| 10 | Borda | **Fato:** o cobre chega a 1,05 mm da borda (pad R3.1) e as trilhas a 1,32 mm, abaixo dos 2–3 mm do Tiago | Gabriel redesenha o contorno do PCB2 com Start X 13 mil, Start Y 1572 mil, Width 2367 mil, Height 1499 mil (60,1 × 38,1 mm, 2,5 mm de borda em volta do cobre); depois exportar o Gerber e refazer `fios.md` e os PNGs |
+| 10 | Borda | **Fechado em 2026-11-27:** o contorno antigo (57,5 × 36,4 mm) deixava o cobre a 1,05 mm da borda. O Gabriel redesenhou o contorno do PCB2 (60,1 × 39,8 mm); agora o cobre fica a 2,50 mm da borda nos lados e a 4,2 mm embaixo | — |
 | 11 | Fios | **Fato:** 5 fios (`fios.md`), sendo o W4 (`GND` J2-2 ↔ J2-8) dispensável | Soldar W1, W2, W3 e W5 na montagem |

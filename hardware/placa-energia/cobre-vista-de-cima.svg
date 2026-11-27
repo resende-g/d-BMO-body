@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="59.531mm" height="38.449mm" viewBox="0.778 -40.497 59.531 38.449">
-<rect x="0.778" y="-40.497" width="59.531" height="38.449" fill="#fff"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="62.122mm" height="41.751000000000005mm" viewBox="-0.6699999999999999 -40.929 62.122 41.751000000000005">
+<rect x="-0.6699999999999999" y="-40.929" width="62.122" height="41.751000000000005" fill="#fff"/>
 <g transform="">
 <g fill="#000">
 <circle cx="22.941" cy="-11.341" r="0.601"/>
@@ -212,9 +212,9 @@
 <circle cx="16.411" cy="-31.750" r="0.450"/>
 </g>
 <g fill="none">
-<line x1="1.778" y1="-3.048" x2="1.778" y2="-39.497" stroke="#888" stroke-width="0.1" stroke-linecap="round"/>
-<line x1="1.778" y1="-39.497" x2="59.309" y2="-39.497" stroke="#888" stroke-width="0.1" stroke-linecap="round"/>
-<line x1="59.309" y1="-39.497" x2="59.309" y2="-3.048" stroke="#888" stroke-width="0.1" stroke-linecap="round"/>
-<line x1="59.309" y1="-3.048" x2="1.778" y2="-3.048" stroke="#888" stroke-width="0.1" stroke-linecap="round"/>
+<line x1="0.330" y1="-0.178" x2="0.330" y2="-39.929" stroke="#888" stroke-width="0.1" stroke-linecap="round"/>
+<line x1="0.330" y1="-39.929" x2="60.452" y2="-39.929" stroke="#888" stroke-width="0.1" stroke-linecap="round"/>
+<line x1="60.452" y1="-39.929" x2="60.452" y2="-0.178" stroke="#888" stroke-width="0.1" stroke-linecap="round"/>
+<line x1="60.452" y1="-0.178" x2="0.330" y2="-0.178" stroke="#888" stroke-width="0.1" stroke-linecap="round"/>
 </g>
 </g></svg>

@@ -8,7 +8,7 @@
 
 5 fios, 70 mm de fio no total; 123 trilhas; sem curtos.
 Isolação mínima: 0.52 mm (trilha `+5V` × trilha `LATCH_G`).
-Contorno: 57.53 × 36.45 mm. Cobre mais perto da borda: 1.05 mm (R3.1).
+Contorno: 60.12 × 39.75 mm. Cobre mais perto da borda: 2.50 mm (R3.1).
 
 Trilhas mais finas que 0.8 mm:
 
