@@ -49,6 +49,6 @@ O toque que **ligou** o aparelho é ignorado: o botão só passa a valer depois 
 
 - Implementado e testado no computador: tudo acima (`tests/unit/power/`, 30 testes).
 - Aguarda hardware e decisão: divisor da bateria, carregador (pinos de estado), trava de
-  alimentação (GPIO 48 é proposta), limiares reais, consumo em sono. O botão de energia
-  no GPIO 0 tem um risco aberto (pino de strap: segurá-lo no reset entra em modo de
-  download), registrado em `docs/hardware/GPIO_MAP.md`.
+  alimentação (POWER_HOLD no GPIO 2 é proposta; ver `pins.h`), limiares reais, consumo em sono. O botão de energia
+  fica no GPIO 10 (RTC, fora dos pinos de strapping; VBAT no 9, CHARGER_STATUS no 8), riscos em
+  `docs/hardware/GPIO_MAP.md`.

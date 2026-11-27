@@ -60,6 +60,12 @@ jobs:
         run: python3 tools/check_pinmap.py
       - name: Netlist da placa principal contra pins.h
         run: python3 hardware/placa-principal/conferir_netlist.py hardware/placa-principal/esquematico.enet
+      - name: Netlist da placa de energia contra as ligações
+        run: python3 hardware/placa-principal/conferir_netlist.py hardware/placa-energia/esquematico.enet hardware/placa-energia/ligacoes.json
+      - name: Netlist da placa de botões da direita contra as ligações
+        run: python3 hardware/placa-principal/conferir_netlist.py hardware/placa-botoes-direita/esquematico.enet hardware/placa-botoes-direita/ligacoes.json
+      - name: Netlist da placa de botões da esquerda contra as ligações
+        run: python3 hardware/placa-principal/conferir_netlist.py hardware/placa-botoes-esquerda/esquematico.enet hardware/placa-botoes-esquerda/ligacoes.json
       - name: Links da documentação
         run: python3 tools/check_links.py
       - name: Estrutura, portabilidade, privacidade e scripts
