@@ -1,135 +1,118 @@
-# Placa principal do d-BMO (uma face)
+# Placa-base da DevKitC (CPU do d-BMO)
 
 | Campo | Valor |
 |---|---|
-| Versão | 0.1 (2026-11-26) |
-| Para quem | Tiago Batista, que fabrica a placa em casa (corrosão de uma face) |
-| Ferramenta | EasyEDA Pro, projeto `dbmo` (esquemático e placa desenhados pelo MCP `easyeda-pro`) |
+| Versão | 0.2 (2026-11-27) |
+| Para quem | Tiago Batista, que fabrica a placa em casa (laser + percloreto, uma face) |
+| Ferramenta | EasyEDA Pro, projeto `dbmo`, Board1 (Schematic1 + PCB1) |
+| Tamanho | 64 × 53 mm (limite do Tiago: 70 × 70 mm) |
 | Fonte das ligações | [`ligacoes.json`](ligacoes.json), conferido contra `firmware/config/include/dbmo/config/pins.h` (perfil `target`) por [`conferir_netlist.py`](conferir_netlist.py) |
-| Estado | **Esquemático conferido contra `pins.h` (126 ligações). Layout em refação:** em 2026-11-26 o Gabriel pediu formato deitado, parecido com o Anbernic RG34XX (tela no meio, cartão SD saindo por cima, um IR em cada canto de cima, USB-C da DevKitC na lateral). A seção 5 descreve o layout em pé, já descartado; a rota e a lista de fios saem quando o novo layout fechar. Não corroer antes de fechar a seção 6 |
+| Estado | **Desenhada e roteada: 0 fio, sem curto** (`fios.py` sobre o Gerber exportado do EasyEDA). Nada montado |
 
-## 1. Escopo (decisões do Gabriel em 2026-11-25)
+## 1. O que é
 
-- Uma face: cobre só embaixo (Bottom), todas as peças de furo passante em cima. O lado das peças é
-  a frente do aparelho: tela e botões ficam virados para quem usa.
-- Encaixados em barras fêmea 2,54 mm: ESP32-S3 DevKitC-1 N16R8 inteira, tela MSP3218 (ILI9341,
-  14 pinos, mais os 4 do SD), CC1101 Ebyte E07-M1101D (2×4), receptor e transmissor de IR (3 pinos
-  cada), INMP441 (duas barras de 3), MAX98357A (7 pinos; o alto-falante vai no borne da placa
-  dele) e PN532 (4 pinos, modo I²C).
-- Botões táteis 6×6 mm PTH: cruz, A, B, X, Y, Start, Select e energia.
-- Os 10 botões de jogo num MCP23017 em DIP-28 (soquete), endereço 0x20 (A0–A2 no GND). O botão
-  de energia vai direto ao GPIO 2.
-- Sem cartucho, sem analógicos, sem gatilhos. Sem circuito de energia: ele vai numa segunda placa
-  (seção 3).
+Em 2026-11-27 o d-BMO virou módulos de até 65 × 65 mm, porque o Tiago só fabrica placas de até
+70 × 70 mm (a placa única deitada tinha 170 × 115 mm). Esta placa só leva a DevKitC: cada pino dela
+vai em linha reta para barras de pinos machos, e **todos os módulos chegam por cabo Dupont**:
+
+- **JT1, JT2, JT3** (1×22, em cima): três cópias da fileira J1 da DevKitC (3V3, 5V, SPI e a maior parte
+  dos GPIOs). Três cópias porque o SPI vai para a tela, o SD e o CC1101.
+- **JB1, JB2** (1×22, embaixo): duas cópias da fileira J3 da DevKitC.
+- **J12** (1×4): mais 3V3. **J13** (1×4): mais GND.
+
+Como cada pino da DevKitC tem a sua coluna, a rota é reta e não sobra fio. Os GPIOs são os de
+`pins.h` (perfil `target`, de 2026-11-26): a placa-base não muda nenhum.
+
+Decisões do Gabriel em 2026-11-27: módulos para o Tiago; a CPU como placa-base, com tudo por cabo
+(a alternativa, MAX98357A, INMP441 e CC1101 montados na CPU, deixava 18 fios); o MCP23017 foi para a
+placa de botões da esquerda.
 
 ## 2. Arquivos
 
 | Arquivo | O que é |
 |---|---|
-| `ligacoes.json` | Pino de cada peça → net. É a fonte; o esquemático foi feito a partir dele |
-| `conferir_netlist.py` | Confere a netlist exportada do EasyEDA contra `ligacoes.json` e `pins.h`. Roda na CI |
-| `esquematico.enet` | Netlist exportada do esquemático (formato do EasyEDA Pro), em 2026-11-26 |
-| `fios.py` | Lê o Gerber exportado (zip) e lista os fios que faltam numa face; falha se houver curto ou trilha na camada de cima |
-| `lista-de-pecas.tsv` | Lista de peças exportada do esquemático (separada por tabulação) |
+| `ligacoes.json` | Pino de cada peça → net. É a fonte |
+| `esquematico.enet` | Netlist exportada do esquemático (EasyEDA Pro) |
+| `conferir_netlist.py` | Confere a netlist contra `ligacoes.json` e `pins.h`. Roda na CI. Aceita o `ligacoes.json` das outras placas como segundo argumento |
+| `gerber.zip` | Gerber exportado do EasyEDA (cobre só na camada de baixo) |
+| `cobre-espelhada.png` / `.svg` | **Para o Tiago gravar**: a camada de cobre vista do lado do cobre, 1:1, 600 dpi, furos marcados |
+| `cobre-vista-de-cima.png` / `.svg` | A mesma camada como o EasyEDA mostra (olhando pelo lado das peças) |
+| `lista-de-pecas.tsv` | Lista de peças exportada do PCB |
+| `fios.md` | Saída do `fios.py`: nenhum fio, isolação mínima de 0,60 mm, cobre a 2,03 mm da borda, toda trilha com 0,8 mm |
+| `fios.py` | Lê o Gerber e lista os fios, a isolação mínima, o cobre mais perto da borda e as trilhas abaixo de 0,8 mm; falha se houver curto, trilha na camada de cima ou isolação abaixo de 0,5 mm. Serve às quatro placas |
+| `dsn.py`, `rotear.py` | Gera o DSN (Specctra) a partir do Gerber e roteia com o Freerouting; o SES volta ao EasyEDA pelo MCP |
+| `png_tiago.py` | Gera as imagens para o Tiago a partir do Gerber |
 
-Para conferir depois de mexer no esquemático: exportar a netlist (Exportar → Netlist, formato
-EasyEDA Pro `.enet`) e rodar
+Como foi feito: esquemático e posições pelo MCP `easyeda-pro`; rota pelo Freerouting 2.5.0 (Java 25+),
+só na camada de baixo, trilha 0,8 mm, isolação 0,5 mm, 2 mm de cobre até a borda e keepout sob a antena;
+o SES voltou ao EasyEDA pela extensão MCP Bridge com uma correção local (a 0.5.1 não sabia criar trilha:
+usa `pcb_PrimitiveLine.create`). Medido de novo pelo Gerber exportado.
 
-```bash
-python3 hardware/placa-principal/conferir_netlist.py placa-principal.enet
-```
+## 3. Colunas das barras
 
-## 3. Conector para a placa de energia (J2)
+Barras na horizontal, coluna 1 à esquerda olhando pelo lado das peças, com o USB da DevKitC na borda
+esquerda. JT1 e JB1 são as fileiras mais perto da DevKitC; todas as fileiras de uma coluna têm a mesma
+net.
 
-Barra 1×8, 2,54 mm. A placa de energia ainda não tem peças compradas.
+| Coluna | JT (cima): pino DevKitC · função · net | JB (baixo): pino DevKitC · função · net |
+|---:|---|---|
+| 1 | J1-22 · GND · `GND` | J3-22 · GND · `GND` |
+| 2 | J1-21 · 5V · `+5V` | J3-21 · GND · `GND` |
+| 3 | J1-20 · GPIO14 · `DISPLAY_BACKLIGHT` | J3-20 · GPIO19 · `USB_DM` |
+| 4 | J1-19 · GPIO13 · `SPI_MISO` | J3-19 · GPIO20 · `USB_DP` |
+| 5 | J1-18 · GPIO12 · `SPI_SCK` | J3-18 · GPIO21 · `CC1101_GDO0` |
+| 6 | J1-17 · GPIO11 · `SPI_MOSI` | J3-17 · GPIO47 · `SD_CS` |
+| 7 | J1-16 · GPIO10 · `POWER_BTN` | J3-16 · GPIO48 · `CC1101_CS` |
+| 8 | J1-15 · GPIO9 · `VBAT_SENSE` | J3-15 · GPIO45 · `IO45` |
+| 9 | J1-14 · GPIO46 · `IO46` | J3-14 · GPIO0 · `IO0` |
+| 10 | J1-13 · GPIO3 · `IO3` | J3-13 · GPIO35 · `IO35` |
+| 11 | J1-12 · GPIO8 · `CHG_STAT` | J3-12 · GPIO36 · `IO36` |
+| 12 | J1-11 · GPIO18 · `I2S_LRCLK` | J3-11 · GPIO37 · `IO37` |
+| 13 | J1-10 · GPIO17 · `I2S_BCLK` | J3-10 · GPIO38 · `IO38` |
+| 14 | J1-9 · GPIO16 · `I2S_SPK_DATA` | J3-9 · GPIO39 · `DISPLAY_DC` |
+| 15 | J1-8 · GPIO15 · `AMP_SHUTDOWN` | J3-8 · GPIO40 · `DISPLAY_RESET` |
+| 16 | J1-7 · GPIO7 · `I2S_MIC_DATA` | J3-7 · GPIO41 · `DISPLAY_CS` |
+| 17 | J1-6 · GPIO6 · `I2C_SDA` | J3-6 · GPIO42 · `IO42` |
+| 18 | J1-5 · GPIO5 · `IR_TX` | J3-5 · GPIO2 · `POWER_HOLD` |
+| 19 | J1-4 · GPIO4 · `IR_RX` | J3-4 · GPIO1 · `I2C_SCL` |
+| 20 | J1-3 · EN · `EN` | J3-3 · RX (GPIO44) · `U0RXD` |
+| 21 | J1-2 · 3V3 · `+3V3` | J3-2 · TX (GPIO43) · `U0TXD` |
+| 22 | J1-1 · 3V3 · `+3V3` | J3-1 · GND · `GND` |
 
-| Pino | Net | Direção (vista da principal) | GPIO | Para quê |
-|---:|---|---|---:|---|
-| 1 | `+5V` | entrada | — | Alimentação: vai ao pino 5V da DevKitC (J1-21), entrada do regulador de 3,3 V dela |
-| 2 | `GND` | — | — | |
-| 3 | `+3V3` | saída | — | 3,3 V do regulador da DevKitC, para pull-ups ou lógica da placa de energia |
-| 4 | `POWER_BTN` | saída | 10 | O botão de energia (SW11) puxa ao GND. A placa de energia precisa ver o aperto para ligar |
-| 5 | `POWER_HOLD` | saída | 2 | Trava: o firmware segura a alimentação ligada depois do aperto |
-| 6 | `VBAT_SENSE` | entrada | 9 | Tensão da bateria pelo divisor 100k/100k, que fica na placa de energia (ADC1) |
-| 7 | `CHG_STAT` | entrada | 8 | Estado do carregador (dreno aberto, ativo em baixo, hipótese). GPIO RTC: acorda o chip |
-| 8 | `GND` | — | — | |
+Não ligar nada em `IO0`, `IO3`, `IO45`, `IO46` (strapping), `IO35`–`IO37` (PSRAM da N16R8), `IO38`
+(LED RGB), `USB_DM`/`USB_DP` e `U0RXD`/`U0TXD` (USB e serial da DevKitC). `IO42` está livre.
 
-### Sem a placa de energia (como usar hoje)
+## 4. Cabos (de cada módulo para a placa-base)
 
-- J2 fica vazio. A placa é alimentada pelo cabo USB da DevKitC, em qualquer uma das duas portas.
-- O 3,3 V de todos os módulos sai do regulador da própria DevKitC (pino 3V3, J1-1).
-- O amplificador fica sempre no 3,3 V (sem jumper, como na bancada). JP2 em **1-2**: luz de
-  fundo da tela sempre acesa, como na bancada; em **2-3**, controlada pelo GPIO 14 (PWM).
-- `POWER_HOLD`, `VBAT_SENSE` e `CHG_STAT` ficam sem nada do outro lado. O GPIO 9 lê um valor sem
-  sentido (o firmware do perfil `target` mostra uma bateria qualquer). O botão de energia funciona:
-  o GPIO 10 tem pull-up interno e acorda o chip do deep sleep.
+`JT·n` = qualquer fileira da coluna n de cima; `JB·n` = coluna n de baixo. 3V3: J12 ou JT·21/22.
+GND: J13, JT·1, JB·1, JB·2 ou JB·22.
 
-## 4. Jumper de escolha
+| Módulo | Pino do módulo → placa-base |
+|---|---|
+| Tela MSP3218 (barra de 14) | VCC → 3V3 · GND → GND · CS → JB·16 · RESET → JB·15 · DC → JB·14 · SDI (MOSI) → JT·6 · SCK → JT·5 · LED → JT·3 (luz de fundo por PWM) **ou** 3V3 (sempre acesa) · SDO (MISO) → JT·4 · T_* → nada |
+| SD da tela (barra de 4) | SD_CS → JB·6 · MOSI → JT·6 · MISO → JT·4 · SCK → JT·5 |
+| CC1101 E07-M1101D | 1 GND → GND · 2 VCC → 3V3 · 3 GDO0 → JB·5 · 4 CS → JB·7 · 5 SCK → JT·5 · 6 MOSI → JT·6 · 7 MISO → JT·4 · 8 GDO2 → nada |
+| INMP441 | L/R → GND · WS → JT·12 · SCK → JT·13 · GND → GND · VDD → 3V3 · SD → JT·16 |
+| MAX98357A | LRC → JT·12 · BCLK → JT·13 · DIN → JT·14 · GAIN → nada (9 dB) · SD → JT·15 · GND → GND · Vin → 3V3 · alto-falante no borne |
+| Receptor de IR | S → JT·19 · + → 3V3 · − → GND |
+| Transmissor de IR | S → JT·18 · + → 3V3 · − → GND |
+| PN532 (modo I²C) | GND → GND · VCC → 3V3 · SDA → JT·17 · SCL → JB·19 |
+| Placa de botões da esquerda (JE) | 1 SDA → JT·17 · 2 SCL → JB·19 · 3 3V3 → 3V3 · 4 GND → GND · 5 `PWR_KEY` → placa de energia J2-4 · 6 `POWER_BTN` → JT·7 |
+| Placa de energia (J2) | 1 `+5V` → JT·2 · 2 e 8 GND → GND · 3 nada · 4 `PWR_KEY` → JE-5 da placa da esquerda · 5 `POWER_HOLD` → JB·18 · 6 `VBAT_SENSE` → JT·8 · 7 `CHG_STAT` → JT·11 |
 
-| Jumper | 1-2 | 2-3 | Por quê |
-|---|---|---|---|
-| JP2 | Luz de fundo no `+3V3` (sempre acesa) | Luz de fundo no GPIO 14 (PWM) | A corrente da luz de fundo da MSP3218 não foi conferida (MSP-05); na bancada ela está no 3,3 V |
+Cópias que bastam: SPI 3 (tela, SD, CC1101), I2S_LRCLK/BCLK 2 (INMP441, MAX98357A), SDA 3 e SCL 2
+(PN532, botões), 3V3 10, GND 13. Sem a placa de energia, tudo roda pelo USB da DevKitC; o botão de
+energia funciona pelo D1 da placa da esquerda.
 
-O JP1 (amplificador no 5 V ou no 3,3 V) saiu em 2026-11-26: o MAX98357A fica fixo no 3,3 V, que
-foi o validado na bancada.
-
-## 5. Como a placa foi feita (layout em pé, descartado em 2026-11-26)
-
-1. **Esquemático** pelo MCP, a partir de `ligacoes.json`, conferido por `conferir_netlist.py`.
-2. **Posições e GPIOs** escolhidos para a placa de uma face precisar de poucos fios: um modelo
-   simples (cruzamentos das linhas de ligação, sem rotear) comparou em pé e deitado e escolheu
-   posição e rotação das peças pequenas, o mapa dos botões no MCP23017 e quais GPIOs da DevKitC
-   ficam com cada sinal. Em pé ganhou nas duas restrições testadas (63 contra 237 com a tela no
-   topo). Restrições fixas: tela encostada na borda de cima com a barra do SD à direita (o cartão
-   sai por cima, pedido do Gabriel em 2026-11-26), DevKitC logo abaixo com a antena na borda
-   esquerda, cruz e ABXY embaixo, IR e CC1101 em bordas com o módulo para fora, nada no caminho do
-   cabo USB.
-3. **Rota** pelo autoroteador do EasyEDA, só na camada de baixo, modo "Speed first" (o "Completion
-   first" cruza nets para fechar 100%). O que ele não consegue ligar vira fio: `fios.py` lê o
-   Gerber exportado e lista os fios em `fios.md`.
-
-Placa de 110 × 185 mm (cabe numa placa virgem de 15 × 20 cm). Posições em mm, origem no canto de
-baixo à esquerda, vista do lado das peças:
-
-| Ref | Peça | Centro (x, y) | Rotação | Como |
-|---|---|---|---:|---|
-| J3, J4 | Tela (14 pinos) e SD (4 pinos) | (13, 154,5) e (97, 154,5) | 90 | Tela encostada no topo; nada embaixo dela além de trilhas |
-| U1 | DevKitC | (37,67, 108) | 90 | Pino 1 em x = 11; antena na borda esquerda; USB para a direita |
-| J10, J11 | IR RX e IR TX | (4, 86,8) e (4, 60,7) | 90 e 270 | Borda esquerda, módulos para fora |
-| J5 | CC1101 | (105,05, 81,2) | 90 | Borda direita, SMA para fora |
-| J7, J8 | INMP441 | (54,7, 69,4) e (54,7, 59,2) | 180 | |
-| J9 | MAX98357A | (52,2, 76,2) | 180 | Alto-falante por fio no borne |
-| J2 | Placa de energia | (74,6, 72,5) | 180 | Cabo até a placa de energia |
-| JP2 | Luz de fundo | (92, 92) | 180 | Abaixo da DevKitC, fora do caminho do cabo USB |
-| SW11 | Energia | (71,4, 82,2) | 0 | |
-| SW9, SW10 | Select, Start | (35,8, 53,9) e (74,7, 54) | 180 | |
-| SW1–SW4 | Cruz | centro (20, 32), botões a 10 mm | — | |
-| SW5–SW8 | A, B, X, Y | centro (90, 32), botões a 10 mm | — | X em cima, A à direita |
-| U2, C1 | MCP23017 e 100 nF | (59,4, 26,2) e (49,7, 31,2) | 90 e 180 | |
-| R1, R2 | Pull-ups do I²C | (43,3, 57) e (26,3, 68,1) | 270 | |
-| J6 | PN532 | (96,2, 61,2) | 180 | Cabo até o PN532 na traseira |
-
-**Pads tirados das pegadas** (pinos sem ligação; na montagem, tirar o contato da barra fêmea ou
-cortar a barra): U1 2, 3, 13, 14, 23, 24, 25, 26, 30, 31, 32, 33, 34, 35, 39, 42, 43; J3 10 a 14
-(toque); J9 4 (GAIN, solto = 9 dB); J5 8 (GDO2).
-
-## 6. Pendente antes de fabricar
+## 5. Pendente antes de fabricar
 
 | # | Item | Situação | Como fechar |
 |---|---|---|---|
-| 1 | Ordem dos pinos da DevKitC | **Fato:** o símbolo da LCSC (ESP32-S3-DEVKITC-1-N8R8, mesma placa e pinagem da N16R8) bate com o guia v1.1 da Espressif; `conferir_netlist.py` confere cada GPIO pelo nome do pino | — |
-| 2 | Pegada da DevKitC | **Fato:** na pegada da LCSC (`CONN-TH_ESP32-S3-DEVKITC-1U-N8`) as fileiras ficam a 22,86 mm e os pinos 1 e 22 a 53,34 mm, como no footprint oficial da Espressif. Os pads livres saíram (seção 5) | Paquímetro na placa em mãos |
-| 3 | Tela MSP3218 | **Fato (Gabriel, 2026-11-26):** barra do SD à direita, cartão saindo por cima. **Hipótese:** cerca de 84 mm entre as barras (placa de 89,3 mm, nominal) e o pino 1 das duas barras embaixo | Paquímetro e conferir o pino 1, antes de corroer |
-| 4 | CC1101 E07-M1101D | **Fato:** pinos 1–4 pelo manual da Ebyte. **Hipótese:** 5–8 (fonte secundária) e ímpares numa fileira, pares na outra | Continuidade do pino 1 com a rosca da SMA |
-| 5 | INMP441 | **Fato:** nomes pela serigrafia (L/R, WS, SCK; GND, VDD, SD). **Hipótese:** distância entre fileiras e quais pinos se encaram | Paquímetro |
-| 6 | PN532 em I²C | **Hipótese:** ordem GND, VCC, SDA, SCL; chave em I²C (canal 1 ON, canal 2 OFF) | Ler a serigrafia; como vai por cabo, a ordem se ajusta no cabo |
-| 7 | IR, MAX98357A, tela | **Fato:** ordem pela serigrafia usada na bancada (`BREADBOARD_MAP.md`) | — |
-| 8 | Botões 6×6 | **Hipótese:** pinos 1 e 4 ficam em lados opostos da chave (diagonal), seja o par interno 1-3/2-4 ou 1-2/3-4 | Multímetro num botão comprado |
-| 9 | 5 V da DevKitC | **Pendente:** o 5 V no pino J1-21 com o USB ligado (DKC-14) e se há diodo entre o VBUS e esse pino. Sem diodo, ligar USB e placa de energia juntos põe duas fontes em paralelo | Esquema da DevKitC v1.1 e multímetro |
-| 10 | Regras do Tiago | **Hipótese conservadora** (Gabriel, 2026-11-25): trilha 0,8 mm, isolação 0,5 mm, ilha 2,0 mm, furo 1,0 mm, 1 mm de cobre até a borda | Perguntar ao Tiago |
-| 11 | PN532 por cabo | **Decisão desta sessão, a confirmar:** encaixado na placa, o módulo cobriria a tela ou os botões, e a antena precisa ficar na traseira sem metal atrás (AD-03) | Gabriel |
-| 12 | Barras na lista de peças | As barras da lista são machos da LCSC, escolhidas só pela pegada. Para os módulos, comprar **barras fêmea** de 2,54 mm; machos só em J2, JP1 e JP2 (com dois jumpers de encaixe) | — |
-| 13 | `CHG_STAT` | **Hipótese:** dreno aberto, ativo em baixo, como os carregadores comuns. Sem pull-up na principal: o firmware liga o pull-up interno quando passar a ler o pino | Escolha do carregador da placa de energia |
-| 14 | Antena do ESP32-S3 | **Pendente:** os 15 mm sem metal recomendados (`KO-ESP`) não cabem; a antena fica na borda esquerda, sem cobre embaixo | Teste de alcance do Wi-Fi com a placa montada |
-| 15 | GPIOs novos | **Hipótese:** a troca de GPIOs de 2026-11-26 (README, Pinagem) segue as restrições do ESP32-S3 (ADC1 na bateria, RTC fora do strapping no botão, no carregador e na trava; SPI no IO_MUX), mas só o SPI, o microfone (7) e o IR RX (4) já rodaram nesses pinos | Testar cada módulo na placa montada |
-| 16 | Corpo dos módulos | **Hipótese:** o MAX98357A (J9) e o INMP441 (J7/J8) ficam no meio da placa; o lado para onde o corpo de cada módulo se estende a partir da barra não foi medido | Encaixar os módulos de verdade sobre a impressão em papel 1:1 antes de corroer |
+| 1 | Ordem dos pinos da DevKitC | **Fato:** símbolo e pegada da LCSC (ESP32-S3-DEVKITC-1-N8R8, mesma pinagem da N16R8) batem com o guia v1.1 da Espressif; `conferir_netlist.py` confere cada GPIO pelo nome do pino | — |
+| 2 | Pegada da DevKitC | **Fato:** fileiras a 22,86 mm e pinos 1 e 22 a 53,34 mm, como no footprint oficial. **Hipótese:** a DevKitC (62,7 mm) fica com o USB rente à borda esquerda | Paquímetro na placa em mãos e na impressão 1:1 |
+| 3 | Dupont ao lado da DevKitC | **Hipótese:** a fileira JT1/JB1 fica a 5,08 mm da fileira da DevKitC (uma posição vazia no meio), o bastante para a carcaça Dupont não encostar na placa da DevKitC, que fica ~11 mm acima | Encaixar um cabo antes de soldar tudo |
+| 4 | Antena | **Fato:** sem cobre embaixo da ponta da antena (keepout na rota). **Pendente:** teste de alcance do Wi-Fi montado | Teste |
+| 5 | Regras do Tiago | **Fato (Tiago, 2026-11-26):** trilha de 0,8 a 1 mm serve; placa até 70 × 70 mm; margem de 2–3 mm. **Fato (`fios.md`):** toda trilha com 0,8 mm (os 2 trechos de `GND` de 0,6 mm junto do JB2.20 foram alargados em 2026-11-27), isolação mínima de 0,60 mm, cobre a 2,03 mm da borda. **Hipótese:** isolação de 0,5 mm basta (ele engrossa tudo no Paint depois) | Ver a primeira placa gravada |
+| 6 | Furos | **Fato (Tiago):** brocas de 1,0 e 0,6 mm. As barras de pinos pedem 1,0 mm | — |
+| 7 | 5V e USB juntos | **Hipótese:** o pino 5V da DevKitC recebe o VBUS com o USB ligado; a placa de energia tem um Schottky (D2) para não haver duas fontes em paralelo | Multímetro no pino 5V com o USB ligado |
+| 8 | Imagem para o Tiago | `cobre-espelhada.png` é o lado do cobre visto de frente (cobre na camada de baixo). Ele engrossa trilhas e pads no Paint | Confirmar com o Tiago na primeira placa |
